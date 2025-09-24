@@ -110,7 +110,7 @@
     "@types/lodash": "^4.17.20",
     "@types/markdown-it": "^14.1.2",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^24.4.0",
+    "@types/node": "^24.5.2",
     "@types/semver": "^7.5.8",
     "@types/serve-handler": "^6.1.4",
     "@typescript-eslint/eslint-plugin": "^8.18.1",
