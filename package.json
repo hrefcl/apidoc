@@ -25,10 +25,17 @@
       "name": "hrefcl"
     }
   ],
+  "type": "commonjs",
   "main": "./dist/lib/index.js",
   "types": "./dist/lib/index.d.ts",
   "bin": {
     "apidoc": "bin/apidoc"
+  },
+  "directories": {
+    "doc": "docs",
+    "example": "example",
+    "lib": "lib",
+    "test": "test"
   },
   "scripts": {
     "build": "tsc",
@@ -150,6 +157,13 @@
     "linux",
     "openbsd",
     "win32"
+  ],
+  "files": [
+    "dist/**/*",
+    "bin/**/*",
+    "template/**/*",
+    "LICENSE",
+    "README.md"
   ],
   "publishConfig": {
     "provenance": true
