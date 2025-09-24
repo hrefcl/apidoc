@@ -402,7 +402,7 @@ class Writer {
     </script>`;
 
             // Insert data script before the bundle script - match actual cache-busted filename
-            const scriptReplaced = indexHtml.replace(/<script src="assets\/main\.bundle\.js[^"]*"><\/script>/, dataScript + '\n  $&');
+            const scriptReplaced = indexHtml.replace(/<script src="assets\/main\.bundle\.js\?__API_CACHE_BUSTING_QUERY_PARAM__"><\/script>/, dataScript + '\n  $&');
 
             if (scriptReplaced === indexHtml) {
                 // Fallback: insert before closing body tag if script tag not found
@@ -418,7 +418,7 @@ class Writer {
     </script>`;
 
             // Insert data script before the bundle script - match actual cache-busted filename
-            const scriptReplaced = indexHtml.replace(/<script src="assets\/main\.bundle\.js[^"]*"><\/script>/, dataScript + '\n    $&');
+            const scriptReplaced = indexHtml.replace(/<script src="assets\/main\.bundle\.js\?__API_CACHE_BUSTING_QUERY_PARAM__"><\/script>/, dataScript + '\n    $&');
 
             if (scriptReplaced === indexHtml) {
                 // Fallback: insert before closing body tag if script tag not found
