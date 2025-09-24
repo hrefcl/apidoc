@@ -1,0 +1,2590 @@
+@import 'tailwindcss';
+
+/* Base styles for API documentation */
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* Code styling for highlight.js */
+    code:not(.hljs) {
+        @apply rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm text-gray-800;
+    }
+
+    pre {
+        @apply overflow-x-auto rounded-lg;
+    }
+
+    /* Highlight.js overrides */
+    .hljs {
+        @apply rounded-lg p-4 font-mono text-sm;
+        background: #0d1117 !important; /* GitHub dark theme */
+    }
+
+    pre code.hljs {
+        @apply bg-transparent p-0;
+    }
+}
+
+/* Light and dark mode variables */
+:root {
+    --sidebar-bg: theme('colors.white');
+    --sidebar-border: theme('colors.gray.200');
+    --text-primary: theme('colors.gray.900');
+    --text-secondary: theme('colors.gray.600');
+    --text-muted: theme('colors.gray.400');
+    --hover-bg: theme('colors.gray.100');
+    --active-bg: theme('colors.blue.50');
+    --active-text: theme('colors.blue.700');
+    --active-border: theme('colors.blue.500');
+    --body-bg: theme('colors.gray.50');
+    --content-bg: theme('colors.white');
+    --border-color: theme('colors.gray.200');
+}
+
+[data-theme='dark'],
+.dark {
+    --sidebar-bg: theme('colors.gray.900');
+    --sidebar-border: theme('colors.gray.700');
+    --text-primary: theme('colors.white');
+    --text-secondary: theme('colors.gray.200');
+    --text-muted: theme('colors.gray.400');
+    --hover-bg: theme('colors.gray.800');
+    --active-bg: theme('colors.blue.900');
+    --active-text: theme('colors.blue.300');
+    --active-border: theme('colors.blue.500');
+    --body-bg: theme('colors.gray.900');
+    --content-bg: theme('colors.gray.800');
+    --border-color: theme('colors.gray.700');
+}
+
+/* ============================================= */
+/* EXPLICIT DARK MODE STYLES - HIGH SPECIFICITY */
+/* ============================================= */
+
+/* Dark mode body and layout */
+html.dark body,
+body.dark {
+    background-color: rgb(17 24 39) !important; /* gray-900 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+/* Dark mode sidebar */
+html.dark .sidebar-container,
+body.dark .sidebar-container,
+html.dark .bg-white,
+body.dark .bg-white {
+    background-color: rgb(17 24 39) !important; /* gray-900 */
+    border-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+/* Dark mode main content */
+html.dark .main-content,
+body.dark .main-content {
+    background-color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+/* Dark mode cards and panels */
+html.dark .card,
+html.dark .project-header,
+html.dark .api-sections,
+html.dark .custom-header,
+html.dark .custom-footer,
+body.dark .card,
+body.dark .project-header,
+body.dark .api-sections,
+body.dark .custom-header,
+body.dark .custom-footer {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    border-color: rgb(55 65 81) !important; /* gray-700 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+/* Dark mode text colors */
+html.dark .text-gray-900,
+body.dark .text-gray-900 {
+    color: rgb(255 255 255) !important; /* white */
+}
+
+html.dark .text-gray-700,
+body.dark .text-gray-700 {
+    color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+html.dark .text-gray-600,
+body.dark .text-gray-600 {
+    color: rgb(156 163 175) !important; /* gray-400 */
+}
+
+html.dark .text-gray-500,
+body.dark .text-gray-500 {
+    color: rgb(107 114 128) !important; /* gray-500 */
+}
+
+html.dark .text-gray-400,
+body.dark .text-gray-400 {
+    color: rgb(156 163 175) !important; /* gray-400 */
+}
+
+/* Dark mode backgrounds */
+html.dark .bg-gray-50,
+body.dark .bg-gray-50 {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+}
+
+html.dark .bg-gray-100,
+body.dark .bg-gray-100 {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+html.dark .hover\:bg-gray-100:hover,
+body.dark .hover\:bg-gray-100:hover {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+html.dark .hover\:bg-gray-800:hover,
+body.dark .hover\:bg-gray-800:hover {
+    background-color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+html.dark .bg-blue-50,
+body.dark .bg-blue-50 {
+    background-color: rgb(30 58 138) !important; /* blue-900 */
+}
+
+html.dark .text-blue-700,
+body.dark .text-blue-700 {
+    color: rgb(147 197 253) !important; /* blue-300 */
+}
+
+/* Dark mode borders */
+html.dark .border-gray-200,
+body.dark .border-gray-200 {
+    border-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+html.dark .border-gray-300,
+body.dark .border-gray-300 {
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+}
+
+/* ============================================= */
+/* DARK MODE CONTENT TEXT - CRITICAL FOR VISIBILITY */
+/* ============================================= */
+
+/* All content text in dark mode */
+html.dark,
+html.dark *,
+body.dark,
+body.dark * {
+    color: rgb(229 231 235) !important; /* gray-200 - light text for dark backgrounds */
+}
+
+/* Specific content areas */
+html.dark .content-wrapper,
+html.dark .content-wrapper *,
+html.dark #content,
+html.dark #content *,
+html.dark .api-sections,
+html.dark .api-sections *,
+html.dark .project-header,
+html.dark .project-header *,
+body.dark .content-wrapper,
+body.dark .content-wrapper *,
+body.dark #content,
+body.dark #content *,
+body.dark .api-sections,
+body.dark .api-sections *,
+body.dark .project-header,
+body.dark .project-header * {
+    color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+/* Headings in dark mode */
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6,
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark h5,
+body.dark h6 {
+    color: rgb(255 255 255) !important; /* white for headings */
+}
+
+/* Paragraphs and content */
+html.dark p,
+html.dark div,
+html.dark span,
+html.dark td,
+html.dark th,
+html.dark li,
+body.dark p,
+body.dark div,
+body.dark span,
+body.dark td,
+body.dark th,
+body.dark li {
+    color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+/* Links in dark mode */
+html.dark a,
+body.dark a {
+    color: rgb(96 165 250) !important; /* blue-400 */
+}
+
+html.dark a:hover,
+body.dark a:hover {
+    color: rgb(147 197 253) !important; /* blue-300 */
+}
+
+/* Strong and emphasis */
+html.dark strong,
+html.dark b,
+html.dark em,
+html.dark i,
+body.dark strong,
+body.dark b,
+body.dark em,
+body.dark i {
+    color: rgb(255 255 255) !important; /* white */
+}
+
+/* Article content specifically */
+html.dark article,
+html.dark article *,
+body.dark article,
+body.dark article * {
+    color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+/* Override any default black text */
+html.dark [style*='color: rgb(0, 0, 0)'],
+html.dark [style*='color: black'],
+html.dark [style*='color:#000'],
+body.dark [style*='color: rgb(0, 0, 0)'],
+body.dark [style*='color: black'],
+body.dark [style*='color:#000'] {
+    color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+/* Dark mode forms and inputs */
+html.dark .form-control,
+html.dark input[type='text'],
+html.dark input[type='url'],
+html.dark input[type='email'],
+html.dark input[type='password'],
+html.dark textarea,
+html.dark select,
+body.dark .form-control,
+body.dark input[type='text'],
+body.dark input[type='url'],
+body.dark input[type='email'],
+body.dark input[type='password'],
+body.dark textarea,
+body.dark select {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+html.dark .form-control:focus,
+html.dark input:focus,
+html.dark textarea:focus,
+html.dark select:focus,
+body.dark .form-control:focus,
+body.dark input:focus,
+body.dark textarea:focus,
+body.dark select:focus {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !important;
+}
+
+html.dark .input-group-text,
+body.dark .input-group-text {
+    background-color: rgb(75 85 99) !important; /* gray-600 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+    color: rgb(209 213 219) !important; /* gray-300 */
+}
+
+/* Dark mode code blocks */
+html.dark code:not(.hljs),
+body.dark code:not(.hljs) {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    color: rgb(229 231 235) !important; /* gray-200 */
+    border: 1px solid rgb(75 85 99) !important; /* gray-600 */
+}
+
+html.dark pre,
+body.dark pre {
+    background-color: rgb(17 24 39) !important; /* gray-900 */
+    border: 1px solid rgb(55 65 81) !important; /* gray-700 */
+}
+
+html.dark .hljs,
+body.dark .hljs {
+    background-color: rgb(17 24 39) !important; /* Keep dark theme */
+}
+
+/* Dark mode buttons */
+.dark .btn-primary {
+    background-color: rgb(59 130 246) !important; /* blue-500 */
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+}
+
+.dark .btn-primary:hover {
+    background-color: rgb(37 99 235) !important; /* blue-600 */
+    border-color: rgb(37 99 235) !important; /* blue-600 */
+}
+
+.dark .btn-secondary {
+    background-color: rgb(75 85 99) !important; /* gray-600 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+.dark .btn-secondary:hover {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    border-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+/* Dark mode cards and panels */
+.dark .card,
+.dark .project-header,
+.dark .api-sections,
+.dark .custom-header,
+.dark .custom-footer {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    border-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+/* ==============================================
+   MAGICUI-INSPIRED TABLE DESIGN
+   ============================================== */
+
+/* Base table styling - Modern & Clean */
+table {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    background: transparent !important;
+    border-radius: 0.75rem !important; /* rounded-xl */
+    overflow: hidden !important;
+    box-shadow:
+        0 1px 3px 0 rgba(0, 0, 0, 0.1),
+        0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid rgb(229 231 235) !important; /* gray-200 light mode */
+}
+
+/* Light mode table container */
+html:not(.dark) table,
+body:not(.dark) table,
+[data-theme='light'] table {
+    background: rgb(255 255 255) !important; /* white */
+    border-color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+/* Dark mode table container */
+.dark table,
+html.dark table,
+body.dark table,
+[data-theme='dark'] table {
+    background: rgb(31 41 55) !important; /* gray-800 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+    box-shadow:
+        0 1px 3px 0 rgba(0, 0, 0, 0.3),
+        0 1px 2px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Table headers - MagicUI style */
+table thead {
+    background: linear-gradient(to bottom, rgb(249 250 251), rgb(243 244 246)) !important; /* gray-50 to gray-100 */
+}
+
+table thead th {
+    padding: 0.875rem 1rem !important; /* py-3.5 px-4 */
+    font-weight: 600 !important; /* font-semibold */
+    font-size: 0.875rem !important; /* text-sm */
+    color: rgb(55 65 81) !important; /* gray-700 */
+    text-align: left !important;
+    border-bottom: 2px solid rgb(229 231 235) !important; /* gray-200 */
+    border-right: 1px solid rgb(229 231 235) !important; /* gray-200 */
+    letter-spacing: 0.025em !important; /* tracking-wide */
+    text-transform: uppercase !important;
+    background: linear-gradient(to bottom, rgb(249 250 251), rgb(243 244 246)) !important;
+}
+
+table thead th:last-child {
+    border-right: none !important;
+}
+
+/* Dark mode headers */
+.dark table thead,
+html.dark table thead,
+body.dark table thead,
+[data-theme='dark'] table thead {
+    background: linear-gradient(to bottom, rgb(55 65 81), rgb(45 55 72)) !important; /* gray-700 to gray-800 */
+}
+
+.dark table thead th,
+html.dark table thead th,
+body.dark table thead th,
+[data-theme='dark'] table thead th {
+    color: rgb(229 231 235) !important; /* gray-200 */
+    border-bottom-color: rgb(75 85 99) !important; /* gray-600 */
+    border-right-color: rgb(75 85 99) !important; /* gray-600 */
+    background: linear-gradient(to bottom, rgb(55 65 81), rgb(45 55 72)) !important;
+}
+
+/* Table body rows */
+table tbody tr {
+    transition: all 0.2s ease-in-out !important;
+    border-bottom: 1px solid rgb(243 244 246) !important; /* gray-100 */
+}
+
+table tbody tr:last-child {
+    border-bottom: none !important;
+}
+
+table tbody tr:hover {
+    background-color: rgb(249 250 251) !important; /* gray-50 */
+    transform: translateY(-1px) !important;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Dark mode body rows */
+.dark table tbody tr,
+html.dark table tbody tr,
+body.dark table tbody tr,
+[data-theme='dark'] table tbody tr {
+    border-bottom-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+.dark table tbody tr:hover,
+html.dark table tbody tr:hover,
+body.dark table tbody tr:hover,
+[data-theme='dark'] table tbody tr:hover {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.3),
+        0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Table cells */
+table tbody td {
+    padding: 16px !important; /* 1rem = 16px - explicit for detection */
+    font-size: 0.875rem !important; /* text-sm */
+    color: rgb(75 85 99) !important; /* gray-600 */
+    border-right: 1px solid rgb(243 244 246) !important; /* gray-100 */
+    vertical-align: top !important;
+    line-height: 1.5 !important;
+}
+
+table tbody td:last-child {
+    border-right: none !important;
+}
+
+table td {
+    display: table-cell;
+    vertical-align: inherit;
+    unicode-bidi: isolate;
+}
+
+/* Dark mode cells */
+.dark table tbody td,
+html.dark table tbody td,
+body.dark table tbody td,
+[data-theme='dark'] table tbody td {
+    color: rgb(209, 213, 219) !important; /* gray-300 - explicit commas for detection */
+    border-right-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+table td,
+table th {
+    border-bottom: 1px solid rgb(198, 196, 196) !important; /* gray-200 */
+}
+/* Force dark mode text color with higher specificity */
+html.dark table td,
+body.dark table td,
+.dark table td {
+    color: rgb(209, 213, 219) !important; /* gray-300 */
+    border-bottom: 1px solid rgb(72, 72, 72) !important;
+}
+
+/* Code elements in tables */
+table td.code,
+table th.code {
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !important;
+    font-size: 0.8125rem !important; /* text-sm */
+    background: rgb(249 250 251) !important; /* gray-50 */
+    padding: 0.375rem 0.5rem !important; /* py-1.5 px-2 */
+    vertical-align: middle !important;
+    color: rgb(59 130 246) !important; /* blue-500 */
+    font-weight: 500 !important;
+}
+
+/* Dark mode code elements */
+.dark table td.code,
+.dark table th.code,
+html.dark table td.code,
+html.dark table th.code,
+body.dark table td.code,
+body.dark table th.code,
+[data-theme='dark'] table td.code,
+[data-theme='dark'] table th.code {
+    background: rgb(55 65 81) !important; /* gray-700 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+    color: rgb(96 165 250) !important; /* blue-400 */
+}
+
+/* Labels in tables */
+table .label {
+    display: inline-block !important;
+    padding: 0.25rem 0.5rem !important; /* py-1 px-2 */
+    font-size: 0.75rem; /* text-xs */
+    font-weight: 600 !important; /* font-semibold */
+    border-radius: 0.375rem !important; /* rounded-md */
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important; /* tracking-wider */
+    margin-left: 0.5rem !important; /* ml-2 */
+}
+
+table .label.required {
+    background: rgb(254 226 226) !important; /* red-100 */
+    color: rgb(185 28 28) !important; /* red-700 */
+    border: 1px solid rgb(252 165 165) !important; /* red-300 */
+    font-size: 0.6rem; /* text-xs */
+}
+
+table .label.optional {
+    background: rgb(219 234 254) !important; /* blue-100 */
+    color: rgb(29 78 216) !important; /* blue-700 */
+    border: 1px solid rgb(147 197 253) !important; /* blue-300 */
+    font-size: 0.6rem; /* text-xs */
+}
+
+/* Dark mode labels */
+.dark table .label.required,
+html.dark table .label.required,
+body.dark table .label.required,
+[data-theme='dark'] table .label.required {
+    background: rgb(127 29 29) !important; /* red-900 */
+    color: rgb(252 165 165) !important; /* red-300 */
+    border-color: rgb(185 28 28) !important; /* red-700 */
+}
+
+.dark table .label.optional,
+html.dark table .label.optional,
+body.dark table .label.optional,
+[data-theme='dark'] table .label.optional {
+    background: rgb(30 58 138) !important; /* blue-900 */
+    color: rgb(147 197 253) !important; /* blue-300 */
+    border-color: rgb(29 78 216) !important; /* blue-700 */
+}
+
+/* Default values and additional info */
+table .default-value,
+table .type-size {
+    margin-top: 0.5rem !important; /* mt-2 */
+    margin-bottom: 0 !important;
+    font-size: 0.75rem !important; /* text-xs */
+    color: rgb(107 114 128) !important; /* gray-500 */
+    font-style: italic !important;
+}
+
+.dark table .default-value,
+.dark table .type-size,
+html.dark table .default-value,
+html.dark table .type-size,
+body.dark table .default-value,
+body.dark table .type-size,
+[data-theme='dark'] table .default-value,
+[data-theme='dark'] table .type-size {
+    color: rgb(156 163 175) !important; /* gray-400 */
+}
+
+/* Code elements within text */
+table .default-value code,
+table .type-size code {
+    background: rgb(243 244 246) !important; /* gray-100 */
+    color: rgb(55 65 81) !important; /* gray-700 */
+    padding: 0.125rem 0.25rem !important; /* py-0.5 px-1 */
+    border-radius: 0.25rem !important; /* rounded */
+    font-size: 0.6875rem !important; /* text-xs */
+    border: 1px solid rgb(229 231 235) !important; /* gray-200 */
+}
+
+.dark table .default-value code,
+.dark table .type-size code,
+html.dark table .default-value code,
+html.dark table .type-size code,
+body.dark table .default-value code,
+body.dark table .type-size code,
+[data-theme='dark'] table .default-value code,
+[data-theme='dark'] table .type-size code {
+    background: rgb(55 65 81) !important; /* gray-700 */
+    color: rgb(209 213 219) !important; /* gray-300 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+}
+
+/* Special table classes */
+table.ins {
+    border-color: rgb(34 197 94) !important; /* green-500 */
+    background: rgb(240 253 244) !important; /* green-50 */
+}
+
+table.del {
+    border-color: rgb(239 68 68) !important; /* red-500 */
+    background: rgb(254 242 242) !important; /* red-50 */
+}
+
+.dark table.ins,
+html.dark table.ins,
+body.dark table.ins,
+[data-theme='dark'] table.ins {
+    border-color: rgb(34 197 94) !important; /* green-500 */
+    background: rgb(20 83 45) !important; /* green-900 */
+}
+
+.dark table.del,
+html.dark table.del,
+body.dark table.del,
+[data-theme='dark'] table.del {
+    border-color: rgb(239 68 68) !important; /* red-500 */
+    background: rgb(127 29 29) !important; /* red-900 */
+}
+
+/* Bootstrap table class compatibility */
+.table {
+    width: 100% !important;
+    margin-bottom: 1rem !important;
+    vertical-align: top !important;
+}
+
+.table-hover tbody tr:hover {
+    color: inherit !important;
+}
+
+/* Dark mode badges and labels */
+.dark .badge {
+    color: rgb(255 255 255) !important; /* white */
+}
+
+.dark .default-value code,
+.dark .type-size code {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    color: rgb(229 231 235) !important; /* gray-200 */
+    border: 1px solid rgb(75 85 99) !important; /* gray-600 */
+}
+
+/* Dark mode dropdowns */
+.dark .dropdown-menu {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+}
+
+.dark .dropdown-item {
+    color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+.dark .dropdown-item:hover {
+    background-color: rgb(75 85 99) !important; /* gray-600 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+/* Dark mode search */
+.dark .search-input {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+.dark .search-input::placeholder {
+    color: rgb(156 163 175) !important; /* gray-400 */
+}
+
+/* Dark mode method badges - keep colors vibrant */
+.dark .method {
+    color: rgb(255 255 255) !important; /* white text for all */
+}
+
+/* Dark mode navbar search improvements */
+.dark #navbar-search-input {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+.dark #navbar-search-input::placeholder {
+    color: rgb(156 163 175) !important; /* gray-400 */
+}
+
+.dark .kbd {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    color: rgb(229 231 235) !important; /* gray-200 */
+    border: 1px solid rgb(75 85 99) !important; /* gray-600 */
+}
+
+/* ============================================= */
+/* EXPLICIT LIGHT MODE STYLES - ENSURE PROPER APPEARANCE */
+/* ============================================= */
+
+/* Light mode body and layout */
+body:not(.dark) {
+    background-color: rgb(249 250 251) !important; /* gray-50 */
+    color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+/* Light mode sidebar */
+.sidebar-container:not(.dark *) {
+    background-color: rgb(255 255 255) !important; /* white */
+    border-color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+/* Light mode main content */
+.main-content:not(.dark *) {
+    background-color: rgb(249 250 251) !important; /* gray-50 */
+}
+
+/* Light mode cards and panels */
+:not(.dark) .card,
+:not(.dark) .project-header,
+:not(.dark) .api-sections,
+:not(.dark) .custom-header,
+:not(.dark) .custom-footer,
+:not(.dark) .bg-white {
+    background-color: rgb(255 255 255) !important; /* white */
+    border-color: rgb(229 231 235) !important; /* gray-200 */
+    color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+/* Light mode text colors */
+:not(.dark) .text-gray-900 {
+    color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+:not(.dark) .text-gray-700 {
+    color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+:not(.dark) .text-gray-600 {
+    color: rgb(75 85 99) !important; /* gray-600 */
+}
+
+:not(.dark) .text-gray-500 {
+    color: rgb(107 114 128) !important; /* gray-500 */
+}
+
+:not(.dark) .text-gray-400 {
+    color: rgb(156 163 175) !important; /* gray-400 */
+}
+
+/* Light mode forms */
+:not(.dark) .form-control,
+:not(.dark) input[type='text'],
+:not(.dark) input[type='url'],
+:not(.dark) input[type='email'],
+:not(.dark) input[type='password'],
+:not(.dark) textarea,
+:not(.dark) select {
+    background-color: rgb(255 255 255) !important; /* white */
+    border-color: rgb(209 213 219) !important; /* gray-300 */
+    color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+:not(.dark) .form-control:focus,
+:not(.dark) input:focus,
+:not(.dark) textarea:focus,
+:not(.dark) select:focus {
+    background-color: rgb(255 255 255) !important; /* white */
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !important;
+}
+
+:not(.dark) .input-group-text {
+    background-color: rgb(243 244 246) !important; /* gray-100 */
+    border-color: rgb(209 213 219) !important; /* gray-300 */
+    color: rgb(75 85 99) !important; /* gray-600 */
+}
+
+/* Light mode code blocks */
+:not(.dark) code:not(.hljs) {
+    background-color: rgb(243 244 246) !important; /* gray-100 */
+    color: rgb(55 65 81) !important; /* gray-700 */
+    border: 1px solid rgb(229 231 235) !important; /* gray-200 */
+    padding: 0.125rem 0.375rem !important;
+    border-radius: 0.25rem !important;
+    font-size: 0.875rem !important;
+}
+
+:not(.dark) pre {
+    background-color: rgb(249 250 251) !important; /* gray-50 */
+    border: 1px solid rgb(229 231 235) !important; /* gray-200 */
+}
+
+/* Light mode buttons */
+:not(.dark) .btn-primary {
+    background-color: rgb(59 130 246) !important; /* blue-500 */
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+:not(.dark) .btn-primary:hover {
+    background-color: rgb(37 99 235) !important; /* blue-600 */
+    border-color: rgb(37 99 235) !important; /* blue-600 */
+}
+
+:not(.dark) .btn-secondary {
+    background-color: rgb(107 114 128) !important; /* gray-500 */
+    border-color: rgb(107 114 128) !important; /* gray-500 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+:not(.dark) .btn-secondary:hover {
+    background-color: rgb(75 85 99) !important; /* gray-600 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+}
+
+/* Light mode borders */
+:not(.dark) .border-gray-200 {
+    border-color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+:not(.dark) .border-gray-300 {
+    border-color: rgb(209 213 219) !important; /* gray-300 */
+}
+
+/* Light mode backgrounds */
+:not(.dark) .bg-gray-50 {
+    background-color: rgb(249 250 251) !important; /* gray-50 */
+}
+
+:not(.dark) .bg-gray-100 {
+    background-color: rgb(243 244 246) !important; /* gray-100 */
+}
+
+:not(.dark) .hover\:bg-gray-100:hover {
+    background-color: rgb(243 244 246) !important; /* gray-100 */
+}
+
+:not(.dark) .bg-blue-50 {
+    background-color: rgb(239 246 255) !important; /* blue-50 */
+}
+
+:not(.dark) .text-blue-700 {
+    color: rgb(29 78 216) !important; /* blue-700 */
+}
+
+/* Light mode search */
+:not(.dark) .search-input,
+:not(.dark) #navbar-search-input {
+    background-color: rgb(255 255 255) !important; /* white */
+    border-color: rgb(209 213 219) !important; /* gray-300 */
+    color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+:not(.dark) .search-input::placeholder,
+:not(.dark) #navbar-search-input::placeholder {
+    color: rgb(156 163 175) !important; /* gray-400 */
+}
+
+/* Light mode dropdowns */
+:not(.dark) .dropdown-menu {
+    background-color: rgb(255 255 255) !important; /* white */
+    border-color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+:not(.dark) .dropdown-item {
+    color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+:not(.dark) .dropdown-item:hover {
+    background-color: rgb(243 244 246) !important; /* gray-100 */
+    color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+/* Component styles using only TailwindCSS classes */
+@layer components {
+    /* HTTP method badges */
+    .method {
+        @apply inline-block rounded px-2 py-1 text-xs font-semibold text-white uppercase;
+    }
+
+    .meth-get {
+        @apply bg-green-500;
+    }
+
+    .meth-post {
+        @apply bg-blue-500;
+    }
+
+    .meth-put {
+        @apply bg-yellow-500;
+    }
+
+    .meth-patch {
+        @apply bg-purple-500;
+    }
+
+    .meth-delete {
+        @apply bg-red-500;
+    }
+
+    /* Navigation items - excluding tab navigation */
+    .nav-item:not(.nav-tabs .nav-item) {
+        @apply block px-3 py-2 text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-100 hover:text-gray-900;
+    }
+
+    .nav-item.active {
+        @apply border-r-2 border-blue-500 bg-blue-50 text-blue-700;
+    }
+
+    /* Search input */
+    .search-input {
+        @apply w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none;
+    }
+
+    /* Modern layout helpers */
+    .modern-layout {
+        @apply min-h-screen bg-gray-50;
+    }
+
+    /* Light mode fixes */
+    body {
+        @apply bg-gray-50;
+    }
+
+    .main-content {
+        @apply bg-gray-50;
+    }
+
+    /* Ensure proper spacing and layout */
+    .content-area {
+        @apply flex-1 overflow-y-auto;
+    }
+
+    /* Sidebar container */
+    .sidebar-container {
+        @apply fixed top-0 left-0 z-30 h-full w-64 overflow-y-auto border-r border-gray-200 bg-white transition-colors duration-200 dark:border-gray-700 dark:bg-gray-900;
+    }
+
+    /* Main content */
+    .main-content {
+        @apply min-h-screen transition-all duration-300 lg:ml-64;
+    }
+
+    /* Content wrapper */
+    .content-wrapper {
+        @apply mx-auto max-w-6xl px-6 py-8;
+    }
+
+    /* Project header */
+    .project-header {
+        @apply mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm;
+    }
+
+    /* API sections */
+    .api-sections {
+        @apply rounded-lg border border-gray-200 bg-white p-6 shadow-sm;
+    }
+
+    /* Custom header/footer */
+    .custom-header,
+    .custom-footer {
+        @apply mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm;
+    }
+
+    /* Generator info */
+    .generator-info {
+        @apply py-4 text-center text-sm text-gray-500;
+    }
+
+    /* Top navbar */
+    .top-navbar {
+        @apply fixed top-0 right-0 left-0 z-40 h-16 border-b border-gray-200 bg-white;
+    }
+
+    .navbar-container {
+        @apply mx-auto flex h-full max-w-full items-center justify-between px-6;
+    }
+
+    .navbar-brand {
+        @apply flex items-center space-x-3;
+    }
+
+    .navbar-logo {
+        @apply flex h-8 w-8 items-center justify-center rounded bg-blue-500 text-white;
+    }
+
+    .navbar-title {
+        @apply text-lg font-bold text-gray-900;
+    }
+
+    .navbar-search {
+        @apply mx-auto max-w-md flex-1;
+    }
+
+    .search-input-container {
+        @apply relative;
+    }
+
+    .navbar-search-input {
+        @apply h-10 w-full rounded-lg border border-gray-300 pr-4 pl-10 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none;
+    }
+
+    .search-icon {
+        @apply absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400;
+    }
+
+    .search-shortcut {
+        @apply absolute top-1/2 right-3 -translate-y-1/2 transform rounded border bg-gray-100 px-2 py-0.5 text-xs text-gray-500;
+    }
+
+    .navbar-actions {
+        @apply flex items-center space-x-3;
+    }
+
+    .version-selector {
+        @apply relative;
+    }
+
+    .version-select {
+        @apply rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none;
+    }
+
+    .navbar-theme-toggle {
+        @apply flex h-10 w-10 items-center justify-center rounded-md border border-gray-300 bg-gray-100 transition-colors hover:bg-gray-200;
+    }
+
+    .mobile-menu-toggle {
+        @apply flex h-10 w-10 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 lg:hidden;
+    }
+
+    /* Modern loader */
+    .modern-loader {
+        @apply fixed inset-0 z-50 flex items-center justify-center bg-white/90;
+    }
+
+    .loader-content {
+        @apply text-center;
+    }
+
+    .loader-spinner {
+        @apply mb-4 text-blue-500;
+    }
+
+    .loader-text {
+        @apply font-medium text-gray-600;
+    }
+
+    /* Dark mode navbar */
+    .navbar-dark {
+        @apply border-gray-700 bg-gray-900;
+    }
+
+    .navbar-dark .navbar-title {
+        @apply text-white;
+    }
+
+    .navbar-dark .navbar-search-input {
+        @apply border-gray-600 bg-gray-800 text-white placeholder-gray-400 focus:border-blue-500;
+    }
+
+    .navbar-dark .navbar-theme-toggle {
+        @apply border-gray-600 bg-gray-800 text-gray-300 hover:bg-gray-700;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+        .sidebar-container {
+            @apply -translate-x-full transform transition-transform duration-300;
+        }
+
+        .sidebar-container.mobile-open {
+            @apply translate-x-0;
+        }
+
+        .main-content {
+            @apply ml-0;
+        }
+
+        .content-wrapper {
+            @apply px-4;
+        }
+    }
+}
+
+/* Utility classes */
+@layer utilities {
+    .pt-20 {
+        padding-top: 5rem;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+}
+
+/* ============================================= */
+/* EXPLICIT LIGHT MODE HOVER STYLES - HIGH SPECIFICITY */
+/* ============================================= */
+
+/* Light mode sidebar menu hover states */
+html:not(.dark) .sidebar-nav-item:hover,
+body:not(.dark) .sidebar-nav-item:hover,
+[data-theme='light'] .sidebar-nav-item:hover {
+    background-color: rgb(243 244 246) !important; /* gray-100 */
+    color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+/* Light mode sidebar menu item text hover */
+html:not(.dark) .sidebar-nav-item:hover span,
+body:not(.dark) .sidebar-nav-item:hover span,
+[data-theme='light'] .sidebar-nav-item:hover span {
+    color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+/* Light mode sidebar menu item group hover text */
+html:not(.dark) .sidebar-nav-item.group:hover .group-hover\:text-gray-900,
+body:not(.dark) .sidebar-nav-item.group:hover .group-hover\:text-gray-900,
+[data-theme='light'] .sidebar-nav-item.group:hover .group-hover\:text-gray-900 {
+    color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+/* Light mode sidebar header hover */
+html:not(.dark) .sidebar-nav-item.nav-header:hover,
+body:not(.dark) .sidebar-nav-item.nav-header:hover,
+[data-theme='light'] .sidebar-nav-item.nav-header:hover {
+    background-color: rgb(243 244 246) !important; /* gray-100 */
+    color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+/* Light mode default text colors */
+html:not(.dark) .sidebar-nav-item,
+body:not(.dark) .sidebar-nav-item,
+[data-theme='light'] .sidebar-nav-item {
+    color: rgb(75 85 99) !important; /* gray-600 */
+}
+
+/* Light mode method badges positioning fix */
+html:not(.dark) .method,
+body:not(.dark) .method,
+[data-theme='light'] .method {
+    margin-left: auto !important;
+    flex-shrink: 0 !important;
+}
+
+/* ============================================= */
+/* BOOTSTRAP CSS CONFLICTS RESOLUTION - SURGICAL FIXES */
+/* ============================================= */
+
+/* Bootstrap reset conflicts - Override Bootstrap's global styles that interfere with Tailwind */
+.sidebar-nav-item {
+    text-decoration: none !important; /* Override Bootstrap's link styles */
+    outline: none !important; /* Remove Bootstrap focus outline */
+}
+
+.sidebar-nav-item:hover {
+    text-decoration: none !important; /* Prevent Bootstrap underline on hover */
+}
+
+/* Bootstrap color inheritance conflicts */
+.sidebar-nav-item,
+.sidebar-nav-item * {
+    color: inherit !important; /* Force color inheritance over Bootstrap defaults */
+}
+
+/* Light mode sidebar specific Bootstrap overrides */
+html:not(.dark) .sidebar-nav-item,
+body:not(.dark) .sidebar-nav-item,
+[data-theme='light'] .sidebar-nav-item {
+    color: rgb(75 85 99) !important; /* gray-600 - override Bootstrap link color */
+}
+
+html:not(.dark) .sidebar-nav-item:hover,
+body:not(.dark) .sidebar-nav-item:hover,
+[data-theme='light'] .sidebar-nav-item:hover {
+    color: rgb(17 24 39) !important; /* gray-900 - override Bootstrap hover color */
+    background-color: rgb(243 244 246) !important; /* gray-100 */
+    text-decoration: none !important; /* No underline */
+}
+
+/* Dark mode sidebar specific Bootstrap overrides */
+html.dark .sidebar-nav-item,
+body.dark .sidebar-nav-item,
+[data-theme='dark'] .sidebar-nav-item {
+    color: rgb(156 163 175) !important; /* gray-400 - override Bootstrap link color */
+}
+
+html.dark .sidebar-nav-item:hover,
+body.dark .sidebar-nav-item:hover,
+[data-theme='dark'] .sidebar-nav-item:hover {
+    color: rgb(229 231 235) !important; /* gray-200 - override Bootstrap hover color */
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    text-decoration: none !important; /* No underline */
+}
+
+/* Bootstrap button and dropdown fixes for our layout */
+.btn:focus,
+.btn:active:focus,
+.dropdown-toggle:focus {
+    box-shadow: none !important; /* Remove Bootstrap focus shadow that conflicts with our design */
+}
+
+/* Preserve Bootstrap functionality for tabs and dropdowns while fixing conflicts */
+/* Note: Removed color: inherit from .nav-tabs .nav-link to allow theme-specific colors */
+
+.dropdown-menu {
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; /* Use Tailwind shadow */
+}
+
+/* Text ellipsis fixes for long menu items - Surgical approach without breaking functionality */
+.sidebar-nav-item[data-action='select-item'] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-nav-item[data-action='select-item'] span.flex-1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 1 1 auto;
+    max-width: calc(100% - 36px); /* Reserve space for method badge */
+}
+
+/* Method badge alignment - only for menu items, not headers */
+.sidebar-nav-item[data-action='select-item'] .method {
+    margin-left: auto; /* Push to the right */
+    flex-shrink: 0;
+}
+
+/* ==============================================
+   BOOTSTRAP DROPDOWN DARK MODE FIXES
+   ============================================== */
+
+/* Dark mode dropdown styling */
+.dark .dropdown-menu,
+html.dark .dropdown-menu,
+body.dark .dropdown-menu,
+[data-theme='dark'] .dropdown-menu {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    border: 1px solid rgb(75 85 99) !important; /* gray-600 */
+    box-shadow:
+        0 10px 15px -3px rgba(0, 0, 0, 0.3),
+        0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark .dropdown-item,
+html.dark .dropdown-item,
+body.dark .dropdown-item,
+[data-theme='dark'] .dropdown-item {
+    color: rgb(229 231 235) !important; /* gray-200 */
+    background-color: transparent !important;
+}
+
+.dark .dropdown-item:hover,
+.dark .dropdown-item:focus,
+html.dark .dropdown-item:hover,
+html.dark .dropdown-item:focus,
+body.dark .dropdown-item:hover,
+body.dark .dropdown-item:focus,
+[data-theme='dark'] .dropdown-item:hover,
+[data-theme='dark'] .dropdown-item:focus {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+.dark .dropdown-item:active,
+html.dark .dropdown-item:active,
+body.dark .dropdown-item:active,
+[data-theme='dark'] .dropdown-item:active {
+    background-color: rgb(59 130 246) !important; /* blue-500 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+.dark .dropdown-header,
+html.dark .dropdown-header,
+body.dark .dropdown-header,
+[data-theme='dark'] .dropdown-header {
+    color: rgb(156 163 175) !important; /* gray-400 */
+}
+
+.dark .dropdown-divider,
+html.dark .dropdown-divider,
+body.dark .dropdown-divider,
+[data-theme='dark'] .dropdown-divider {
+    border-top: 1px solid rgb(75 85 99) !important; /* gray-600 */
+}
+
+/* Dropdown button styling in dark mode */
+.dark .dropdown-toggle,
+html.dark .dropdown-toggle,
+body.dark .dropdown-toggle,
+[data-theme='dark'] .dropdown-toggle {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+    color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+.dark .dropdown-toggle:hover,
+.dark .dropdown-toggle:focus,
+html.dark .dropdown-toggle:hover,
+html.dark .dropdown-toggle:focus,
+body.dark .dropdown-toggle:hover,
+body.dark .dropdown-toggle:focus,
+[data-theme='dark'] .dropdown-toggle:hover,
+[data-theme='dark'] .dropdown-toggle:focus {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    border-color: rgb(107 114 128) !important; /* gray-500 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+/* ==============================================
+   BOOTSTRAP TABS TAILWIND DESIGN
+   ============================================== */
+
+/* Tab navigation styling */
+.nav-tabs {
+    border-bottom: 2px solid rgb(229 231 235) !important; /* gray-200 light mode */
+    background: transparent !important;
+    padding: 0 !important;
+    margin-bottom: 1rem !important;
+}
+
+.dark .nav-tabs,
+html.dark .nav-tabs,
+body.dark .nav-tabs,
+[data-theme='dark'] .nav-tabs {
+    border-bottom: 2px solid rgb(75 85 99) !important; /* gray-600 dark mode */
+}
+
+.nav-tabs .nav-item {
+    margin-bottom: -2px !important;
+    margin-right: 0.25rem !important;
+}
+
+.nav-tabs .nav-link {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0.5rem 0.5rem 0 0 !important; /* rounded-t-lg */
+    padding: 0.75rem 1rem !important; /* py-3 px-4 */
+    color: rgb(107 114 128) !important; /* gray-500 light mode */
+    font-weight: 500 !important;
+    transition: all 0.2s ease-in-out !important;
+    position: relative !important;
+}
+
+.dark .nav-tabs .nav-link,
+html.dark .nav-tabs .nav-link,
+body.dark .nav-tabs .nav-link,
+[data-theme='dark'] .nav-tabs .nav-link {
+    color: rgb(156 163 175) !important; /* gray-400 dark mode */
+    background-color: transparent !important;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: rgb(249 250 251) !important; /* gray-50 light mode */
+    color: rgb(59 130 246) !important; /* blue-500 */
+    border: none !important;
+}
+
+.dark .nav-tabs .nav-link:hover,
+html.dark .nav-tabs .nav-link:hover,
+body.dark .nav-tabs .nav-link:hover,
+[data-theme='dark'] .nav-tabs .nav-link:hover {
+    background-color: rgb(55 65 81) !important; /* gray-700 dark mode */
+    color: rgb(96 165 250) !important; /* blue-400 */
+    border: none !important;
+}
+
+/* Additional specificity for dark mode hover */
+html[data-theme='dark'] .nav-tabs .nav-link:hover,
+html.dark .nav-tabs .nav-link:hover {
+    background-color: rgb(55 65 81) !important; /* gray-700 dark mode */
+    color: rgb(96 165 250) !important; /* blue-400 */
+    border: none !important;
+}
+
+/* Force dark mode hover with highest specificity */
+.dark .nav-tabs .nav-link:not(.active):hover,
+html.dark .nav-tabs .nav-link:not(.active):hover,
+[data-theme='dark'] .nav-tabs .nav-link:not(.active):hover {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    color: rgb(96 165 250) !important; /* blue-400 */
+    border: none !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* Ultimate fallback - override any possible conflicts */
+html.dark .nav-tabs .nav-link:hover,
+body.dark .nav-tabs .nav-link:hover,
+.dark .nav-tabs .nav-link:hover {
+    background-color: rgb(55 65 81) !important;
+    color: rgb(96 165 250) !important;
+    border-color: transparent !important;
+    border: none !important;
+}
+
+/* Bootstrap override for dark mode */
+.dark .nav-tabs .nav-link:hover:not(.active),
+.dark .nav-tabs .nav-link:focus:not(.active) {
+    background-color: rgb(55 65 81) !important;
+    color: rgb(96 165 250) !important;
+    border-color: transparent !important;
+}
+
+/* Force color override with maximum specificity and repetition */
+html.dark .nav-tabs .nav-link:hover,
+html.dark .nav-tabs .nav-link:hover,
+html.dark .nav-tabs .nav-link:hover {
+    color: rgb(96 165 250) !important;
+}
+
+.dark .nav-tabs .nav-link:hover,
+.dark .nav-tabs .nav-link:hover,
+.dark .nav-tabs .nav-link:hover {
+    color: rgb(96 165 250) !important;
+}
+
+/* Target all possible combinations */
+html[data-theme='dark'] .nav-tabs .nav-link:hover,
+body[data-theme='dark'] .nav-tabs .nav-link:hover,
+[data-theme='dark'] .nav-tabs .nav-link:hover {
+    color: rgb(96 165 250) !important;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: rgb(255 255 255) !important; /* white light mode */
+    color: rgb(59 130 246) !important; /* blue-500 */
+    border: none !important;
+    border-bottom: 2px solid rgb(59 130 246) !important; /* blue-500 */
+}
+
+.dark .nav-tabs .nav-link.active,
+html.dark .nav-tabs .nav-link.active,
+body.dark .nav-tabs .nav-link.active,
+[data-theme='dark'] .nav-tabs .nav-link.active {
+    background-color: rgb(31 41 55) !important; /* gray-800 dark mode */
+    color: rgb(96 165 250) !important; /* blue-400 */
+    border-bottom: 2px solid rgb(96 165 250) !important; /* blue-400 */
+}
+
+/* Tab content styling */
+.tab-content {
+    background: transparent !important;
+    border: none !important;
+    padding: 1rem 0 !important;
+}
+
+.tab-pane {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+/* Tab content pre and code blocks */
+.tab-content pre {
+    background-color: rgb(249 250 251) !important; /* gray-50 light mode */
+    border: 1px solid rgb(229 231 235) !important; /* gray-200 */
+    border-radius: 0.5rem !important; /* rounded-lg */
+    padding: 1rem !important;
+    margin: 0 !important;
+}
+
+.dark .tab-content pre,
+html.dark .tab-content pre,
+body.dark .tab-content pre,
+[data-theme='dark'] .tab-content pre {
+    background-color: rgb(31 41 55) !important; /* gray-800 dark mode */
+    border: 1px solid rgb(75 85 99) !important; /* gray-600 */
+}
+
+.tab-content code {
+    background: transparent !important;
+    color: rgb(55 65 81) !important; /* gray-700 light mode */
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !important;
+}
+
+.dark .tab-content code,
+html.dark .tab-content code,
+body.dark .tab-content code,
+[data-theme='dark'] .tab-content code {
+    color: rgb(229 231 235) !important; /* gray-200 dark mode */
+}
+
+/* ==============================================
+   MODERN TYPOGRAPHY DESIGN - HEADINGS H1-H6
+   ============================================== */
+
+/* Base heading styles - Modern typography with proper hierarchy */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-weight: 700 !important; /* font-bold */
+    line-height: 1.2 !important; /* tight line height for headings */
+    letter-spacing: -0.025em !important; /* tracking-tight */
+    margin-top: 0 !important;
+    margin-bottom: 1rem !important;
+    color: rgb(17 24 39) !important; /* gray-900 light mode */
+    transition: color 0.2s ease-in-out !important;
+}
+
+/* H1 - Page titles and main headers */
+h1 {
+    font-size: 2.25rem !important; /* text-4xl (36px) */
+    font-weight: 800 !important; /* font-extrabold */
+    margin-bottom: 1.5rem !important; /* mb-6 */
+    letter-spacing: -0.05em !important; /* tracking-tighter */
+    background: linear-gradient(to right, rgb(59 130 246), rgb(147 51 234)) !important; /* blue-500 to purple-600 */
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+    text-rendering: optimizeLegibility !important;
+}
+
+/* H2 - Section titles */
+h2 {
+    font-size: 1.875rem !important; /* text-3xl (30px) */
+    font-weight: 700 !important; /* font-bold */
+    margin-top: 2rem !important; /* mt-8 */
+    margin-bottom: 1rem !important; /* mb-4 */
+    color: rgb(17 24 39) !important; /* gray-900 light mode */
+    position: relative !important;
+}
+
+h2::after {
+    content: '' !important;
+    position: absolute !important;
+    bottom: -0.5rem !important;
+    left: 0 !important;
+    width: 3rem !important; /* w-12 */
+    height: 0.25rem !important; /* h-1 */
+    background: linear-gradient(to right, rgb(59 130 246), rgb(147 51 234)) !important; /* blue-500 to purple-600 */
+    border-radius: 0.125rem !important; /* rounded-sm */
+}
+
+/* H3 - Subsection titles */
+h3 {
+    font-size: 1.5rem !important; /* text-2xl (24px) */
+    font-weight: 600 !important; /* font-semibold */
+    margin-top: 1.5rem !important; /* mt-6 */
+    margin-bottom: 0.75rem !important; /* mb-3 */
+    color: rgb(55 65 81) !important; /* gray-700 light mode */
+}
+
+/* H4 - Sub-subsection titles */
+h4 {
+    font-size: 1.25rem !important; /* text-xl (20px) */
+    font-weight: 600 !important; /* font-semibold */
+    margin-top: 1.25rem !important; /* mt-5 */
+    margin-bottom: 0.75rem !important; /* mb-3 */
+    color: rgb(75 85 99) !important; /* gray-600 light mode */
+}
+
+/* H5 - Minor headings */
+h5 {
+    font-size: 1.125rem !important; /* text-lg (18px) */
+    font-weight: 600 !important; /* font-semibold */
+    margin-top: 1rem !important; /* mt-4 */
+    margin-bottom: 0.5rem !important; /* mb-2 */
+    color: rgb(107 114 128) !important; /* gray-500 light mode */
+}
+
+/* H6 - Smallest headings */
+h6 {
+    font-size: 1rem !important; /* text-base (16px) */
+    font-weight: 600 !important; /* font-semibold */
+    margin-top: 1rem !important; /* mt-4 */
+    margin-bottom: 0.5rem !important; /* mb-2 */
+    color: rgb(107 114 128) !important; /* gray-500 light mode */
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important; /* tracking-wide */
+}
+
+/* Dark mode heading styles */
+.dark h1,
+html.dark h1,
+body.dark h1,
+[data-theme='dark'] h1 {
+    background: linear-gradient(to right, rgb(96 165 250), rgb(168 85 247)) !important; /* blue-400 to purple-400 */
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+}
+
+.dark h2,
+html.dark h2,
+body.dark h2,
+[data-theme='dark'] h2 {
+    color: rgb(229 231 235) !important; /* gray-200 dark mode */
+}
+
+.dark h2::after,
+html.dark h2::after,
+body.dark h2::after,
+[data-theme='dark'] h2::after {
+    background: linear-gradient(to right, rgb(96 165 250), rgb(168 85 247)) !important; /* blue-400 to purple-400 */
+}
+
+.dark h3,
+html.dark h3,
+body.dark h3,
+[data-theme='dark'] h3 {
+    color: rgb(209 213 219) !important; /* gray-300 dark mode */
+}
+
+.dark h4,
+html.dark h4,
+body.dark h4,
+[data-theme='dark'] h4 {
+    color: rgb(156 163 175) !important; /* gray-400 dark mode */
+}
+
+.dark h5,
+html.dark h5,
+body.dark h5,
+[data-theme='dark'] h5 {
+    color: rgb(156 163 175) !important; /* gray-400 dark mode */
+}
+
+.dark h6,
+html.dark h6,
+body.dark h6,
+[data-theme='dark'] h6 {
+    color: rgb(156 163 175) !important; /* gray-400 dark mode */
+}
+
+/* Heading spacing adjustments for better content flow */
+h1 + h2 {
+    margin-top: 1rem !important; /* mt-4 - reduce gap when h2 follows h1 */
+}
+
+h2 + h3 {
+    margin-top: 1rem !important; /* mt-4 - reduce gap when h3 follows h2 */
+}
+
+h3 + h4 {
+    margin-top: 0.75rem !important; /* mt-3 - reduce gap when h4 follows h3 */
+}
+
+h4 + h5,
+h5 + h6 {
+    margin-top: 0.5rem !important; /* mt-2 - reduce gap for smaller headings */
+}
+
+/* Special heading variants for API documentation */
+.api-endpoint-title {
+    font-size: 1.5rem !important; /* text-2xl */
+    font-weight: 700 !important; /* font-bold */
+    color: rgb(59 130 246) !important; /* blue-500 light mode */
+    margin-bottom: 1rem !important;
+    padding-bottom: 0.5rem !important;
+    border-bottom: 2px solid rgb(229 231 235) !important; /* gray-200 */
+}
+
+.dark .api-endpoint-title,
+html.dark .api-endpoint-title,
+body.dark .api-endpoint-title,
+[data-theme='dark'] .api-endpoint-title {
+    color: rgb(96 165 250) !important; /* blue-400 dark mode */
+    border-bottom-color: rgb(75 85 99) !important; /* gray-600 */
+}
+
+.section-title {
+    font-size: 1.25rem !important; /* text-xl */
+    font-weight: 600 !important; /* font-semibold */
+    color: rgb(55 65 81) !important; /* gray-700 light mode */
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+
+.dark .section-title,
+html.dark .section-title,
+body.dark .section-title,
+[data-theme='dark'] .section-title {
+    color: rgb(209 213 219) !important; /* gray-300 dark mode */
+}
+
+.section-title::before {
+    content: '' !important;
+    width: 0.25rem !important; /* w-1 */
+    height: 1.25rem !important; /* h-5 */
+    background: linear-gradient(to bottom, rgb(59 130 246), rgb(147 51 234)) !important; /* blue-500 to purple-600 */
+    border-radius: 0.125rem !important; /* rounded-sm */
+}
+
+.dark .section-title::before,
+html.dark .section-title::before,
+body.dark .section-title::before,
+[data-theme='dark'] .section-title::before {
+    background: linear-gradient(to bottom, rgb(96 165 250), rgb(168 85 247)) !important; /* blue-400 to purple-400 */
+}
+
+/* API method headings */
+.method-heading {
+    font-size: 1.125rem !important; /* text-lg */
+    font-weight: 600 !important; /* font-semibold */
+    margin-top: 1rem !important;
+    margin-bottom: 0.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+}
+
+/* Responsive typography adjustments */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem !important; /* text-3xl on mobile */
+        margin-bottom: 1rem !important;
+    }
+
+    h2 {
+        font-size: 1.5rem !important; /* text-2xl on mobile */
+        margin-top: 1.5rem !important;
+    }
+
+    h3 {
+        font-size: 1.25rem !important; /* text-xl on mobile */
+        margin-top: 1rem !important;
+    }
+
+    h4 {
+        font-size: 1.125rem !important; /* text-lg on mobile */
+    }
+
+    h5,
+    h6 {
+        font-size: 1rem !important; /* text-base on mobile */
+    }
+}
+
+/* Improved readability for long content */
+.content-area h1,
+.content-area h2,
+.content-area h3,
+.content-area h4,
+.content-area h5,
+.content-area h6 {
+    scroll-margin-top: 6rem !important; /* Offset for fixed header */
+}
+
+/* Accessibility improvements */
+h1:focus,
+h2:focus,
+h3:focus,
+h4:focus,
+h5:focus,
+h6:focus {
+    outline: 2px solid rgb(59 130 246) !important; /* blue-500 */
+    outline-offset: 2px !important;
+    border-radius: 0.25rem !important;
+}
+
+.dark h1:focus,
+.dark h2:focus,
+.dark h3:focus,
+.dark h4:focus,
+.dark h5:focus,
+.dark h6:focus,
+html.dark h1:focus,
+html.dark h2:focus,
+html.dark h3:focus,
+html.dark h4:focus,
+html.dark h5:focus,
+html.dark h6:focus,
+body.dark h1:focus,
+body.dark h2:focus,
+body.dark h3:focus,
+body.dark h4:focus,
+body.dark h5:focus,
+body.dark h6:focus {
+    outline-color: rgb(96 165 250) !important; /* blue-400 dark mode */
+}
+
+/* ==============================================
+   BEAUTIFUL FORM DESIGN - MODERN STYLING
+   ============================================== */
+
+/* Base form styling - Modern and clean */
+.form-control,
+input[type='text'],
+input[type='url'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='search'],
+input[type='tel'],
+textarea,
+select {
+    width: 100% !important;
+    padding: 0.75rem 1rem !important; /* py-3 px-4 */
+    font-size: 0.875rem !important; /* text-sm */
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    color: rgb(17 24 39) !important; /* gray-900 light mode */
+    background-color: rgb(255 255 255) !important; /* white */
+    border: 1px solid rgb(209 213 219) !important; /* gray-300 */
+    border-radius: 0.5rem !important; /* rounded-lg */
+    transition: all 0.2s ease-in-out !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Focus states - Beautiful focus rings */
+.form-control:focus,
+input[type='text']:focus,
+input[type='url']:focus,
+input[type='email']:focus,
+input[type='password']:focus,
+input[type='number']:focus,
+input[type='search']:focus,
+input[type='tel']:focus,
+textarea:focus,
+select:focus {
+    outline: none !important;
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.1),
+        0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    background-color: rgb(255 255 255) !important; /* white */
+}
+
+/* Hover states */
+.form-control:hover:not(:focus),
+input:hover:not(:focus),
+textarea:hover:not(:focus),
+select:hover:not(:focus) {
+    border-color: rgb(156 163 175) !important; /* gray-400 */
+}
+
+/* Placeholder styling */
+.form-control::placeholder,
+input::placeholder,
+textarea::placeholder {
+    color: rgb(156 163 175) !important; /* gray-400 */
+    font-style: normal !important;
+    opacity: 1 !important;
+}
+
+/* Disabled states */
+.form-control:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+    background-color: rgb(249 250 251) !important; /* gray-50 */
+    border-color: rgb(229 231 235) !important; /* gray-200 */
+    color: rgb(107 114 128) !important; /* gray-500 */
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+}
+
+/* Dark mode form styles */
+.dark .form-control,
+.dark input[type='text'],
+.dark input[type='url'],
+.dark input[type='email'],
+.dark input[type='password'],
+.dark input[type='number'],
+.dark input[type='search'],
+.dark input[type='tel'],
+.dark textarea,
+.dark select,
+html.dark .form-control,
+html.dark input[type='text'],
+html.dark input[type='url'],
+html.dark input[type='email'],
+html.dark input[type='password'],
+html.dark input[type='number'],
+html.dark input[type='search'],
+html.dark input[type='tel'],
+html.dark textarea,
+html.dark select,
+body.dark .form-control,
+body.dark input[type='text'],
+body.dark input[type='url'],
+body.dark input[type='email'],
+body.dark input[type='password'],
+body.dark input[type='number'],
+body.dark input[type='search'],
+body.dark input[type='tel'],
+body.dark textarea,
+body.dark select,
+[data-theme='dark'] .form-control,
+[data-theme='dark'] input[type='text'],
+[data-theme='dark'] input[type='url'],
+[data-theme='dark'] input[type='email'],
+[data-theme='dark'] input[type='password'],
+[data-theme='dark'] input[type='number'],
+[data-theme='dark'] input[type='search'],
+[data-theme='dark'] input[type='tel'],
+[data-theme='dark'] textarea,
+[data-theme='dark'] select {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+    color: rgb(229 231 235) !important; /* gray-200 */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Dark mode focus states */
+.dark .form-control:focus,
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus,
+html.dark .form-control:focus,
+html.dark input:focus,
+html.dark textarea:focus,
+html.dark select:focus,
+body.dark .form-control:focus,
+body.dark input:focus,
+body.dark textarea:focus,
+body.dark select:focus,
+[data-theme='dark'] .form-control:focus,
+[data-theme='dark'] input:focus,
+[data-theme='dark'] textarea:focus,
+[data-theme='dark'] select:focus {
+    border-color: rgb(96 165 250) !important; /* blue-400 */
+    box-shadow:
+        0 0 0 3px rgba(96, 165, 250, 0.1),
+        0 1px 2px 0 rgba(0, 0, 0, 0.1) !important;
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+}
+
+/* Dark mode hover states */
+.dark .form-control:hover:not(:focus),
+.dark input:hover:not(:focus),
+.dark textarea:hover:not(:focus),
+.dark select:hover:not(:focus),
+html.dark .form-control:hover:not(:focus),
+html.dark input:hover:not(:focus),
+html.dark textarea:hover:not(:focus),
+html.dark select:hover:not(:focus),
+body.dark .form-control:hover:not(:focus),
+body.dark input:hover:not(:focus),
+body.dark textarea:hover:not(:focus),
+body.dark select:hover:not(:focus) {
+    border-color: rgb(107 114 128) !important; /* gray-500 */
+}
+
+/* Dark mode placeholder */
+.dark .form-control::placeholder,
+.dark input::placeholder,
+.dark textarea::placeholder,
+html.dark .form-control::placeholder,
+html.dark input::placeholder,
+html.dark textarea::placeholder,
+body.dark .form-control::placeholder,
+body.dark input::placeholder,
+body.dark textarea::placeholder {
+    color: rgb(107 114 128) !important; /* gray-500 */
+}
+
+/* Dark mode disabled states */
+.dark .form-control:disabled,
+.dark input:disabled,
+.dark textarea:disabled,
+.dark select:disabled,
+html.dark .form-control:disabled,
+html.dark input:disabled,
+html.dark textarea:disabled,
+html.dark select:disabled,
+body.dark .form-control:disabled,
+body.dark input:disabled,
+body.dark textarea:disabled,
+body.dark select:disabled {
+    background-color: rgb(17 24 39) !important; /* gray-900 */
+    border-color: rgb(55 65 81) !important; /* gray-700 */
+    color: rgb(75 85 99) !important; /* gray-600 */
+}
+
+/* Textarea specific styling */
+textarea {
+    min-height: 100px !important;
+    resize: vertical !important;
+    font-family: inherit !important;
+}
+
+/* Select dropdown styling */
+select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+    background-position: right 0.5rem center !important;
+    background-repeat: no-repeat !important;
+    background-size: 1.5em 1.5em !important;
+    padding-right: 2.5rem !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+}
+
+/* Dark mode select dropdown */
+.dark select,
+html.dark select,
+body.dark select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%9ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+}
+
+/* Form groups and labels */
+.form-group {
+    margin-bottom: 1.5rem !important; /* mb-6 */
+}
+
+.form-label,
+label {
+    display: block !important;
+    font-size: 0.875rem !important; /* text-sm */
+    font-weight: 600 !important; /* font-semibold */
+    color: rgb(55 65 81) !important; /* gray-700 light mode */
+    margin-bottom: 0.5rem !important; /* mb-2 */
+    line-height: 1.4 !important;
+}
+
+.dark .form-label,
+.dark label,
+html.dark .form-label,
+html.dark label,
+body.dark .form-label,
+body.dark label {
+    color: rgb(209 213 219) !important; /* gray-300 dark mode */
+}
+
+/* Required field indicators */
+.form-label.required::after,
+label.required::after {
+    content: ' *' !important;
+    color: rgb(239 68 68) !important; /* red-500 */
+    font-weight: 500 !important;
+}
+
+/* Help text and descriptions */
+.form-text,
+.help-text,
+small.text-muted {
+    font-size: 0.75rem !important; /* text-xs */
+    color: rgb(107 114 128) !important; /* gray-500 light mode */
+    margin-top: 0.25rem !important; /* mt-1 */
+    line-height: 1.4 !important;
+}
+
+.dark .form-text,
+.dark .help-text,
+.dark small.text-muted,
+html.dark .form-text,
+html.dark .help-text,
+html.dark small.text-muted,
+body.dark .form-text,
+body.dark .help-text,
+body.dark small.text-muted {
+    color: rgb(156 163 175) !important; /* gray-400 dark mode */
+}
+
+/* Input groups */
+.input-group {
+    display: flex !important;
+    align-items: stretch !important;
+    width: 100% !important;
+}
+
+.input-group .form-control,
+.input-group input {
+    border-radius: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.input-group .form-control:first-child,
+.input-group input:first-child {
+    border-top-left-radius: 0.5rem !important; /* rounded-l-lg */
+    border-bottom-left-radius: 0.5rem !important;
+}
+
+.input-group .form-control:last-child,
+.input-group input:last-child {
+    border-top-right-radius: 0.5rem !important; /* rounded-r-lg */
+    border-bottom-right-radius: 0.5rem !important;
+}
+
+.input-group-text {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0.75rem 1rem !important; /* py-3 px-4 */
+    font-size: 0.875rem !important; /* text-sm */
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+    color: rgb(75 85 99) !important; /* gray-600 light mode */
+    background-color: rgb(249 250 251) !important; /* gray-50 */
+    border: 1px solid rgb(209 213 219) !important; /* gray-300 */
+    white-space: nowrap !important;
+}
+
+.dark .input-group-text,
+html.dark .input-group-text,
+body.dark .input-group-text {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+    color: rgb(209 213 219) !important; /* gray-300 */
+}
+
+/* Form validation states */
+.form-control.is-valid,
+input.is-valid,
+textarea.is-valid,
+select.is-valid {
+    border-color: rgb(34 197 94) !important; /* green-500 */
+    box-shadow:
+        0 0 0 3px rgba(34, 197, 94, 0.1),
+        0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.form-control.is-invalid,
+input.is-invalid,
+textarea.is-invalid,
+select.is-invalid {
+    border-color: rgb(239 68 68) !important; /* red-500 */
+    box-shadow:
+        0 0 0 3px rgba(239, 68, 68, 0.1),
+        0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.valid-feedback {
+    font-size: 0.75rem !important; /* text-xs */
+    color: rgb(34 197 94) !important; /* green-500 */
+    margin-top: 0.25rem !important; /* mt-1 */
+}
+
+.invalid-feedback {
+    font-size: 0.75rem !important; /* text-xs */
+    color: rgb(239 68 68) !important; /* red-500 */
+    margin-top: 0.25rem !important; /* mt-1 */
+}
+
+/* Checkbox and radio styling */
+input[type='checkbox'],
+input[type='radio'] {
+    width: 1rem !important; /* w-4 */
+    height: 1rem !important; /* h-4 */
+    color: rgb(59 130 246) !important; /* blue-500 */
+    background-color: rgb(255 255 255) !important; /* white */
+    border: 1px solid rgb(209 213 219) !important; /* gray-300 */
+    margin-right: 0.5rem !important; /* mr-2 */
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    background-image: none !important;
+    cursor: pointer !important;
+}
+
+input[type='checkbox'] {
+    border-radius: 0.25rem !important; /* rounded */
+}
+
+input[type='radio'] {
+    border-radius: 50% !important; /* rounded-full */
+}
+
+input[type='checkbox']:checked {
+    background-color: rgb(59 130 246) !important; /* blue-500 */
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7-7a.5.5 0 0 0-.708.708L12.293 3.5 6.146 9.646a.5.5 0 0 0 .708.708l7-7a.5.5 0 0 0 0-.708z'/%3e%3c/svg%3e") !important;
+    background-size: 100% 100% !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+input[type='radio']:checked {
+    background-color: rgb(59 130 246) !important; /* blue-500 */
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e") !important;
+    background-size: 100% 100% !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+/* Dark mode checkbox and radio */
+.dark input[type='checkbox'],
+.dark input[type='radio'],
+html.dark input[type='checkbox'],
+html.dark input[type='radio'],
+body.dark input[type='checkbox'],
+body.dark input[type='radio'] {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+}
+
+.dark input[type='checkbox']:checked,
+.dark input[type='radio']:checked,
+html.dark input[type='checkbox']:checked,
+html.dark input[type='radio']:checked,
+body.dark input[type='checkbox']:checked,
+body.dark input[type='radio']:checked {
+    background-color: rgb(96 165 250) !important; /* blue-400 */
+    border-color: rgb(96 165 250) !important; /* blue-400 */
+}
+
+/* Form button styling */
+.btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0.75rem 1.5rem !important; /* py-3 px-6 */
+    font-size: 0.875rem !important; /* text-sm */
+    font-weight: 600 !important; /* font-semibold */
+    line-height: 1 !important;
+    border: 1px solid transparent !important;
+    border-radius: 0.5rem !important; /* rounded-lg */
+    transition: all 0.2s ease-in-out !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    font-family: inherit !important;
+    gap: 0.5rem !important; /* space-x-2 for icons */
+}
+
+.btn:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+.btn:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
+.btn-primary {
+    background-color: rgb(59 130 246) !important; /* blue-500 */
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+    color: rgb(255 255 255) !important; /* white */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: rgb(37 99 235) !important; /* blue-600 */
+    border-color: rgb(37 99 235) !important; /* blue-600 */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.btn-secondary {
+    background-color: rgb(255 255 255) !important; /* white */
+    border-color: rgb(209 213 219) !important; /* gray-300 */
+    color: rgb(55 65 81) !important; /* gray-700 */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background-color: rgb(249 250 251) !important; /* gray-50 */
+    border-color: rgb(156 163 175) !important; /* gray-400 */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.btn-outline {
+    background-color: transparent !important;
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+    color: rgb(59 130 246) !important; /* blue-500 */
+}
+
+.btn-outline:hover:not(:disabled) {
+    background-color: rgb(59 130 246) !important; /* blue-500 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+/* Dark mode button styles */
+.dark .btn-primary,
+html.dark .btn-primary,
+body.dark .btn-primary {
+    background-color: rgb(96 165 250) !important; /* blue-400 */
+    border-color: rgb(96 165 250) !important; /* blue-400 */
+}
+
+.dark .btn-primary:hover:not(:disabled),
+html.dark .btn-primary:hover:not(:disabled),
+body.dark .btn-primary:hover:not(:disabled) {
+    background-color: rgb(59 130 246) !important; /* blue-500 */
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+}
+
+.dark .btn-secondary,
+html.dark .btn-secondary,
+body.dark .btn-secondary {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+    color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+.dark .btn-secondary:hover:not(:disabled),
+html.dark .btn-secondary:hover:not(:disabled),
+body.dark .btn-secondary:hover:not(:disabled) {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+    border-color: rgb(107 114 128) !important; /* gray-500 */
+    color: rgb(255 255 255) !important; /* white */
+}
+
+.dark .btn-outline,
+html.dark .btn-outline,
+body.dark .btn-outline {
+    border-color: rgb(96 165 250) !important; /* blue-400 */
+    color: rgb(96 165 250) !important; /* blue-400 */
+}
+
+.dark .btn-outline:hover:not(:disabled),
+html.dark .btn-outline:hover:not(:disabled),
+body.dark .btn-outline:hover:not(:disabled) {
+    background-color: rgb(96 165 250) !important; /* blue-400 */
+    color: rgb(17 24 39) !important; /* gray-900 */
+}
+
+/* Button sizes */
+.btn-sm {
+    padding: 0.5rem 1rem !important; /* py-2 px-4 */
+    font-size: 0.75rem !important; /* text-xs */
+}
+
+.btn-lg {
+    padding: 1rem 2rem !important; /* py-4 px-8 */
+    font-size: 1rem !important; /* text-base */
+}
+
+/* Form layout utilities */
+.form-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    margin-left: -0.5rem !important;
+    margin-right: -0.5rem !important;
+}
+
+.form-col {
+    flex-basis: 0 !important;
+    flex-grow: 1 !important;
+    max-width: 100% !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}
+
+.form-col-auto {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}
+
+/* Responsive form adjustments */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column !important;
+    }
+
+    .form-col {
+        margin-bottom: 1rem !important;
+    }
+
+    .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    .btn + .btn {
+        margin-top: 0.5rem !important;
+    }
+}
+
+/* File input styling */
+input[type='file'] {
+    padding: 0.5rem !important;
+    border: 2px dashed rgb(209 213 219) !important; /* gray-300 */
+    border-radius: 0.5rem !important; /* rounded-lg */
+    background-color: rgb(249 250 251) !important; /* gray-50 */
+    cursor: pointer !important;
+}
+
+input[type='file']:hover {
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+    background-color: rgb(239 246 255) !important; /* blue-50 */
+}
+
+.dark input[type='file'],
+html.dark input[type='file'],
+body.dark input[type='file'] {
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    color: rgb(229 231 235) !important; /* gray-200 */
+}
+
+.dark input[type='file']:hover,
+html.dark input[type='file']:hover,
+body.dark input[type='file']:hover {
+    border-color: rgb(96 165 250) !important; /* blue-400 */
+    background-color: rgb(30 58 138) !important; /* blue-900 */
+}
+
+/* Diff Elements - Modern Design with Light/Dark Mode Support */
+ins {
+    @apply mx-0.5 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold;
+    @apply border border-green-200 bg-green-100 text-green-800;
+    @apply transition-all duration-200 ease-in-out;
+    text-decoration: none;
+}
+
+del {
+    @apply mx-0.5 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold;
+    @apply border border-red-200 bg-red-100 text-red-800;
+    @apply transition-all duration-200 ease-in-out;
+    text-decoration: none;
+}
+ins {
+    font-size: inherit;
+}
+
+/* Dark mode support for diff elements */
+.dark ins,
+html.dark ins,
+body.dark ins {
+    @apply border-green-700/50 bg-green-900/30 text-green-300;
+}
+
+.dark del,
+html.dark del,
+body.dark del {
+    @apply border-red-700/50 bg-red-900/30 text-red-300;
+}
+
+/* Hover effects for better interactivity */
+ins:hover {
+    @apply scale-105 border-green-300 bg-green-200;
+}
+
+del:hover {
+    @apply scale-105 border-red-300 bg-red-200;
+}
+
+.dark ins:hover,
+html.dark ins:hover,
+body.dark ins:hover {
+    @apply border-green-600/60 bg-green-800/40;
+}
+
+.dark del:hover,
+html.dark del:hover,
+body.dark del:hover {
+    @apply border-red-600/60 bg-red-800/40;
+}
+
+/* Table row diff styling - for entire row highlighting */
+tr.ins {
+    @apply border-l-4 border-green-400 bg-green-50;
+}
+
+tr.del {
+    @apply border-l-4 border-red-400 bg-red-50;
+}
+
+tr.ins td {
+    @apply bg-green-50/50 text-green-900;
+}
+
+tr.del td {
+    @apply bg-red-50/50 text-red-900;
+}
+
+/* Dark mode for table row diff styling */
+.dark tr.ins,
+html.dark tr.ins,
+body.dark tr.ins {
+    @apply border-green-500 bg-green-900/20;
+}
+
+.dark tr.del,
+html.dark tr.del,
+body.dark tr.del {
+    @apply border-red-500 bg-red-900/20;
+}
+
+.dark tr.ins td,
+html.dark tr.ins td,
+body.dark tr.ins td {
+    @apply bg-green-900/10 text-green-300;
+}
+
+.dark tr.del td,
+html.dark tr.del td,
+body.dark tr.del td {
+    @apply bg-red-900/10 text-red-300;
+}
+
+/* Comparison badges styling */
+.comparison-badge {
+    @apply mx-1 inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium;
+    @apply border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-800;
+    @apply shadow-sm transition-all duration-200 ease-in-out;
+}
+
+.comparison-badge.compare-from {
+    @apply border-emerald-200 from-emerald-50 to-green-50 text-emerald-800;
+}
+
+/* Dark mode for comparison badges */
+.dark .comparison-badge,
+html.dark .comparison-badge,
+body.dark .comparison-badge {
+    @apply border-blue-700/50 bg-gray-800/50 from-blue-900/20 to-indigo-900/20 text-blue-300;
+}
+
+.dark .comparison-badge.compare-from,
+html.dark .comparison-badge.compare-from,
+body.dark .comparison-badge.compare-from {
+    @apply border-emerald-700/50 from-emerald-900/20 to-green-900/20 text-emerald-300;
+}
+
+/* Hover effects for badges */
+.comparison-badge:hover {
+    @apply scale-105 shadow-md;
+}
+
+.dark .comparison-badge:hover,
+html.dark .comparison-badge:hover,
+body.dark .comparison-badge:hover {
+    @apply shadow-lg shadow-gray-900/20;
+}
+
+.hide {
+    display: none !important;
+}
+input.form-control,
+textarea.form-control,
+.form-control.sample-request-param {
+    border-bottom-left-radius: 0 !important;
+    border-top-left-radius: 0 !important;
+}

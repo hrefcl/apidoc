@@ -1,0 +1,101 @@
+{
+    "entryPoints": ["lib/**/*.ts"],
+    "entryPointStrategy": "expand",
+    "out": "docs/api",
+    "theme": "default",
+    "exclude": [
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/tmp/**",
+        "**/test/**",
+        "**/example/**"
+    ],
+    "includeVersion": true,
+    "excludePrivate": false,
+    "excludeProtected": false,
+    "excludeExternals": true,
+    "readme": "README.md",
+    "name": "@hrefcl/apidoc",
+    "navigationLinks": {
+        "GitHub": "https://github.com/hrefcl/apidoc",
+        "NPM": "https://www.npmjs.com/package/@hrefcl/apidoc"
+    },
+    "sidebarLinks": {
+        "Documentation": "https://apidocts.com",
+        "Live Demo": "http://apidocts.com/example/"
+    },
+    "categorizeByGroup": true,
+    "defaultCategory": "Other",
+    "categoryOrder": [
+        "Core",
+        "Parser",
+        "Filter",
+        "Worker",
+        "Language",
+        "Utility",
+        "*"
+    ],
+    "sort": ["source-order"],
+    "kindSortOrder": [
+        "Reference",
+        "Project",
+        "Module",
+        "Namespace",
+        "Enum",
+        "EnumMember",
+        "Class",
+        "Interface",
+        "TypeAlias",
+        "Constructor",
+        "Property",
+        "Variable",
+        "Function",
+        "Accessor",
+        "Method",
+        "Parameter",
+        "TypeParameter",
+        "TypeLiteral",
+        "CallSignature",
+        "ConstructorSignature",
+        "IndexSignature",
+        "GetSignature",
+        "SetSignature"
+    ],
+    "validation": {
+        "notExported": true,
+        "invalidLink": true,
+        "notDocumented": false
+    },
+    "treatWarningsAsErrors": false,
+    "intentionallyNotExported": [],
+    "requiredToBeDocumented": [
+        "Enum",
+        "EnumMember",
+        "Variable",
+        "Function",
+        "Class",
+        "Interface",
+        "Property",
+        "Method",
+        "Accessor",
+        "TypeAlias"
+    ],
+    "highlightLanguages": [
+        "typescript",
+        "javascript",
+        "java",
+        "clojure",
+        "coffeescript",
+        "elixir",
+        "erlang",
+        "perl",
+        "python",
+        "ruby",
+        "php",
+        "go",
+        "dart",
+        "scala"
+    ],
+    "searchInComments": true,
+    "searchInDocuments": true
+}

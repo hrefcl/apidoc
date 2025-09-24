@@ -1,0 +1,36 @@
+name: validate
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  run-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [ 20.x, 22.x]
+    name: Node ${{ matrix.node }} test
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - name: Node.js modules cache
+        uses: actions/cache@v4
+        id: modules-cache
+        with:
+          path: ${{ github.workspace }}/node_modules
+          key: ${{ runner.os }}-${{ matrix.node-version }}-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.node-version }}-modules
+      - name: Install Node.js packages
+        if: ${{ steps.modules-cache.outputs.cache-hit != 'true' }}
+        run: npm ci
+      - name: Lint and test
+        run: npm run test:ci
+      - name: Build example
+        if: ${{ success() }}
+        run: npm run build:example

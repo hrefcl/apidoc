@@ -1,0 +1,7 @@
+*
+!package.json
+!bin/**/*
+!lib/**/*
+!template/**/*
+!LICENSE
+!README.md

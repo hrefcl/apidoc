@@ -1,0 +1,70 @@
+{
+  "name": "LexCorp Api documentation",
+  "version": "4.0.0",
+  "description": "Documentation for the REST api access provided at LexCorp",
+  "footer": {
+    "title": "Best practices",
+    "filename": "footer.md",
+    "icon": "fa-lightbulb"
+  },
+  "header": {
+    "title": "Introduction",
+    "filename": "header.md",
+    "icon": "fa-home"
+  },
+  "input": [
+    "example"
+  ],
+  "login": {
+    "active": true,
+    "admited": [
+      {
+        "email": "admin@apidoc.app",
+        "password": "admin"
+      }
+    ]
+  },
+  "logo": {
+    "icon": "fa-solid fa-rocket",
+    "alt": "API Logo"
+  },
+  "order": [
+    "Users",
+    "Company",
+    "System",
+    "City",
+    "Category"
+  ],
+  "output": "/tmp/apidoc-output",
+  "sampleUrl": "https://apidoc.free.beeceptor.com",
+  "settings": {
+    "Users": {
+      "icon": "fa-user",
+      "title": "Usuarios"
+    },
+    "Company": {
+      "icon": "fa-building",
+      "title": "Empresa"
+    },
+    "System": {
+      "icon": "fa-cog",
+      "title": "Sistema"
+    },
+    "City": {
+      "icon": "fa-map-marker-alt",
+      "title": "Ciudad"
+    },
+    "Category": {
+      "icon": "fa-tags",
+      "title": "Categoría"
+    }
+  },
+  "template": {
+    "showRequiredLabels": false,
+    "withCompare": true,
+    "withGenerator": true,
+    "aloneDisplay": false
+  },
+  "title": "Href ApiDoc 4",
+  "url": "https://api.example.com"
+}

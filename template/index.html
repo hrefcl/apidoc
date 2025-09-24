@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>__API_NAME__</title>
+  <meta name="description" content="__API_DESCRIPTION__">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link href="IMAGE_LINK_TOKEN_apidoc.png" rel="icon" type="image/png">
+  <link href="IMAGE_LINK_TOKEN_apidoc.png" rel="apple-touch-icon" sizes="180x180">
+  <!-- Font Awesome Local -->
+  <link href="assets/font-awesome-all.min.css" rel="stylesheet" />
+  <link href="assets/main.bundle.css?__API_CACHE_BUSTING_QUERY_PARAM__" rel="stylesheet" />
+
+  <!-- Authentication System -->
+  <script>
+    // Login configuration from apidoc.json will be injected here
+    window.APIDOC_LOGIN_CONFIG = __LOGIN_CONFIG__;
+    window.APIDOC_PROJECT_NAME = '__API_NAME__';
+    window.APIDOC_PROJECT_VERSION = '__API_VERSION__';
+  </script>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
+
+<!-- Immediate Theme Application -->
+<script>
+  (function() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  })();
+
+  // Simple toggle function
+  function toggleDarkMode() {
+    try {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+      // Apply theme
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+
+      if (newTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      // Update icons safely
+      const sunIcon = document.querySelector('.sun-icon');
+      const moonIcon = document.querySelector('.moon-icon');
+
+      if (sunIcon && moonIcon) {
+        if (newTheme === 'dark') {
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
+        } else {
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        }
+      }
+
+      console.log('🎨 Theme toggled to:', newTheme);
+    } catch (error) {
+      console.error('Error toggling dark mode:', error);
+    }
+  }
+
+  // Initialize icons on load
+  document.addEventListener('DOMContentLoaded', function() {
+    try {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      const sunIcon = document.querySelector('.sun-icon');
+      const moonIcon = document.querySelector('.moon-icon');
+
+      if (sunIcon && moonIcon) {
+        if (savedTheme === 'dark') {
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
+        } else {
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        }
+      }
+    } catch (error) {
+      console.error('Error initializing theme icons:', error);
+    }
+  });
+</script>
+
+<!-- Layout will have navbar inside content area -->
+
+<!-- SIDENAV - Sidebar with header design pattern -->
+<div id="mobile-sidebar-overlay" class="fixed inset-0 z-20 bg-gray-600 bg-opacity-75 lg:hidden hidden"></div>
+
+<!-- PROJECT -->
+<script id="template-project" type="text/x-handlebars-template">
+  <div class="flex justify-between items-start mb-4">
+    <div class="flex-1">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">{{name}}</h1>
+      {{#if description}}<p class="text-lg text-gray-600">{{{nl2br description}}}</p>{{/if}}
+    </div>
+    <div class="ml-6">
+      {{#if template.withCompare}}
+      <div class="dropdown">
+        <button id="version" class="btn btn-lg btn-secondary dropdown-toggle" data-toggle="dropdown">
+          <strong>{{version}}</strong>
+        </button>
+        <div id="versions" class="dropdown-menu">
+          <a id="compareAllWithPredecessor" class="dropdown-item" href="#">{{__ "Compare all with predecessor"}}</a>
+          <div class="dropdown-divider"></div>
+          <h6 class="dropdown-header">{{__ "show up to version:"}}</h6>
+        {{#each versions}}
+          <a class="dropdown-item version" href="#">{{this}}</a>
+        {{/each}}
+        </div>
+      </div>
+      {{else}}
+      <div id="version" class="bg-white border border-gray-300 rounded px-3 py-2">
+        <strong class="text-gray-900">{{version}}</strong>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+</script>
+
+<script id="template-header" type="text/x-handlebars-template">
+  {{#if content}}
+    <div id="api-_header" class="prose max-w-none">{{{content}}}</div>
+  {{/if}}
+</script>
+
+<script id="template-footer" type="text/x-handlebars-template">
+  {{#if content}}
+    <div id="api-_footer" class="prose max-w-none">{{{content}}}</div>
+  {{/if}}
+</script>
+
+<script id="template-generator" type="text/x-handlebars-template">
+  {{#if template.withGenerator}}
+    {{#if generator}}
+      <div class="text-center">
+        <p class="text-gray-500 text-sm">
+          {{__ "Generated with"}} <a href="{{{generator.url}}}" class="text-blue-600 hover:text-blue-700">{{{generator.name}}}</a> {{{generator.version}}} - {{{generator.time}}}
+        </p>
+      </div>
+    {{/if}}
+  {{/if}}
+</script>
+
+<script id="template-sections" type="text/x-handlebars-template">
+  <section id="api-{{group}}" class="mb-8 relative {{#if aloneDisplay}}hidden{{/if}}">
+    <h1 class="text-2xl font-bold text-blue-600 mb-4">{{underscoreToSpace title}}</h1>
+    {{#if description}}
+      <div class="text-gray-600 mb-6 prose max-w-none">{{{nl2br description}}}</div>
+    {{/if}}
+    {{#each articles}}
+      <div id="api-{{group}}-{{name}}" class="relative {{#if aloneDisplay}}hidden{{/if}}">
+        {{{article}}}
+      </div>
+    {{/each}}
+  </section>
+</script>
+
+<script id="template-article" type="text/x-handlebars-template">
+  <article id="api-{{article.group}}-{{article.name}}-{{article.version}}" {{#if hidden}}class="hide border border-gray-200 rounded-lg mb-6 bg-white shadow-sm p-6"{{else}}class="border border-gray-200 rounded-lg mb-6 bg-white shadow-sm p-6"{{/if}} data-group="{{article.group}}" data-name="{{article.name}}" data-version="{{article.version}}">
+    <div class="mb-4">
+      <h1 class="text-xl font-semibold"><span class="text-blue-600">{{underscoreToSpace article.groupTitle}}</span>{{#if article.title}} <span class="text-gray-400 mx-2">|</span> <span class="text-gray-900">{{article.title}}</span>{{/if}}</h1>
+    </div>
+    {{#if template.withCompare}}
+    <div class="absolute top-4 right-4">
+      <div class="dropdown">
+        <button class="version btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+          <strong>{{article.version}}</strong>
+        </button>
+        <div class="versions dropdown-menu">
+          <h6 class="dropdown-header">{{__ "compare changes to:"}}</h6>
+        {{#each versions}}
+          <a class="dropdown-item version" href="#">{{this}}</a>
+        {{/each}}
+        </div>
+      </div>
+    </div>
+    {{/if}}
+
+    {{#if article.author}}<p class="text-gray-500 text-sm mb-3">Authored by: {{article.author}}</p>{{/if}}
+
+    {{#if article.deprecated}}
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+        <span class="text-red-600 font-semibold">{{__ "DEPRECATED"}}</span>
+        <div class="text-red-700 mt-1">{{{markdown article.deprecated.content}}}</div>
+      </div>
+    {{/if}}
+
+    {{#if article.description}}
+      <div class="text-gray-700 mb-4 prose max-w-none">{{{nl2br article.description}}}</div>
+    {{/if}}
+    <span class="method inline-block px-2 py-1 text-xs font-semibold text-white rounded uppercase meth-{{toLowerCase article.type}}">{{article.type}}</span>
+    <pre
+      data-type="{{toLowerCase article.type}}"
+      data-prismjs-copy="{{__ "Copy"}}"
+      data-prismjs-copy-error="{{__ "Press Ctrl+C to copy"}}"
+      data-prismjs-copy-success="{{__ "copied!"}}"
+    ><code class="language-http">{{article.url}}</code></pre>
+
+    {{#if article.permission}}
+      <p>
+        {{__ "Permission:"}}
+        {{#each article.permission}}
+          {{name}}
+          {{#if title}}
+          <button type="button" class="btn btn-info btn-sm" data-title="{{title}}" data-content="{{nl2br description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+              <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{/if}}
+        {{/each}}
+      </p>
+    {{/if}}
+
+    {{!-- CODE EXAMPLES IN TABS --}}
+    {{#ifCond article.examples.length '>' 0}}
+      <ul class="nav nav-tabs nav-tabs-examples" role="tablist">
+        {{#each article.examples}}
+          <li class="nav-item">
+            <a class="nav-link{{#ifCond @index '==' 0}} active{{/ifCond}}" href="#examples-{{../id}}-{{@index}}" role="tab" data-toggle="tab">{{title}}</a>
+          </li>
+        {{/each}}
+      </ul>
+
+      <div class="tab-content">
+      {{#each article.examples}}
+        <div class="tab-pane{{#ifCond @index '==' 0}} active{{/ifCond}}" id="examples-{{../id}}-{{@index}}">
+          <pre
+            data-type="{{type}}"
+            data-prismjs-copy="{{__ "Copy"}}"
+            data-prismjs-copy-error="{{__ "Press Ctrl+C to copy"}}"
+            data-prismjs-copy-success="{{__ "copied!"}}"
+          ><code class="language-{{type}}">{{content}}</code></pre>
+        </div>
+      {{/each}}
+      </div>
+    {{/ifCond}}
+
+    {{subTemplate "article-param-block" params=article.header _hasType=_hasTypeInHeaderFields section="header"}}
+    {{subTemplate "article-param-block" params=article.parameter _hasType=_hasTypeInParameterFields section="parameter"}}
+    {{subTemplate "article-query-block" params=article.query _hasType=_hasTypeInParameterFields section="query"}}
+    {{subTemplate "article-body-block" params=article.body _hasType=_hasTypeInParameterFields section="body"}}
+    {{subTemplate "article-param-block" params=article.success _hasType=_hasTypeInSuccessFields section="success"}}
+    {{subTemplate "article-param-block" params=article.error _col1="Name" _hasType=_hasTypeInErrorFields section="error"}}
+
+    {{subTemplate "article-sample-request" article=article id=id}}
+  </article>
+</script>
+
+<script id="template-article-query-block" type="text/x-handlebars-template">
+  {{#if article.query}}
+    <h2>{{__ "Query Parameter(s)"}}</h2>
+    <table class="my-4">
+      <thead>
+        <tr>
+          <th style="width: 30%">{{#if ../_col1}}{{__ ../_col1}}{{else}}{{__ "Field"}}{{/if}}</th>
+          {{#unless this.Type compare=null}}
+            <th style="width: 10%">{{__ "Type"}}</th>
+          {{/unless}}
+          <th {{#if ../_hasType}}style="width: 60%"{{else}}style="width: 70%"{{/if}}>{{__ "Description"}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each params}}
+          <tr>
+            <td class="code">
+            {{{nestObject this}}}
+            {{#if this.optional}}
+              <span class="label optional text-[0.5rem] float-right">{{__ "optional"}}</span>
+            {{else}}
+              {{#if ../template.showRequiredLabels}}
+                <span class="label required  text-[0.5rem] float-right">{{__ "required"}}</span>
+              {{/if}}
+            {{/if}}
+            </td>
+            {{#unless this.Type compare=null}}
+              <td class="code">{{this.type}}</td>
+            {{/unless}}
+            <td>{{{nl2br this.description}}}
+            {{#if defaultValue}}<p class="default-value">{{__ "Default value:"}} <code>{{{defaultValue}}}</code></p>{{/if}}
+            {{#if size}}<p class="type-size">{{__ "Size range:"}} <code>{{{size}}}</code></p>{{/if}}
+            {{#if allowedValues}}<p class="type-size">{{__ "Allowed values:"}}
+              {{#each allowedValues}}
+                <code>{{{this}}}</code>{{#unless @last}}, {{/unless}}
+              {{/each}}
+              </p>
+            {{/if}}
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
+</script>
+
+<script id="template-article-body-block" type="text/x-handlebars-template">
+  {{#if article.body}}
+    <h2>{{__ "Request Body"}}</h2>
+    <table  class="my-4">
+      <thead>
+        <tr>
+          <th style="width: 30%">{{#if ../_col1}}{{__ ../_col1}}{{else}}{{__ "Field"}}{{/if}}</th>
+          {{#unless this.Type compare=null}}
+            <th style="width: 10%">{{__ "Type"}}</th>
+          {{/unless}}
+          <th {{#if ../_hasType}}style="width: 60%"{{else}}style="width: 70%"{{/if}}>{{__ "Description"}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each params}}
+          <tr>
+            <td class="code">
+            {{{nestObject this}}}
+            {{#if this.optional}}
+              <span class="label optional text-[0.5rem] float-right">{{__ "optional"}}</span>
+            {{else}}
+              {{#if ../template.showRequiredLabels}}
+                <span class="label required text-[0.5rem] float-right">{{__ "required"}}</span>
+              {{/if}}
+            {{/if}}
+            </td>
+            {{#unless this.Type compare=null}}
+              <td class="code">{{this.type}}</td>
+            {{/unless}}
+            <td>
+              {{{nl2br this.description}}}
+              {{#if defaultValue}}
+                <p class="default-value">{{__ "Default value:"}} <code>{{{defaultValue}}}</code></p>
+              {{/if}}
+              {{#if size}}
+                <p class="type-size">{{__ "Size range:"}} <code>{{{size}}}</code></p>
+              {{/if}}
+              {{#if allowedValues}}
+                <p class="type-size">{{__ "Allowed values:"}}
+                  {{#each allowedValues}}
+                    <code>{{{this}}}</code>{{#unless @last}}, {{/unless}}
+                  {{/each}}
+                </p>
+              {{/if}}
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
+</script>
+
+<script id="template-article-param-block" type="text/x-handlebars-template">
+  {{#if params}}
+    {{#each params.fields}}
+      <h2>{{__ @key}}</h2>
+      <table  class="my-4">
+        <thead>
+          <tr>
+          <th style="width: 30%">{{#if ../_col1}}{{__ ../_col1}}{{else}}{{__ "Field"}}{{/if}}</th>
+            {{#if ../_hasType}}<th style="width: 10%">{{__ "Type"}}</th>{{/if}}
+            <th {{#if ../_hasType}}style="width: 60%"{{else}}style="width: 70%"{{/if}}>{{__ "Description"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{#each this}}
+          <tr>
+            <td class="code">
+            {{{nestObject this}}}
+            {{#if optional}}
+              <span class="label optional text-[0.5rem] float-right">{{__ "optional"}}</span>
+            {{else}}
+              {{#if ../../template.showRequiredLabels}}
+                <span class="label required text-[0.5rem] float-right">{{__ "required"}}</span>
+              {{/if}}
+            {{/if}}</td>
+            {{#if ../../_hasType}}
+              <td class="code">
+                {{{type}}}
+              </td>
+            {{/if}}
+            <td>
+            {{{nl2br description}}}
+            {{#if defaultValue}}<p class="default-value">{{__ "Default value:"}} <code>{{{defaultValue}}}</code></p>{{/if}}
+            {{#if size}}<p class="type-size">{{__ "Size range:"}} <code>{{{size}}}</code></p>{{/if}}
+            {{#if allowedValues}}<p class="type-size">{{__ "Allowed values:"}}
+              {{#each allowedValues}}
+                <code>{{{this}}}</code>{{#unless @last}}, {{/unless}}
+              {{/each}}
+              </p>
+            {{/if}}
+            </td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+    {{/each}}
+    {{#ifCond params.examples.length '>' 0}}
+      <ul class="nav nav-tabs nav-tabs-examples" role="tablist">
+      {{#each params.examples}}
+        <li class="nav-item">
+          <a class="nav-link{{#ifCond @index '==' 0}} active{{/ifCond}}" href="#{{../section}}-examples-{{../id}}-{{@index}}" role="tab" data-toggle="tab">{{title}}</a>
+        </li>
+      {{/each}}
+      </ul>
+
+      <div class="tab-content">
+      {{#each params.examples}}
+        <div class="tab-pane{{#ifCond @index '==' 0}} active{{/ifCond}}" id="{{../section}}-examples-{{../id}}-{{@index}}">
+        <pre
+          data-type="{{type}}"
+          data-prismjs-copy="{{__ "Copy"}}"
+          data-prismjs-copy-error="{{__ "Press Ctrl+C to copy"}}"
+          data-prismjs-copy-success="{{__ "copied!"}}"
+        ><code class="language-{{type}}">{{reformat content type}}</code></pre>
+        </div>
+      {{/each}}
+      </div>
+    {{/ifCond}}
+  {{/if}}
+</script>
+
+<script id="template-article-sample-request" type="text/x-handlebars-template">
+  {{#if article.sampleRequest}}
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-6">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{{__ "Send a Sample Request"}}</h3>
+      <form class="space-y-4">
+        <fieldset>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="{{../id}}-sample-request-url">URL</label>
+            <div class="flex">
+              <span class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm rounded-l-md border-r-0">{{__ "url"}}</span>
+              <input id="{{../id}}-sample-request-url" type="url" class="flex-1 form-control sample-request-url block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-md rounded-l-none shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="{{article.sampleRequest.0.url}}" />
+            </div>
+          </div>
+
+      {{#if article.header}}
+        {{#if article.header.fields}}
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{{__ "Headers"}}</h3>
+          {{#each article.header.fields}}
+            <div class="{{../id}}-sample-request-header-fields">
+              {{#each this}}
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="sample-request-header-field-{{field}}">{{field}}</label>
+                <div class="flex">
+                  <span class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm rounded-l-md border-r-0">{{{type}}}</span>
+                  <input type="text" id="sample-request-header-field-{{field}}"
+                    class="flex-1 form-control sample-request-input block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-md rounded-l-none shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    value="{{#if defaultValue}}{{ defaultValue }}{{/if}}"
+                    placeholder="{{#if defaultValue}}{{ defaultValue }}{{else}}{{field}}{{/if}}"
+                    data-family="header"
+                    data-name="{{field}}"
+                    data-group="{{@../index}}">
+                </div>
+              </div>
+              {{/each}}
+            </div>
+          {{/each}}
+        {{/if}}
+      {{/if}}
+
+      {{#if article.parameter}}
+        {{#if article.parameter.fields}}
+          <h3>{{__ "Parameters"}}</h3>
+          {{#each article.parameter.fields}}
+            <div class="col-md-3">
+              <select   name="{{../id}}-sample-header-content-type" class="{{../id}}-sample-request-param-select sample-header-content-type sample-header-content-type-switch">
+                <option value="auto" selected>ajax-auto</option>
+                <option value="json" >json</option>
+                <option value="form-data" >form-data</option>
+              </select>
+            </div>
+
+            <div class="{{../id}}-sample-request-param-body {{../id}}-sample-header-content-type-body hide">
+              <div class="form-group">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">json</span>
+                  </div>
+                  <textarea id="sample-request-body-json" class="form-control sample-request-body" data-sample-request-body-group="sample-request-param-{{@./index}}" rows="6" style="OVERFLOW: visible" {{#if optional}}data-sample-request-param-optional="true"{{/if}}></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="{{../id}}-sample-request-param-fields {{../id}}-sample-header-content-type-fields">
+              {{#each this}}
+              <div class="form-group">
+                {{#ifNotObject type}}
+                <label class="col-md-3 col-form-label" for="sample-request-param-field-{{field}}">{{field}}</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">{{{type}}}</span>
+                  </div>
+                  {{#if allowedValues}}
+                  <div class="input-group-append sample-request-select">
+                    <select class="form-control" data-name="{{dot2bracket this}}" data-family="query" data-group="{{@../index}}" {{#if optional}}data-optional="true"{{/if}}>
+                      <option value="" class="empty">&lt;{{__ "No value"}}&gt;</option>
+                      {{#each allowedValues}}
+                      <option {{#ifCond ../defaultValue '===' this}} selected {{/ifCond}}value="{{{removeDblQuotes this}}}">{{{removeDblQuotes this}}}</option>
+                      {{/each}}
+                    </select>
+                  </div>
+                  <input class="invisible">
+                  {{else}}
+                  <div class="sample-request-input-{{type}}-container"><div>
+                  <input id="sample-request-param-field-{{field}}"
+                    class="{{#ifCond type '!==' 'Boolean'}}form-control{{/ifCond}} sample-request-param"
+                    type="{{setInputType type}}"
+                    value="{{#if defaultValue}}{{ defaultValue }}{{/if}}"
+                    placeholder="{{#if defaultValue}}{{ defaultValue }}{{/if}}"
+                    data-name="{{dot2bracket this}}"
+                    data-family="query"
+                    data-group="{{@../index}}"
+                    {{#if optional}}data-optional="true"{{/if}}>
+                  </div></div>
+                  {{/if}}
+                </div>
+                {{/ifNotObject}}
+              </div>
+              {{/each}}
+            </div>
+          {{/each}}
+        {{/if}}
+      {{/if}}
+
+      {{#if article.query}}
+        <h3>{{__ "Query Parameters"}}</h3>
+        <div class="{{../id}}-sample-request-param-fields {{../id}}-sample-header-content-type-fields">
+          {{#each article.query}}
+            <div class="form-group">
+              {{#ifNotObject type}}
+              <label class="col-md-3 col-form-label" for="sample-request-param-field-{{field}}">{{field}}{{#if optional}} ({{__ "optional"}}){{/if}}</label>
+              <div class="input-group col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">{{{type}}}</span>
+                </div>
+                {{#if allowedValues}}
+                <div class="input-group-append sample-request-select">
+                  <select class="form-control" data-name="{{dot2bracket this}}" data-family="query" data-group="{{@../index}}" {{#if optional}}data-optional="true"{{/if}}>
+                    <option value="" class="empty">&lt;{{__ "No value"}}&gt;</option>
+                    {{#each allowedValues}}
+                    <option {{#ifCond ../defaultValue '===' this}} selected {{/ifCond}}value="{{{removeDblQuotes this}}}">{{{removeDblQuotes this}}}</option>
+                    {{/each}}
+                  </select>
+                </div>
+                <input class="invisible">
+                {{else}}
+                <div class="sample-request-input-{{type}}-container"><div>
+                  <input id="sample-request-param-field-{{field}}"
+                    class="{{#ifCond type '!==' 'Boolean'}}form-control{{/ifCond}} sample-request-input"
+                    type="{{setInputType type}}"
+                    value="{{#if defaultValue}}{{ defaultValue }}{{/if}}"
+                    placeholder="{{#if defaultValue}}{{ defaultValue }}{{/if}}"
+                    data-name="{{dot2bracket this}}"
+                    data-family="query"
+                    data-group="{{@../index}}"
+                    {{#if optional}}data-optional="true"{{/if}}>
+                </div></div>
+                {{/if}}
+              </div>
+              {{/ifNotObject}}
+            </div>
+          {{/each}}
+        </div>
+      {{/if}}
+
+      {{#if article.body}}
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{{__ "Body"}}</h3>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="body-content-type-{{this.id}}">{{__ "Content-Type"}}</label>
+          <select id="body-content-type-{{this.id}}" data-id="{{this.id}}" class="sample-request-content-type-switch block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <option value="body-json" selected>json</option>
+            <option value="body-form-data">form-data</option>
+          </select>
+        </div>
+
+        <div class="mb-4" id="sample-request-body-json-input-{{this.id}}">
+          <div class="mb-4">
+            <div class="flex">
+              <span class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm rounded-l-md border-r-0">json</span>
+              <textarea class="flex-1 form-control sample-request-input block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-md rounded-l-none shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500" rows="6"
+                data-family="body-json"
+                data-name={{"body"}}
+                data-content-type="json"
+                {{#if optional}}data-optional="true"{{/if}}>{{body2json article.body}}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4" id="sample-request-body-form-input-{{this.id}}" style="display: none;">
+          {{#each article.body}}
+            <div class="mb-4">
+              {{#ifNotObject type}}
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="sample-request-param-field-{{field}}">{{field}}</label>
+              <div class="flex">
+                {{#if allowedValues}}
+                <span class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm rounded-l-md border-r-0">{{{type}}}</span>
+                <select class="flex-1 form-control block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-md rounded-l-none shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500" data-name="{{dot2bracket this}}" data-family="body" data-group="{{@../index}}" {{#if optional}}data-optional="true"{{/if}}>
+                  <option value="" class="empty">&lt;{{__ "No value"}}&gt;</option>
+                  {{#each allowedValues}}
+                  <option {{#ifCond ../defaultValue '===' this}} selected {{/ifCond}}value="{{{removeDblQuotes this}}}">{{{removeDblQuotes this}}}</option>
+                  {{/each}}
+                </select>
+                {{else}}
+                {{#ifCond type '===' 'Boolean'}}
+                <div class="flex items-center space-x-3 p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800">
+                  <span class="text-sm text-gray-500 dark:text-gray-400">{{{type}}}</span>
+                  <input id="sample-request-param-field-{{field}}"
+                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 sample-request-input"
+                    type="checkbox"
+                    {{#if checked}}checked{{/if}}
+                    data-family="body"
+                    data-name="{{dot2bracket this}}"
+                    data-content-type="form"
+                    {{#if optional}}data-optional="true"{{/if}}>
+                </div>
+                {{else}}
+                <span class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm rounded-l-md border-r-0">{{{type}}}</span>
+                <input id="sample-request-param-field-{{field}}"
+                  class="flex-1 form-control sample-request-input block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-md rounded-l-none shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  type="{{setInputType type}}"
+                  value="{{#if defaultValue}}{{ defaultValue }}{{/if}}"
+                  placeholder="{{#if defaultValue}}{{ defaultValue }}{{/if}}"
+                  data-family="body"
+                  data-name="{{dot2bracket this}}"
+                  data-content-type="form"
+                  {{#if optional}}data-optional="true"{{/if}}>
+                {{/ifCond}}
+                {{/if}}
+              </div>
+              {{/ifNotObject}}
+            </div>
+          {{/each}}
+        </div>
+      {{/if}}
+
+          <div class="mb-6">
+            <div class="flex justify-end space-x-3">
+              <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sample-request-send" data-type="{{article.type}}">{{__ "Send"}}</button>
+              <button class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sample-request-clear" data-type="{{article.type}}">{{__ "Reset"}}</button>
+            </div>
+          </div>
+          <div class="sample-request-response" style="display: none;">
+            <div class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mt-4">
+              <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{__ "Response"}}</h3>
+                <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200 sample-request-clear">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+              <pre
+                data-type="json"
+                data-prismjs-copy="{{__ "Copy"}}"
+                data-prismjs-copy-error="{{__ "Press Ctrl+C to copy"}}"
+                data-prismjs-copy-success="{{__ "copied!"}}"
+                class="bg-gray-800 dark:bg-gray-950 text-gray-100 p-4 rounded-md overflow-x-auto text-sm border-0"
+              ><code class="language-json sample-request-response-json max-w-[53rem]"></code></pre>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  {{/if}}
+</script>
+
+<script id="template-compare-article" type="text/x-handlebars-template">
+  <article id="api-{{article.group}}-{{article.name}}-{{article.version}}" {{#if hidden}}class="hide border border-gray-200 dark:border-gray-700 rounded-lg mb-6 bg-white dark:bg-gray-800 shadow-sm dark:shadow-gray-900/10 p-6"{{else}}class="border border-gray-200 dark:border-gray-700 rounded-lg mb-6 bg-white dark:bg-gray-800 shadow-sm dark:shadow-gray-900/10 p-6"{{/if}} data-group="{{article.group}}" data-name="{{article.name}}" data-version="{{article.version}}" data-compare-version="{{compare.version}}">
+    <div class="mb-4 relative">
+      <h1 class="text-xl font-semibold pr-40"><span class="text-blue-600 dark:text-blue-400">{{underscoreToSpace article.groupTitle}}</span> <span class="text-gray-400 dark:text-gray-500 mx-2">|</span> <span class="text-gray-900 dark:text-gray-100">{{{showDiff article.title compare.title}}}</span></h1>
+
+      <div class="absolute top-0 right-0">
+        <div class="flex items-center space-x-1">
+          <span class="comparison-badge compare-from">
+            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <strong>{{article.version}}</strong>
+          </span>
+          <span class="text-gray-400 dark:text-gray-500 mx-1">{{__ "compared to"}}</span>
+          <div class="dropdown relative">
+            <button class="comparison-badge version dropdown-toggle transition-all duration-200 hover:shadow-md" data-toggle="dropdown">
+              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+              </svg>
+              <strong>{{compare.version}}</strong>
+            </button>
+            <div class="versions dropdown-menu">
+              <h6 class="dropdown-header">{{__ "compare changes to:"}}</h6>
+              <div class="dropdown-divider"></div>
+            {{#each versions}}
+              <a class="dropdown-item version" href="#">{{this}}</a>
+            {{/each}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{#if article.description}}
+      <div class="text-gray-700 dark:text-gray-300 mb-4 prose dark:prose-invert max-w-none">{{{showDiff article.description compare.description "nl2br"}}}</div>
+    {{else}}
+      {{#if compare.description}}
+      <div class="text-gray-700 dark:text-gray-300 mb-4 prose dark:prose-invert max-w-none">{{{showDiff "" compare.description "nl2br"}}}</div>
+      {{/if}}
+    {{/if}}
+
+    <span class="method inline-block px-2 py-1 text-xs font-semibold text-white rounded uppercase meth-{{toLowerCase compare.type}}">{{compare.type}}</span>
+    <pre
+      data-type="{{toLowerCase article.type}}"
+      data-prismjs-copy="{{__ "Copy"}}"
+      data-prismjs-copy-error="{{__ "Press Ctrl+C to copy"}}"
+      data-prismjs-copy-success="{{__ "copied!"}}"
+    ><code class="language-http">{{{showDiff article.url compare.url}}}</code></pre>
+
+    {{subTemplate "article-compare-permission" article=article compare=compare}}
+
+    <ul class="nav nav-tabs nav-tabs-examples" role="tablist">
+    <!-- DEBUG: article.examples length={{article.examples.length}}, compare.examples length={{compare.examples.length}} -->
+    {{#each_compare_title article.examples compare.examples}}
+      {{#if typeSame}}
+        <li class="nav-item">
+          <a class="nav-link{{#ifCond index '==' 0}} active{{/ifCond}}" href="#compare-examples-{{../article.id}}-{{index}}" role="tab" data-toggle="tab">{{{showDiff source.title compare.title}}}</a>
+        </li>
+      {{/if}}
+
+      {{#if typeIns}}
+        <li class="nav-item">
+          <a class="nav-link{{#ifCond index '==' 0}} active{{/ifCond}}" href="#compare-examples-{{../article.id}}-{{index}}"><ins>{{{source.title}}}</ins></a>
+        </li>
+      {{/if}}
+
+      {{#if typeDel}}
+        <li class="nav-item">
+          <a class="nav-link{{#ifCond index '==' 0}} active{{/ifCond}}" href="#compare-examples-{{../article.id}}-{{index}}"><del>{{{compare.title}}}</del></a>
+        </li>
+      {{/if}}
+    {{/each_compare_title}}
+    </ul>
+
+    <div class="tab-content">
+    {{#each_compare_title article.examples compare.examples}}
+
+      {{#if typeSame}}
+        <div class="tab-pane{{#ifCond index '==' 0}} active{{/ifCond}}" id="compare-examples-{{../article.id}}-{{index}}">
+          <pre
+            data-type="{{source.type}}"
+            data-prismjs-copy="{{__ "Copy"}}"
+            data-prismjs-copy-error="{{__ "Press Ctrl+C to copy"}}"
+            data-prismjs-copy-success="{{__ "copied!"}}"
+          ><code class="language-diff-{{source.type}} diff-highlight">{{{showDiff source.content compare.content "code"}}}</code></pre>
+        </div>
+      {{/if}}
+
+      {{#if typeIns}}
+        <div class="tab-pane{{#ifCond index '==' 0}} active{{/ifCond}}" id="compare-examples-{{../article.id}}-{{index}}">
+          <pre
+            data-type="{{source.type}}"
+            data-prismjs-copy="{{__ "Copy"}}"
+            data-prismjs-copy-error="{{__ "Press Ctrl+C to copy"}}"
+            data-prismjs-copy-success="{{__ "copied!"}}"
+          ><code class="language-{{source.type}}">{{{source.content}}}</code></pre>
+        </div>
+      {{/if}}
+
+      {{#if typeDel}}
+        <div class="tab-pane{{#ifCond index '==' 0}} active{{/ifCond}}" id="compare-examples-{{../article.id}}-{{index}}">
+          <pre
+            data-type="{{compare.type}}"
+            data-prismjs-copy="{{__ "Copy"}}"
+            data-prismjs-copy-error="{{__ "Press Ctrl+C to copy"}}"
+            data-prismjs-copy-success="{{__ "copied!"}}"
+          ><code class="language-{{source.type}}">{{{compare.content}}}</code></pre>
+        </div>
+      {{/if}}
+
+    {{/each_compare_title}}
+    </div>
+
+    {{subTemplate "article-compare-param-block" source=article.header compare=compare.header _hasType=_hasTypeInHeaderFields section="header"}}
+    {{subTemplate "article-compare-param-block" source=article.parameter compare=compare.parameter _hasType=_hasTypeInParameterFields section="parameter"}}
+    {{subTemplate "article-compare-query-block" source=article.query compare=compare.query _hasType=_hasTypeInParameterFields section="query"}}
+    {{subTemplate "article-compare-body-block" source=article.body compare=compare.body _hasType=_hasTypeInParameterFields section="body"}}
+    {{subTemplate "article-compare-param-block" source=article.success compare=compare.success _hasType=_hasTypeInSuccessFields section="success"}}
+    {{subTemplate "article-compare-param-block" source=article.error compare=compare.error _col1="Name" _hasType=_hasTypeInErrorFields section="error"}}
+
+    {{subTemplate "article-sample-request" article=article id=id}}
+
+  </article>
+</script>
+
+<script id="template-article-compare-permission" type="text/x-handlebars-template">
+  <p>
+  {{__ "Permission:"}}
+  {{#each_compare_list_field article.permission compare.permission field="name"}}
+    {{#if source}}
+      {{#if typeSame}}
+        {{source.name}}
+        {{#if source.title}}
+          <button type="button" class="btn btn-info btn-sm" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{#unless _last}}, {{/unless}}
+        {{/if}}
+      {{/if}}
+
+      {{#if typeIns}}
+        <ins>{{source.name}}</ins>
+        {{#if source.title}}
+          <button type="button" class="btn btn-info btn-sm" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{#unless _last}}, {{/unless}}
+        {{/if}}
+      {{/if}}
+
+      {{#if typeDel}}
+        <del>{{source.name}}</del>
+        {{#if source.title}}
+          <button type="button" class="btn btn-info btn-sm" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{#unless _last}}, {{/unless}}
+        {{/if}}
+      {{/if}}
+    {{else}}
+      {{#if typeSame}}
+        {{compare.name}}
+        {{#if compare.title}}
+          <button type="button" class="btn btn-info btn-sm" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{#unless _last}}, {{/unless}}
+        {{/if}}
+      {{/if}}
+
+      {{#if typeIns}}
+        <ins>{{compare.name}}</ins>
+        {{#if compare.title}}
+          <button type="button" class="btn btn-info btn-sm" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{#unless _last}}, {{/unless}}
+        {{/if}}
+      {{/if}}
+
+      {{#if typeDel}}
+        <del>{{compare.name}}</del>
+        {{#if compare.title}}
+          <button type="button" class="btn btn-info btn-sm" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
+          {{#unless _last}}, {{/unless}}
+        {{/if}}
+      {{/if}}
+    {{/if}}
+  {{/each_compare_list_field}}
+  </p>
+</script>
+
+<script id="template-article-compare-param-block" type="text/x-handlebars-template">
+  {{#if source}}
+    {{#each_compare_keys source.fields compare.fields}}
+      {{#if typeSame}}
+        <h2>{{__ source.key}}</h2>
+        <table>
+        <thead>
+          <tr>
+            <th style="width: 30%">{{#if ../_col1}}{{__ ../_col1}}{{else}}{{__ "Field"}}{{/if}}</th>
+            {{#if ../_hasType}}<th style="width: 10%">{{__ "Type"}}</th>{{/if}}
+            <th {{#if ../_hasType}}style="width: 60%"{{else}}style="width: 70%"{{/if}}>{{__ "Description"}}</th>
+          </tr>
+        </thead>
+        {{subTemplate "article-compare-param-block-body" source=source.value compare=compare.value _hasType=../_hasType}}
+        </table>
+      {{/if}}
+
+      {{#if typeIns}}
+        <h2><ins>{{__ source.key}}</ins></h2>
+        <table class="ins">
+        <thead>
+          <tr>
+            <th style="width: 30%">{{#if ../_col1}}{{__ ../_col1}}{{else}}{{__ "Field"}}{{/if}}</th>
+            {{#if ../_hasType}}<th style="width: 10%">{{__ "Type"}}</th>{{/if}}
+            <th {{#if ../_hasType}}style="width: 60%"{{else}}style="width: 70%"{{/if}}>{{__ "Description"}}</th>
+          </tr>
+        </thead>
+        {{subTemplate "article-compare-param-block-body" source=source.value compare=source.value _hasType=../_hasType}}
+        </table>
+      {{/if}}
+
+      {{#if typeDel}}
+        <h2><del>{{__ compare.key}}</del></h2>
+        <table class="del">
+        <thead>
+          <tr>
+            <th style="width: 30%">{{#if ../_col1}}{{__ ../_col1}}{{else}}{{__ "Field"}}{{/if}}</th>
+            {{#if ../_hasType}}<th style="width: 10%">{{__ "Type"}}</th>{{/if}}
+            <th {{#if ../_hasType}}style="width: 60%"{{else}}style="width: 70%"{{/if}}>{{__ "Description"}}</th>
+          </tr>
+        </thead>
+        {{subTemplate "article-compare-param-block-body" source=compare.value compare=compare.value _hasType=../_hasType}}
+        </table>
+      {{/if}}
+    {{/each_compare_keys}}
+
+    {{#if source.examples}}
+    <ul class="nav nav-tabs nav-tabs-examples" role="tablist">
+    {{#each_compare_title source.examples compare.examples}}
+      {{#if typeSame}}
+        <li class="nav-item">
+          <a class="nav-link{{#ifCond index '==' 0}} active{{/ifCond}}" href="#{{../section}}-compare-examples-{{../article.id}}-{{index}}" role="tab" data-toggle="tab">{{{showDiff source.title compare.title}}}</a>
+        </li>
+      {{/if}}
+
+      {{#if typeIns}}
+        <li class="nav-item">
+          <a class="nav-link{{#ifCond index '==' 0}} active{{/ifCond}}" href="#{{../section}}-compare-examples-{{../article.id}}-{{index}}"><ins>{{{source.title}}}</ins></a>
+        </li>
+      {{/if}}
+
+      {{#if typeDel}}
+        <li class="nav-item">
+          <a class="nav-link{{#ifCond index '==' 0}} active{{/ifCond}}" href="#{{../section}}-compare-examples-{{../article.id}}-{{index}}"><del>{{{compare.title}}}</del></a>
+        </li>
+      {{/if}}
+    {{/each_compare_title}}
+    </ul>
+
+    <div class="tab-content">
+    {{#each_compare_title source.examples compare.examples}}
+
+      {{#if typeSame}}
+        <div class="tab-pane{{#ifCond index '==' 0}} active{{/ifCond}}" id="{{../section}}-compare-examples-{{../article.id}}-{{index}}">
+          <pre
+            data-type="{{source.type}}"
+            data-prismjs-copy="{{__ "Copy"}}"
+            data-prismjs-copy-error="{{__ "Press Ctrl+C to copy"}}"
+            data-prismjs-copy-success="{{__ "copied!"}}"
+          ><code class="language-diff-{{source.type}} diff-highlight">{{{showDiff source.content compare.content "code"}}}</code></pre>
+        </div>
+      {{/if}}
+
+      {{#if typeIns}}
+        <div class="tab-pane{{#ifCond index '==' 0}} active{{/ifCond}}" id="{{../section}}-compare-examples-{{../article.id}}-{{index}}">
+          <pre
+            data-type="{{source.type}}"
+            data-prismjs-copy="{{__ "Copy"}}"
+            data-prismjs-copy-error="{{__ "Press Ctrl+C to copy"}}"
+            data-prismjs-copy-success="{{__ "copied!"}}"
+          ><code class="language-{{source.type}}">{{{source.content}}}</code></pre>
+        </div>
+      {{/if}}
+
+      {{#if typeDel}}
+        <div class="tab-pane{{#ifCond index '==' 0}} active{{/ifCond}}" id="{{../section}}-compare-examples-{{../article.id}}-{{index}}">
+          <pre
+            data-type="{{compare.type}}"
+            data-prismjs-copy="{{__ "Copy"}}"
+            data-prismjs-copy-error="{{__ "Press Ctrl+C to copy"}}"
+            data-prismjs-copy-success="{{__ "copied!"}}"
+          ><code class="language-{{source.type}}">{{{compare.content}}}</code></pre>
+        </div>
+      {{/if}}
+    {{/each_compare_title}}
+    </div>
+    {{/if}}
+  {{/if}}
+</script>
+
+<script id="template-article-compare-query-block" type="text/x-handlebars-template">
+  {{#if source}}
+    <h2>{{__ "Query Parameter(s)"}}</h2>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th style="width: 30%">{{#if ../_col1}}{{__ ../_col1}}{{else}}{{__ "Field"}}{{/if}}</th>
+          {{#unless this.Type compare=null}}
+            <th style="width: 10%">{{__ "Type"}}</th>
+          {{/unless}}
+          <th {{#if ../_hasType}}style="width: 60%"{{else}}style="width: 70%"{{/if}}>{{__ "Description"}}</th>
+        </tr>
+      </thead>
+      {{subTemplate "article-compare-param-block-body" source=source compare=compare _hasType=_hasType}}
+    </table>
+  {{/if}}
+</script>
+
+<script id="template-article-compare-body-block" type="text/x-handlebars-template">
+  {{#if source}}
+    <h2>{{__ "Request Body"}}</h2>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th style="width: 30%">{{#if ../_col1}}{{__ ../_col1}}{{else}}{{__ "Field"}}{{/if}}</th>
+          {{#unless this.Type compare=null}}
+            <th style="width: 10%">{{__ "Type"}}</th>
+          {{/unless}}
+          <th {{#if ../_hasType}}style="width: 60%"{{else}}style="width: 70%"{{/if}}>{{__ "Description"}}</th>
+        </tr>
+      </thead>
+      {{subTemplate "article-compare-param-block-body" source=source compare=compare _hasType=_hasType}}
+    </table>
+  {{/if}}
+</script>
+
+<script id="template-article-compare-param-block-body" type="text/x-handlebars-template">
+  <tbody>
+    {{#each_compare_field source compare}}
+      {{#if typeSame}}
+        <tr>
+          <td class="code">
+            {{{nestObject source}}}
+            {{#if source.optional}}
+              {{#if compare.optional}} <span class="label label-optional">{{__ "optional"}}</span>
+              {{else}} <span class="label label-optional label-ins">{{__ "optional"}}</span>
+              {{/if}}
+            {{else}}
+              {{#if compare.optional}} <span class="label label-optional label-del">{{__ "optional"}}</span>{{/if}}
+            {{/if}}
+          </td>
+
+        {{#if source.type}}
+          {{#if compare.type}}
+          <td>{{{showDiff source.type compare.type}}}</td>
+          {{else}}
+          <td>{{{source.type}}}</td>
+          {{/if}}
+        {{else}}
+          {{#if compare.type}}
+          <td>{{{compare.type}}}</td>
+          {{else}}
+            {{#if ../../../../_hasType}}<td></td>{{/if}}
+          {{/if}}
+        {{/if}}
+          <td>
+            {{{showDiff source.description compare.description "nl2br"}}}
+            {{#if source.defaultValue}}<p class="default-value">{{__ "Default value:"}} <code>{{{showDiff source.defaultValue compare.defaultValue}}}</code><p>{{/if}}
+          </td>
+        </tr>
+      {{/if}}
+
+      {{#if typeIns}}
+        <tr class="ins">
+          <td class="code">
+            {{{nestObject source}}}
+            {{#if source.optional}} <span class="label label-optional label-ins">{{__ "optional"}}</span>{{/if}}
+          </td>
+
+        {{#if source.type}}
+          <td>{{{source.type}}}</td>
+        {{else}}
+          {{{typRowTd}}}
+        {{/if}}
+
+          <td>
+            {{{nl2br source.description}}}
+            {{#if source.defaultValue}}<p class="default-value">{{__ "Default value:"}} <code>{{{source.defaultValue}}}</code><p>{{/if}}
+          </td>
+        </tr>
+      {{/if}}
+
+      {{#if typeDel}}
+        <tr class="del">
+          <td class="code">
+            {{{nestObject compare}}}
+            {{#if compare.optional}} <span class="label label-optional label-del">{{__ "optional"}}</span>{{/if}}
+          </td>
+
+        {{#if compare.type}}
+          <td>{{{compare.type}}}</td>
+        {{else}}
+          {{{typRowTd}}}
+        {{/if}}
+
+          <td>
+            {{{nl2br compare.description}}}
+            {{#if compare.defaultValue}}<p class="default-value">{{__ "Default value:"}} <code>{{{compare.defaultValue}}}</code><p>{{/if}}
+          </td>
+        </tr>
+      {{/if}}
+
+    {{/each_compare_field}}
+  </tbody>
+</script>
+
+<!-- Main Layout -->
+<div class="flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+  <!-- Sidebar -->
+  <div id="sidenav" class="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 overflow-y-auto"></div>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col h-screen">
+    <!-- Top Navbar -->
+    <nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200 flex-shrink-0">
+      <div class="px-6 py-4">
+        <div class="flex items-center justify-between">
+          <!-- Logo/Title -->
+          <div class="flex items-center space-x-3">
+            <div id="navbar-logo-container">
+              <div class="w-8 h-8 bg-blue-500 text-white rounded flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14,2 14,8 20,8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+              </div>
+            </div>
+            <h1 class="text-lg font-bold text-gray-900 dark:text-white m-0 transition-colors duration-200">__API_NAME__</h1>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="flex-1 max-w-md mx-auto">
+            <div class="relative">
+              <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input type="text" placeholder="Search APIs..." class="w-full h-10 pl-10 pr-16 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" id="navbar-search">
+              <kbd class="absolute right-3 top-1/2 transform -translate-y-1/2 px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded border transition-colors duration-200">⌘K</kbd>
+            </div>
+          </div>
+
+          <!-- Right Section -->
+          <div class="flex items-center space-x-4">
+            <!-- Version Selector -->
+            <div class="relative">
+              <select class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200" id="version-select">
+                <option value="__API_VERSION__">v__API_VERSION__</option>
+              </select>
+            </div>
+
+            <!-- Dark/Light Toggle -->
+            <button id="navbar-theme-toggle" onclick="toggleDarkMode()" class="w-10 h-10 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-md flex items-center justify-center transition-colors duration-200" aria-label="Toggle dark mode">
+              <svg class="sun-icon w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="5"></circle>
+                <path d="m12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+              </svg>
+              <svg class="moon-icon hidden w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            </button>
+
+            <!-- Menu Toggle (Mobile) -->
+            <button data-action="toggle-mobile-menu" class="w-10 h-10 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md flex items-center justify-center lg:hidden transition-colors" aria-label="Toggle menu">
+              <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Content Area -->
+    <div id="content" class="flex-1 overflow-y-auto">
+      <div class="max-w-6xl mx-auto px-6 py-8">
+        <div id="project" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6 transition-colors duration-200"></div>
+        <div id="header" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6 transition-colors duration-200" style="display: none;"></div>
+        <div id="sections" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-200"></div>
+        <div id="footer" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6 transition-colors duration-200" style="display: none;"></div>
+        <div id="generator" class="text-center text-gray-500 dark:text-gray-400 text-sm py-4 transition-colors duration-200"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loader -->
+<div id="loader" class="fixed inset-0 bg-white/90 dark:bg-gray-900/90 flex items-center justify-center z-50 transition-colors duration-200">
+  <div class="text-center">
+    <div class="text-blue-500 mb-4">
+      <svg class="animate-spin w-12 h-12 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="12" cy="12" r="10" stroke-width="2" stroke-linecap="round" stroke-dasharray="32" stroke-dashoffset="32">
+          <animate attributeName="stroke-dasharray" dur="2s" values="0 32;16 16;0 32;0 32" repeatCount="indefinite"/>
+          <animate attributeName="stroke-dashoffset" dur="2s" values="0;-16;-32;-32" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
+    <p class="text-gray-600 dark:text-gray-300 font-medium transition-colors duration-200">Loading API Documentation...</p>
+  </div>
+</div>
+
+<!-- Authentication & Content Protection System -->
+<script>
+  // Authentication will be initialized by main.ts when the bundle loads
+  // The LOGIN_CONFIG is made available through the bundled main.js
+  window.LOGIN_CONFIG = window.APIDOC_LOGIN_CONFIG;
+</script>
+
+<!-- Protected content bundle will be injected here if authentication is enabled -->
+<!--PROTECTED_CONTENT_INJECTION_POINT-->
+
+<script src="assets/main.bundle.js?__API_CACHE_BUSTING_QUERY_PARAM__"></script>
+</body>
+</html>

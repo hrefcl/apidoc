@@ -1,0 +1,37 @@
+node_modules/
+npm-debug.log
+# default output dir
+doc/
+# used in tests
+tmp/
+.idea
+test/*/fixtures*/vendor/
+test/apidoc/fixtures*/css/
+# Misc and development files
+.archive
+dist
+bk-*
+# Test output directory - contains all test files and screenshots
+test-output/
+template-backup-original/
+CLAUDE.md
+design*.png
+button-*.png
+after-*.png
+before-*.png
+input-*.png
+check-*.js
+sidebar-*.png
+build
+
+debug-*.js
+template-*.png
+tester-*.js
+test-*.js
+analyze-*.js
+dropdown-*.png
+docs
+test_*.js
+.DS_Store
+test-temp
+package-lock.json

@@ -1,0 +1,35 @@
+{
+    "arrowParens": "always",
+    "bracketSameLine": true,
+    "bracketSpacing": true,
+    "embeddedLanguageFormatting": "auto",
+    "endOfLine": "lf",
+    "htmlWhitespaceSensitivity": "ignore",
+    "jsonRecursiveSort": false,
+    "jsonSortOrder": "{\"*\": \"lexical\"}",
+    "jsxBracketSameLine": true,
+    "jsxSingleQuote": true,
+    "overrides": [
+        {
+            "files": "*.html",
+            "options": {
+                "parser": "angular"
+            }
+        },
+        {
+            "files": "*.json",
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ],
+    "plugins": ["prettier-plugin-sort-json", "prettier-plugin-organize-imports", "prettier-plugin-tailwindcss"],
+    "printWidth": 200,
+    "proseWrap": "never",
+    "semi": true,
+    "singleAttributePerLine": false,
+    "singleQuote": true,
+    "tabWidth": 4,
+    "trailingComma": "es5",
+    "useTabs": false
+}
