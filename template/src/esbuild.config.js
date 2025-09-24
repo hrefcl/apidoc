@@ -14,6 +14,7 @@ module.exports = {
   minify: true,
   sourcemap: false,
   resolveExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
+  conditions: ['style'],
   loader: {
     '.js': 'jsx',
     '.jsx': 'jsx',
