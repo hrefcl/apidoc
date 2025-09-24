@@ -15,15 +15,7 @@
   "input": [
     "example"
   ],
-  "login": {
-    "active": true,
-    "admited": [
-      {
-        "email": "admin@apidoc.app",
-        "password": "admin"
-      }
-    ]
-  },
+
   "logo": {
     "icon": "fa-solid fa-rocket",
     "alt": "API Logo"

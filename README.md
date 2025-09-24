@@ -144,10 +144,10 @@ npx serve docs/ -p 8080
 
 ### 📚 Authentication Documentation
 
-- **[🚀 Quick Start Guide](./QUICK-START-AUTH.md)** - Setup in 3 steps
-- **[📖 Complete Authentication Guide](./AUTHENTICATION.md)** - Comprehensive documentation
-- **[🛠️ Developer Reference](./AUTH-DEVELOPER-GUIDE.md)** - Technical API and customization
-- **[📝 Changelog](./CHANGELOG-AUTH.md)** - Implementation details and history
+- **[🚀 Quick Start Guide](./md/QUICK-START-AUTH.md)** - Setup in 3 steps
+- **[📖 Complete Authentication Guide](./md/AUTHENTICATION.md)** - Comprehensive documentation
+- **[🛠️ Developer Reference](./md/AUTH-DEVELOPER-GUIDE.md)** - Technical API and customization
+- **[📝 Changelog](./md/CHANGELOG-AUTH.md)** - Implementation details and history
 
 ### 🧪 Test Authentication
 
