@@ -249,6 +249,7 @@ class Writer {
             this.log.warn('Font Awesome CSS file not found at: ' + fontAwesomeSource);
         }
 
+
         // copy Font Awesome webfonts folder
         const webfontsSource = this.path.join(this.opt.template, 'src', 'webfonts');
         const webfontsDest = this.path.join(this.opt.dest, 'webfonts');
