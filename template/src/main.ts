@@ -510,67 +510,198 @@ function init() {
     // remove loader
     $('#loader').remove();
 
-    // render sidenav - Enhanced error handling and debugging
-    try {
-        console.log('🔄 Starting sidebar initialization...');
+    // render sidenav - EMERGENCY DEBUG VERSION with multiple initialization attempts
+    const initializeSidebar = () => {
+        try {
+            console.log('🚨 EMERGENCY SIDEBAR INITIALIZATION - Attempt started');
+            console.log('🔍 Current context:', {
+                navData: nav,
+                navLength: nav ? nav.length : 'undefined',
+                SidebarComponent: typeof SidebarComponent,
+                windowSidebarComponent: typeof (window as any).SidebarComponent
+            });
 
-        const sidenavContainer = document.getElementById('sidenav');
-        if (!sidenavContainer) {
-            throw new Error('Sidenav container not found in DOM');
-        }
-        console.log('✅ Sidenav container found');
-
-        if (typeof SidebarComponent === 'undefined') {
-            throw new Error('SidebarComponent class not available');
-        }
-        console.log('✅ SidebarComponent class available');
-
-        if (!nav || !Array.isArray(nav) || nav.length === 0) {
-            console.warn('⚠️ Navigation data is empty or invalid:', nav);
-        } else {
-            console.log('✅ Navigation data valid, items:', nav.length);
-        }
-
-        // Initialize native sidebar component
-        const sidebar = new SidebarComponent(sidenavContainer);
-        console.log('✅ SidebarComponent instance created');
-
-        sidebar.setData(nav);
-        console.log('✅ Native SidebarComponent initialized successfully');
-
-        // Verify sidebar content was rendered
-        setTimeout(() => {
-            const sidebarContent = sidenavContainer.innerHTML;
-            if (!sidebarContent || sidebarContent.trim() === '') {
-                console.error('❌ Sidebar content is empty after initialization');
-            } else {
-                console.log('✅ Sidebar content rendered successfully');
+            const sidenavContainer = document.getElementById('sidenav');
+            if (!sidenavContainer) {
+                throw new Error('Sidenav container not found in DOM');
             }
-        }, 100);
+            console.log('✅ Sidenav container found');
 
-    } catch (error) {
-        console.error('❌ Critical error: SidebarComponent failed to initialize:', error);
-        console.error('❌ Error details:', {
-            message: error.message,
-            stack: error.stack,
-            sidebarAvailable: typeof SidebarComponent !== 'undefined',
-            navData: nav
-        });
+            // Try multiple ways to access SidebarComponent
+            let SidebarClass = SidebarComponent || (window as any).SidebarComponent;
 
-        const sidenavContainer = document.getElementById('sidenav');
-        if (sidenavContainer) {
-            sidenavContainer.innerHTML = `
-        <div class="sidebar-error p-4 text-center">
-          <p class="text-red-600 dark:text-red-400 font-medium">⚠️ Error cargando navegación</p>
-          <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Error: ${error.message}</p>
-          <button onclick="location.reload()" class="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            Recargar página
-          </button>
-        </div>`;
+            if (!SidebarClass) {
+                console.error('❌ SidebarComponent not found in any location');
+                throw new Error('SidebarComponent class not available');
+            }
+            console.log('✅ SidebarComponent class available via:', SidebarClass === SidebarComponent ? 'import' : 'window');
+
+            if (!nav || !Array.isArray(nav)) {
+                console.error('❌ Navigation data invalid:', nav);
+
+                // EMERGENCY: Create basic nav structure from API_DATA if nav is missing
+                try {
+                    const apiDataStr = (window as any).API_DATA;
+                    if (typeof apiDataStr === 'string') {
+                        const apiData = JSON.parse(apiDataStr);
+                        console.log('🔧 Creating emergency nav from API_DATA');
+
+                        const groups = {};
+                        apiData.forEach(item => {
+                            if (!groups[item.group]) {
+                                groups[item.group] = [];
+                            }
+                            groups[item.group].push({
+                                title: item.title,
+                                group: item.group,
+                                name: item.name,
+                                type: item.type,
+                                version: item.version,
+                                url: item.url
+                            });
+                        });
+
+                        const emergencyNav = [];
+                        Object.keys(groups).forEach(groupName => {
+                            emergencyNav.push({
+                                group: groupName,
+                                isHeader: true,
+                                title: groupName
+                            });
+                            groups[groupName].forEach(item => {
+                                emergencyNav.push(item);
+                            });
+                        });
+
+                        nav = emergencyNav;
+                        console.log('✅ Emergency nav created with', nav.length, 'items');
+                    }
+                } catch (apiError) {
+                    console.error('❌ Could not create emergency nav:', apiError);
+                    throw new Error('No valid navigation data available');
+                }
+            }
+
+            console.log('✅ Navigation data validated, items:', nav.length);
+
+            // Initialize with extra error handling
+            const sidebar = new SidebarClass(sidenavContainer);
+            console.log('✅ SidebarComponent instance created');
+
+            sidebar.setData(nav);
+            console.log('✅ Native SidebarComponent initialized successfully');
+
+            // Force immediate verification
+            setTimeout(() => {
+                const sidebarContent = sidenavContainer.innerHTML;
+                if (!sidebarContent || sidebarContent.trim() === '') {
+                    console.error('❌ EMERGENCY: Sidebar content still empty after initialization');
+                    throw new Error('Sidebar failed to render content');
+                } else {
+                    console.log('🎉 EMERGENCY SIDEBAR SUCCESS: Content rendered');
+                }
+            }, 50);
+
+            return true;
+
+        } catch (error) {
+            console.error('🚨 EMERGENCY SIDEBAR FAILED:', error);
+            console.error('🚨 Full error details:', {
+                message: error.message,
+                stack: error.stack,
+                available: {
+                    SidebarComponent: typeof SidebarComponent,
+                    windowSidebarComponent: typeof (window as any).SidebarComponent,
+                    nav: nav,
+                    apiData: typeof (window as any).API_DATA
+                }
+            });
+
+            // EMERGENCY FALLBACK: Create basic HTML sidebar manually
+            const sidenavContainer = document.getElementById('sidenav');
+            if (sidenavContainer) {
+                try {
+                    console.log('🔧 Creating emergency HTML sidebar...');
+                    const apiDataStr = (window as any).API_DATA;
+                    let fallbackHTML = `
+                    <div class="h-full flex flex-col bg-white dark:bg-gray-900">
+                        <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                            <h2 class="text-sm font-semibold text-gray-900 dark:text-white">API Docs</h2>
+                        </div>
+                        <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+                            <div class="text-red-600 mb-4">⚠️ Sidebar cargado en modo de emergencia</div>`;
+
+                    if (typeof apiDataStr === 'string') {
+                        const apiData = JSON.parse(apiDataStr);
+                        const groups = {};
+
+                        apiData.forEach(item => {
+                            if (!groups[item.group]) {
+                                groups[item.group] = [];
+                            }
+                            groups[item.group].push(item);
+                        });
+
+                        Object.keys(groups).forEach(groupName => {
+                            fallbackHTML += `
+                                <div class="mb-4">
+                                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${groupName}</h3>
+                                    <div class="space-y-1 ml-2">`;
+
+                            groups[groupName].forEach(item => {
+                                const methodClass = item.type?.toUpperCase() === 'GET' ? 'text-green-600' :
+                                                   item.type?.toUpperCase() === 'POST' ? 'text-blue-600' :
+                                                   item.type?.toUpperCase() === 'PUT' ? 'text-yellow-600' :
+                                                   item.type?.toUpperCase() === 'DELETE' ? 'text-red-600' : 'text-gray-600';
+
+                                fallbackHTML += `
+                                    <a href="#api-${groupName}-${item.name}"
+                                       class="flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
+                                        <span class="w-12 text-xs font-mono ${methodClass}">${item.type?.toUpperCase() || 'API'}</span>
+                                        <span class="flex-1">${item.title}</span>
+                                    </a>`;
+                            });
+
+                            fallbackHTML += `
+                                    </div>
+                                </div>`;
+                        });
+                    }
+
+                    fallbackHTML += `
+                        </nav>
+                    </div>`;
+
+                    sidenavContainer.innerHTML = fallbackHTML;
+                    console.log('✅ Emergency HTML sidebar created successfully');
+                    return true;
+
+                } catch (fallbackError) {
+                    console.error('❌ Even emergency fallback failed:', fallbackError);
+                    sidenavContainer.innerHTML = `
+                        <div class="p-4 text-center">
+                            <p class="text-red-600">❌ Error crítico en sidebar</p>
+                            <button onclick="location.reload()" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
+                                Recargar
+                            </button>
+                        </div>`;
+                }
+            }
+
+            return false;
         }
+    };
 
-        // Continue execution even if sidebar fails - don't block other components
-        console.log('🔄 Continuing with other component initialization...');
+    // Try to initialize immediately and also after a delay
+    let sidebarInitialized = initializeSidebar();
+
+    if (!sidebarInitialized) {
+        console.log('🔄 Sidebar failed, retrying after delay...');
+        setTimeout(() => {
+            if (!sidebarInitialized) {
+                initializeSidebar();
+            }
+        }, 500);
     }
 
     // render Generator
