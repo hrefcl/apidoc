@@ -110,7 +110,7 @@
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.35.0",
     "@playwright/test": "^1.55.0",
-    "@tailwindcss/typography": "^0.5.18",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/commander": "^2.12.2",
     "@types/diff-match-patch": "^1.0.36",
     "@types/fs-extra": "^11.0.4",
@@ -143,7 +143,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-sort-json": "^4.1.1",
-    "prettier-plugin-tailwindcss": "^0.6.9",
+    "prettier-plugin-tailwindcss": "^0.6.14",
     "serve-handler": "^6.1.6",
     "typedoc-plugin-markdown": "^4.3.4",
     "typescript": "^5.7.2"
