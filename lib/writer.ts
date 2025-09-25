@@ -283,10 +283,28 @@ class Writer {
         this.log.verbose('Running bundler');
 
         return new Promise((resolve, reject) => {
-            // Data is now injected directly into HTML via getIndexContent()
-            // No need for temporary file
+            // Copy pre-compiled CSS instead of compiling it
+            // Check for development CSS first, then fallback to production CSS
+            const devCSS = this.path.join(this.opt.template, 'assets', 'main.bundle.dev.css');
+            const prodCSS = this.path.join(this.opt.template, 'assets', 'main.bundle.css');
+            const outputCSS = this.path.join(outputPath, 'main.bundle.css');
 
-            // run esbuild to create the bundle file in assets
+            let sourceCSS = prodCSS;
+            if (this.fs.existsSync(devCSS)) {
+                sourceCSS = devCSS;
+                this.log.debug('Using development CSS');
+            }
+
+            if (this.fs.existsSync(sourceCSS)) {
+                this.fs.copyFileSync(sourceCSS, outputCSS);
+                const stats = this.fs.statSync(outputCSS);
+                const sizeKb = (stats.size / 1024).toFixed(1);
+                this.log.debug(`Copied pre-compiled CSS: ${sizeKb}kb`);
+            } else {
+                this.log.warn('⚠️  No pre-compiled CSS found, CSS may not be available');
+            }
+
+            // run esbuild to create the bundle file in assets (JavaScript only)
             const entryPoint = this.path.resolve(this.path.join(this.opt.template, 'src', 'main.js'));
             const outfile = this.path.join(outputPath, 'main.bundle.js');
 

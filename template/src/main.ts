@@ -1,9 +1,7 @@
 /** apidoc template main.js */
 
-// CSS imports for bundling - TailwindCSS and essential styles only
-import 'highlight.js/styles/github-dark.css';
-import './css/tailwind.css'; // Import Tailwind second to override Bootstrap
-import './vendor/bootstrap/css/bootstrap.css'; // Import Bootstrap first
+// Note: CSS is now pre-compiled and copied directly by writer.ts
+// No CSS imports needed - only JavaScript functionality
 
 import Handlebars from 'handlebars';
 import $ from 'jquery';

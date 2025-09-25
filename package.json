@@ -1,6 +1,6 @@
 {
   "name": "@hrefcl/apidoc",
-  "version": "4.0.1",
+  "version": "4.0.3-beta.2",
   "description": "RESTful web API Documentation Generator",
   "keywords": [
     "api",
@@ -39,7 +39,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "build:clean": "rm -rf dist && npm run build",
+    "build:css": "node scripts/build-css.js",
+    "build:css:dev": "node scripts/build-css.js --dev",
+    "build:clean": "rm -rf dist && npm run build:css && npm run build",
     "build:debug": "npm run build:example -- --debug",
     "build:example": "npm run build && ./bin/apidoc -v -i example/ -o ./tmp/apidoc-output",
     "build:watch": "tsc --watch",
@@ -98,15 +100,19 @@
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "typedoc": "^0.28.13",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "postcss": "^8.5.6",
+    "@tailwindcss/postcss": "^4.1.13",
+    "@tailwindcss/typography": "^0.5.18",
+    "autoprefixer": "^10.4.21",
+    "tailwindcss": "^4.1.13",
+    "esbuild-postcss": "^0.0.4"
   },
   "devDependencies": {
     "@eslint/compat": "^1.3.2",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.35.0",
     "@playwright/test": "^1.55.0",
-    "@tailwindcss/postcss": "^4.1.13",
-    "@tailwindcss/typography": "^0.5.18",
     "@types/commander": "^2.12.2",
     "@types/diff-match-patch": "^1.0.36",
     "@types/fs-extra": "^11.0.4",
@@ -122,11 +128,9 @@
     "@types/serve-handler": "^6.1.4",
     "@typescript-eslint/eslint-plugin": "^8.18.1",
     "@typescript-eslint/parser": "^8.18.1",
-    "autoprefixer": "^10.4.21",
     "changelog-light": "^3.0.3",
     "concurrently": "^9.2.1",
     "cspell": "^9.2.1",
-    "esbuild-postcss": "^0.0.4",
     "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
@@ -138,13 +142,11 @@
     "globals": "^16.4.0",
     "mocha": "^11.7.2",
     "playwright": "^1.55.0",
-    "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-sort-json": "^4.1.1",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "serve-handler": "^6.1.6",
-    "tailwindcss": "^4.1.13",
     "typedoc-plugin-markdown": "^4.3.4",
     "typescript": "^5.7.2"
   },
@@ -165,7 +167,5 @@
     "LICENSE",
     "README.md"
   ],
-  "publishConfig": {
-    "provenance": true
-  }
+  "publishConfig": {}
 }
