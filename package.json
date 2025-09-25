@@ -1,6 +1,6 @@
 {
   "name": "@hrefcl/apidoc",
-  "version": "4.0.2-beta.4",
+  "version": "4.0.2-beta.5",
   "description": "RESTful web API Documentation Generator",
   "keywords": [
     "api",
@@ -165,6 +165,5 @@
     "LICENSE",
     "README.md"
   ],
-  "publishConfig": {
-  }
+  "publishConfig": {}
 }
