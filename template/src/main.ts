@@ -59,6 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize authentication system
     initializeAuthentication();
 
+    // Initialize dynamic highlight.js theme loading
+    initializeHighlightTheme();
+
     init();
     initSampleRequest();
     hljs.highlightAll();
@@ -189,8 +192,69 @@ function getDefaultNavbarLogo(): string {
     `;
 }
 
-// Theme toggle is now handled by inline HTML script
-// This function is deprecated
+// Initialize dynamic highlight.js theme loading
+function initializeHighlightTheme() {
+    try {
+        console.log('🎨 Initializing dynamic highlight.js theme system...');
+
+        // Get highlight theme configuration from API_PROJECT
+        let highlightTheme = 'androidstudio'; // Default theme
+        if (typeof window.API_PROJECT !== 'undefined') {
+            const project = typeof window.API_PROJECT === 'string'
+                ? JSON.parse(window.API_PROJECT)
+                : window.API_PROJECT;
+            highlightTheme = project.highlightTheme || highlightTheme;
+        }
+
+        // Load the theme if it's not the default (default is already in bundle.css)
+        if (highlightTheme !== 'androidstudio') {
+            loadHighlightTheme(highlightTheme);
+        }
+
+        console.log(`🎨 Highlight.js theme set to: ${highlightTheme}`);
+    } catch (error) {
+        console.warn('⚠️  Error initializing highlight theme:', error);
+    }
+}
+
+// Dynamically load a highlight.js theme
+function loadHighlightTheme(themeName: string) {
+    try {
+        // Remove any existing dynamic highlight theme
+        const existingTheme = document.getElementById('dynamic-highlight-theme');
+        if (existingTheme) {
+            existingTheme.remove();
+        }
+
+        // Create new link element for the theme
+        const link = document.createElement('link');
+        link.id = 'dynamic-highlight-theme';
+        link.rel = 'stylesheet';
+        link.href = `assets/highlight-themes/${themeName}.css`;
+
+        // Add error handling
+        link.onerror = () => {
+            console.warn(`⚠️  Failed to load highlight.js theme: ${themeName}.css - falling back to default`);
+        };
+
+        link.onload = () => {
+            console.log(`✅ Loaded highlight.js theme: ${themeName}.css`);
+
+            // Re-highlight all code blocks with new theme
+            if (typeof hljs !== 'undefined') {
+                hljs.highlightAll();
+            }
+        };
+
+        // Add to document head
+        document.head.appendChild(link);
+    } catch (error) {
+        console.warn(`⚠️  Error loading highlight theme ${themeName}:`, error);
+    }
+}
+
+// Make loadHighlightTheme available globally for potential runtime theme switching
+(window as any).loadHighlightTheme = loadHighlightTheme;
 
 /**
  * Initialize the API documentation interface by compiling templates, organizing API data,

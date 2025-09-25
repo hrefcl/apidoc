@@ -155,11 +155,11 @@ try {
             completeCss += result.css;
             completeCss += '\n\n';
 
-            // 3. Highlight.js CSS
-            const hlCssPath = path.join(srcDir, '..', '..', 'node_modules', 'highlight.js', 'styles', 'github-dark.css');
+            // 3. Highlight.js CSS (androidstudio theme by default)
+            const hlCssPath = path.join(srcDir, '..', '..', 'node_modules', 'highlight.js', 'styles', 'androidstudio.css');
             if (fs.existsSync(hlCssPath)) {
-                console.log('📄 Adding Highlight.js CSS...');
-                completeCss += '/* Highlight.js CSS */\n';
+                console.log('📄 Adding Highlight.js CSS (androidstudio theme)...');
+                completeCss += '/* Highlight.js CSS - androidstudio theme */\n';
                 completeCss += fs.readFileSync(hlCssPath, 'utf8');
                 completeCss += '\n\n';
             }

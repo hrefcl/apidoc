@@ -259,6 +259,9 @@ class Writer {
             this.log.warn('Font Awesome webfonts folder not found at: ' + webfontsSource);
         }
 
+        // copy highlight.js themes for dynamic theme loading
+        this.copyHighlightThemes(assetsPath);
+
         // save the parsed api file
         if (this.opt.writeJson) {
             const jsonFile = this.path.join(assetsPath, 'api-data.json');
@@ -525,6 +528,45 @@ class Writer {
                 break;
             default:
                 this.fs.writeFileSync(dest, 'define(' + data + ');' + '\n');
+        }
+    }
+
+    /**
+     * Copy all highlight.js themes for dynamic theme loading
+     *
+     * @param {string} assetsPath - Path to the assets directory
+     * @memberof Writer
+     */
+    copyHighlightThemes(assetsPath) {
+        try {
+            this.log.verbose('🎨 Copying highlight.js themes for dynamic loading...');
+
+            // Create highlight-themes directory in assets
+            const highlightThemesDir = this.path.join(assetsPath, 'highlight-themes');
+            this.createDir(highlightThemesDir);
+
+            // Find highlight.js styles directory
+            const highlightStylesPath = this.path.join(this.opt.template, '..', 'node_modules', 'highlight.js', 'styles');
+
+            if (this.fs.existsSync(highlightStylesPath)) {
+                // Copy all CSS theme files
+                const themeFiles = this.fs.readdirSync(highlightStylesPath).filter(file => file.endsWith('.css'));
+                let copiedCount = 0;
+
+                themeFiles.forEach(themeFile => {
+                    const sourcePath = this.path.join(highlightStylesPath, themeFile);
+                    const destPath = this.path.join(highlightThemesDir, themeFile);
+
+                    this.fs.copyFileSync(sourcePath, destPath);
+                    copiedCount++;
+                });
+
+                this.log.verbose(`✅ Copied ${copiedCount} highlight.js themes to assets/highlight-themes/`);
+            } else {
+                this.log.warn('⚠️  highlight.js styles directory not found, dynamic themes not available');
+            }
+        } catch (error) {
+            this.log.warn('⚠️  Failed to copy highlight.js themes:', error.message);
         }
     }
 
