@@ -177,31 +177,31 @@ body.dark .border-gray-300 {
 /* DARK MODE CONTENT TEXT - CRITICAL FOR VISIBILITY */
 /* ============================================= */
 
-/* All content text in dark mode */
-html.dark,
-html.dark *,
-body.dark,
-body.dark * {
+/* All content text in dark mode, but exclude highlight.js elements */
+html.dark:not(.hljs),
+html.dark *:not(.hljs):not(.hljs *),
+body.dark:not(.hljs),
+body.dark *:not(.hljs):not(.hljs *) {
     color: rgb(229 231 235) !important; /* gray-200 - light text for dark backgrounds */
 }
 
-/* Specific content areas */
-html.dark .content-wrapper,
-html.dark .content-wrapper *,
-html.dark #content,
-html.dark #content *,
-html.dark .api-sections,
-html.dark .api-sections *,
-html.dark .project-header,
-html.dark .project-header *,
-body.dark .content-wrapper,
-body.dark .content-wrapper *,
-body.dark #content,
-body.dark #content *,
-body.dark .api-sections,
-body.dark .api-sections *,
-body.dark .project-header,
-body.dark .project-header * {
+/* Specific content areas, but exclude highlight.js elements */
+html.dark .content-wrapper:not(.hljs),
+html.dark .content-wrapper *:not(.hljs):not(.hljs *),
+html.dark #content:not(.hljs),
+html.dark #content *:not(.hljs):not(.hljs *),
+html.dark .api-sections:not(.hljs),
+html.dark .api-sections *:not(.hljs):not(.hljs *),
+html.dark .project-header:not(.hljs),
+html.dark .project-header *:not(.hljs):not(.hljs *),
+body.dark .content-wrapper:not(.hljs),
+body.dark .content-wrapper *:not(.hljs):not(.hljs *),
+body.dark #content:not(.hljs),
+body.dark #content *:not(.hljs):not(.hljs *),
+body.dark .api-sections:not(.hljs):not(.hljs *),
+body.dark .api-sections *:not(.hljs):not(.hljs *),
+body.dark .project-header:not(.hljs),
+body.dark .project-header *:not(.hljs):not(.hljs *) {
     color: rgb(229 231 235) !important; /* gray-200 */
 }
 
@@ -221,19 +221,19 @@ body.dark h6 {
     color: rgb(255 255 255) !important; /* white for headings */
 }
 
-/* Paragraphs and content */
-html.dark p,
-html.dark div,
-html.dark span,
-html.dark td,
-html.dark th,
-html.dark li,
-body.dark p,
-body.dark div,
-body.dark span,
-body.dark td,
-body.dark th,
-body.dark li {
+/* Paragraphs and content, but exclude highlight.js elements */
+html.dark p:not(.hljs):not(.hljs *),
+html.dark div:not(.hljs):not(.hljs *),
+html.dark span:not(.hljs):not(.hljs *),
+html.dark td:not(.hljs):not(.hljs *),
+html.dark th:not(.hljs):not(.hljs *),
+html.dark li:not(.hljs):not(.hljs *),
+body.dark p:not(.hljs):not(.hljs *),
+body.dark div:not(.hljs):not(.hljs *),
+body.dark span:not(.hljs):not(.hljs *),
+body.dark td:not(.hljs):not(.hljs *),
+body.dark th:not(.hljs):not(.hljs *),
+body.dark li:not(.hljs):not(.hljs *) {
     color: rgb(229 231 235) !important; /* gray-200 */
 }
 
@@ -260,21 +260,21 @@ body.dark i {
     color: rgb(255 255 255) !important; /* white */
 }
 
-/* Article content specifically */
-html.dark article,
-html.dark article *,
-body.dark article,
-body.dark article * {
+/* Article content specifically, but exclude highlight.js elements */
+html.dark article:not(.hljs),
+html.dark article *:not(.hljs):not(.hljs *),
+body.dark article:not(.hljs),
+body.dark article *:not(.hljs):not(.hljs *) {
     color: rgb(229 231 235) !important; /* gray-200 */
 }
 
-/* Override any default black text */
-html.dark [style*='color: rgb(0, 0, 0)'],
-html.dark [style*='color: black'],
-html.dark [style*='color:#000'],
-body.dark [style*='color: rgb(0, 0, 0)'],
-body.dark [style*='color: black'],
-body.dark [style*='color:#000'] {
+/* Override any default black text, but exclude highlight.js elements */
+html.dark [style*='color: rgb(0, 0, 0)']:not(.hljs):not(.hljs *),
+html.dark [style*='color: black']:not(.hljs):not(.hljs *),
+html.dark [style*='color:#000']:not(.hljs):not(.hljs *),
+body.dark [style*='color: rgb(0, 0, 0)']:not(.hljs):not(.hljs *),
+body.dark [style*='color: black']:not(.hljs):not(.hljs *),
+body.dark [style*='color:#000']:not(.hljs):not(.hljs *) {
     color: rgb(229 231 235) !important; /* gray-200 */
 }
 
@@ -332,10 +332,8 @@ body.dark pre {
     border: 1px solid rgb(55 65 81) !important; /* gray-700 */
 }
 
-html.dark .hljs,
-body.dark .hljs {
-    background-color: rgb(17 24 39) !important; /* Keep dark theme */
-}
+/* Removed: Dark mode .hljs styles that interfere with highlight.js themes */
+/* Let highlight.js themes handle their own colors */
 
 /* Dark mode buttons */
 .dark .btn-primary {

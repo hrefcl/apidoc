@@ -13478,28 +13478,28 @@ html.dark .border-gray-300,
 body.dark .border-gray-300 {
   border-color: rgb(75 85 99) !important;
 }
-html.dark,
-html.dark *,
-body.dark,
-body.dark * {
+html.dark:not(.hljs),
+html.dark *:not(.hljs):not(.hljs *),
+body.dark:not(.hljs),
+body.dark *:not(.hljs):not(.hljs *) {
   color: rgb(229 231 235) !important;
 }
-html.dark .content-wrapper,
-html.dark .content-wrapper *,
-html.dark #content,
-html.dark #content *,
-html.dark .api-sections,
-html.dark .api-sections *,
-html.dark .project-header,
-html.dark .project-header *,
-body.dark .content-wrapper,
-body.dark .content-wrapper *,
-body.dark #content,
-body.dark #content *,
-body.dark .api-sections,
-body.dark .api-sections *,
-body.dark .project-header,
-body.dark .project-header * {
+html.dark .content-wrapper:not(.hljs),
+html.dark .content-wrapper *:not(.hljs):not(.hljs *),
+html.dark #content:not(.hljs),
+html.dark #content *:not(.hljs):not(.hljs *),
+html.dark .api-sections:not(.hljs),
+html.dark .api-sections *:not(.hljs):not(.hljs *),
+html.dark .project-header:not(.hljs),
+html.dark .project-header *:not(.hljs):not(.hljs *),
+body.dark .content-wrapper:not(.hljs),
+body.dark .content-wrapper *:not(.hljs):not(.hljs *),
+body.dark #content:not(.hljs),
+body.dark #content *:not(.hljs):not(.hljs *),
+body.dark .api-sections:not(.hljs):not(.hljs *),
+body.dark .api-sections *:not(.hljs):not(.hljs *),
+body.dark .project-header:not(.hljs),
+body.dark .project-header *:not(.hljs):not(.hljs *) {
   color: rgb(229 231 235) !important;
 }
 html.dark h1,
@@ -13516,18 +13516,18 @@ body.dark h5,
 body.dark h6 {
   color: rgb(255 255 255) !important;
 }
-html.dark p,
-html.dark div,
-html.dark span,
-html.dark td,
-html.dark th,
-html.dark li,
-body.dark p,
-body.dark div,
-body.dark span,
-body.dark td,
-body.dark th,
-body.dark li {
+html.dark p:not(.hljs):not(.hljs *),
+html.dark div:not(.hljs):not(.hljs *),
+html.dark span:not(.hljs):not(.hljs *),
+html.dark td:not(.hljs):not(.hljs *),
+html.dark th:not(.hljs):not(.hljs *),
+html.dark li:not(.hljs):not(.hljs *),
+body.dark p:not(.hljs):not(.hljs *),
+body.dark div:not(.hljs):not(.hljs *),
+body.dark span:not(.hljs):not(.hljs *),
+body.dark td:not(.hljs):not(.hljs *),
+body.dark th:not(.hljs):not(.hljs *),
+body.dark li:not(.hljs):not(.hljs *) {
   color: rgb(229 231 235) !important;
 }
 html.dark a,
@@ -13548,18 +13548,18 @@ body.dark em,
 body.dark i {
   color: rgb(255 255 255) !important;
 }
-html.dark article,
-html.dark article *,
-body.dark article,
-body.dark article * {
+html.dark article:not(.hljs),
+html.dark article *:not(.hljs):not(.hljs *),
+body.dark article:not(.hljs),
+body.dark article *:not(.hljs):not(.hljs *) {
   color: rgb(229 231 235) !important;
 }
-html.dark [style*='color: rgb(0, 0, 0)'],
-html.dark [style*='color: black'],
-html.dark [style*='color:#000'],
-body.dark [style*='color: rgb(0, 0, 0)'],
-body.dark [style*='color: black'],
-body.dark [style*='color:#000'] {
+html.dark [style*='color: rgb(0, 0, 0)']:not(.hljs):not(.hljs *),
+html.dark [style*='color: black']:not(.hljs):not(.hljs *),
+html.dark [style*='color:#000']:not(.hljs):not(.hljs *),
+body.dark [style*='color: rgb(0, 0, 0)']:not(.hljs):not(.hljs *),
+body.dark [style*='color: black']:not(.hljs):not(.hljs *),
+body.dark [style*='color:#000']:not(.hljs):not(.hljs *) {
   color: rgb(229 231 235) !important;
 }
 html.dark .form-control,
@@ -13608,10 +13608,6 @@ html.dark pre,
 body.dark pre {
   background-color: rgb(17 24 39) !important;
   border: 1px solid rgb(55 65 81) !important;
-}
-html.dark .hljs,
-body.dark .hljs {
-  background-color: rgb(17 24 39) !important;
 }
 .dark .btn-primary {
   background-color: rgb(59 130 246) !important;
@@ -16157,7 +16153,7 @@ textarea.form-control,
 }
 
 
-/* Highlight.js CSS - androidstudio theme */
+/* Highlight.js CSS - tokyo-night-dark theme */
 pre code.hljs {
   display: block;
   overflow-x: auto;
@@ -16166,51 +16162,105 @@ pre code.hljs {
 code.hljs {
   padding: 3px 5px
 }
-/*
-Date: 24 Fev 2015
-Author: Pedro Oliveira <kanytu@gmail . com>
+/*!
+  Theme: Tokyo-night-Dark
+  origin: https://github.com/enkia/tokyo-night-vscode-theme
+  Description: Original highlight.js style
+  Author: (c) Henri Vandersleyen <hvandersleyen@gmail.com>
+  License: see project LICENSE
+  Touched: 2022
 */
-.hljs {
-  color: #a9b7c6;
-  background: #282b2e
+/*  Comment */
+.hljs-meta,
+.hljs-comment {
+  color: #565f89
 }
-.hljs-number,
-.hljs-literal,
-.hljs-symbol,
-.hljs-bullet {
-  color: #6897BB
-}
-.hljs-keyword,
-.hljs-selector-tag,
+/* Red */
+/*INFO: This keyword, HTML elements, Regex group symbol, CSS units, Terminal Red */
+.hljs-tag,
+.hljs-doctag,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-template-tag,
+.hljs-selector-pseudo,
+.hljs-selector-attr,
+.hljs-variable.language_,
 .hljs-deletion {
-  color: #cc7832
+  color: #f7768e
 }
+/*Orange */
+/*INFO: Number and Boolean constants, Language support constants */
 .hljs-variable,
 .hljs-template-variable,
+.hljs-number,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
 .hljs-link {
-  color: #629755
+  color: #ff9e64
 }
-.hljs-comment,
-.hljs-quote {
-  color: #808080
+/*  Yellow */
+/* INFO:  	Function parameters, Regex character sets, Terminal Yellow */
+.hljs-built_in,
+.hljs-attribute {
+  color: #e0af68
 }
-.hljs-meta {
-  color: #bbb529
+/* cyan */
+/* INFO: Language support functions, CSS HTML elements */
+.hljs-selector-tag {
+  color: #2ac3de
 }
-.hljs-string,
-.hljs-attribute,
-.hljs-addition {
-  color: #6A8759
-}
-.hljs-section,
+/* light blue */
+/* INFO: Object properties, Regex quantifiers and flags, Markdown headings, Terminal Cyan, Markdown code, Import/export keywords */
+.hljs-keyword,
+.hljs-title.function_,
 .hljs-title,
-.hljs-type {
-  color: #ffc66d
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-subst,
+.hljs-property {
+  color: #7dcfff
 }
+/*Green*/
+/* INFO: Object literal keys, Markdown links, Terminal Green */
+.hljs-selector-tag {
+  color: #73daca
+}
+/*Green(er) */
+/* INFO: Strings, CSS class names */
+.hljs-quote,
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+  color: #9ece6a
+}
+/* Blue */
+/* INFO:  	Function names, CSS property names, Terminal Blue */
+.hljs-code,
+.hljs-formula,
+.hljs-section {
+  color: #7aa2f7
+}
+/* Magenta */
+/*INFO: Control Keywords, Storage Types, Regex symbols and operators, HTML Attributes, Terminal Magenta */
 .hljs-name,
-.hljs-selector-id,
-.hljs-selector-class {
-  color: #e8bf6a
+.hljs-keyword,
+.hljs-operator,
+.hljs-keyword,
+.hljs-char.escape_,
+.hljs-attr {
+  color: #bb9af7
+}
+/* white*/
+/* INFO: Variables, Class names, Terminal White */
+.hljs-punctuation {
+  color: #c0caf5
+}
+.hljs {
+  background: #1a1b26;
+  color: #9aa5ce
 }
 .hljs-emphasis {
   font-style: italic

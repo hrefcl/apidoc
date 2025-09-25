@@ -18,6 +18,7 @@
 - **🆕 @apiSchema Integration** - Built-in TypeScript interface and JSON Schema support
 - **🆕 Dual Authentication System** - Comprehensive protection with local/remote authentication (all issues fixed!)
 - **🆕 Native OpenAPI 3.0 Support** - Write OpenAPI specifications directly in comments + external file references with full $ref resolution
+- **🎨 Dynamic Highlight.js Themes** - 160+ syntax highlighting themes with perfect dark mode compatibility
 
 ### New @apiSchema Feature
 APIDoc 4.0 introduces powerful schema integration that automatically generates API documentation from:
@@ -1394,6 +1395,99 @@ This project is actively maintained by [@hrefcl](https://github.com/hrefcl).
 - ✅ Mixed syntax support (APIDoc + external OpenAPI)
 
 Example: `@openapi /api/products/{id} {openapi=./schemas/products-api.yaml}` automatically resolves all $ref components to create full documentation.
+
+## 🎨 NEW: Dynamic Highlight.js Theme System
+
+**APIDoc 4.0** introduces a **dynamic highlight.js theme system** that allows you to customize syntax highlighting with 160+ available themes while maintaining perfect compatibility with both light and dark modes.
+
+### ✨ Theme System Features
+
+- **🎨 160+ Themes**: Access to all highlight.js themes including modern options like `tokyo-night-dark`, `github-dark`, `monokai`, `dracula`, and more
+- **🌙 Dark Mode Compatible**: All themes work perfectly in both light and dark modes (CSS conflicts completely resolved)
+- **⚡ Dynamic Loading**: Only loads extra CSS when needed - default theme included in main bundle
+- **🔧 Simple Configuration**: Just add `highlightTheme` field to your `apidoc.json`
+- **📦 NPM Ready**: Works seamlessly with NPM distribution and compiled code
+- **🔄 Runtime Switching**: Themes can be changed dynamically via JavaScript API
+
+### 🚀 Quick Setup
+
+Add the `highlightTheme` field to your `apidoc.json` configuration:
+
+```json
+{
+  "name": "My API Documentation",
+  "version": "1.0.0",
+  "description": "API documentation with custom syntax highlighting",
+  "highlightTheme": "tokyo-night-dark",
+  "title": "My API"
+}
+```
+
+### 🎯 Popular Theme Examples
+
+**Dark Themes** (perfect for dark mode):
+```json
+{"highlightTheme": "tokyo-night-dark"}    // Modern dark theme (default)
+{"highlightTheme": "github-dark"}         // GitHub's dark theme
+{"highlightTheme": "monokai"}            // Classic Monokai
+{"highlightTheme": "dracula"}            // Popular Dracula theme
+{"highlightTheme": "androidstudio"}      // Android Studio theme
+```
+
+**Light Themes** (perfect for light mode):
+```json
+{"highlightTheme": "github"}             // GitHub's light theme
+{"highlightTheme": "vs"}                 // Visual Studio theme
+{"highlightTheme": "atom-one-light"}     // Atom One Light
+{"highlightTheme": "xcode"}              // Xcode theme
+```
+
+### 🛠️ Advanced Usage
+
+**Runtime Theme Switching**:
+```javascript
+// Change theme dynamically (function available globally)
+window.loadHighlightTheme('dracula');
+window.loadHighlightTheme('github-dark');
+window.loadHighlightTheme('monokai');
+```
+
+**Available Themes** (160+ total):
+- **GitHub**: `github`, `github-dark`, `github-dark-dimmed`
+- **Popular**: `monokai`, `dracula`, `tomorrow-night`, `solarized-dark`
+- **Modern**: `tokyo-night-dark`, `tokyo-night-light`, `nord`, `gruvbox-dark`
+- **Classic**: `vs`, `vs2015`, `androidstudio`, `xcode`
+- **Colorful**: `rainbow`, `magula`, `sunburst`, `hybrid`
+- **Minimal**: `default`, `lightfair`, `far`, `foundation`
+- **And 140+ more...**
+
+### 🔧 How It Works
+
+1. **Default Theme**: `tokyo-night-dark` is included in the main CSS bundle (391KB)
+2. **Dynamic Loading**: When a different theme is specified, it's loaded from `assets/highlight-themes/`
+3. **Smart Caching**: Themes are copied during build process for optimal NPM distribution
+4. **CSS Compatibility**: All dark mode CSS conflicts have been resolved using advanced selectors
+5. **Fallback Support**: Graceful fallback to default theme if loading fails
+
+### 💡 Migration from v3.x
+
+If you were using a custom highlight.js theme in v3.x:
+1. Remove any custom CSS imports
+2. Add `"highlightTheme": "your-theme-name"` to `apidoc.json`
+3. Rebuild your documentation
+
+The new system is more efficient and handles theme conflicts automatically.
+
+### 🐛 Troubleshooting
+
+**Theme not loading?**
+- Ensure the theme name matches exactly (case-sensitive)
+- Check browser console for loading errors
+- Verify theme exists in `assets/highlight-themes/` directory
+
+**Colors not showing in dark mode?**
+- This was a known issue in early v4.0 versions, now completely fixed
+- All 160+ themes work perfectly in both light and dark modes
 
 ## 🔗 Links
 

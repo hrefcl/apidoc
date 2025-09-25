@@ -28,8 +28,8 @@ import { initSampleRequest } from './send_sample_request';
 import { register } from './hb_helpers';
 
 // Native Components
-import { SidebarComponent } from './components/sidebar';
 import AuthManager from './components/auth';
+import { SidebarComponent } from './components/sidebar';
 
 // API data - injected globally via script tag
 declare global {
@@ -142,9 +142,7 @@ function initializeNavbarLogo() {
         // Get logo configuration from API_PROJECT
         let logoConfig: any = {};
         if (typeof window.API_PROJECT !== 'undefined') {
-            const project = typeof window.API_PROJECT === 'string'
-                ? JSON.parse(window.API_PROJECT)
-                : window.API_PROJECT;
+            const project = typeof window.API_PROJECT === 'string' ? JSON.parse(window.API_PROJECT) : window.API_PROJECT;
             logoConfig = project.logo || {};
         }
 
@@ -198,16 +196,14 @@ function initializeHighlightTheme() {
         console.log('🎨 Initializing dynamic highlight.js theme system...');
 
         // Get highlight theme configuration from API_PROJECT
-        let highlightTheme = 'androidstudio'; // Default theme
+        let highlightTheme = 'tokyo-night-dark'; // Default theme
         if (typeof window.API_PROJECT !== 'undefined') {
-            const project = typeof window.API_PROJECT === 'string'
-                ? JSON.parse(window.API_PROJECT)
-                : window.API_PROJECT;
+            const project = typeof window.API_PROJECT === 'string' ? JSON.parse(window.API_PROJECT) : window.API_PROJECT;
             highlightTheme = project.highlightTheme || highlightTheme;
         }
 
         // Load the theme if it's not the default (default is already in bundle.css)
-        if (highlightTheme !== 'androidstudio') {
+        if (highlightTheme !== 'tokyo-night-dark') {
             loadHighlightTheme(highlightTheme);
         }
 
@@ -279,7 +275,7 @@ function init() {
     const apiProject = typeof window.API_PROJECT === 'string' ? JSON.parse(window.API_PROJECT) : window.API_PROJECT || {};
 
     // Validate and clean API data to prevent version errors
-    api = api.filter(entry => {
+    api = api.filter((entry) => {
         if (!entry.version || typeof entry.version !== 'string' || entry.version.trim() === '') {
             console.warn('Filtering out API entry with invalid version:', entry.name || 'unknown', 'version:', entry.version);
             return false;
@@ -1679,7 +1675,6 @@ function initBootstrapDropdowns() {
 
         // Custom event handlers for specific functionality
         initCustomDropdownHandlers();
-
     } catch (error) {
         console.error('Error initializing Bootstrap 5 components:', error);
         // Fallback to manual implementation
