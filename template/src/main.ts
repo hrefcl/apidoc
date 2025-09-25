@@ -510,31 +510,67 @@ function init() {
     // remove loader
     $('#loader').remove();
 
-    // render sidenav - Only use native SidebarComponent (no fallback)
+    // render sidenav - Enhanced error handling and debugging
     try {
+        console.log('🔄 Starting sidebar initialization...');
+
         const sidenavContainer = document.getElementById('sidenav');
         if (!sidenavContainer) {
             throw new Error('Sidenav container not found in DOM');
         }
+        console.log('✅ Sidenav container found');
 
-        if (!SidebarComponent) {
-            throw new Error('SidebarComponent not available');
+        if (typeof SidebarComponent === 'undefined') {
+            throw new Error('SidebarComponent class not available');
+        }
+        console.log('✅ SidebarComponent class available');
+
+        if (!nav || !Array.isArray(nav) || nav.length === 0) {
+            console.warn('⚠️ Navigation data is empty or invalid:', nav);
+        } else {
+            console.log('✅ Navigation data valid, items:', nav.length);
         }
 
         // Initialize native sidebar component
         const sidebar = new SidebarComponent(sidenavContainer);
+        console.log('✅ SidebarComponent instance created');
+
         sidebar.setData(nav);
         console.log('✅ Native SidebarComponent initialized successfully');
+
+        // Verify sidebar content was rendered
+        setTimeout(() => {
+            const sidebarContent = sidenavContainer.innerHTML;
+            if (!sidebarContent || sidebarContent.trim() === '') {
+                console.error('❌ Sidebar content is empty after initialization');
+            } else {
+                console.log('✅ Sidebar content rendered successfully');
+            }
+        }, 100);
+
     } catch (error) {
         console.error('❌ Critical error: SidebarComponent failed to initialize:', error);
+        console.error('❌ Error details:', {
+            message: error.message,
+            stack: error.stack,
+            sidebarAvailable: typeof SidebarComponent !== 'undefined',
+            navData: nav
+        });
+
         const sidenavContainer = document.getElementById('sidenav');
         if (sidenavContainer) {
             sidenavContainer.innerHTML = `
-        <div class="sidebar-error">
-          <p>⚠️ Error cargando navegación</p>
-          <p>Por favor recarga la página</p>
+        <div class="sidebar-error p-4 text-center">
+          <p class="text-red-600 dark:text-red-400 font-medium">⚠️ Error cargando navegación</p>
+          <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Error: ${error.message}</p>
+          <button onclick="location.reload()" class="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            Recargar página
+          </button>
         </div>`;
         }
+
+        // Continue execution even if sidebar fails - don't block other components
+        console.log('🔄 Continuing with other component initialization...');
     }
 
     // render Generator

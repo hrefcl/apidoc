@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sidebar Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .error { color: red; padding: 10px; background: #fee; }
+        .success { color: green; padding: 10px; background: #efe; }
+        #sidenav { width: 300px; height: 500px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Sidebar Component Test</h1>
+    <div id="result"></div>
+    <div id="sidenav"></div>
+
+    <script>
+        // Simulate the global data that would be available
+        window.API_DATA = JSON.stringify([
+            {
+                "group": "Authentication",
+                "name": "LoginUser",
+                "title": "User Authentication",
+                "type": "post"
+            },
+            {
+                "group": "Category",
+                "name": "GetCategory",
+                "title": "Get a category",
+                "type": "get"
+            }
+        ]);
+
+        window.API_PROJECT = JSON.stringify({
+            "name": "Test API",
+            "version": "1.0.0"
+        });
+
+        // Test script loading
+        const script = document.createElement('script');
+        script.src = 'test-output/assets/main.bundle.js';
+        script.onload = function() {
+            document.getElementById('result').innerHTML = '<div class="success">✅ Script loaded successfully</div>';
+
+            // Wait a moment for initialization
+            setTimeout(function() {
+                const sidenavContent = document.getElementById('sidenav').innerHTML;
+                if (sidenavContent && sidenavContent.trim()) {
+                    document.getElementById('result').innerHTML += '<div class="success">✅ Sidebar content rendered</div>';
+                } else {
+                    document.getElementById('result').innerHTML += '<div class="error">❌ Sidebar content is empty</div>';
+                }
+            }, 1000);
+        };
+
+        script.onerror = function() {
+            document.getElementById('result').innerHTML = '<div class="error">❌ Failed to load script</div>';
+        };
+
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>

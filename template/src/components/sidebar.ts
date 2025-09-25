@@ -309,7 +309,11 @@ export class SidebarComponent {
   }
 
   private render() {
+    console.log('🔄 SidebarComponent.render() called');
+    console.log('📊 Navigation data:', this.navData);
+
     if (!this.navData || !Array.isArray(this.navData)) {
+      console.warn('⚠️ Invalid navigation data, showing loading state');
       this.container.innerHTML = `
         <div class="h-full flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
           ${this.createSidebarHeader()}
@@ -320,38 +324,62 @@ export class SidebarComponent {
       return;
     }
 
+    try {
+      console.log('🔄 Processing navigation data...');
+
     let navItemsHtml = '';
     let needsClose = false;
 
-    this.navData.forEach((item, index) => {
-      if (item.isHeader) {
-        // Cerrar grupo anterior si existe
-        if (needsClose) {
-          navItemsHtml += this.closeGroupHtml();
+      this.navData.forEach((item, index) => {
+        if (item.isHeader) {
+          // Cerrar grupo anterior si existe
+          if (needsClose) {
+            navItemsHtml += this.closeGroupHtml();
+          }
+
+          navItemsHtml += this.createNavItemHtml(item);
+          needsClose = true;
+        } else {
+          navItemsHtml += this.createNavItemHtml(item);
         }
 
-        navItemsHtml += this.createNavItemHtml(item);
-        needsClose = true;
-      } else {
-        navItemsHtml += this.createNavItemHtml(item);
-      }
+        // Cerrar el último grupo si es necesario
+        if (index === this.navData.length - 1 && needsClose) {
+          navItemsHtml += this.closeGroupHtml();
+        }
+      });
 
-      // Cerrar el último grupo si es necesario
-      if (index === this.navData.length - 1 && needsClose) {
-        navItemsHtml += this.closeGroupHtml();
-      }
-    });
+      console.log('✅ Navigation HTML generated successfully');
 
-    this.container.innerHTML = `
-      <div class="h-full flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
-        ${this.createSidebarHeader()}
-        <nav aria-label="Main" class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-          ${navItemsHtml}
-        </nav>
-      </div>`;
+      this.container.innerHTML = `
+        <div class="h-full flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
+          ${this.createSidebarHeader()}
+          <nav aria-label="Main" class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+            ${navItemsHtml}
+          </nav>
+        </div>`;
 
-    this.attachEventListeners();
-    this.updateVisibility();
+      console.log('✅ Sidebar HTML injected to container');
+
+      this.attachEventListeners();
+      console.log('✅ Event listeners attached');
+
+      this.updateVisibility();
+      console.log('✅ Visibility updated');
+
+    } catch (error) {
+      console.error('❌ Error during sidebar render:', error);
+      this.container.innerHTML = `
+        <div class="h-full flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
+          ${this.createSidebarHeader()}
+          <nav aria-label="Main" class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+            <div class="sidebar-error text-red-500 dark:text-red-400 text-center py-4">
+              <p>❌ Error renderizando navegación</p>
+              <p class="text-sm mt-2">${error.message}</p>
+            </div>
+          </nav>
+        </div>`;
+    }
   }
 
   private attachEventListeners() {

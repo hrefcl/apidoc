@@ -166,6 +166,5 @@
     "README.md"
   ],
   "publishConfig": {
-    "provenance": true
   }
 }
