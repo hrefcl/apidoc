@@ -8,16 +8,16 @@
  * @example OpenAPI operation definition
  * ```javascript
  * /**
- *  * @openapi-operation
- *  * summary: Create a new user
- *  * description: Creates a new user account with the provided information
- *  * operationId: createUser
- *  * tags:
- *  *   - Users
- *  * requestBody:
- *  *   required: true
- *  *   content:
- *  *     application/json:
+ *  @openapi-operation
+ *  summary: Create a new user
+ *  description: Creates a new user account with the provided information
+ *  operationId: createUser
+ *  tags:
+ *  - Users
+ *  requestBody:
+ *  required: true
+ *  content:
+ *  application/json:
  *  *       schema:
  *  *         $ref: '#/components/schemas/CreateUserRequest'
  *  * responses:
@@ -37,13 +37,13 @@ const DEFAULT_OPENAPI_VERSION = '4.0.0';
 
 // APIDoc-compatible result structure
 interface ApiDocCompatibleResult {
-    type?: string;        // Operation type identifier
-    name?: string;        // Operation ID or generated name
-    title?: string;       // Operation summary
-    group?: string;       // Group name (from tags)
+    type?: string; // Operation type identifier
+    name?: string; // Operation ID or generated name
+    title?: string; // Operation summary
+    group?: string; // Group name (from tags)
     description?: string; // Operation description
-    version?: string;     // API version
-    openapi?: any;        // Full OpenAPI data for advanced processing
+    version?: string; // API version
+    openapi?: any; // Full OpenAPI data for advanced processing
 }
 
 /**
@@ -76,7 +76,6 @@ export function parse(content: string): ApiDocCompatibleResult | null {
         }
 
         return processOperationDefinition(operationDef);
-
     } catch (error) {
         console.warn(`[OpenAPI Operation Parser] Failed to parse content: ${error.message}`);
         return null;
@@ -95,7 +94,7 @@ function processOperationDefinition(operation: any): ApiDocCompatibleResult {
         title: operation.summary || name,
         description: operation.description || '',
         version: extractVersionFromOperation(operation) || DEFAULT_OPENAPI_VERSION || '4.0.0',
-        openapi: operation
+        openapi: operation,
     };
 
     // Convert OpenAPI tags to APIDoc group
@@ -137,7 +136,7 @@ function extractParameterInfo(operation: any): {
         hasQueryParams: false,
         hasHeaderParams: false,
         hasCookieParams: false,
-        hasRequestBody: false
+        hasRequestBody: false,
     };
 
     if (operation.parameters) {
@@ -196,7 +195,7 @@ function validateOperation(operation: any): { valid: boolean; errors: string[] }
 
     return {
         valid: errors.length === 0,
-        errors
+        errors,
     };
 }
 

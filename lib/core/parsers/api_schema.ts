@@ -1,5 +1,5 @@
 /**
- * @fileoverview Parser for @apiSchema tags - handles API schema documentation
+ * @file Parser for @apiSchema tags - handles API schema documentation
  *
  * @description This parser processes @apiSchema tags to extract schema definitions including:
  * - TypeScript interfaces from .ts files
@@ -12,10 +12,10 @@
  * ```typescript
  * // In your API documentation:
  * /**
- *  * @apiSchema {interface=UserProfile} apiSuccess
- *  * @apiSchema (Body) {interface=CreateUser} apiParam
- *  * @apiSchema {jsonschema=./schemas/user.json} apiParam
- *  *\/
+ *  @apiSchema {interface=UserProfile} apiSuccess
+ *  @apiSchema (Body) {interface=CreateUser} apiParam
+ *  @apiSchema {jsonschema=./schemas/user.json} apiParam
+ *  \/
  * ```
  *
  * @author hrefcl
@@ -25,15 +25,15 @@
 
 import fs from 'fs';
 import path from 'path';
-import unindent from '../utils/unindent';
 import { findInterface, interfaceToApiDocElements } from '../utils/typescript-parser';
 
 /**
  * Current schema group being processed
+ *
  * @internal
  * @deprecated This global variable is maintained for legacy compatibility but not actively used
  */
-let group = '';
+const group = '';
 
 /**
  * Parses TypeScript interface definitions and converts them to APIDoc elements
@@ -67,63 +67,63 @@ let group = '';
  * // ]
  * ```
  *
- * @internal This function is used internally by the processor
+ * @internal
  * @since 4.0.0
  */
 function parseTypeScriptInterface(interfaceContent: string, interfaceName: string): Array<any> {
-  const elements: Array<any> = [];
+    const elements: Array<any> = [];
 
-  // Remove interface declaration and braces
-  const cleanContent = interfaceContent
-    .replace(new RegExp(`interface\\s+${interfaceName}\\s*\\{`), '')
-    .replace(/\}$/, '')
-    .trim();
+    // Remove interface declaration and braces
+    const cleanContent = interfaceContent
+        .replace(new RegExp(`interface\\s+${interfaceName}\\s*\\{`), '')
+        .replace(/\}$/, '')
+        .trim();
 
-  // Split by lines and parse each property
-  const lines = cleanContent.split('\n');
+    // Split by lines and parse each property
+    const lines = cleanContent.split('\n');
 
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('*')) continue;
+    for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('*')) continue;
 
-    // Parse property: name?: type; or name: type;
-    const propertyMatch = trimmed.match(/^(\w+)(\?)?:\s*(.+?);?\s*(?:\/\/.*)?$/);
-    if (propertyMatch) {
-      const [, propertyName, isOptional, typeDefinition] = propertyMatch;
+        // Parse property: name?: type; or name: type;
+        const propertyMatch = trimmed.match(/^(\w+)(\?)?:\s*(.+?);?\s*(?:\/\/.*)?$/);
+        if (propertyMatch) {
+            const [, propertyName, isOptional, typeDefinition] = propertyMatch;
 
-      // Parse type information
-      const typeInfo = parseTypeScriptType(typeDefinition);
+            // Parse type information
+            const typeInfo = parseTypeScriptType(typeDefinition);
 
-      // Create field name with optional brackets
-      const fieldName = isOptional ? `[${propertyName}]` : propertyName;
+            // Create field name with optional brackets
+            const fieldName = isOptional ? `[${propertyName}]` : propertyName;
 
-      // Generate description from property name (convert camelCase)
-      const description = propertyName.replace(/([A-Z])/g, ' $1').toLowerCase();
+            // Generate description from property name (convert camelCase)
+            const description = propertyName.replace(/([A-Z])/g, ' $1').toLowerCase();
 
-      elements.push({
-        source: `@apiParam {${typeInfo.type}} ${fieldName} ${description}`,
-        name: 'apiparam',
-        sourceName: 'apiParam',
-        content: `{${typeInfo.type}} ${fieldName} ${description}`
-      });
+            elements.push({
+                source: `@apiParam {${typeInfo.type}} ${fieldName} ${description}`,
+                name: 'apiparam',
+                sourceName: 'apiParam',
+                content: `{${typeInfo.type}} ${fieldName} ${description}`,
+            });
+        }
+
+        // Handle nested objects and arrays
+        const nestedMatch = trimmed.match(/^(\w+)(\?)?:\s*\{/);
+        if (nestedMatch) {
+            const [, propertyName, isOptional] = nestedMatch;
+            const fieldName = isOptional ? `[${propertyName}]` : propertyName;
+
+            elements.push({
+                source: `@apiParam {Object} ${fieldName} ${propertyName} object`,
+                name: 'apiparam',
+                sourceName: 'apiParam',
+                content: `{Object} ${fieldName} ${propertyName} object`,
+            });
+        }
     }
 
-    // Handle nested objects and arrays
-    const nestedMatch = trimmed.match(/^(\w+)(\?)?:\s*\{/);
-    if (nestedMatch) {
-      const [, propertyName, isOptional] = nestedMatch;
-      const fieldName = isOptional ? `[${propertyName}]` : propertyName;
-
-      elements.push({
-        source: `@apiParam {Object} ${fieldName} ${propertyName} object`,
-        name: 'apiparam',
-        sourceName: 'apiParam',
-        content: `{Object} ${fieldName} ${propertyName} object`
-      });
-    }
-  }
-
-  return elements;
+    return elements;
 }
 
 /**
@@ -161,53 +161,53 @@ function parseTypeScriptInterface(interfaceContent: string, interfaceName: strin
  * parseTypeScriptType('string | number') // { type: 'String/Number' }
  * ```
  *
- * @internal Used internally by parseTypeScriptInterface
+ * @internal
  * @since 4.0.0
  */
 function parseTypeScriptType(typeDefinition: string): { type: string; constraints?: string } {
-  const type = typeDefinition.trim();
+    const type = typeDefinition.trim();
 
-  // Handle basic types
-  if (type === 'string') return { type: 'String' };
-  if (type === 'number') return { type: 'Number' };
-  if (type === 'boolean') return { type: 'Boolean' };
-  if (type === 'any') return { type: 'Mixed' };
+    // Handle basic types
+    if (type === 'string') return { type: 'String' };
+    if (type === 'number') return { type: 'Number' };
+    if (type === 'boolean') return { type: 'Boolean' };
+    if (type === 'any') return { type: 'Mixed' };
 
-  // Handle arrays
-  if (type.endsWith('[]')) {
-    const baseType = parseTypeScriptType(type.slice(0, -2));
-    return { type: `${baseType.type}[]` };
-  }
-
-  if (type.startsWith('Array<') && type.endsWith('>')) {
-    const innerType = type.slice(6, -1);
-    const baseType = parseTypeScriptType(innerType);
-    return { type: `${baseType.type}[]` };
-  }
-
-  // Handle union types
-  if (type.includes('|')) {
-    const types = type.split('|').map(t => t.trim());
-    const mappedTypes = types.map(t => parseTypeScriptType(t).type);
-    return { type: mappedTypes.join('/') };
-  }
-
-  // Handle generic types
-  if (type.includes('<')) {
-    const baseType = type.split('<')[0];
-    return parseTypeScriptType(baseType);
-  }
-
-  // Handle string literals
-  if (type.includes('"') || type.includes("'")) {
-    const values = type.match(/["']([^"']+)["']/g);
-    if (values) {
-      return { type: `String=${values.join(',')}` };
+    // Handle arrays
+    if (type.endsWith('[]')) {
+        const baseType = parseTypeScriptType(type.slice(0, -2));
+        return { type: `${baseType.type}[]` };
     }
-  }
 
-  // Default to Object for unknown types
-  return { type: 'Object' };
+    if (type.startsWith('Array<') && type.endsWith('>')) {
+        const innerType = type.slice(6, -1);
+        const baseType = parseTypeScriptType(innerType);
+        return { type: `${baseType.type}[]` };
+    }
+
+    // Handle union types
+    if (type.includes('|')) {
+        const types = type.split('|').map((t) => t.trim());
+        const mappedTypes = types.map((t) => parseTypeScriptType(t).type);
+        return { type: mappedTypes.join('/') };
+    }
+
+    // Handle generic types
+    if (type.includes('<')) {
+        const baseType = type.split('<')[0];
+        return parseTypeScriptType(baseType);
+    }
+
+    // Handle string literals
+    if (type.includes('"') || type.includes("'")) {
+        const values = type.match(/["']([^"']+)["']/g);
+        if (values) {
+            return { type: `String=${values.join(',')}` };
+        }
+    }
+
+    // Default to Object for unknown types
+    return { type: 'Object' };
 }
 
 /**
@@ -239,33 +239,33 @@ function parseTypeScriptType(typeDefinition: string): { type: string; constraint
  *
  * @throws Will log warning if schema file cannot be read or parsed
  *
- * @public This function is part of the public @apiSchema API
+ * @public
  * @since 4.0.0
  */
 function parseJsonSchema(schemaPath: string, relativeTo: string): Array<any> {
-  const elements: Array<any> = [];
+    const elements: Array<any> = [];
 
-  try {
-    const fullPath = path.resolve(path.dirname(relativeTo), schemaPath);
-    const schemaContent = fs.readFileSync(fullPath, 'utf8');
-    const schema = JSON.parse(schemaContent);
+    try {
+        const fullPath = path.resolve(path.dirname(relativeTo), schemaPath);
+        const schemaContent = fs.readFileSync(fullPath, 'utf8');
+        const schema = JSON.parse(schemaContent);
 
-    // Use simplified traversal for now
-    const params = traverseJsonSchema(schema);
+        // Use simplified traversal for now
+        const params = traverseJsonSchema(schema);
 
-    for (const [field, definition] of Object.entries(params)) {
-      elements.push({
-        source: `@apiParam ${definition}`,
-        name: 'apiparam',
-        sourceName: 'apiParam',
-        content: definition
-      });
+        for (const [field, definition] of Object.entries(params)) {
+            elements.push({
+                source: `@apiParam ${definition}`,
+                name: 'apiparam',
+                sourceName: 'apiParam',
+                content: definition,
+            });
+        }
+    } catch (error) {
+        console.warn(`Warning: Could not parse JSON schema at ${schemaPath}:`, error.message);
     }
-  } catch (error) {
-    console.warn(`Warning: Could not parse JSON schema at ${schemaPath}:`, error.message);
-  }
 
-  return elements;
+    return elements;
 }
 
 /**
@@ -326,33 +326,33 @@ function parseJsonSchema(schemaPath: string, relativeTo: string): Array<any> {
  * // }
  * ```
  *
- * @internal This function is used internally by parseJsonSchema for recursive processing
+ * @internal
  * @since 4.0.0
  */
 function traverseJsonSchema(schema: any, prefix = ''): Record<string, string> {
-  const params: Record<string, string> = {};
+    const params: Record<string, string> = {};
 
-  if (schema.type === 'object' && schema.properties) {
-    for (const [key, prop] of Object.entries(schema.properties)) {
-      const fieldName = prefix ? `${prefix}.${key}` : key;
-      const isRequired = schema.required?.includes(key);
-      const field = isRequired ? fieldName : `[${fieldName}]`;
+    if (schema.type === 'object' && schema.properties) {
+        for (const [key, prop] of Object.entries(schema.properties)) {
+            const fieldName = prefix ? `${prefix}.${key}` : key;
+            const isRequired = schema.required?.includes(key);
+            const field = isRequired ? fieldName : `[${fieldName}]`;
 
-      const propSchema = prop as any;
-      const type = getJsonSchemaType(propSchema);
-      const description = propSchema.description || '';
+            const propSchema = prop as any;
+            const type = getJsonSchemaType(propSchema);
+            const description = propSchema.description || '';
 
-      params[fieldName] = `{${type}} ${field} ${description}`;
+            params[fieldName] = `{${type}} ${field} ${description}`;
 
-      // Handle nested objects
-      if (propSchema.type === 'object' && propSchema.properties) {
-        const nested = traverseJsonSchema(propSchema, fieldName);
-        Object.assign(params, nested);
-      }
+            // Handle nested objects
+            if (propSchema.type === 'object' && propSchema.properties) {
+                const nested = traverseJsonSchema(propSchema, fieldName);
+                Object.assign(params, nested);
+            }
+        }
     }
-  }
 
-  return params;
+    return params;
 }
 
 /**
@@ -397,23 +397,23 @@ function traverseJsonSchema(schema: any, prefix = ''): Record<string, string> {
  * getJsonSchemaType({})                     // Returns: 'Mixed' (unknown type)
  * ```
  *
- * @internal This function is used internally by traverseJsonSchema for type conversion
+ * @internal
  * @since 4.0.0
  */
 function getJsonSchemaType(schema: any): string {
-  if (schema.type === 'string') return 'String';
-  if (schema.type === 'number' || schema.type === 'integer') return 'Number';
-  if (schema.type === 'boolean') return 'Boolean';
-  if (schema.type === 'array') {
-    if (schema.items) {
-      const itemType = getJsonSchemaType(schema.items);
-      return `${itemType}[]`;
+    if (schema.type === 'string') return 'String';
+    if (schema.type === 'number' || schema.type === 'integer') return 'Number';
+    if (schema.type === 'boolean') return 'Boolean';
+    if (schema.type === 'array') {
+        if (schema.items) {
+            const itemType = getJsonSchemaType(schema.items);
+            return `${itemType}[]`;
+        }
+        return 'Array';
     }
-    return 'Array';
-  }
-  if (schema.type === 'object') return 'Object';
+    if (schema.type === 'object') return 'Object';
 
-  return 'Mixed';
+    return 'Mixed';
 }
 
 /**
@@ -456,40 +456,40 @@ function getJsonSchemaType(schema: any): string {
  *
  * @returns null for invalid syntax, multiline content, or commented content
  *
- * @public This function is part of the @apiSchema tag parsing API
+ * @public
  * @since 4.0.0
  */
 function parse(content: string, source: string): any {
-  const trimmedContent = content.trim();
+    const trimmedContent = content.trim();
 
-  if (trimmedContent.length === 0) {
-    return null;
-  }
+    if (trimmedContent.length === 0) {
+        return null;
+    }
 
-  // Skip if content contains commented-out lines or multiple lines
-  if (trimmedContent.includes('\n') || trimmedContent.includes('//')) {
-    return null;
-  }
+    // Skip if content contains commented-out lines or multiple lines
+    if (trimmedContent.includes('\n') || trimmedContent.includes('//')) {
+        return null;
+    }
 
-  // Skip if content doesn't look like a valid @apiSchema pattern
-  if (!trimmedContent.includes('{') || !trimmedContent.includes('=') || !trimmedContent.includes('}')) {
-    return null;
-  }
+    // Skip if content doesn't look like a valid @apiSchema pattern
+    if (!trimmedContent.includes('{') || !trimmedContent.includes('=') || !trimmedContent.includes('}')) {
+        return null;
+    }
 
-  // Parse: @apiSchema (optional group) {type=value} element
-  const parseRegExp = /^(?:\((.+?)\))?\s*\{(.+?)=(.+?)\}\s*(?:(.+?))?$/;
-  const matches = parseRegExp.exec(trimmedContent);
+    // Parse: @apiSchema (optional group) {type=value} element
+    const parseRegExp = /^(?:\((.+?)\))?\s*\{(.+?)=(.+?)\}\s*(?:(.+?))?$/;
+    const matches = parseRegExp.exec(trimmedContent);
 
-  if (!matches) {
-    return null;
-  }
+    if (!matches) {
+        return null;
+    }
 
-  return {
-    group: matches[1] || '',
-    schemaType: matches[2],
-    schemaValue: matches[3],
-    element: matches[4] || 'apiParam'
-  };
+    return {
+        group: matches[1] || '',
+        schemaType: matches[2],
+        schemaValue: matches[3],
+        element: matches[4] || 'apiParam',
+    };
 }
 
 /**
@@ -547,80 +547,75 @@ function parse(content: string, source: string): any {
  * ```
  *
  * @hook This function is registered as a 'parser-find-elements' hook with priority 200
- * @public This function is part of the APIDoc parser hook system
+ * @public
  * @since 4.0.0
  */
 function processor(elements: Array<any>, element: any, block: any, filename: string): Array<any> {
-  if (element.name !== 'apischema') {
+    if (element.name !== 'apischema') {
+        return elements;
+    }
+
+    // Remove the @apiSchema element from processing
+    elements.pop();
+
+    const parsed = parse(element.content, element.source);
+    if (!parsed) {
+        // Only warn for content that looks like it should be a valid @apiSchema but failed to parse
+        if (element.content.includes('{') && element.content.includes('=') && element.content.includes('}')) {
+            console.warn(`Warning: Could not parse @apiSchema: ${element.content}`);
+        }
+        return elements;
+    }
+
+    let newElements: Array<any> = [];
+
+    if (parsed.schemaType === 'interface') {
+        // Handle TypeScript interface
+        const interfaceName = parsed.schemaValue;
+
+        // Find interface definition
+        const interfaceDefinition = findInterface(interfaceName, filename);
+
+        if (interfaceDefinition) {
+            newElements = interfaceToApiDocElements(interfaceDefinition, parsed.element, parsed.group);
+        } else {
+            console.warn(`Warning: Could not find TypeScript interface '${interfaceName}' in source files`);
+
+            // Fallback: generate basic documentation
+            const groupPrefix = parsed.group ? `(${parsed.group}) ` : '';
+            newElements.push({
+                source: `@${parsed.element} ${groupPrefix}{Object} data ${interfaceName} interface`,
+                name: parsed.element.toLowerCase(),
+                sourceName: parsed.element,
+                content: `${groupPrefix}{Object} data ${interfaceName} interface`,
+            });
+        }
+    } else if (parsed.schemaType === 'jsonschema') {
+        // Handle JSON Schema file
+        newElements = parseJsonSchema(parsed.schemaValue, filename);
+
+        // Update element names if not apiParam
+        if (parsed.element !== 'apiParam') {
+            newElements.forEach((el) => {
+                el.name = parsed.element.toLowerCase();
+                el.sourceName = parsed.element;
+                el.source = el.source.replace('@apiParam', `@${parsed.element}`);
+            });
+        }
+    }
+
+    // Add group information for JSON Schema only (TypeScript interfaces handle groups internally)
+    if (parsed.group && parsed.schemaType === 'jsonschema') {
+        newElements.forEach((el) => {
+            el.content = `(${parsed.group}) ${el.content}`;
+            el.source = el.source.replace(`{`, `(${parsed.group}) {`);
+        });
+    }
+
+    // Add new elements to the list
+    newElements.forEach((el) => elements.push(el));
+
     return elements;
-  }
-
-  // Remove the @apiSchema element from processing
-  elements.pop();
-
-  const parsed = parse(element.content, element.source);
-  if (!parsed) {
-    // Only warn for content that looks like it should be a valid @apiSchema but failed to parse
-    if (element.content.includes('{') && element.content.includes('=') && element.content.includes('}')) {
-      console.warn(`Warning: Could not parse @apiSchema: ${element.content}`);
-    }
-    return elements;
-  }
-
-  let newElements: Array<any> = [];
-
-  if (parsed.schemaType === 'interface') {
-    // Handle TypeScript interface
-    const interfaceName = parsed.schemaValue;
-
-    // Find interface definition
-    const interfaceDefinition = findInterface(interfaceName, filename);
-
-    if (interfaceDefinition) {
-      newElements = interfaceToApiDocElements(
-        interfaceDefinition,
-        parsed.element,
-        parsed.group
-      );
-    } else {
-      console.warn(`Warning: Could not find TypeScript interface '${interfaceName}' in source files`);
-
-      // Fallback: generate basic documentation
-      const groupPrefix = parsed.group ? `(${parsed.group}) ` : '';
-      newElements.push({
-        source: `@${parsed.element} ${groupPrefix}{Object} data ${interfaceName} interface`,
-        name: parsed.element.toLowerCase(),
-        sourceName: parsed.element,
-        content: `${groupPrefix}{Object} data ${interfaceName} interface`
-      });
-    }
-
-  } else if (parsed.schemaType === 'jsonschema') {
-    // Handle JSON Schema file
-    newElements = parseJsonSchema(parsed.schemaValue, filename);
-
-    // Update element names if not apiParam
-    if (parsed.element !== 'apiParam') {
-      newElements.forEach(el => {
-        el.name = parsed.element.toLowerCase();
-        el.sourceName = parsed.element;
-        el.source = el.source.replace('@apiParam', `@${parsed.element}`);
-      });
-    }
-  }
-
-  // Add group information for JSON Schema only (TypeScript interfaces handle groups internally)
-  if (parsed.group && parsed.schemaType === 'jsonschema') {
-    newElements.forEach(el => {
-      el.content = `(${parsed.group}) ${el.content}`;
-      el.source = el.source.replace(`{`, `(${parsed.group}) {`);
-    });
-  }
-
-  // Add new elements to the list
-  newElements.forEach(el => elements.push(el));
-
-  return elements;
 }
 
 /**
@@ -641,18 +636,18 @@ function processor(elements: Array<any>, element: any, block: any, filename: str
  *
  * @hook Registers processor function with 'parser-find-elements' event at priority 200
  * @priority 200 - Runs after basic element parsing but before final processing
- * @public This function is called automatically during parser module loading
+ * @public
  * @since 4.0.0
  */
 function init(app: any) {
-  app.addHook('parser-find-elements', processor, 200);
+    app.addHook('parser-find-elements', processor, 200);
 }
 
 export default {
-  parse,
-  path: 'local',
-  method: 'push',
-  markdownFields: [],
-  markdownRemoveFields: [],
-  init
+    parse,
+    path: 'local',
+    method: 'push',
+    markdownFields: [],
+    markdownRemoveFields: [],
+    init,
 };

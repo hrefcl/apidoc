@@ -693,7 +693,8 @@ Parser.prototype.findElements = function (block, filename) {
     block = block.replace(/\n/g, '\uffff');
 
     // Elements start with @api or @openapi (at beginning of comment line, not in text)
-    const elementsRegExp = /((?:^|\uffff)[\s*]*@(api\w*|openapi(?:-\w+)?)(?:\s*([\s\S]*?))?(?=\uffff[\s*]*@(?:api|openapi)|\*\/|$))/gm;
+    const elementsRegExp =
+        /((?:^|\uffff)[\s*]*@(api\w*|openapi(?:-\w+)?)(?:\s*([\s\S]*?))?(?=\uffff[\s*]*@(?:api|openapi)|\*\/|$))/gm;
     let matches = elementsRegExp.exec(block);
     while (matches) {
         const element = {

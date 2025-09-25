@@ -316,7 +316,9 @@ class Writer {
             this.log.debug(`API project length: ${JSON.stringify(this.api.project).length}`);
 
             // Load esbuild config
-            const esbuildConfig = require(this.path.resolve(this.path.join(this.opt.template, 'src', 'esbuild.config.js')));
+            const esbuildConfig = require(
+                this.path.resolve(this.path.join(this.opt.template, 'src', 'esbuild.config.js'))
+            );
 
             const buildOptions = {
                 ...esbuildConfig,
@@ -391,7 +393,9 @@ class Writer {
 
         // Check for StencilJS template first, fallback to regular template
         const stencilTemplate = this.path.join(this.opt.template, 'index-stencil.html');
-        const templateFile = this.fs.existsSync(stencilTemplate) ? stencilTemplate : this.path.join(this.opt.template, 'index.html');
+        const templateFile = this.fs.existsSync(stencilTemplate)
+            ? stencilTemplate
+            : this.path.join(this.opt.template, 'index.html');
 
         let indexHtml = this.fs.readFileSync(templateFile, 'utf8').toString();
 
@@ -423,7 +427,10 @@ class Writer {
     </script>`;
 
             // Insert data script before the bundle script - match actual cache-busted filename
-            const scriptReplaced = indexHtml.replace(/<script src="assets\/main\.bundle\.js[^"]*"><\/script>/, dataScript + '\n  $&');
+            const scriptReplaced = indexHtml.replace(
+                /<script src="assets\/main\.bundle\.js[^"]*"><\/script>/,
+                dataScript + '\n  $&'
+            );
 
             if (scriptReplaced === indexHtml) {
                 // Fallback: insert before closing body tag if script tag not found
@@ -439,7 +446,10 @@ class Writer {
     </script>`;
 
             // Insert data script before the bundle script - match actual cache-busted filename
-            const scriptReplaced = indexHtml.replace(/<script src="assets\/main\.bundle\.js[^"]*"><\/script>/, dataScript + '\n    $&');
+            const scriptReplaced = indexHtml.replace(
+                /<script src="assets\/main\.bundle\.js[^"]*"><\/script>/,
+                dataScript + '\n    $&'
+            );
 
             if (scriptReplaced === indexHtml) {
                 // Fallback: insert before closing body tag if script tag not found
@@ -546,14 +556,20 @@ class Writer {
             this.createDir(highlightThemesDir);
 
             // Find highlight.js styles directory
-            const highlightStylesPath = this.path.join(this.opt.template, '..', 'node_modules', 'highlight.js', 'styles');
+            const highlightStylesPath = this.path.join(
+                this.opt.template,
+                '..',
+                'node_modules',
+                'highlight.js',
+                'styles'
+            );
 
             if (this.fs.existsSync(highlightStylesPath)) {
                 // Copy all CSS theme files
-                const themeFiles = this.fs.readdirSync(highlightStylesPath).filter(file => file.endsWith('.css'));
+                const themeFiles = this.fs.readdirSync(highlightStylesPath).filter((file) => file.endsWith('.css'));
                 let copiedCount = 0;
 
-                themeFiles.forEach(themeFile => {
+                themeFiles.forEach((themeFile) => {
                     const sourcePath = this.path.join(highlightStylesPath, themeFile);
                     const destPath = this.path.join(highlightThemesDir, themeFile);
 

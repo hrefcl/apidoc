@@ -10,16 +10,16 @@
  * @example Basic OpenAPI path definition
  * ```javascript
  * /**
- *  * @openapi
- *  * /users/{id}:
- *  *   get:
- *  *     summary: Get user by ID
- *  *     tags: [Users]
- *  *     parameters:
- *  *       - name: id
- *  *         in: path
- *  *         required: true
- *  *         schema:
+ *  @openapi
+ *  /users/{id}:
+ *  get:
+ *  summary: Get user by ID
+ *  tags: [Users]
+ *  parameters:
+ *  - name: id
+ *  in: path
+ *  required: true
+ *  schema:
  *  *           type: integer
  *  *     responses:
  *  *       200:
@@ -31,8 +31,8 @@
  * @public
  */
 
-import * as YAML from 'js-yaml';
 import * as fs from 'fs';
+import * as YAML from 'js-yaml';
 import * as pathModule from 'path';
 
 /**
@@ -46,21 +46,22 @@ const DEFAULT_OPENAPI_VERSION = '4.0.0';
 
 // APIDoc-compatible result structure
 interface ApiDocCompatibleResult {
-    type?: string;        // HTTP method (get, post, etc.)
-    url?: string;         // API endpoint path
-    title?: string;       // Operation summary
-    name?: string;        // Operation ID or generated name
-    group?: string;       // Group name (from tags)
+    type?: string; // HTTP method (get, post, etc.)
+    url?: string; // API endpoint path
+    title?: string; // Operation summary
+    name?: string; // Operation ID or generated name
+    group?: string; // Group name (from tags)
     description?: string; // Operation description
-    version?: string;     // API version
-    openapi?: any;        // Full OpenAPI data for advanced processing
-    parameter?: any[];    // Parameters (path, query, header)
-    body?: any[];         // Request body fields
-    success?: any;        // Success response fields (array or structured object)
-    error?: any;          // Error response fields (array or structured object)
-    externalSource?: {    // Metadata for external file references
-        file: string;     // Path to external file
-        path: string;     // Specific path/operation within file
+    version?: string; // API version
+    openapi?: any; // Full OpenAPI data for advanced processing
+    parameter?: any[]; // Parameters (path, query, header)
+    body?: any[]; // Request body fields
+    success?: any; // Success response fields (array or structured object)
+    error?: any; // Error response fields (array or structured object)
+    externalSource?: {
+        // Metadata for external file references
+        file: string; // Path to external file
+        path: string; // Specific path/operation within file
     };
 }
 
@@ -120,13 +121,11 @@ function parse(content: string, filePath?: string): ApiDocCompatibleResult | nul
 
         const result = processOpenApiForApiDoc(parsedOpenApi, content);
         return result;
-
     } catch (error) {
         console.warn(`[OpenAPI Parser] Failed to parse content: ${error.message}`);
         return null;
     }
 }
-
 
 /**
  * Process OpenAPI content and convert to APIDoc-compatible format
@@ -135,7 +134,6 @@ function parse(content: string, filePath?: string): ApiDocCompatibleResult | nul
  * and converts it to the format expected by APIDoc's navigation system.
  */
 function processOpenApiForApiDoc(openapi: any, rawContent: string): ApiDocCompatibleResult | null {
-
     // Handle path definitions (most common case)
     if (openapi.paths || isPathDefinition(openapi)) {
         return extractFirstOperation(openapi.paths || openapi, openapi.components);
@@ -168,7 +166,7 @@ function extractFirstOperation(paths: any, components?: any): ApiDocCompatibleRe
 
     // Find the first HTTP method in the path
     const httpMethods = ['get', 'post', 'put', 'delete', 'patch', 'head', 'options', 'trace'];
-    const method = httpMethods.find(m => pathItem[m]);
+    const method = httpMethods.find((m) => pathItem[m]);
 
     if (!method) {
         return null;
@@ -183,7 +181,7 @@ function extractFirstOperation(paths: any, components?: any): ApiDocCompatibleRe
         name: operation.operationId || generateOperationName(method, firstPath),
         description: operation.description || '',
         version: extractVersionFromOperation(operation) || DEFAULT_OPENAPI_VERSION,
-        openapi: { paths: { [firstPath]: pathItem } }
+        openapi: { paths: { [firstPath]: pathItem } },
     };
 
     // Convert OpenAPI parameters to APIDoc format
@@ -203,16 +201,16 @@ function extractFirstOperation(paths: any, components?: any): ApiDocCompatibleRe
             // Convert to APIDoc expected structure: { fields: { "GroupName": [array] } }
             result.success = {
                 fields: {
-                    "Success 200": success
-                }
+                    'Success 200': success,
+                },
             };
         }
         if (error && error.length > 0) {
             // Convert to APIDoc expected structure: { fields: { "GroupName": [array] } }
             result.error = {
                 fields: {
-                    "Error 4xx": error
-                }
+                    'Error 4xx': error,
+                },
             };
         }
     }
@@ -238,7 +236,7 @@ function processStandaloneOperation(operation: any): ApiDocCompatibleResult {
         name: operation.operationId || 'OpenAPIOperation',
         description: operation.description || '',
         version: extractVersionFromOperation(operation) || DEFAULT_OPENAPI_VERSION,
-        openapi: operation
+        openapi: operation,
     };
 
     // Convert OpenAPI tags to APIDoc group
@@ -262,7 +260,7 @@ function createDocumentationEntry(openapi: any): ApiDocCompatibleResult {
         type: 'openapi-doc',
         group: 'OpenAPI_Documentation',
         version: extractVersionFromOpenAPI(openapi) || DEFAULT_OPENAPI_VERSION,
-        openapi: openapi
+        openapi: openapi,
     };
 
     if (openapi.info) {
@@ -304,8 +302,9 @@ function generateOperationName(method: string, path: string): string {
     // Convert path to camelCase operation name
     // e.g., GET /users/{id} -> getUsersId
     const cleanPath = path.replace(/[{}/:]/g, ' ').trim();
-    const words = cleanPath.split(/\s+/).filter(w => w.length > 0);
-    const camelCase = method.toLowerCase() + words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+    const words = cleanPath.split(/\s+/).filter((w) => w.length > 0);
+    const camelCase =
+        method.toLowerCase() + words.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
     return camelCase;
 }
 
@@ -364,7 +363,7 @@ function isPathDefinition(obj: any): boolean {
 
     // Check if keys look like paths (start with /)
     const keys = Object.keys(obj);
-    return keys.some(key => key.startsWith('/'));
+    return keys.some((key) => key.startsWith('/'));
 }
 
 /**
@@ -374,11 +373,13 @@ function isSchemaDefinition(obj: any): boolean {
     if (!obj || typeof obj !== 'object') return false;
 
     // Check for schema properties
-    return obj.type !== undefined ||
-           obj.properties !== undefined ||
-           obj.allOf !== undefined ||
-           obj.oneOf !== undefined ||
-           obj.anyOf !== undefined;
+    return (
+        obj.type !== undefined ||
+        obj.properties !== undefined ||
+        obj.allOf !== undefined ||
+        obj.oneOf !== undefined ||
+        obj.anyOf !== undefined
+    );
 }
 
 /**
@@ -388,23 +389,25 @@ function isOperationDefinition(obj: any): boolean {
     if (!obj || typeof obj !== 'object') return false;
 
     // Check for operation properties
-    return obj.responses !== undefined ||
-           obj.parameters !== undefined ||
-           obj.requestBody !== undefined ||
-           obj.operationId !== undefined;
+    return (
+        obj.responses !== undefined ||
+        obj.parameters !== undefined ||
+        obj.requestBody !== undefined ||
+        obj.operationId !== undefined
+    );
 }
 
 /**
  * Convert OpenAPI parameters to APIDoc parameter format
  */
 function convertParametersToApiDoc(parameters: any[]): any[] {
-    return parameters.map(param => ({
+    return parameters.map((param) => ({
         group: 'Parameter',
         type: getApiDocType(param.schema),
         optional: !param.required,
         field: param.name,
         description: param.description || '',
-        ...(param.schema?.example && { defaultValue: param.schema.example })
+        ...(param.schema?.example && { defaultValue: param.schema.example }),
     }));
 }
 
@@ -431,11 +434,11 @@ function convertRequestBodyToApiDoc(requestBody: any, components?: any): any[] {
 /**
  * Convert OpenAPI responses to APIDoc success/error format
  */
-function convertResponsesToApiDoc(responses: any, components?: any): { success: any[], error: any[] } {
+function convertResponsesToApiDoc(responses: any, components?: any): { success: any[]; error: any[] } {
     const success = [];
     const error = [];
 
-    Object.keys(responses).forEach(statusCode => {
+    Object.keys(responses).forEach((statusCode) => {
         const response = responses[statusCode];
         const isError = parseInt(statusCode) >= 400;
 
@@ -459,7 +462,7 @@ function convertResponsesToApiDoc(responses: any, components?: any): { success: 
                 type: 'Object',
                 field: `${statusCode}`,
                 description: response.description || '',
-                optional: false
+                optional: false,
             };
 
             if (isError) {
@@ -484,7 +487,7 @@ function extractSchemaFields(schema: any, contentType?: string, statusCode?: str
     const resolvedSchema = resolveSchemaReference(schema, components);
 
     if (resolvedSchema.type === 'object' && resolvedSchema.properties) {
-        Object.keys(resolvedSchema.properties).forEach(fieldName => {
+        Object.keys(resolvedSchema.properties).forEach((fieldName) => {
             const prop = resolvedSchema.properties[fieldName];
             const resolvedProp = resolveSchemaReference(prop, components);
 
@@ -495,7 +498,7 @@ function extractSchemaFields(schema: any, contentType?: string, statusCode?: str
                 field: fieldName,
                 description: resolvedProp.description || prop.description || '',
                 ...(resolvedProp.example && { defaultValue: resolvedProp.example }),
-                ...(resolvedProp.enum && { allowedValues: resolvedProp.enum })
+                ...(resolvedProp.enum && { allowedValues: resolvedProp.enum }),
             });
         });
     } else if (resolvedSchema.type === 'array' && resolvedSchema.items) {
@@ -503,7 +506,7 @@ function extractSchemaFields(schema: any, contentType?: string, statusCode?: str
         const itemSchema = resolveSchemaReference(resolvedSchema.items, components);
         if (itemSchema.type === 'object' && itemSchema.properties) {
             // Array of objects - extract each property
-            Object.keys(itemSchema.properties).forEach(fieldName => {
+            Object.keys(itemSchema.properties).forEach((fieldName) => {
                 const prop = itemSchema.properties[fieldName];
                 const resolvedProp = resolveSchemaReference(prop, components);
 
@@ -513,7 +516,7 @@ function extractSchemaFields(schema: any, contentType?: string, statusCode?: str
                     optional: !itemSchema.required?.includes(fieldName),
                     field: `${fieldName}[]`,
                     description: resolvedProp.description || prop.description || '',
-                    ...(resolvedProp.example && { defaultValue: resolvedProp.example })
+                    ...(resolvedProp.example && { defaultValue: resolvedProp.example }),
                 });
             });
         } else {
@@ -523,7 +526,7 @@ function extractSchemaFields(schema: any, contentType?: string, statusCode?: str
                 type: `${getApiDocType(itemSchema)}[]`,
                 field: 'items[]',
                 description: resolvedSchema.description || '',
-                optional: false
+                optional: false,
             });
         }
     } else {
@@ -531,10 +534,9 @@ function extractSchemaFields(schema: any, contentType?: string, statusCode?: str
         fields.push({
             group: group,
             type: getApiDocType(resolvedSchema),
-            field: contentType === 'multipart/form-data' ? 'file' :
-                   resolvedSchema.title?.toLowerCase() || 'data',
+            field: contentType === 'multipart/form-data' ? 'file' : resolvedSchema.title?.toLowerCase() || 'data',
             description: resolvedSchema.description || schema.description || '',
-            optional: false
+            optional: false,
         });
     }
 
@@ -647,9 +649,8 @@ function parseExternalOpenApiFile(pathSpec: string, filePath: string, currentFil
         return {
             openapi: parsedOpenApi,
             sourceFile: resolvedPath,
-            pathSpec: pathSpec || 'full-spec'
+            pathSpec: pathSpec || 'full-spec',
         };
-
     } catch (error) {
         console.warn(`[OpenAPI External] Failed to load file ${filePath}: ${error.message}`);
         return null;
@@ -668,9 +669,9 @@ function extractSpecificOperationFromFile(openapi: any, pathSpec: string): any |
                 openapi: openapi.openapi || '3.0.0',
                 info: openapi.info || { title: 'API', version: '1.0.0' },
                 paths: {
-                    [pathSpec]: openapi.paths[pathSpec]
+                    [pathSpec]: openapi.paths[pathSpec],
                 },
-                components: openapi.components || {}
+                components: openapi.components || {},
             };
         }
     }
@@ -697,7 +698,7 @@ function convertOpenApiToElements(openapi: any, sourceFile: string, pathSpec: st
         // Process each HTTP method for this path
         const httpMethods = ['get', 'post', 'put', 'delete', 'patch', 'head', 'options'];
 
-        httpMethods.forEach(method => {
+        httpMethods.forEach((method) => {
             const operation = pathItem[method];
             if (!operation) return;
 
@@ -707,10 +708,10 @@ function convertOpenApiToElements(openapi: any, sourceFile: string, pathSpec: st
                 info: openapi.info || { title: 'API', version: '1.0.0' },
                 paths: {
                     [path]: {
-                        [method]: operation
-                    }
+                        [method]: operation,
+                    },
                 },
-                components: openapi.components || {}
+                components: openapi.components || {},
             };
 
             // Convert to YAML for consistent formatting
@@ -724,8 +725,8 @@ function convertOpenApiToElements(openapi: any, sourceFile: string, pathSpec: st
                 content: yamlContent,
                 externalSource: {
                     file: sourceFile,
-                    path: pathSpec
-                }
+                    path: pathSpec,
+                },
             };
 
             elements.push(element);
@@ -768,14 +769,10 @@ function externalFileProcessor(elements: Array<any>, element: any, block: any, f
     }
 
     // Convert external OpenAPI to APIDoc elements
-    const newElements = convertOpenApiToElements(
-        externalData.openapi,
-        externalData.sourceFile,
-        externalData.pathSpec
-    );
+    const newElements = convertOpenApiToElements(externalData.openapi, externalData.sourceFile, externalData.pathSpec);
 
     // Add new elements to the list
-    newElements.forEach(el => elements.push(el));
+    newElements.forEach((el) => elements.push(el));
 
     return elements;
 }
@@ -791,6 +788,6 @@ function init(app: any) {
 /**
  * APIDoc parser exports
  */
-export { parse, init };
+export { init, parse };
 export const path = 'local';
 export const method = 'insert';

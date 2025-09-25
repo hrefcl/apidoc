@@ -7,16 +7,16 @@
  * @example OpenAPI path definition
  * ```javascript
  * /**
- *  * @openapi-path /users/{id}
- *  * get:
- *  *   summary: Get user by ID
- *  *   tags: [Users]
- *  *   parameters:
- *  *     - name: id
- *  *       in: path
- *  *       required: true
- *  *       schema:
- *  *         type: integer
+ *  @openapi-path /users/{id}
+ *  get:
+ *  summary: Get user by ID
+ *  tags: [Users]
+ *  parameters:
+ *  - name: id
+ *  in: path
+ *  required: true
+ *  schema:
+ *  type: integer
  *  *   responses:
  *  *     200:
  *  *       description: Success
@@ -34,20 +34,21 @@ const DEFAULT_OPENAPI_VERSION = '4.0.0';
 
 // APIDoc-compatible result structure
 interface ApiDocCompatibleResult {
-    type?: string;        // HTTP method (get, post, etc.)
-    url?: string;         // API endpoint path
-    title?: string;       // Operation summary
-    name?: string;        // Operation ID or generated name
-    group?: string;       // Group name (from tags)
+    type?: string; // HTTP method (get, post, etc.)
+    url?: string; // API endpoint path
+    title?: string; // Operation summary
+    name?: string; // Operation ID or generated name
+    group?: string; // Group name (from tags)
     description?: string; // Operation description
-    version?: string;     // API version
-    openapi?: any;        // Full OpenAPI data for advanced processing
+    version?: string; // API version
+    openapi?: any; // Full OpenAPI data for advanced processing
 }
 
 /**
  * Parse @openapi-path content and convert to APIDoc-compatible format
  *
  * Expected format:
+ *
  * @openapi-path /path/to/endpoint
  * operation_definition_in_yaml_or_json
  *
@@ -76,7 +77,7 @@ export function parse(content: string): ApiDocCompatibleResult | null {
         if (!path.startsWith('/')) {
             // Maybe the path is in the first word
             const words = pathLine.split(/\s+/);
-            const pathWord = words.find(word => word.startsWith('/'));
+            const pathWord = words.find((word) => word.startsWith('/'));
             if (pathWord) {
                 path = pathWord;
             } else {
@@ -103,7 +104,6 @@ export function parse(content: string): ApiDocCompatibleResult | null {
         }
 
         return processPathDefinition(path, operationsDefinition);
-
     } catch (error) {
         console.warn(`[OpenAPI Path Parser] Failed to parse content: ${error.message}`);
         return null;
@@ -116,7 +116,7 @@ export function parse(content: string): ApiDocCompatibleResult | null {
 function processPathDefinition(path: string, operations: any): ApiDocCompatibleResult | null {
     // Find the first HTTP method in the operations
     const httpMethods = ['get', 'post', 'put', 'delete', 'patch', 'head', 'options', 'trace'];
-    const method = httpMethods.find(m => operations[m]);
+    const method = httpMethods.find((m) => operations[m]);
 
     if (!method) {
         return null;
@@ -130,7 +130,7 @@ function processPathDefinition(path: string, operations: any): ApiDocCompatibleR
         name: operation.operationId || generateOperationName(method, path),
         description: operation.description || '',
         version: extractVersionFromOperation(operation) || DEFAULT_OPENAPI_VERSION || '4.0.0',
-        openapi: { paths: { [path]: operations } }
+        openapi: { paths: { [path]: operations } },
     };
 
     // Convert OpenAPI tags to APIDoc group
@@ -159,8 +159,9 @@ function generateOperationName(method: string, path: string): string {
     // Convert path to camelCase operation name
     // e.g., GET /users/{id} -> getUsersId
     const cleanPath = path.replace(/[{}/:]/g, ' ').trim();
-    const words = cleanPath.split(/\s+/).filter(w => w.length > 0);
-    const camelCase = method.toLowerCase() + words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+    const words = cleanPath.split(/\s+/).filter((w) => w.length > 0);
+    const camelCase =
+        method.toLowerCase() + words.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
     return camelCase;
 }
 

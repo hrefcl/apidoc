@@ -8,16 +8,16 @@
  * @example OpenAPI schema definition
  * ```javascript
  * /**
- *  * @openapi-schema User
- *  * type: object
- *  * required:
- *  *   - id
- *  *   - name
- *  *   - email
- *  * properties:
- *  *   id:
- *  *     type: integer
- *  *     format: int64
+ *  @openapi-schema User
+ *  type: object
+ *  required:
+ *  - id
+ *  - name
+ *  - email
+ *  properties:
+ *  id:
+ *  type: integer
+ *  format: int64
  *  *     example: 12345
  *  *   name:
  *  *     type: string
@@ -40,19 +40,20 @@ const DEFAULT_OPENAPI_VERSION = '4.0.0';
 
 // APIDoc-compatible result structure
 interface ApiDocCompatibleResult {
-    type?: string;        // Schema type identifier
-    name?: string;        // Schema name
-    title?: string;       // Schema title
-    group?: string;       // Group name (typically 'Schemas')
+    type?: string; // Schema type identifier
+    name?: string; // Schema name
+    title?: string; // Schema title
+    group?: string; // Group name (typically 'Schemas')
     description?: string; // Schema description
-    version?: string;     // API version
-    openapi?: any;        // Full OpenAPI data for advanced processing
+    version?: string; // API version
+    openapi?: any; // Full OpenAPI data for advanced processing
 }
 
 /**
  * Parse @openapi-schema content and convert to APIDoc-compatible format
  *
  * Expected format:
+ *
  * @openapi-schema SchemaName
  * schema_definition_in_yaml_or_json
  *
@@ -101,7 +102,6 @@ export function parse(content: string): ApiDocCompatibleResult | null {
         }
 
         return processSchemaDefinition(schemaName, schemaDef);
-
     } catch (error) {
         console.warn(`[OpenAPI Schema Parser] Failed to parse content: ${error.message}`);
         return null;
@@ -122,10 +122,10 @@ function processSchemaDefinition(name: string, schema: any): ApiDocCompatibleRes
         openapi: {
             components: {
                 schemas: {
-                    [name]: schema
-                }
-            }
-        }
+                    [name]: schema,
+                },
+            },
+        },
     };
 
     // Add schema type to description for clarity
@@ -182,9 +182,13 @@ function generateExampleFromSchema(schema: any): any {
 
         case 'integer':
         case 'number':
-            return schema.minimum !== undefined ? schema.minimum :
-                   schema.maximum !== undefined ? schema.maximum :
-                   schema.multipleOf !== undefined ? schema.multipleOf : 0;
+            return schema.minimum !== undefined
+                ? schema.minimum
+                : schema.maximum !== undefined
+                  ? schema.maximum
+                  : schema.multipleOf !== undefined
+                    ? schema.multipleOf
+                    : 0;
 
         case 'boolean':
             return true;
@@ -221,7 +225,7 @@ function validateSchema(schema: any): { valid: boolean; errors: string[] } {
 
     return {
         valid: errors.length === 0,
-        errors
+        errors,
     };
 }
 

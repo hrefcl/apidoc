@@ -1,5 +1,5 @@
 /**
- * @fileoverview TypeScript Interface Parser - extracts and converts interface definitions
+ * @file TypeScript Interface Parser - extracts and converts interface definitions
  *
  * @description This module provides comprehensive TypeScript interface parsing capabilities
  * for the @apiSchema functionality. It extracts interface definitions from TypeScript source
@@ -82,7 +82,7 @@ interface ParsedInterface {
  * a composite key of "filePath:interfaceName" to enable fast lookups and avoid
  * redundant file parsing operations.
  *
- * @internal Cache implementation detail for performance optimization
+ * @internal
  * @since 4.0.0
  */
 const interfaceCache = new Map<string, ParsedInterface>();
@@ -116,7 +116,7 @@ const interfaceCache = new Map<string, ParsedInterface>();
  *
  * @throws Logs warning and returns empty Map if file cannot be read or parsed
  *
- * @public This function is part of the TypeScript parsing API
+ * @public
  * @since 4.0.0
  */
 export function extractInterfacesFromFile(filePath: string): Map<string, ParsedInterface> {
@@ -182,7 +182,7 @@ export function extractInterfacesFromFile(filePath: string): Map<string, ParsedI
  * @performance Uses caching to avoid re-parsing files for subsequent lookups
  * @resilient Handles file system errors gracefully with warning logs
  *
- * @public This function is part of the TypeScript interface discovery API
+ * @public
  * @since 4.0.0
  */
 export function findInterface(interfaceName: string, currentFile: string): ParsedInterface | null {
@@ -502,10 +502,14 @@ function removeCommentsAndStrings(content: string): string {
  * // Returns error response documentation elements
  * ```
  *
- * @public This function is part of the @apiSchema conversion API
+ * @public
  * @since 4.0.0
  */
-export function interfaceToApiDocElements(iface: ParsedInterface, elementType: string = 'apiParam', group?: string): Array<any> {
+export function interfaceToApiDocElements(
+    iface: ParsedInterface,
+    elementType: string = 'apiParam',
+    group?: string
+): Array<any> {
     const elements: Array<any> = [];
 
     for (const prop of iface.properties) {
