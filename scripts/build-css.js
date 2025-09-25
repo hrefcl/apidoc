@@ -140,11 +140,11 @@ try {
             // Build complete CSS with Bootstrap and highlight.js
             let completeCss = '/* APIDoc 4.0 CSS Bundle - Complete Build */\n\n';
 
-            // 1. Bootstrap CSS first
-            const bootstrapCssPath = path.join(srcDir, 'vendor', 'bootstrap', 'css', 'bootstrap.css');
+            // 1. Bootstrap 5 CSS first
+            const bootstrapCssPath = path.join(__dirname, '..', 'node_modules', 'bootstrap', 'dist', 'css', 'bootstrap.css');
             if (fs.existsSync(bootstrapCssPath)) {
-                console.log('📄 Adding Bootstrap CSS...');
-                completeCss += '/* Bootstrap CSS */\n';
+                console.log('📄 Adding Bootstrap 5 CSS...');
+                completeCss += '/* Bootstrap 5.3.8 CSS */\n';
                 completeCss += fs.readFileSync(bootstrapCssPath, 'utf8');
                 completeCss += '\n\n';
             }
@@ -181,11 +181,11 @@ try {
 
         let cssContent = '/* APIDoc 4.0 CSS Bundle - Fallback Concatenation */\n\n';
 
-        // 1. Bootstrap CSS
-        const bootstrapCssPath = path.join(srcDir, 'vendor', 'bootstrap', 'css', 'bootstrap.css');
+        // 1. Bootstrap 5 CSS
+        const bootstrapCssPath = path.join(__dirname, '..', 'node_modules', 'bootstrap', 'dist', 'css', 'bootstrap.css');
         if (fs.existsSync(bootstrapCssPath)) {
-            console.log('📄 Adding Bootstrap CSS...');
-            cssContent += '/* Bootstrap CSS */\n';
+            console.log('📄 Adding Bootstrap 5 CSS...');
+            cssContent += '/* Bootstrap 5.3.8 CSS */\n';
             cssContent += fs.readFileSync(bootstrapCssPath, 'utf8');
             cssContent += '\n\n';
         }

@@ -105,7 +105,7 @@
     <div class="ml-6">
       {{#if template.withCompare}}
       <div class="dropdown">
-        <button id="version" class="btn btn-lg btn-secondary dropdown-toggle" data-toggle="dropdown">
+        <button id="version" class="btn btn-lg btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
           <strong>{{version}}</strong>
         </button>
         <div id="versions" class="dropdown-menu">
@@ -172,7 +172,7 @@
     {{#if template.withCompare}}
     <div class="absolute top-4 right-4">
       <div class="dropdown">
-        <button class="version btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+        <button class="version btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
           <strong>{{article.version}}</strong>
         </button>
         <div class="versions dropdown-menu">
@@ -211,7 +211,7 @@
         {{#each article.permission}}
           {{name}}
           {{#if title}}
-          <button type="button" class="btn btn-info btn-sm" data-title="{{title}}" data-content="{{nl2br description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+          <button type="button" class="btn btn-info btn-sm" data-title="{{title}}" data-content="{{nl2br description}}" data-html="true" data-bs-toggle="popover" data-placement="right" data-trigger="hover">
               <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
           </button>
           {{/if}}
@@ -224,7 +224,7 @@
       <ul class="nav nav-tabs nav-tabs-examples" role="tablist">
         {{#each article.examples}}
           <li class="nav-item">
-            <a class="nav-link{{#ifCond @index '==' 0}} active{{/ifCond}}" href="#examples-{{../id}}-{{@index}}" role="tab" data-toggle="tab">{{title}}</a>
+            <a class="nav-link{{#ifCond @index '==' 0}} active{{/ifCond}}" href="#examples-{{../id}}-{{@index}}" role="tab" data-bs-toggle="tab">{{title}}</a>
           </li>
         {{/each}}
       </ul>
@@ -401,7 +401,7 @@
       <ul class="nav nav-tabs nav-tabs-examples" role="tablist">
       {{#each params.examples}}
         <li class="nav-item">
-          <a class="nav-link{{#ifCond @index '==' 0}} active{{/ifCond}}" href="#{{../section}}-examples-{{../id}}-{{@index}}" role="tab" data-toggle="tab">{{title}}</a>
+          <a class="nav-link{{#ifCond @index '==' 0}} active{{/ifCond}}" href="#{{../section}}-examples-{{../id}}-{{@index}}" role="tab" data-bs-toggle="tab">{{title}}</a>
         </li>
       {{/each}}
       </ul>
@@ -682,7 +682,7 @@
           </span>
           <span class="text-gray-400 dark:text-gray-500 mx-1">{{__ "compared to"}}</span>
           <div class="dropdown relative">
-            <button class="comparison-badge version dropdown-toggle transition-all duration-200 hover:shadow-md" data-toggle="dropdown">
+            <button class="comparison-badge version dropdown-toggle transition-all duration-200 hover:shadow-md" data-bs-toggle="dropdown">
               <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
               </svg>
@@ -723,7 +723,7 @@
     {{#each_compare_title article.examples compare.examples}}
       {{#if typeSame}}
         <li class="nav-item">
-          <a class="nav-link{{#ifCond index '==' 0}} active{{/ifCond}}" href="#compare-examples-{{../article.id}}-{{index}}" role="tab" data-toggle="tab">{{{showDiff source.title compare.title}}}</a>
+          <a class="nav-link{{#ifCond index '==' 0}} active{{/ifCond}}" href="#compare-examples-{{../article.id}}-{{index}}" role="tab" data-bs-toggle="tab">{{{showDiff source.title compare.title}}}</a>
         </li>
       {{/if}}
 
@@ -800,7 +800,7 @@
       {{#if typeSame}}
         {{source.name}}
         {{#if source.title}}
-          <button type="button" class="btn btn-info btn-sm" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+          <button type="button" class="btn btn-info btn-sm" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-bs-toggle="popover" data-placement="right" data-trigger="hover">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
           </button>
           {{#unless _last}}, {{/unless}}
@@ -810,7 +810,7 @@
       {{#if typeIns}}
         <ins>{{source.name}}</ins>
         {{#if source.title}}
-          <button type="button" class="btn btn-info btn-sm" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+          <button type="button" class="btn btn-info btn-sm" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-bs-toggle="popover" data-placement="right" data-trigger="hover">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
           </button>
           {{#unless _last}}, {{/unless}}
@@ -820,7 +820,7 @@
       {{#if typeDel}}
         <del>{{source.name}}</del>
         {{#if source.title}}
-          <button type="button" class="btn btn-info btn-sm" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+          <button type="button" class="btn btn-info btn-sm" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-bs-toggle="popover" data-placement="right" data-trigger="hover">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
           </button>
           {{#unless _last}}, {{/unless}}
@@ -830,7 +830,7 @@
       {{#if typeSame}}
         {{compare.name}}
         {{#if compare.title}}
-          <button type="button" class="btn btn-info btn-sm" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+          <button type="button" class="btn btn-info btn-sm" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-bs-toggle="popover" data-placement="right" data-trigger="hover">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
           </button>
           {{#unless _last}}, {{/unless}}
@@ -840,7 +840,7 @@
       {{#if typeIns}}
         <ins>{{compare.name}}</ins>
         {{#if compare.title}}
-          <button type="button" class="btn btn-info btn-sm" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+          <button type="button" class="btn btn-info btn-sm" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-bs-toggle="popover" data-placement="right" data-trigger="hover">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
           </button>
           {{#unless _last}}, {{/unless}}
@@ -850,7 +850,7 @@
       {{#if typeDel}}
         <del>{{compare.name}}</del>
         {{#if compare.title}}
-          <button type="button" class="btn btn-info btn-sm" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
+          <button type="button" class="btn btn-info btn-sm" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-bs-toggle="popover" data-placement="right" data-trigger="hover">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
           </button>
           {{#unless _last}}, {{/unless}}
@@ -912,7 +912,7 @@
     {{#each_compare_title source.examples compare.examples}}
       {{#if typeSame}}
         <li class="nav-item">
-          <a class="nav-link{{#ifCond index '==' 0}} active{{/ifCond}}" href="#{{../section}}-compare-examples-{{../article.id}}-{{index}}" role="tab" data-toggle="tab">{{{showDiff source.title compare.title}}}</a>
+          <a class="nav-link{{#ifCond index '==' 0}} active{{/ifCond}}" href="#{{../section}}-compare-examples-{{../article.id}}-{{index}}" role="tab" data-bs-toggle="tab">{{{showDiff source.title compare.title}}}</a>
         </li>
       {{/if}}
 

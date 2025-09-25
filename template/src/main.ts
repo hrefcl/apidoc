@@ -8,12 +8,8 @@ import $ from 'jquery';
 import { extend, groupBy, some } from 'lodash';
 import semver from 'semver';
 
-// Bootstrap jQuery plugins
-import './vendor/bootstrap/js/dropdown';
-import './vendor/bootstrap/js/popover';
-import './vendor/bootstrap/js/scrollspy';
-import './vendor/bootstrap/js/tab';
-import './vendor/bootstrap/js/tooltip';
+// Bootstrap 5 JavaScript components
+import { Dropdown, Popover, Tab, Tooltip } from 'bootstrap';
 
 // Highlight.js is the modern syntax highlighting library
 import hljs from 'highlight.js';
@@ -294,7 +290,6 @@ function init() {
 
     // sort api within a group by title ASC and custom order
     const newList = [];
-    // const umlauts = { ä: 'ae', ü: 'ue', ö: 'oe', ß: 'ss' }; // TODO: remove in version 1.0
     $.each(apiByGroupAndName, (index, groupEntries) => {
         // get titles from the first entry of group[].name[] (name has versioning)
         let titles = [];
@@ -745,12 +740,8 @@ function init() {
      * On Template changes, recall plugins.
      */
     function initDynamic() {
-        // Bootstrap popover
-        $('button[data-toggle="popover"]')
-            .popover()
-            .click(function (e) {
-                e.preventDefault();
-            });
+        // Bootstrap 5 popover - handled by initBootstrapDropdowns()
+        // Popovers are now initialized automatically with data-bs-toggle="popover"
 
         const version = $('#version strong').html();
         $('#sidenav li').removeClass('is-new');
@@ -767,11 +758,10 @@ function init() {
         }
 
         // tabs
-        $('.nav-tabs-examples a').click(function (e) {
-            e.preventDefault();
-            $(this).tab('show');
-        });
-        $('.nav-tabs-examples').find('a:first').tab('show');
+        // Bootstrap 5 tabs are handled automatically with data-bs-toggle="tab"
+        // Initialize first tab as active
+        $('.nav-tabs-examples').find('a:first').addClass('active');
+        $('.tab-content').find('.tab-pane:first').addClass('show active');
 
         // switch content-type for body inputs (json or form-data)
         $('.sample-request-content-type-switch').change(function () {
@@ -1595,106 +1585,96 @@ function processRemainingTemplates() {
  */
 function initBootstrapDropdowns() {
     try {
-        console.log('🔧 Initializing Bootstrap dropdowns...');
+        console.log('🔧 Initializing Bootstrap 5 components...');
 
-        // First, hide all dropdown menus by default
-        const dropdownMenus = document.querySelectorAll('.dropdown-menu');
-        dropdownMenus.forEach((menu) => {
-            // Remove any inline styles that might be forcing them visible
-            menu.style.display = '';
-            // Ensure parent doesn't have open or show class
-            const parent = menu.closest('.btn-group, .dropdown');
-            if (parent) {
-                parent.classList.remove('open', 'show');
-            }
+        // Initialize all dropdown toggles with Bootstrap 5
+        const dropdownToggleList = document.querySelectorAll('.dropdown-toggle');
+        const dropdownList = Array.from(dropdownToggleList).map((dropdownToggleEl) => {
+            return new Dropdown(dropdownToggleEl);
         });
 
-        // Initialize Bootstrap dropdown functionality
-        if (typeof $ !== 'undefined' && typeof $.fn.dropdown !== 'undefined') {
-            $('.dropdown-toggle').dropdown();
-            console.log('✅ Bootstrap dropdowns initialized successfully');
+        // Initialize tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = Array.from(tooltipTriggerList).map((tooltipTriggerEl) => {
+            return new Tooltip(tooltipTriggerEl);
+        });
 
-            // Fix version dropdown specifically
-            $('#version').on('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('🔄 Main version dropdown clicked');
+        // Initialize popovers
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+        const popoverList = Array.from(popoverTriggerList).map((popoverTriggerEl) => {
+            return new Popover(popoverTriggerEl);
+        });
 
-                const parent = $(this).closest('.dropdown');
-                const isOpen = parent.hasClass('open') || parent.hasClass('show');
+        // Initialize tabs
+        const tabTriggerList = document.querySelectorAll('[data-bs-toggle="tab"]');
+        const tabList = Array.from(tabTriggerList).map((tabTriggerEl) => {
+            return new Tab(tabTriggerEl);
+        });
 
-                // Close all other dropdowns
-                $('.dropdown.open, .dropdown.show').not(parent).removeClass('open show');
+        console.log(`✅ Bootstrap 5 initialized: ${dropdownList.length} dropdowns, ${tooltipList.length} tooltips, ${popoverList.length} popovers, ${tabList.length} tabs`);
 
-                // Toggle this dropdown
-                if (isOpen) {
-                    parent.removeClass('open show');
-                } else {
-                    parent.addClass('open show');
-                }
-            });
+        // Custom event handlers for specific functionality
+        initCustomDropdownHandlers();
 
-            // Fix article version dropdowns
-            $(document).on('click', 'article .version.dropdown-toggle', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('🔄 Article version dropdown clicked');
+    } catch (error) {
+        console.error('Error initializing Bootstrap 5 components:', error);
+        // Fallback to manual implementation
+        initManualDropdownFallback();
+    }
+}
 
-                const parent = $(this).closest('.dropdown');
-                const isOpen = parent.hasClass('open') || parent.hasClass('show');
+/**
+ * Initialize custom dropdown event handlers for version selection
+ */
+function initCustomDropdownHandlers() {
+    // Handle version dropdown clicks
+    const versionDropdown = document.getElementById('version');
+    if (versionDropdown) {
+        versionDropdown.addEventListener('show.bs.dropdown', function () {
+            console.log('🔄 Main version dropdown opened');
+        });
+    }
 
-                // Close all other dropdowns
-                $('.dropdown.open, .dropdown.show').not(parent).removeClass('open show');
+    // Handle article version dropdowns
+    document.addEventListener('show.bs.dropdown', function (e) {
+        if (e.target.closest('article') && e.target.classList.contains('dropdown-toggle')) {
+            console.log('🔄 Article version dropdown opened');
+        }
+    });
+}
 
-                // Toggle this dropdown
-                if (isOpen) {
-                    parent.removeClass('open show');
-                } else {
-                    parent.addClass('open show');
-                }
-            });
+/**
+ * Manual dropdown implementation as fallback
+ */
+function initManualDropdownFallback() {
+    console.warn('Using manual dropdown fallback');
 
-            // Close dropdowns when clicking outside
-            $(document).on('click', function (e) {
-                if (!$(e.target).closest('.dropdown').length) {
-                    $('.dropdown.open, .dropdown.show').removeClass('open show');
-                }
-            });
-        } else {
-            console.warn('Bootstrap dropdown not available, using manual implementation');
+    document.querySelectorAll('.dropdown-toggle').forEach((toggle) => {
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-            // Manual dropdown implementation as fallback
-            document.querySelectorAll('.dropdown-toggle').forEach((toggle) => {
-                toggle.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
+            const parent = this.closest('.dropdown');
+            const menu = parent?.querySelector('.dropdown-menu');
 
-                    const parent = this.closest('.btn-group, .dropdown');
-                    const menu = parent?.querySelector('.dropdown-menu');
-
-                    if (parent && menu) {
-                        // Close all other open dropdowns
-                        document.querySelectorAll('.btn-group.open, .btn-group.show, .dropdown.open, .dropdown.show').forEach((otherParent) => {
-                            if (otherParent !== parent) {
-                                otherParent.classList.remove('open', 'show');
-                            }
-                        });
-
-                        // Toggle this dropdown
-                        parent.classList.toggle('open');
-                        parent.classList.toggle('show');
+            if (menu && parent) {
+                // Close all other open dropdowns
+                document.querySelectorAll('.dropdown.show').forEach((otherParent) => {
+                    if (otherParent !== parent) {
+                        otherParent.classList.remove('show');
                     }
                 });
-            });
 
-            // Close dropdowns when clicking outside
-            document.addEventListener('click', function () {
-                document.querySelectorAll('.btn-group.open, .btn-group.show, .dropdown.open, .dropdown.show').forEach((parent) => {
-                    parent.classList.remove('open', 'show');
-                });
-            });
-        }
-    } catch (error) {
-        console.error('Error initializing Bootstrap dropdowns:', error);
-    }
+                // Toggle this dropdown
+                parent.classList.toggle('show');
+            }
+        });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function () {
+        document.querySelectorAll('.dropdown.show').forEach((parent) => {
+            parent.classList.remove('show');
+        });
+    });
 }
