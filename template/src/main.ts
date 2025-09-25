@@ -573,7 +573,9 @@ function init() {
                             });
                         });
 
-                        nav = emergencyNav;
+                        // Replace nav array contents instead of reassigning const
+                        nav.length = 0;
+                        nav.push(...emergencyNav);
                         console.log('✅ Emergency nav created with', nav.length, 'items');
                     }
                 } catch (apiError) {
