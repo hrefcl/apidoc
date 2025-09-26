@@ -54,7 +54,9 @@
     "showRequiredLabels": false,
     "withCompare": true,
     "withGenerator": true,
-    "aloneDisplay": false
+    "aloneDisplay": false,
+    "groupsCollapsible": true,
+    "endpointsCollapsible": true
   },
   "title": "Href ApiDoc 4",
   "url": "https://api.example.com"

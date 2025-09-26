@@ -12090,6 +12090,7 @@ textarea.form-control-lg {
     --color-emerald-800: oklch(43.2% 0.095 166.913);
     --color-emerald-900: oklch(37.8% 0.077 168.94);
     --color-blue-50: oklch(97% 0.014 254.604);
+    --color-blue-100: oklch(93.2% 0.032 255.585);
     --color-blue-200: oklch(88.2% 0.059 254.128);
     --color-blue-300: oklch(80.9% 0.105 251.813);
     --color-blue-400: oklch(70.7% 0.165 254.624);
@@ -12337,9 +12338,6 @@ textarea.form-control-lg {
   .top-1\/2 {
     top: calc(1/2 * 100%);
   }
-  .top-4 {
-    top: calc(var(--spacing) * 4);
-  }
   .top-\[0\.7rem\] {
     top: 0.7rem;
   }
@@ -12348,9 +12346,6 @@ textarea.form-control-lg {
   }
   .right-3 {
     right: calc(var(--spacing) * 3);
-  }
-  .right-4 {
-    right: calc(var(--spacing) * 4);
   }
   .right-\[0\.2rem\] {
     right: 0.2rem;
@@ -12435,6 +12430,9 @@ textarea.form-control-lg {
   }
   .mb-8 {
     margin-bottom: calc(var(--spacing) * 8);
+  }
+  .ml-1 {
+    margin-left: calc(var(--spacing) * 1);
   }
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
@@ -12615,6 +12613,13 @@ textarea.form-control-lg {
       margin-inline-end: calc(calc(var(--spacing) * 1) * calc(1 - var(--tw-space-x-reverse)));
     }
   }
+  .space-x-2 {
+    :where(& > :not(:last-child)) {
+      --tw-space-x-reverse: 0;
+      margin-inline-start: calc(calc(var(--spacing) * 2) * var(--tw-space-x-reverse));
+      margin-inline-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-x-reverse)));
+    }
+  }
   .space-x-3 {
     :where(& > :not(:last-child)) {
       --tw-space-x-reverse: 0;
@@ -12633,9 +12638,6 @@ textarea.form-control-lg {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-  .overflow-hidden {
-    overflow: hidden;
   }
   .overflow-x-auto {
     overflow-x: auto;
@@ -12675,10 +12677,6 @@ textarea.form-control-lg {
     border-style: var(--tw-border-style);
     border-width: 0px;
   }
-  .border-t {
-    border-top-style: var(--tw-border-style);
-    border-top-width: 1px;
-  }
   .border-r {
     border-right-style: var(--tw-border-style);
     border-right-width: 1px;
@@ -12715,6 +12713,9 @@ textarea.form-control-lg {
   }
   .bg-blue-50 {
     background-color: var(--color-blue-50);
+  }
+  .bg-blue-100 {
+    background-color: var(--color-blue-100);
   }
   .bg-blue-500 {
     background-color: var(--color-blue-500);
@@ -12896,6 +12897,9 @@ textarea.form-control-lg {
   }
   .text-blue-700 {
     color: var(--color-blue-700);
+  }
+  .text-blue-800 {
+    color: var(--color-blue-800);
   }
   .text-gray-100 {
     color: var(--color-gray-100);
@@ -15964,46 +15968,69 @@ textarea.form-control,
 .opblock-summary-method {
   font-weight: 700;
   font-size: 14px;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: 3px;
   text-transform: uppercase;
-  min-width: 60px;
+  min-width: 70px;
   text-align: center;
-  margin-right: 12px;
+  margin-right: 16px;
+  color: white;
+  flex-shrink: 0;
 }
 .opblock-get .opblock-summary {
   border-left: 4px solid #61affe;
 }
-.opblock-get .opblock-summary-method {
+.opblock-get .opblock-summary-method,
+.opblock-summary-method-get {
   background: #61affe;
   color: white;
 }
 .opblock-post .opblock-summary {
   border-left: 4px solid #49cc90;
 }
-.opblock-post .opblock-summary-method {
+.opblock-post .opblock-summary-method,
+.opblock-summary-method-post {
   background: #49cc90;
   color: white;
 }
 .opblock-put .opblock-summary {
   border-left: 4px solid #fca130;
 }
-.opblock-put .opblock-summary-method {
+.opblock-put .opblock-summary-method,
+.opblock-summary-method-put {
   background: #fca130;
   color: white;
 }
 .opblock-delete .opblock-summary {
   border-left: 4px solid #f93e3e;
 }
-.opblock-delete .opblock-summary-method {
+.opblock-delete .opblock-summary-method,
+.opblock-summary-method-delete {
   background: #f93e3e;
   color: white;
 }
 .opblock-patch .opblock-summary {
   border-left: 4px solid #50e3c2;
 }
-.opblock-patch .opblock-summary-method {
+.opblock-patch .opblock-summary-method,
+.opblock-summary-method-patch {
   background: #50e3c2;
+  color: white;
+}
+.opblock-options .opblock-summary {
+  border-left: 4px solid #9012fe;
+}
+.opblock-options .opblock-summary-method,
+.opblock-summary-method-options {
+  background: #9012fe;
+  color: white;
+}
+.opblock-head .opblock-summary {
+  border-left: 4px solid #9b9b9b;
+}
+.opblock-head .opblock-summary-method,
+.opblock-summary-method-head {
+  background: #9b9b9b;
   color: white;
 }
 .opblock-content {

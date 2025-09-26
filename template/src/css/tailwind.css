@@ -2689,30 +2689,34 @@ textarea.form-control,
 .opblock-summary-method {
     font-weight: 700;
     font-size: 14px;
-    padding: 4px 8px;
+    padding: 6px 12px;
     border-radius: 3px;
     text-transform: uppercase;
-    min-width: 60px;
+    min-width: 70px;
     text-align: center;
-    margin-right: 12px;
+    margin-right: 16px;
+    color: white;
+    flex-shrink: 0;
 }
 
-/* GET - Verde */
+/* GET - Azul */
 .opblock-get .opblock-summary {
     border-left: 4px solid #61affe;
 }
 
-.opblock-get .opblock-summary-method {
+.opblock-get .opblock-summary-method,
+.opblock-summary-method-get {
     background: #61affe;
     color: white;
 }
 
-/* POST - Azul */
+/* POST - Verde */
 .opblock-post .opblock-summary {
     border-left: 4px solid #49cc90;
 }
 
-.opblock-post .opblock-summary-method {
+.opblock-post .opblock-summary-method,
+.opblock-summary-method-post {
     background: #49cc90;
     color: white;
 }
@@ -2722,7 +2726,8 @@ textarea.form-control,
     border-left: 4px solid #fca130;
 }
 
-.opblock-put .opblock-summary-method {
+.opblock-put .opblock-summary-method,
+.opblock-summary-method-put {
     background: #fca130;
     color: white;
 }
@@ -2732,18 +2737,42 @@ textarea.form-control,
     border-left: 4px solid #f93e3e;
 }
 
-.opblock-delete .opblock-summary-method {
+.opblock-delete .opblock-summary-method,
+.opblock-summary-method-delete {
     background: #f93e3e;
     color: white;
 }
 
-/* PATCH - Púrpura */
+/* PATCH - Turquesa */
 .opblock-patch .opblock-summary {
     border-left: 4px solid #50e3c2;
 }
 
-.opblock-patch .opblock-summary-method {
+.opblock-patch .opblock-summary-method,
+.opblock-summary-method-patch {
     background: #50e3c2;
+    color: white;
+}
+
+/* OPTIONS - Púrpura */
+.opblock-options .opblock-summary {
+    border-left: 4px solid #9012fe;
+}
+
+.opblock-options .opblock-summary-method,
+.opblock-summary-method-options {
+    background: #9012fe;
+    color: white;
+}
+
+/* HEAD - Gris */
+.opblock-head .opblock-summary {
+    border-left: 4px solid #9b9b9b;
+}
+
+.opblock-head .opblock-summary-method,
+.opblock-summary-method-head {
+    background: #9b9b9b;
     color: white;
 }
 

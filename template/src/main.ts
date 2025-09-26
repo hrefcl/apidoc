@@ -729,6 +729,7 @@ function init() {
             description: description,
             articles: articles,
             aloneDisplay: apiProject.template.aloneDisplay,
+            template: apiProject.template,
         };
         try {
             content += templateSections(fields);
@@ -1764,6 +1765,15 @@ function initializeCollapsibleFunctionality() {
  * Initialize group-level collapsible functionality
  */
 function initializeGroupCollapsibles() {
+    // Check if groups should be collapsible
+    const apiProject = typeof window.API_PROJECT === 'string' ? JSON.parse(window.API_PROJECT) : window.API_PROJECT || {};
+    const groupsCollapsible = apiProject.template?.groupsCollapsible;
+
+    if (!groupsCollapsible) {
+        console.log('🔄 Groups collapsible disabled - keeping all groups expanded');
+        return;
+    }
+
     // Find all group headers with expand buttons
     const groupHeaders = document.querySelectorAll('.opblock-tag .expand-operation');
 
@@ -1799,25 +1809,36 @@ function initializeGroupCollapsibles() {
  * Initialize endpoint-level collapsible functionality
  */
 function initializeEndpointCollapsibles() {
+    // Check if endpoints should be collapsible
+    const apiProject = typeof window.API_PROJECT === 'string' ? JSON.parse(window.API_PROJECT) : window.API_PROJECT || {};
+    const endpointsCollapsible = apiProject.template?.endpointsCollapsible;
+
     // Find all endpoint summaries
     const endpointSummaries = document.querySelectorAll('.opblock-summary');
 
     endpointSummaries.forEach((summary) => {
-        const opblock = summary.closest('.opblock') || summary.parentElement;
-        const content = opblock?.querySelector('.opblock-content');
+        const article = summary.closest('article');
+        const content = article?.querySelector('.opblock-content');
 
-        if (opblock && content) {
-            // Set initial state (collapsed by default for endpoints)
-            summary.setAttribute('aria-expanded', 'false');
-            content.classList.add('collapsed');
-            opblock.classList.add('collapsed');
+        if (article && content) {
+            if (endpointsCollapsible) {
+                // Set initial state (collapsed by default for endpoints)
+                summary.setAttribute('aria-expanded', 'false');
+                content.style.display = 'none';
+                article.classList.add('collapsed');
 
-            // Add click handler
-            summary.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleEndpointCollapse(summary, content, opblock);
-            });
+                // Add click handler
+                summary.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleEndpointCollapse(summary, content, article);
+                });
+            } else {
+                // Keep all endpoints expanded and remove collapse functionality
+                summary.setAttribute('aria-expanded', 'true');
+                content.style.display = 'block';
+                article.classList.remove('collapsed');
+            }
         }
     });
 }
@@ -1849,19 +1870,19 @@ function toggleGroupCollapse(groupHeader: Element, groupContent: Element) {
 /**
  * Toggle endpoint collapse state
  */
-function toggleEndpointCollapse(summary: Element, content: Element, opblock: Element) {
+function toggleEndpointCollapse(summary: Element, content: Element, article: Element) {
     const isExpanded = summary.getAttribute('aria-expanded') === 'true';
 
     if (isExpanded) {
         // Collapse
         summary.setAttribute('aria-expanded', 'false');
-        content.classList.add('collapsed');
-        opblock.classList.add('collapsed');
+        (content as HTMLElement).style.display = 'none';
+        article.classList.add('collapsed');
     } else {
         // Expand
         summary.setAttribute('aria-expanded', 'true');
-        content.classList.remove('collapsed');
-        opblock.classList.remove('collapsed');
+        (content as HTMLElement).style.display = 'block';
+        article.classList.remove('collapsed');
     }
 }
 
