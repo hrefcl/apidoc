@@ -114,7 +114,7 @@
                                 id='version'
                                 class='btn btn-lg btn-secondary dropdown-toggle'
                                 data-bs-toggle='dropdown'
-                                >
+                            >
                                 <strong>
                                     {{version}}
                                 </strong>
@@ -218,8 +218,9 @@
         </script>
 
         <script id="template-article" type="text/x-handlebars-template">
-            <article id="api-{{article.group}}-{{article.name}}-{{article.version}}" {{#if hidden}}class="hide border border-gray-200 rounded-lg mb-6 bg-white shadow-sm p-6"{{else}}class="border border-gray-200 rounded-lg mb-6 bg-white shadow-sm p-6"{{/if}} data-group="{{article.group}}" data-name="{{article.name}}" data-version="{{article.version}}">
-                <div class="mb-4">
+            <article id="api-{{article.group}}-{{article.name}}-{{article.version}}" {{#if hidden}}class="hide opblock opblock-post border border-gray-200 rounded-lg mb-6 bg-white shadow-sm p-6"{{else}}class="border border-gray-200 rounded-lg mb-6 bg-white shadow-sm p-6"{{/if}} data-group="{{article.group}}" data-name="{{article.name}}" data-version="{{article.version}}">
+              <div class="opblock-summary opblock-summary-post border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">  
+              <div class="mb-4">
                     <h1 class="text-xl font-semibold"><span class="text-blue-600">{{underscoreToSpace article.groupTitle}}</span>{{#if article.title}} <span class="text-gray-400 mx-2">|</span> <span class="text-gray-900">{{article.title}}</span>{{/if}}</h1>
                 </div>
                 {{#if template.withCompare}}
@@ -237,6 +238,8 @@
                         </div>
                     </div>
                 {{/if}}
+                  </div>
+                 <div class="opblock-content hide border-t border-gray-300 dark:border-gray-600 p-4">
 
                 {{#if article.author}}<p class="text-gray-500 text-sm mb-3">Authored by: {{article.author}}</p>{{/if}}
 
@@ -256,8 +259,11 @@
                         data-prismjs-copy="{{__ "Copy"}}"
                         data-prismjs-copy-error="{{__ "Press Ctrl+C to copy"}}"
                         data-prismjs-copy-success="{{__ "copied!"}}"
-                        ><code class="language-http">{{article.url}}</code></pre>
+                        >
+                        <code class="language-http">{{article.url}}</code>
+                    </pre>
 
+                       
                         {{#if article.permission}}
                             <p>
                                 {{__ "Permission:"}}
@@ -292,8 +298,8 @@
                                             data-prismjs-copy-success="{{__ "copied!"}}"
                                             ><code class="language-{{type}}">{{content}}</code></pre>
                                         </div>
-                                    {{/each}}
-                                </div>
+                                  {{/each}}
+                            </div>
                             {{/ifCond}}
 
                             {{subTemplate "article-param-block" params=article.header _hasType=_hasTypeInHeaderFields section="header"}}
@@ -304,7 +310,8 @@
                             {{subTemplate "article-param-block" params=article.error _col1="Name" _hasType=_hasTypeInErrorFields section="error"}}
 
                             {{subTemplate "article-sample-request" article=article id=id}}
-                        </article>
+                  </div>
+            </article>
         </script>
 
         <script id="template-article-query-block" type="text/x-handlebars-template">
@@ -862,7 +869,7 @@
                                     data-bs-toggle='popover'
                                     data-placement='right'
                                     data-trigger='hover'
-                                    >
+                                >
                                     <span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span>
                                 </button>
                                 {{#unless _last}}
@@ -885,7 +892,7 @@
                                     data-bs-toggle='popover'
                                     data-placement='right'
                                     data-trigger='hover'
-                                    >
+                                >
                                     <span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span>
                                 </button>
                                 {{#unless _last}}
@@ -908,7 +915,7 @@
                                     data-bs-toggle='popover'
                                     data-placement='right'
                                     data-trigger='hover'
-                                    >
+                                >
                                     <span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span>
                                 </button>
                                 {{#unless _last}}
@@ -929,7 +936,7 @@
                                     data-bs-toggle='popover'
                                     data-placement='right'
                                     data-trigger='hover'
-                                    >
+                                >
                                     <span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span>
                                 </button>
                                 {{#unless _last}}
@@ -952,7 +959,7 @@
                                     data-bs-toggle='popover'
                                     data-placement='right'
                                     data-trigger='hover'
-                                    >
+                                >
                                     <span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span>
                                 </button>
                                 {{#unless _last}}
@@ -975,7 +982,7 @@
                                     data-bs-toggle='popover'
                                     data-placement='right'
                                     data-trigger='hover'
-                                    >
+                                >
                                     <span class='glyphicon glyphicon-info-sign' aria-hidden='true'></span>
                                 </button>
                                 {{#unless _last}}
