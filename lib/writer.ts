@@ -399,10 +399,15 @@ class Writer {
 
         let indexHtml = this.fs.readFileSync(templateFile, 'utf8').toString();
 
-        // Process authentication if enabled
-        if (this.authProcessor && this.authProcessor.isAuthEnabled) {
-            this.log.verbose('🔒 Processing authentication for template...');
+        // Always process authentication (even if disabled) to replace placeholders
+        if (this.authProcessor) {
+            if (this.authProcessor.isAuthEnabled) {
+                this.log.verbose('🔒 Processing authentication for template...');
+            }
             indexHtml = this.authProcessor.processTemplate(indexHtml, projectInfo);
+        } else {
+            // Fallback: replace placeholder with null if no auth processor
+            indexHtml = indexHtml.replace('__LOGIN_CONFIG__', 'null');
         }
 
         // Replace image tokens with base64 data

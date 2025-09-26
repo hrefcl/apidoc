@@ -55,7 +55,7 @@ class AuthProcessor {
     processTemplate(templateContent: string, projectData: any): string {
         let processedContent = templateContent;
 
-        // Inject login configuration
+        // Always inject login configuration (null if not configured)
         processedContent = this.injectLoginConfig(processedContent, projectData);
 
         // If authentication is enabled, protect sensitive content

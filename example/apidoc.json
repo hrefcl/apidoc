@@ -12,7 +12,7 @@
   },
   "input": ["example"],
   "login": {
-    "active": true,
+    "active": false,
     "urlAuth": "https://bifrost.cleverty.app/sign-in",
     "value_form": {
       "email": "email",
