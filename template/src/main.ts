@@ -1591,6 +1591,9 @@ function init() {
 
     // Initialize collapsible functionality
     initializeCollapsibleFunctionality();
+
+    // Initialize copy URL functionality
+    initializeCopyUrlFunctionality();
 }
 
 /**
@@ -1886,7 +1889,106 @@ function toggleEndpointCollapse(summary: Element, content: Element, article: Ele
     }
 }
 
+/**
+ * Initialize URL copy functionality
+ */
+function initializeCopyUrlFunctionality() {
+    try {
+        console.log('🔄 Initializing copy URL functionality...');
+
+        // Add event listeners to all copy URL buttons
+        const copyButtons = document.querySelectorAll('.copy-url-btn');
+        copyButtons.forEach(button => {
+            button.addEventListener('click', handleCopyUrl);
+        });
+
+        console.log(`✅ Copy URL functionality initialized for ${copyButtons.length} buttons`);
+    } catch (error) {
+        console.error('❌ Error initializing copy URL functionality:', error);
+    }
+}
+
+/**
+ * Handle copy URL button click
+ */
+function handleCopyUrl(event: Event) {
+    const button = event.target as HTMLElement;
+    const url = button.getAttribute('data-url');
+
+    if (!url) {
+        console.warn('⚠️ No URL found for copy button');
+        return;
+    }
+
+    try {
+        // Use modern clipboard API if available
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(url).then(() => {
+                showCopyFeedback(button, 'copied!');
+            }).catch(() => {
+                // Fallback to older method
+                fallbackCopyToClipboard(url, button);
+            });
+        } else {
+            // Fallback for older browsers or non-secure contexts
+            fallbackCopyToClipboard(url, button);
+        }
+    } catch (error) {
+        console.error('❌ Error copying URL:', error);
+        showCopyFeedback(button, 'Copy failed');
+    }
+}
+
+/**
+ * Fallback copy method for older browsers
+ */
+function fallbackCopyToClipboard(text: string, button: HTMLElement) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+
+        if (successful) {
+            showCopyFeedback(button, 'copied!');
+        } else {
+            showCopyFeedback(button, 'Press Ctrl+C');
+        }
+    } catch (err) {
+        document.body.removeChild(textArea);
+        showCopyFeedback(button, 'Copy failed');
+    }
+}
+
+/**
+ * Show visual feedback for copy action
+ */
+function showCopyFeedback(button: HTMLElement, message: string) {
+    const originalText = button.innerHTML;
+    const originalClasses = button.className;
+
+    // Update button appearance
+    button.innerHTML = `<i class="fa fa-check mr-1"></i>${message}`;
+    button.className = button.className.replace('bg-blue-500 hover:bg-blue-600', 'bg-green-500 hover:bg-green-600');
+    button.setAttribute('disabled', 'true');
+
+    // Restore original appearance after 2 seconds
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.className = originalClasses;
+        button.removeAttribute('disabled');
+    }, 2000);
+}
+
 // Make collapsible functions available globally for debugging
 (window as any).initializeCollapsibleFunctionality = initializeCollapsibleFunctionality;
 (window as any).toggleGroupCollapse = toggleGroupCollapse;
 (window as any).toggleEndpointCollapse = toggleEndpointCollapse;
+(window as any).initializeCopyUrlFunctionality = initializeCopyUrlFunctionality;
