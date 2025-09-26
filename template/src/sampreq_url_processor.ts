@@ -1,14 +1,15 @@
-/*
- * apidocts
- * https://apidocts.com
- * https://apidoc.app
- * Href Spa API Doc (TypeScript version)
+/**
+ * @file URL Parameter Processor for Sample Requests
  *
- * Author: Href Spa <hola@apidoc.app>
- * Copyright (c) 2025 Href SpA
- * Licensed under the MIT license.
+ * Provides URL parameter substitution and query string processing for
+ * interactive sample request functionality. Handles dynamic URL segments
+ * and query parameter injection for testing API endpoints.
  *
- * This project is a TypeScript refactor inspired by the original apidoc project.
+ * @author Href Spa <hola@apidoc.app>
+ * @copyright 2025 Href SpA
+ * @license MIT
+ * @since 4.0.0
+ * @internal
  */
 
 interface QueryParameters {

@@ -1,3 +1,17 @@
+/**
+ * @file File discovery and filtering utility for APIDoc
+ *
+ * Provides recursive file search capabilities with include/exclude
+ * filtering for API documentation source file discovery. Supports
+ * glob patterns and regex filtering for flexible file selection.
+ *
+ * @author Href Spa <hola@apidoc.app>
+ * @copyright 2025 Href SpA
+ * @license MIT
+ * @since 4.0.0
+ * @internal
+ */
+
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import os from 'os';
@@ -6,9 +20,33 @@ import path from 'path';
 import { FileError } from '../errors/file_error';
 
 /**
- * Search files recursively and filter with include and exclude filters
+ * File finder with recursive search and filtering capabilities
  *
- * @class
+ * Recursively searches directories for files matching specified patterns.
+ * Supports both include and exclude filters with glob pattern matching.
+ * Designed for discovering API documentation source files while excluding
+ * unwanted directories like node_modules, tests, and build outputs.
+ *
+ * @example Basic usage
+ * ```typescript
+ * const finder = new FindFiles();
+ * finder.setPath('./src');
+ * finder.setIncludeFilters(['*.js', '*.ts']);
+ * finder.setExcludeFilters(['node_modules', 'test']);
+ * const files = finder.search();
+ * ```
+ *
+ * @example Advanced filtering
+ * ```typescript
+ * const finder = new FindFiles();
+ * finder.setPath('./project');
+ * finder.setIncludeFilters(['**/*.{js,ts}', '**/*.php']);
+ * finder.setExcludeFilters(['**/node_modules/**', '**/dist/**', '**/*.test.*']);
+ * const sourceFiles = finder.search();
+ * ```
+ *
+ * @since 4.0.0
+ * @internal
  */
 function FindFiles() {
     this.path = process.cwd();
@@ -65,10 +103,36 @@ FindFiles.prototype.setIncludeFilters = function (includeFilters) {
 };
 
 /**
- * Search files recursively.
+ * Execute recursive file search with applied filters
  *
- * @returns {Array<string>} An array of file paths matching the include filters and NOT excluded by the exclude filters.
- * @memberof FindFiles
+ * Performs a recursive directory traversal starting from the configured path,
+ * applying include and exclude filters to find matching files. Returns an
+ * array of absolute file paths that match the criteria.
+ *
+ * @returns Array of absolute file paths matching the filter criteria
+ *
+ * @throws {FileError} When the search path doesn't exist or is inaccessible
+ * @throws {Error} When file system operations fail
+ *
+ * @example Simple search
+ * ```typescript
+ * const finder = new FindFiles();
+ * finder.setPath('./src');
+ * const files = finder.search();
+ * // Returns: ['/absolute/path/to/src/file1.js', '/absolute/path/to/src/file2.ts']
+ * ```
+ *
+ * @example Filtered search
+ * ```typescript
+ * const finder = new FindFiles();
+ * finder.setPath('./project');
+ * finder.setIncludeFilters(['*.js', '*.ts']);
+ * finder.setExcludeFilters(['node_modules', '*.test.*']);
+ * const sourceFiles = finder.search();
+ * ```
+ *
+ * @since 4.0.0
+ * @internal
  */
 FindFiles.prototype.search = function () {
     const self = this;

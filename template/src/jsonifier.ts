@@ -1,32 +1,88 @@
-/*
- * apidocts
- * https://apidocts.com
- * https://apidoc.app
- * Href Spa API Doc (TypeScript version)
+/**
+ * @file JSON Generation Utilities for APIDoc Template
  *
- * Author: Href Spa <hola@apidoc.app>
- * Copyright (c) 2025 Href SpA
- * Licensed under the MIT license.
+ * Provides utilities for converting API parameter definitions into formatted
+ * JSON objects for documentation examples. Handles complex nested structures,
+ * arrays, and type-based value generation for creating realistic API examples.
  *
- * This project is a TypeScript refactor inspired by the original apidoc project.
+ * Features:
+ * - Type-aware JSON generation
+ * - Nested object and array support
+ * - Default value handling
+ * - Locale-aware date formatting
+ * - Pretty-printed JSON output
+ *
+ * @author Href Spa <hola@apidoc.app>
+ * @copyright 2025 Href SpA
+ * @license MIT
+ * @since 4.0.0
+ * @internal
  */
 
+/**
+ * Represents a field item with metadata for JSON generation
+ *
+ * @since 4.0.0
+ * @internal
+ */
 interface FieldItem {
+    /** Parent node information for nested structures */
     parentNode?: {
+        /** Path to the parent node */
         path: string;
     };
+    /** Field name/key */
     field: string;
+    /** Data type (String, Number, Boolean, Object, Array, etc.) */
     type: string;
+    /** Whether this field is optional */
     optional?: boolean;
 }
 
+/**
+ * Represents a context entry for JSON body generation
+ *
+ * @since 4.0.0
+ * @internal
+ */
 interface ContextEntry {
+    /** Data type for the field */
     type: string;
+    /** Default value to use if no type-specific value is generated */
     defaultValue?: any;
 }
 
+/**
+ * Tuple representing a field and its value for JSON generation
+ *
+ * @since 4.0.0
+ * @internal
+ */
 type FieldEntry = [FieldItem, any];
 
+/**
+ * Convert field entries to a formatted JSON string
+ *
+ * Takes an array of field definitions and their values, builds a nested
+ * object structure, and returns a formatted JSON string. Handles complex
+ * nested objects, arrays, and optional field optimization.
+ *
+ * @param items - Array of field entries with metadata and values
+ * @returns Formatted JSON string representation
+ *
+ * @example Basic usage
+ * ```typescript
+ * const fields: FieldEntry[] = [
+ *   [{ field: 'name', type: 'String' }, 'John Doe'],
+ *   [{ field: 'age', type: 'Number' }, 30]
+ * ];
+ * fieldsToJson(fields);
+ * // Returns: '{\n    "name": "John Doe",\n    "age": 30\n}'
+ * ```
+ *
+ * @since 4.0.0
+ * @internal
+ */
 const fieldsToJson = (items: FieldEntry[]): string => {
     let obj: any = {};
 
@@ -85,20 +141,62 @@ const fieldsToJson = (items: FieldEntry[]): string => {
 };
 
 /**
- * Stringify an object to JSON, with spaces.
- * @param obj - Object converted into JSON
- * @returns Formatted JSON string
+ * Format an object as a pretty-printed JSON string
+ *
+ * Converts a JavaScript object to a formatted JSON string with 4-space
+ * indentation for better readability in documentation examples.
+ *
+ * @param obj - Object to convert to formatted JSON
+ * @returns Pretty-printed JSON string with 4-space indentation
+ *
+ * @example Format an object
+ * ```typescript
+ * const data = { name: 'John', age: 30 };
+ * beautify(data);
+ * // Returns:
+ * // {
+ * //     "name": "John",
+ * //     "age": 30
+ * // }
+ * ```
+ *
+ * @since 4.0.0
+ * @public
  */
 function beautify(obj: any): string {
     return JSON.stringify(obj, null, 4);
 }
 
 /**
- * Converts a given context of entries into a JSON object.
- * @param context - An array of entries where each entry details a
- *     field, its type, and optionally its default value.
- * @returns JSON of the fields defined in context. Each field
- *     is assigned a value based on its type and defaultValue.
+ * Generate JSON from API parameter context definitions
+ *
+ * Takes an array of parameter definitions and generates appropriate
+ * example values based on their types. Supports various data types
+ * including String, Number, Boolean, and Date with locale-aware formatting.
+ *
+ * @param context - Array of parameter definitions with types and default values
+ * @returns Formatted JSON string with generated example values
+ *
+ * @example Generate JSON from parameters
+ * ```typescript
+ * const context: ContextEntry[] = [
+ *   { type: 'String', defaultValue: 'John Doe' },
+ *   { type: 'Number', defaultValue: '25' },
+ *   { type: 'Boolean', defaultValue: 'true' },
+ *   { type: 'Date' }
+ * ];
+ * body2json(context);
+ * // Returns:
+ * // {
+ * //     "param1": "John Doe",
+ * //     "param2": 25,
+ * //     "param3": true,
+ * //     "param4": "1/15/2025"
+ * // }
+ * ```
+ *
+ * @since 4.0.0
+ * @public
  */
 function body2json(context: ContextEntry[]): string {
     // build an array of fields with their type

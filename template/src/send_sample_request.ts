@@ -1,14 +1,22 @@
-/*
- * apidocts
- * https://apidocts.com
- * https://apidoc.app
- * Href Spa API Doc (TypeScript version)
+/**
+ * @file Sample Request Handler for APIDoc Template
  *
- * Author: Href Spa <hola@apidoc.app>
- * Copyright (c) 2025 Href SpA
- * Licensed under the MIT license.
+ * Provides interactive sample request functionality for API documentation.
+ * Enables users to test API endpoints directly from the documentation interface
+ * with form-based parameter input and real-time response display.
  *
- * This project is a TypeScript refactor inspired by the original apidoc project.
+ * Features:
+ * - Interactive form-based API testing
+ * - Real-time parameter validation
+ * - Response formatting and syntax highlighting
+ * - Support for headers, query parameters, and request bodies
+ * - URL parameter substitution and hydration
+ *
+ * @author Href Spa <hola@apidoc.app>
+ * @copyright 2025 Href SpA
+ * @license MIT
+ * @since 4.0.0
+ * @internal
  */
 
 import $ from 'jquery';
@@ -20,7 +28,22 @@ import { UrlProcessor } from './sampreq_url_processor';
 import hljs from 'highlight.js';
 
 /**
- * Initialize event listeners for sample request buttons, enabling the send and clear functionality.
+ * Initialize interactive sample request functionality
+ *
+ * Sets up event listeners for sample request buttons across all API endpoints
+ * in the documentation. Enables users to send test requests and clear forms.
+ * Must be called after the DOM is ready and API documentation is rendered.
+ *
+ * @example Usage in template initialization
+ * ```typescript
+ * $(document).ready(() => {
+ *   initSampleRequest();
+ *   // Other initialization code...
+ * });
+ * ```
+ *
+ * @since 4.0.0
+ * @internal
  */
 function initSampleRequest() {
     // Button send
@@ -47,25 +70,55 @@ function initSampleRequest() {
 }
 
 /**
- * Convert path params in the {param} format to the accepted :param format,
+ * Convert path parameters from {param} to :param format
  *
- * Converts path parameters in a URL from curly brace notation to colon notation.
- * For example, replaces `{param}` with `:param`. Used before inserting the URL params.
- * @param {string} url - URL containing path parameters in curly brace notation.
- * @returns {string} URL with path parameters converted to colon notation.
+ * Transforms URL path parameters from curly brace notation to colon notation
+ * for compatibility with the URL processor. This is required before parameter
+ * substitution can be performed.
+ *
+ * @param url - URL string containing path parameters in curly brace notation
+ * @returns URL string with path parameters converted to colon notation
+ *
+ * @example Basic conversion
+ * ```typescript
+ * convertPathParams('/users/{id}/posts/{postId}')
+ * // Returns: '/users/:id/posts/:postId'
+ * ```
+ *
+ * @example No parameters
+ * ```typescript
+ * convertPathParams('/users')
+ * // Returns: '/users'
+ * ```
+ *
+ * @since 4.0.0
+ * @internal
  */
 function convertPathParams(url) {
     return url.replace(/{(.+?)}/g, ':$1');
 }
 
 /**
- * Process a base URL with path parameters and query parameters and return a hydrated URL.
+ * Generate a complete URL with substituted parameters from user input
  *
- * For example, https://example.org/:path/:id in https://example.org/some-path/42
- * Based on query parameters collected
- * @param {object} root - Root DOM element to find the user-inputted URL.
- * @param {object} queryParameters - Key-value pairs to use for hydrating the URL.
- * @returns {string} - Hydrated URL with query parameters applied.
+ * Takes a base URL template and replaces path parameters with actual values
+ * collected from the form. Also appends query parameters as needed.
+ * The URL is retrieved from the sample request form in the DOM.
+ *
+ * @param root - jQuery DOM element containing the sample request form
+ * @param queryParameters - Object containing parameter name-value pairs for URL hydration
+ * @returns Complete URL string with all parameters substituted
+ *
+ * @example URL parameter substitution
+ * ```typescript
+ * // Form contains URL: '/users/:id/posts/:postId'
+ * // Parameters: { id: '123', postId: '456', limit: '10' }
+ * getHydratedUrl(formRoot, parameters)
+ * // Returns: '/users/123/posts/456?limit=10'
+ * ```
+ *
+ * @since 4.0.0
+ * @internal
  */
 function getHydratedUrl(root, queryParameters) {
     // grab user-inputted URL
@@ -78,19 +131,29 @@ function getHydratedUrl(root, queryParameters) {
 }
 
 /**
- * Collect and organize input values from a given DOM root element based on specified
- * data-family attributes.
+ * Collect all form input values organized by parameter type
  *
- * - Grabs values from different inputs
- * - The url in this object is already hydrated from query parameters
- * @param {object} root - DOM root element to collect values from. Expected to use jQuery for DOM
- *     traversal and manipulation.
- * @returns {{
- *     header: { name: string, value: * },
- *     query: { name: string, value: * },
- *     body: { name: string, value: * },
- *     url: string }} Object containing collected parameters organized by family types ('header',
- *     'query', 'body'), including additional processing for checkboxes and optional fields.
+ * Scans the sample request form and extracts all user-entered values,
+ * organizing them by parameter family (header, query, body). Handles
+ * special input types like checkboxes and provides proper value conversion.
+ *
+ * @param root - jQuery DOM element containing the sample request form
+ * @returns Object containing organized parameter values and hydrated URL
+ *
+ * @example Collected values structure
+ * ```typescript
+ * const values = collectValues(formRoot);
+ * // Returns:
+ * {
+ *   header: { 'Authorization': 'Bearer token', 'Content-Type': 'application/json' },
+ *   query: { 'limit': '10', 'offset': '0' },
+ *   body: { 'name': 'John', 'email': 'john@example.com' },
+ *   url: '/users/123?limit=10&offset=0'
+ * }
+ * ```
+ *
+ * @since 4.0.0
+ * @internal
  */
 function collectValues(root) {
     const parameters = {};
@@ -136,14 +199,25 @@ function collectValues(root) {
 }
 
 /**
- * Send a sample HTTP request based on provided parameters and display the response.
- * @param {string} group - Group of the sample request, used to locate the corresponding
- *     request element in the DOM.
- * @param {string} name - Name of the sample request, used to locate the corresponding
- *     request element in the DOM.
- * @param {string} version - Version of the sample request, used to locate the
- *     corresponding request element in the DOM.
- * @param {string} method - HTTP method to use for the request (e.g., GET, POST, PUT, DELETE).
+ * Execute a sample API request and display the response
+ *
+ * Collects form data, builds an HTTP request, sends it to the API endpoint,
+ * and displays the formatted response in the documentation interface.
+ * Handles different content types and provides syntax-highlighted output.
+ *
+ * @param group - API group identifier for DOM element selection
+ * @param name - API endpoint name for DOM element selection
+ * @param version - API version for DOM element selection
+ * @param method - HTTP method to use for the request
+ *
+ * @example Send a sample request
+ * ```typescript
+ * // Triggered by clicking "Send" button on a GET /users/:id endpoint
+ * sendSampleRequest('User', 'GetUser', '1.0.0', 'GET');
+ * ```
+ *
+ * @since 4.0.0
+ * @internal
  */
 function sendSampleRequest(group, name, version, method) {
     // root is the current sample request block, all is scoped within this block
@@ -241,13 +315,24 @@ function sendSampleRequest(group, name, version, method) {
 }
 
 /**
- * Clear the sample request section for a specific API endpoint.
+ * Reset the sample request form to its initial state
  *
- * Includes resetting parameter inputs, hiding response elements, and restoring the default
- * request URL.
- * @param {string} group - Group name of the API endpoint.
- * @param {string} name - Name of the API endpoint.
- * @param {string} version - Version of the API endpoint.
+ * Clears all user input from the sample request form, hides response
+ * sections, and restores default values. Provides a clean slate for
+ * testing different parameter combinations.
+ *
+ * @param group - API group identifier for DOM element selection
+ * @param name - API endpoint name for DOM element selection
+ * @param version - API version for DOM element selection
+ *
+ * @example Clear a sample request form
+ * ```typescript
+ * // Triggered by clicking \"Clear\" button
+ * clearSampleRequest('User', 'GetUser', '1.0.0');
+ * ```
+ *
+ * @since 4.0.0
+ * @internal
  */
 function clearSampleRequest(group, name, version) {
     const root = $('article[data-group="' + group + '"][data-name="' + name + '"][data-version="' + version + '"]');

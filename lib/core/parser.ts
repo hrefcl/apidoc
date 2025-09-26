@@ -1,14 +1,23 @@
-/*
- * apidocts
- * https://apidocts.com
- * https://apidoc.app
- * Href Spa API Doc (TypeScript version)
+/**
+ * @file Core Parser Engine for APIDoc 4.0
  *
- * Author: Href Spa <hola@apidoc.app>
- * Copyright (c) 2025 Href SpA
- * Licensed under the MIT license.
+ * The main parsing engine that processes source code files to extract API documentation.
+ * Handles file discovery, language detection, comment extraction, and API tag parsing.
+ * This is the core component that powers the entire APIDoc documentation generation system.
  *
- * This project is a TypeScript refactor inspired by the original apidoc project.
+ * Features:
+ * - Multi-language source code parsing (JavaScript, TypeScript, PHP, etc.)
+ * - Recursive file search with include/exclude filtering
+ * - Block-based API comment extraction
+ * - Plugin-based parser architecture
+ * - Error handling and validation
+ * - Markdown processing support
+ *
+ * @author Href Spa <hola@apidoc.app>
+ * @copyright 2025 Href SpA
+ * @license MIT
+ * @since 4.0.0
+ * @public
  */
 
 const { isObject, get, set, extend } = require('lodash');

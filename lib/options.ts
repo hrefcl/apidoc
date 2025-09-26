@@ -1,18 +1,23 @@
-/*
- * apidocts
- * https://apidocts.com
- * https://apidoc.app
- * Href Spa API Doc (TypeScript version)
- *
- * Author: Href Spa <hola@apidoc.app>
- * Copyright (c) 2025 Href SpA
- * Licensed under the MIT license.
- *
- * This project is a TypeScript refactor inspired by the original apidoc project.
- */
-
 /**
- * All about options
+ * @file Configuration Options Processing for APIDoc 4.0
+ *
+ * Handles configuration option processing, validation, and normalization.
+ * Merges user-provided options with defaults, validates paths, and processes
+ * configuration files to create a complete configuration object for the
+ * documentation generation process.
+ *
+ * Features:
+ * - Default configuration values
+ * - Configuration file processing (apidoc.json)
+ * - Path normalization and validation
+ * - Option merging and inheritance
+ * - Type-safe configuration handling
+ *
+ * @author Href Spa <hola@apidoc.app>
+ * @copyright 2025 Href SpA
+ * @license MIT
+ * @since 4.0.0
+ * @public
  */
 import * as fs from 'fs';
 import { defaults } from 'lodash';
