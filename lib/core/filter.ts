@@ -22,7 +22,7 @@ let app: any = {};
  * Clean up the data, e.g.: remove double fields. This happens when overwriting a global
  * inherited field with a local definition.
  *
- * @param {object} _app - Application instance
+ * @param _app - Application instance
  * @class
  */
 function Filter(_app) {
@@ -56,8 +56,8 @@ util.inherits(Filter, Object);
 /**
  * Add Filter
  *
- * @param {string} name - Filter name
- * @param {object} filter
+ * @param name - Filter name
+ * @param filter
  * @memberof Filter
  */
 Filter.prototype.addFilter = function (name, filter) {
@@ -67,8 +67,8 @@ Filter.prototype.addFilter = function (name, filter) {
 /**
  * Execute filter
  *
- * @param {Array<object>} parsedFiles - Array of parsed files
- * @param {Array<string>} parsedFilenames - Array of parsed filenames
+ * @param parsedFiles - Array of parsed files
+ * @param parsedFilenames - Array of parsed filenames
  * @returns {Array<object>} - Array of filtered blocks
  * @memberof Filter
  */

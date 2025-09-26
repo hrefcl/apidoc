@@ -96,7 +96,7 @@ const regExp = {
 /**
  * Flatten all string values within an object, and nested objects, into a single concatenated string.
  *
- * @param {object} obj - The input object whose string values need to be concatenated.
+ * @param obj - The input object whose string values need to be concatenated.
  * @returns {string}
  * @private
  */
@@ -116,7 +116,7 @@ function _objectValuesToString(obj) {
  * Retrieve the parent node object of a given field by traversing the field string
  * to find a matching path in the parent object.
  *
- * @param {string} field - The string representing the field path to search for a parent node.
+ * @param field - The string representing the field path to search for a parent node.
  * @returns {{ path: string }|undefined}
  * @private
  */
@@ -142,9 +142,9 @@ const allowedValuesRegExp = /[^,\s]+/g;
 /**
  * Parse to extract API param
  *
- * @param {string} content Raw input string to be parsed. May contain line breaks and metadata formatted in a predefined syntax.
- * @param {string} source - UNUSED
- * @param {string} defaultGroup - Name to use if no group is identified in the content.
+ * @param content Raw input string to be parsed. May contain line breaks and metadata formatted in a predefined syntax.
+ * @param source - UNUSED
+ * @param defaultGroup - Name to use if no group is identified in the content.
  * @returns {{
  *     group: string,
  *     type: string,

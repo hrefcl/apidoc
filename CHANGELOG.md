@@ -5,6 +5,53 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.4] - 2025-01-26
+
+### 🎨 Added - Swagger UI-Style Collapsible Interface
+- **NEW**: Complete Swagger UI-inspired collapsible interface system
+- **NEW**: Two-level collapsible hierarchy - groups and individual endpoints
+- **NEW**: Professional endpoint display with HTTP method badges and complete URLs
+- **NEW**: One-click URL copy functionality with modern clipboard integration
+- **NEW**: Visual feedback system for copy actions (green button + checkmark)
+- **NEW**: Configurable collapsible behavior via `apidoc.json` template settings
+- **NEW**: `groupsCollapsible` option for collapsing entire API sections
+- **NEW**: `endpointsCollapsible` option for collapsing individual endpoints
+- **NEW**: Clean method+URL+permissions section for easy navigation
+- **NEW**: Responsive design that works perfectly on mobile devices
+
+### 🚀 Enhanced - User Experience & Navigation
+- **IMPROVED**: Professional API documentation appearance matching modern standards
+- **IMPROVED**: Organized content layout with proper visual hierarchy
+- **IMPROVED**: Fast navigation with instant expand/collapse transitions
+- **IMPROVED**: Developer-friendly URL copying with fallback support for all browsers
+- **IMPROVED**: Permission badges with clean tooltips and proper styling
+- **IMPROVED**: Method color-coding (GET=green, POST=blue, PUT=orange, DELETE=red)
+
+### 🛠️ Technical Implementation
+- **ENHANCED**: TypeScript implementation with comprehensive type safety
+- **ENHANCED**: Modern clipboard API with document.execCommand fallback
+- **ENHANCED**: Event-driven architecture for collapsible functionality
+- **ENHANCED**: Proper ARIA attributes for accessibility compliance
+- **ENHANCED**: TailwindCSS styling with consistent design patterns
+- **ENHANCED**: Font Awesome icons integration for visual clarity
+
+### 📋 Configuration & Documentation
+- **ADDED**: Complete documentation in README.md with configuration examples
+- **ADDED**: Template configuration options with best practices guide
+- **ADDED**: Use case documentation for different API sizes
+- **ADDED**: Visual benefits and features documentation
+- **UPDATED**: Configuration examples showing collapsible settings
+
+### 🧪 Quality Assurance
+- **TESTED**: Full functionality verification with Playwright testing
+- **TESTED**: Cross-browser compatibility for copy functionality
+- **TESTED**: Mobile responsiveness verification
+- **TESTED**: Accessibility compliance testing
+- **VERIFIED**: Clean console logs without errors
+- **VERIFIED**: Proper initialization and cleanup
+
+---
+
 ## [4.0.3] - 2025-01-25
 
 ### 🔄 Updated - Complete Dependency Modernization

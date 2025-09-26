@@ -39,10 +39,10 @@ const _messages = {
  *
  * Processes the parsed files and organizes the data in a structured format.
  *
- * @param {Array<object>} parsedFiles - An array of parsed file objects containing the data blocks.
- * @param {Array<string>} filenames - An array of filenames associated with the parsed files.
- * @param {object} packageInfos - Information about the package, including its default version.
- * @param {string} [target] - Target key/path in preProcess-Object where the processed data will be stored.
+ * @param parsedFiles - An array of parsed file objects containing the data blocks.
+ * @param filenames - An array of filenames associated with the parsed files.
+ * @param packageInfos - Information about the package, including its default version.
+ * @param [target] - Target key/path in preProcess-Object where the processed data will be stored.
  * @returns {object} Processed data organized by the target key.
  */
 function preProcess(parsedFiles: ParsedFile[], filenames: string[], packageInfos: PackageInfos, target?: string): any {
@@ -86,13 +86,13 @@ function preProcess(parsedFiles: ParsedFile[], filenames: string[], packageInfos
  * - matches data definitions
  * - updates field information
  *
- * @param {Array<object>} parsedFiles - Array of objects containing the parsed file data. Each file contains blocks to modify.
- * @param {Array<string>} filenames - Array of filenames associated with the parsed files.
- * @param {Array<object>} preProcess - Pre-processed data source used for matching and updating fields.
- * @param {object} packageInfos - Contains package-specific information such as default version.
- * @param {string} [source] - Source path in preProcess-Object
- * @param {string} [target] - Relative path to the tree (local.), where the data should be modified.
- * @param {object} [messages] - Messages used for error reporting.
+ * @param parsedFiles - Array of objects containing the parsed file data. Each file contains blocks to modify.
+ * @param filenames - Array of filenames associated with the parsed files.
+ * @param preProcess - Pre-processed data source used for matching and updating fields.
+ * @param packageInfos - Contains package-specific information such as default version.
+ * @param [source] - Source path in preProcess-Object
+ * @param [target] - Relative path to the tree (local.), where the data should be modified.
+ * @param [messages] - Messages used for error reporting.
  */
 function postProcess(
     parsedFiles: ParsedFile[],

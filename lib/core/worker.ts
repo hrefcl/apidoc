@@ -19,8 +19,7 @@ let app: any = {};
 /**
  * Set the provided app instance with worker modules.
  *
- * @param {object} _app Application instance
- * @class
+ * @param _app Application instance
  */
 function Worker(_app) {
     const self = this;
@@ -53,8 +52,8 @@ util.inherits(Worker, Object);
 /**
  * Add a worker to the "workers" collection.
  *
- * @param {string} name - Name of the worker to be added.
- * @param {object} worker - Object assigned to the passed name.
+ * @param name - Name of the worker to be added.
+ * @param worker - Object assigned to the passed name.
  * @memberof Worker.prototype
  */
 Worker.prototype.addWorker = function (name, worker) {
@@ -71,9 +70,9 @@ Worker.prototype.addWorker = function (name, worker) {
  * - Applies transformations (e.g., converting directory delimiters to the standard format).
  * - Invokes pre-processing and post-processing steps for workers, allowing modular operations on the parsed data.
  *
- * @param {Array<Array<object>>} parsedFiles - Array of parsed files, where each file is an array of block objects with global and local configurations.
- * @param {Array<string>} parsedFilenames - Array of filenames corresponding to parsed files. Used to enrich block data with file-specific metadata.
- * @param {object} packageInfos - An object containing package-level information, such as the default version, used to populate block data when specific fields are not provided.
+ * @param parsedFiles - Array of parsed files, where each file is an array of block objects with global and local configurations.
+ * @param parsedFilenames - Array of filenames corresponding to parsed files. Used to enrich block data with file-specific metadata.
+ * @param packageInfos - An object containing package-level information, such as the default version, used to populate block data when specific fields are not provided.
  * @memberof Worker.prototype
  * @todo Add priority system (if needed), if a plugin need an other operation to be done before.
  */

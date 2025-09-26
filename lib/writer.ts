@@ -53,11 +53,7 @@ class Writer {
      * Creates a new Writer instance for generating documentation output
      *
      * @param api - Parsed API data and project information from the core parser
-     * @param api.data - JSON string containing the parsed API endpoints and documentation
-     * @param api.project - JSON string containing project metadata (name, version, etc.)
      * @param app - Application context containing shared instances and configuration
-     * @param app.log - Logger instance for output and debugging
-     * @param app.options - Application options including source paths, destination, etc.
      * @param cacheBustingQueryParam - Cache-busting query parameter for static assets.
      *   Defaults to current timestamp to ensure fresh assets on each build.
      *
@@ -146,7 +142,7 @@ class Writer {
      * Attempt to locate the specified asset file path and retrieve its resolved path.
      * If the file cannot be resolved, an error is logged.
      *
-     * @param {string} assetPath - Relative file path of the asset to find.
+     * @param assetPath - Relative file path of the asset to find.
      * @returns {string|undefined} Return the resolved file path
      * @memberof Writer
      */
@@ -277,7 +273,7 @@ class Writer {
     /**
      * Run the bundler to create a bundled JS file using esbuild.
      *
-     * @param {string} outputPath - Path where the bundler will output
+     * @param outputPath - Path where the bundler will output
      * @returns {Promise<string>} Resolves with the output path upon successful bundling,
      *     or rejects with an error if the bundling process fails.
      * @memberof Writer
@@ -515,8 +511,8 @@ class Writer {
     /**
      * Write a JSON file with the provided data.
      *
-     * @param {string} dest - Destination file path where the file will be written.
-     * @param {string} data - File data
+     * @param dest - Destination file path where the file will be written.
+     * @param data - File data
      * @memberof Writer
      */
     writeJsonFile(dest, data) {
@@ -527,8 +523,8 @@ class Writer {
     /**
      * Write a JS file with the provided data.
      *
-     * @param {string} dest - Destination file path where the file will be written.
-     * @param {string} data - File data
+     * @param dest - Destination file path where the file will be written.
+     * @param data - File data
      * @memberof Writer
      */
     writeJSFile(dest, data) {
@@ -549,7 +545,7 @@ class Writer {
     /**
      * Copy all highlight.js themes for dynamic theme loading
      *
-     * @param {string} assetsPath - Path to the assets directory
+     * @param assetsPath - Path to the assets directory
      * @memberof Writer
      */
     copyHighlightThemes(assetsPath) {
@@ -594,7 +590,7 @@ class Writer {
     /**
      * Create a directory
      *
-     * @param {string} dir - Path of the directory to create
+     * @param dir - Path of the directory to create
      * @memberof Writer
      */
     createDir(dir) {

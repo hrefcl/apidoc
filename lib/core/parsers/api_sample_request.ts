@@ -3,7 +3,7 @@
  *
  * Trims whitespace
  *
- * @param {string} content - The content to be parsed.
+ * @param content - The content to be parsed.
  * @returns {{url: string}|null}
  */
 function parse(content) {

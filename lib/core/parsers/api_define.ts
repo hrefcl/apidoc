@@ -22,10 +22,10 @@ const _messages = {
 /**
  * Parse to extract API define. Throw a `ParameterError` if the content is improperly formatted.
  *
- * @param {string} content - Content to be parsed. Must follow a specific format: name, optional title,
+ * @param content - Content to be parsed. Must follow a specific format: name, optional title,
  *     and description, separated by spaces or line breaks.
- * @param {object} source - UNUSED
- * @param {object} [messages] - Object containing configuration messages, can include error messages. If not provided, a default `_messages` object is used.
+ * @param source - UNUSED
+ * @param [messages] - Object containing configuration messages, can include error messages. If not provided, a default `_messages` object is used.
  * @returns {{ name: string, title: string, description: string }|null}
  */
 function parse(content, source, messages) {

@@ -30,7 +30,7 @@ let filterTag = null; // define the tag to filter by
  *
  * Manage and load languages, parsers, and related configurations.
  *
- * @param {object} _app - Application instance
+ * @param _app - Application instance
  * @class
  */
 function Parser(_app) {
@@ -98,8 +98,8 @@ util.inherits(Parser, Object);
 /**
  * Add a new programming, or spoken language, to the existing collection.
  *
- * @param {string} name - Key for the language being added.
- * @param {string|object} language - Language object associated with the provided name.
+ * @param name - Key for the language being added.
+ * @param language - Language object associated with the provided name.
  * @memberof Parser
  */
 Parser.prototype.addLanguage = function (name, language) {
@@ -111,8 +111,8 @@ Parser.prototype.addLanguage = function (name, language) {
  *
  * Enables the extension or customization of parsing behavior.
  *
- * @param {string} name - Unique identifier for the parser.
- * @param {Function} parser - Function that defines the parser behavior.
+ * @param name - Unique identifier for the parser.
+ * @param parser - Function that defines the parser behavior.
  * @memberof Parser
  */
 Parser.prototype.addParser = function (name, parser) {
@@ -122,9 +122,9 @@ Parser.prototype.addParser = function (name, parser) {
 /**
  * Parse files in specified folder
  *
- * @param {object} options The options used to parse and filter the files.
- * @param {Array<object>} parsedFiles List of parsed files.
- * @param {Array<string>} parsedFilenames List of parsed files, with full path.
+ * @param options The options used to parse and filter the files.
+ * @param parsedFiles List of parsed files.
+ * @param parsedFilenames List of parsed files, with full path.
  * @memberof Parser
  */
 Parser.prototype.parseFiles = function (options, parsedFiles, parsedFilenames) {
@@ -151,8 +151,8 @@ Parser.prototype.parseFiles = function (options, parsedFiles, parsedFilenames) {
 /**
  * Execute file parsing
  *
- * @param {string} filename - Name of the file to be parsed, including its path.
- * @param {string} [encoding='utf8'] - The encoding to be used for processing the file.
+ * @param filename - Name of the file to be parsed, including its path.
+ * @param [encoding='utf8'] - The encoding to be used for processing the file.
  * @returns {object|boolean|void|*}
  * @throws {Error} If the file cannot be read or processed.
  * @memberof Parser
@@ -203,9 +203,9 @@ Parser.prototype.parseFile = function (filename, encoding) {
  * - Logs the number of identified blocks.
  * - Logs the number of elements in each block.
  *
- * @param {Buffer|string} fileContent - Content to be parsed.
- * @param {string} encoding - Content character encoding
- * @param {string} filename - Name of the file being parsed.
+ * @param fileContent - Content to be parsed.
+ * @param encoding - Content character encoding
+ * @param filename - Name of the file being parsed.
  * @returns {Array<object>|undefined} Return an array of parsed blocks containing API elements, or undefined
  *     if no blocks or elements were found.
  * @memberof Parser
@@ -260,9 +260,9 @@ Parser.prototype.parseSource = function (fileContent, encoding, filename) {
  * - Supports markdown rendering for specified fields within each element.
  * - Allows flexible configuration for adding parsed values to global or local paths within the block data.
  *
- * @param {Array<number>} indexApiBlocks - Array of indices representing definition blocks to parse.
- * @param {object} detectedElements - An object mapping block indices to detected elements.
- * @param {string} filename - Name of the file being parsed, used for logging and error purposes.
+ * @param indexApiBlocks - Array of indices representing definition blocks to parse.
+ * @param detectedElements - An object mapping block indices to detected elements.
+ * @param filename - Name of the file being parsed, used for logging and error purposes.
  * @returns {Array<object>} - Array of parsed block objects containing globally and locally processed data.
  * @throws {ParserError} - Throw a `ParserError` when parsing fails due to invalid configurations,
  *     empty results, or unsupported options in the block elements and paths.
@@ -517,9 +517,9 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
 /**
  * Create a nonexisting path in an object.
  *
- * @param {object} src - The source object where the path will be created.
- * @param {string} path - The dot-separated string defining the path in the source object.
- * @param {string} [attachMethod] - An optional method to define the behavior for the final path, such as
+ * @param src - The source object where the path will be created.
+ * @param path - The dot-separated string defining the path in the source object.
+ * @param [attachMethod] - An optional method to define the behavior for the final path, such as
  *     initializing an empty array (e.g., 'push'). Create last element as object or array: 'insert', 'push'
  * @returns {object|Array} - The object or array corresponding to the final path in the hierarchy.
  * @memberof Parser
@@ -549,9 +549,9 @@ Parser.prototype._createObjectPath = function (src, path, attachMethod) {
  *
  * Retrieves the value of a nested property from a source object.
  *
- * @param {string} path - A dot-separated string representing the path to navigate within the source object.
+ * @param path - A dot-separated string representing the path to navigate within the source object.
  *    If undefined or null, the entire source object is returned.
- * @param {object} src - The source object to search
+ * @param src - The source object to search
  * @returns {object|*} - The value of the property at the specified path, or the source object if the path is not provided.
  * @memberof Parser
  */
@@ -611,7 +611,7 @@ Parser.prototype._findBlocks = function () {
  * An @apiIgnore ignores the block.
  * Other, non @api elements, will be ignored.
  *
- * @param {Array<object>} blocks - Array of block elements to be analyzed and filtered.
+ * @param blocks - Array of block elements to be analyzed and filtered.
  *     Each block is an array of objects, where each object contains metadata, including names and content.
  * @returns {Array<number>} - An array of integers representing the indexes of blocks.
  * @memberof Parser
@@ -675,9 +675,9 @@ Parser.prototype._findBlockWithApiGetIndex = function (blocks) {
  * Extracts and processes elements defined with the `@api` tag from a block of text.
  * And trigger "hooks" for additional customization during the extraction process.
  *
- * @param {string} block - A string block of text that contains the elements to extract.
+ * @param block - A string block of text that contains the elements to extract.
  *                        Linebreaks are temporarily replaced with a Unicode character for parsing.
- * @param {string} filename - The name of the file being processed. Used for context within the hooks.
+ * @param filename - The name of the file being processed. Used for context within the hooks.
  * @returns {Array<{source: string, name: string, sourceName: string, content: string}>} - An array of
  *     extracted elements. Each element is an object containing:
  *     - `source` {string}: The entire matched string including the `@api` annotation and its content.
@@ -723,9 +723,9 @@ Parser.prototype.findElements = function (block, filename) {
 /**
  * Emit warnings through the logger instance for inconsistent API doc elements.
  *
- * @param {Array<object>} parsedBlocks - An array of parsed block objects containing API documentation data.
- * @param {object} log - A logger instance used to emit warnings or errors during the sanity checks.
- * @param {string} filename - The name of the file being processed for generating documentation.
+ * @param parsedBlocks - An array of parsed block objects containing API documentation data.
+ * @param log - A logger instance used to emit warnings or errors during the sanity checks.
+ * @param filename - The name of the file being processed for generating documentation.
  * @private
  */
 function _sanityChecks(parsedBlocks, log, filename) {
@@ -786,7 +786,7 @@ function _sanityChecks(parsedBlocks, log, filename) {
 /**
  * Process an object and extract all parameter fields across all field groups.
  *
- * @param {object} block - The block object containing parameter field information. It is expected to have a structure that includes `local.parameter.fields`.
+ * @param block - The block object containing parameter field information. It is expected to have a structure that includes `local.parameter.fields`.
  * @returns {Array<object>} Array of parameter fields extracted from the block object. If no fields are present, an empty array is returned.
  * @private
  */

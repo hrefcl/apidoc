@@ -1,7 +1,7 @@
 /**
  * Removes the common leading whitespace from every line in the given string.
  *
- * @param {string} str - The input string where indentation should be removed.
+ * @param str - The input string where indentation should be removed.
  * @returns {string} The unindented string with common leading spaces removed.
  */
 function unindent(str) {

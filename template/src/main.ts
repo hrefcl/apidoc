@@ -1747,6 +1747,28 @@ function initManualDropdownFallback() {
 
 /**
  * Initialize Swagger UI style collapsible functionality
+ *
+ * Sets up a two-level collapsible hierarchy for API documentation:
+ * - Group level: Collapse entire API sections (Users, Products, etc.)
+ * - Endpoint level: Collapse individual API endpoints within groups
+ *
+ * The collapsible behavior is controlled by template configuration:
+ * - `groupsCollapsible`: Enables group-level collapsing
+ * - `endpointsCollapsible`: Enables endpoint-level collapsing
+ *
+ * @remarks
+ * This function provides a modern Swagger UI-inspired interface that improves
+ * navigation for large API documentations. It includes proper ARIA attributes
+ * for accessibility and smooth transitions for enhanced user experience.
+ *
+ * @example
+ * ```typescript
+ * // Automatically called during page initialization
+ * initializeCollapsibleFunctionality();
+ * ```
+ *
+ * @throws {Error} Logs errors to console if initialization fails
+ * @since 4.0.4
  */
 function initializeCollapsibleFunctionality() {
     try {
@@ -1766,6 +1788,28 @@ function initializeCollapsibleFunctionality() {
 
 /**
  * Initialize group-level collapsible functionality
+ *
+ * Sets up collapsible behavior for API group sections (e.g., Users, Products, Orders).
+ * When enabled, entire groups can be collapsed/expanded using the arrow button in the header.
+ *
+ * @remarks
+ * - Groups are expanded by default for immediate access to content
+ * - Only active when `template.groupsCollapsible` is true in configuration
+ * - Adds click handlers to group headers and expand buttons
+ * - Updates ARIA attributes for proper accessibility
+ * - Provides visual feedback with rotating arrow icons
+ *
+ * @example
+ * ```json
+ * // Enable in apidoc.json
+ * {
+ *   "template": {
+ *     "groupsCollapsible": true
+ *   }
+ * }
+ * ```
+ *
+ * @since 4.0.4
  */
 function initializeGroupCollapsibles() {
     // Check if groups should be collapsible
@@ -1891,6 +1935,33 @@ function toggleEndpointCollapse(summary: Element, content: Element, article: Ele
 
 /**
  * Initialize URL copy functionality
+ *
+ * Sets up one-click URL copying for API endpoints. Attaches event listeners to all
+ * copy buttons that allow users to quickly copy complete endpoint URLs to clipboard.
+ *
+ * @remarks
+ * Features:
+ * - Modern Clipboard API with fallback for older browsers
+ * - Visual feedback with button state changes (blue → green with checkmark)
+ * - Cross-browser compatibility including non-secure contexts
+ * - Error handling with appropriate user feedback
+ * - Automatic button restoration after 2 seconds
+ *
+ * The copy buttons are automatically generated in the template with:
+ * - Class: `.copy-url-btn` for event binding
+ * - Attribute: `data-url` containing the complete endpoint URL
+ * - Icon: Font Awesome copy icon with text label
+ *
+ * @example
+ * ```html
+ * <!-- Template generates buttons like this -->
+ * <button class="copy-url-btn" data-url="https://api.example.com/users/123">
+ *   <i class="fa fa-copy"></i> Copy
+ * </button>
+ * ```
+ *
+ * @throws {Error} Logs errors to console if initialization fails
+ * @since 4.0.4
  */
 function initializeCopyUrlFunctionality() {
     try {
@@ -1910,6 +1981,27 @@ function initializeCopyUrlFunctionality() {
 
 /**
  * Handle copy URL button click
+ *
+ * Processes click events on copy URL buttons to copy endpoint URLs to clipboard.
+ * Uses modern Clipboard API when available, falls back to older methods for compatibility.
+ *
+ * @param event - The click event from the copy button
+ *
+ * @remarks
+ * Process flow:
+ * 1. Extract URL from button's `data-url` attribute
+ * 2. Attempt modern clipboard API (secure contexts)
+ * 3. Fall back to `document.execCommand` method if needed
+ * 4. Show visual feedback regardless of method used
+ * 5. Handle errors gracefully with user-friendly messages
+ *
+ * @example
+ * ```typescript
+ * // Automatically attached to copy buttons
+ * button.addEventListener('click', handleCopyUrl);
+ * ```
+ *
+ * @since 4.0.4
  */
 function handleCopyUrl(event: Event) {
     const button = event.target as HTMLElement;
@@ -1969,6 +2061,30 @@ function fallbackCopyToClipboard(text: string, button: HTMLElement) {
 
 /**
  * Show visual feedback for copy action
+ *
+ * Provides immediate visual feedback when users copy URLs by temporarily changing
+ * the button appearance and text to indicate success or failure.
+ *
+ * @param button - The copy button element to provide feedback on
+ * @param message - The feedback message to display (e.g., 'copied!', 'Copy failed')
+ *
+ * @remarks
+ * Visual changes applied:
+ * - Changes button text to include checkmark icon and message
+ * - Updates button color from blue to green for success states
+ * - Disables button temporarily to prevent rapid clicking
+ * - Automatically restores original appearance after 2 seconds
+ *
+ * The function preserves the original button state and restores it completely,
+ * ensuring no permanent changes to the UI.
+ *
+ * @example
+ * ```typescript
+ * showCopyFeedback(copyButton, 'copied!');     // Success feedback
+ * showCopyFeedback(copyButton, 'Copy failed'); // Error feedback
+ * ```
+ *
+ * @since 4.0.4
  */
 function showCopyFeedback(button: HTMLElement, message: string) {
     const originalText = button.innerHTML;

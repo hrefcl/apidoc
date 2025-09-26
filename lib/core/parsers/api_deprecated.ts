@@ -3,7 +3,7 @@ import unindent from '../utils/unindent';
 /**
  * Parse to extract API deprecated
  *
- * @param {string} content - Content to be parsed.
+ * @param content - Content to be parsed.
  * @returns {{deprecated: boolean}|{deprecated: {content: string}}}
  */
 function parse(content) {

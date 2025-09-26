@@ -175,7 +175,7 @@ function getSpecificationVersion() {
  * Handles parsing of source directories/files, processing of parsing results,
  * and generating output data (e.g., API data and project metadata).
  *
- * @param {object} options - Configuration options. Overwrite default options.
+ * @param options - Configuration options. Overwrite default options.
  * @returns {{data: string, project: string}|boolean} If successful, an object containing API data (`data`) and project information (`project`)
  *     is returned, otherwise returns `true` if no data is parsed, or `false` if an error occurs.
  */
@@ -303,8 +303,8 @@ function parse(options) {
 /**
  * Parse a source using application parser config.
  *
- * @param {string} source - Source to be parsed.
- * @param {object} options - Configuration options. Overwrite default options.
+ * @param source - Source to be parsed.
+ * @param options - Configuration options. Overwrite default options.
  * @returns {Array<object>|undefined|*} Parsed result from source, or `undefined` if an error occurs.
  */
 function parseSource(source, options) {
@@ -319,7 +319,7 @@ function parseSource(source, options) {
 /**
  * initApp
  *
- * @param {object} options - Overwrite default options.
+ * @param options - Overwrite default options.
  * @returns {void}
  */
 function initApp(options) {
@@ -361,7 +361,7 @@ function initApp(options) {
 /**
  * Set generator information.
  *
- * @param {{name: string, time: string, version: string, url: string}} generator - The generator instance to be set.
+ * @param generator - The generator instance to be set.
  *     - `generator.name` {string}: Generator name (UI-Name)
  *     - `generator.time` {string}: Time for the generated doc
  *     - `generator.version` {string}: Version (semver) of the generator, e.g. 1.2.3
@@ -374,7 +374,7 @@ function setGeneratorInfos(generator) {
 /**
  * Set a logger
  *
- * @param {object} logger - Logger instance (@see https://github.com/winstonjs/winston for details)
+ * @param logger - Logger instance (@see https://github.com/winstonjs/winston for details)
  *     Interface:
  *     - debug(msg, meta)
  *     - verbose(msg, meta)
@@ -389,7 +389,7 @@ function setLogger(logger) {
 /**
  * Set a markdown parser
  *
- * @param {object} [markdownParser] - Markdown parser instance
+ * @param [markdownParser] - Markdown parser instance
  */
 function setMarkdownParser(markdownParser) {
     app.markdownParser = markdownParser;
@@ -398,11 +398,7 @@ function setMarkdownParser(markdownParser) {
 /**
  * Set package infos.
  *
- * @param {object} [packageInfos]             - Collected from apidoc.json / package.json.
- * @param {string} [packageInfos.name]        - Project name.
- * @param {string} [packageInfos.version]     - Version (semver) of the project, e.g. 1.0.27
- * @param {string} [packageInfos.description] - A short description.
- * @param {string} [packageInfos.sampleUrl]   - @see https://apidocts.com/#param-api-sample-request
+ * @param packageInfos - Collected from apidoc.json / package.json.
  */
 function setPackageInfos(packageInfos) {
     app.packageInfos = packageInfos;
@@ -413,9 +409,9 @@ function setPackageInfos(packageInfos) {
  *
  * Add a new hook to the application hook list with the specified name, function, and priority.
  *
- * @param {string} name - Name of the hook. Hook overview: https://github.com/apidoc/apidoc/wiki/Hooks
- * @param {Function} func - Callback function when the hook is triggered.
- * @param {number} [priority] - Hook priority. Defaults to `100` if not provided. A lower value will be executed first. The "same value" will
+ * @param name - Name of the hook. Hook overview: https://github.com/apidoc/apidoc/wiki/Hooks
+ * @param func - Callback function when the hook is triggered.
+ * @param [priority] - Hook priority. Defaults to `100` if not provided. A lower value will be executed first. The "same value" will
  *     overwrite a previously defined hook.
  */
 function addHook(name, func, priority) {
@@ -450,7 +446,7 @@ function addHook(name, func, priority) {
  *
  * If no hooks are registered for the specified name, returns the first argument passed.
  *
- * @param {string} name - Name of the hook to execute.
+ * @param name - Name of the hook to execute.
  * @returns {*} The first argument provided, or the modified value after applying the hooks.
  */
 function applyHook(name /* , ...args */) {

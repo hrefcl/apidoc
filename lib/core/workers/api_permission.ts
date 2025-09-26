@@ -23,10 +23,10 @@ const _messages = {
  * Pre-processes the given parsed files, filenames, and package information
  * to extract and organize permission definitions.
  *
- * @param {Array<object>} parsedFiles - Array of parsed file objects to process.
- * @param {Array<string>} filenames - Array of filenames corresponding to the parsed files.
- * @param {object} packageInfos - Object containing package information to apply during processing.
- * @param {string} target - Target key/path in preProcess-Object, returned result, where the data will be set.
+ * @param parsedFiles - Array of parsed file objects to process.
+ * @param filenames - Array of filenames corresponding to the parsed files.
+ * @param packageInfos - Object containing package information to apply during processing.
+ * @param target - Target key/path in preProcess-Object, returned result, where the data will be set.
  * @returns {object}
  */
 function preProcess(parsedFiles, filenames, packageInfos, target) {
@@ -65,13 +65,13 @@ function preProcess(parsedFiles, filenames, packageInfos, target) {
  * Processes the parsed files and metadata after the initial processing is completed.
  * Handles permission definitions, versioning, and updates permission information.
  *
- * @param {Array<object>} parsedFiles - Array of objects containing the parsed file data.
- * @param {Array<string>} filenames - Array of filenames associated with the parsed files.
- * @param {object} preProcess - Pre-processing results containing defined permissions.
- * @param {object} packageInfos - Collection of package-level details and information.
- * @param {string} source - Source path in preProcess-Object.
- * @param {string} target - Relative path to the tree (local.), where the data should be modified.
- * @param {object} messages - Messages used for error reporting.
+ * @param parsedFiles - Array of objects containing the parsed file data.
+ * @param filenames - Array of filenames associated with the parsed files.
+ * @param preProcess - Pre-processing results containing defined permissions.
+ * @param packageInfos - Collection of package-level details and information.
+ * @param source - Source path in preProcess-Object.
+ * @param target - Relative path to the tree (local.), where the data should be modified.
+ * @param messages - Messages used for error reporting.
  */
 function postProcess(parsedFiles, filenames, preProcess, packageInfos, source, target, messages) {
     source = source || 'definePermission';

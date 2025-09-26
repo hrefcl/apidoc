@@ -5,10 +5,10 @@
  * Handles sample request URLs, including prepending the sampleUrl from packageInfos
  * for relative URLs and filtering out disabled sample requests.
  *
- * @param {Array<object>} parsedFiles - Array of objects containing the parsed file data.
- * @param {Array<string>} filenames - Array of filenames associated with the parsed files.
- * @param {object} preProcess - Pre-processing results containing defined sample requests.
- * @param {object} packageInfos - Collection of package-level details and information.
+ * @param parsedFiles - Array of objects containing the parsed file data.
+ * @param filenames - Array of filenames associated with the parsed files.
+ * @param preProcess - Pre-processing results containing defined sample requests.
+ * @param packageInfos - Collection of package-level details and information.
  */
 function postProcess(parsedFiles, filenames, preProcess, packageInfos) {
     const targetName = 'sampleRequest';

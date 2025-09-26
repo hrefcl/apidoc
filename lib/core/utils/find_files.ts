@@ -22,7 +22,7 @@ function FindFiles() {
  * Updates the internal path property to the specified directory.
  * Throws an error if the path is invalid or null.
  *
- * @param {string} newPath - The directory path to set for searching files.
+ * @param newPath - The directory path to set for searching files.
  * @memberof FindFiles
  */
 FindFiles.prototype.setPath = function (newPath) {
@@ -37,7 +37,7 @@ FindFiles.prototype.setPath = function (newPath) {
  * Exclude filters are patterns used to ignore files or directories during
  * a file search operation.
  *
- * @param {Array<string|RegExp>} excludeFilters - An array of exclude filters.
+ * @param excludeFilters - An array of exclude filters.
  *     Filters can include wildcards, regex patterns, or specific file/directory names to be excluded.
  * @memberof FindFiles
  */
@@ -54,7 +54,7 @@ FindFiles.prototype.setExcludeFilters = function (excludeFilters) {
  * be included in the search. These patterns are strings or
  * regular expressions that match file names or paths.
  *
- * @param {Array<string|RegExp>} includeFilters - An array of filters to include files.
+ * @param includeFilters - An array of filters to include files.
  *     Each filter can be a string or a regular expression.
  * @memberof FindFiles
  */
