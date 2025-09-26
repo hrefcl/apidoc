@@ -24,7 +24,8 @@ check-*.js
 sidebar-*.png
 build
 
-debug-*.js
+screenshots
+debug-*.*
 template-*.png
 tester-*.js
 test-*.js

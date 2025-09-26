@@ -68,7 +68,8 @@
     "test:lint": "npm run test:spell-support && npm run test:spell && eslint;",
     "test:spell": "cspell --fail-fast './bin/apidoc' './example/**/*' './lib/**/*.*js' './template/index.html' './template/src/*' './test/**/*' --config ./cspell.config.json",
     "test:spell-support": "cspell --fail-fast ./README.md ./CONTRIBUTING.md ./CONTRIBUTORS.md ./SECURITY.md --config ./cspell.config.json",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "example": "npm run build:css && npm run build:example"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
@@ -99,6 +100,7 @@
     "path-to-regexp": "^8.3.0",
     "picocolors": "^1.1.1",
     "postcss": "^8.5.6",
+    "puppeteer": "^24.22.3",
     "semver": "^7.7.2",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.13",
