@@ -40,8 +40,8 @@ import { FileError } from '../errors/file_error';
  * ```typescript
  * const finder = new FindFiles();
  * finder.setPath('./project');
- * finder.setIncludeFilters(['**/*.{js,ts}', '**/*.php']);
- * finder.setExcludeFilters(['**/node_modules/**', '**/dist/**', '**/*.test.*']);
+ * finder.setIncludeFilters(['**\/*.js', '**\/*.ts', '**\/*.php']);
+ * finder.setExcludeFilters(['**\/node_modules\/**', '**\/dist\/**', '**\/*.test.*']);
  * const sourceFiles = finder.search();
  * ```
  *

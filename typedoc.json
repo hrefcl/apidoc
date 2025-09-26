@@ -116,6 +116,7 @@
     "blockTags": [
         "@api",
         "@apiBody",
+        "@apiDeprecated",
         "@apiDescription",
         "@apiError",
         "@apiExample",
@@ -123,6 +124,7 @@
         "@apiHeader",
         "@apiName",
         "@apiParam",
+        "@apiSampleRequest",
         "@apiSchema",
         "@apiSuccess",
         "@apiUse",
