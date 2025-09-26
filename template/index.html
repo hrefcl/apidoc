@@ -14,8 +14,7 @@
         <!-- Authentication System -->
         <script>
             // Login configuration from apidoc.json will be injected here
-            var LOGIN_CONFIG_RAW = '__LOGIN_CONFIG__';
-            window.APIDOC_LOGIN_CONFIG = LOGIN_CONFIG_RAW.startsWith('__') ? null : LOGIN_CONFIG_RAW;
+            window.APIDOC_LOGIN_CONFIG = __LOGIN_CONFIG__;
             window.APIDOC_PROJECT_NAME = '__API_NAME__';
             window.APIDOC_PROJECT_VERSION = '__API_VERSION__';
         </script>

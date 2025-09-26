@@ -13,7 +13,7 @@
   "input": ["example"],
   "login": {
     "active": true,
-    "urlAuth": "https://bifrost.cleverty.app/apidoc-auth",
+    "urlAuth": "https://bifrost.cleverty.app/sign-in",
     "value_form": {
       "email": "email",
       "password": "password"
