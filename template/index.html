@@ -224,7 +224,7 @@
 
                 {{#if template.endpointsCollapsible}}
                 <div class="opblock-summary opblock-summary-{{toLowerCase article.type}} cursor-pointer" role="button" tabindex="0">
-                    <div class="flex items-center p-4">
+                    <div class="flex items-center p-2">
                         <span class="opblock-summary-method opblock-summary-method-{{toLowerCase article.type}} mr-4">{{article.type}}</span>
                         <span class="opblock-summary-path font-mono">{{article.url}}</span>
                         {{#if article.title}}
@@ -244,9 +244,12 @@
                 </div>
                 {{/if}}
 
-                <div class="opblock-content p-6" {{#if template.endpointsCollapsible}}style="display: none;"{{/if}}>
-                    {{#if template.withCompare}}
-                        <div class="absolute top-4 right-4">
+                <div class="opblock-content" {{#if template.endpointsCollapsible}}style="display: none;"{{/if}}>
+                    <!-- Request Information Section -->
+                    <div class="opblock-section border-b border-gray-200 p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Request</h3>
+                            {{#if template.withCompare}}
                             <div class="dropdown">
                                 <button class="version btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
                                     <strong>{{article.version}}</strong>
@@ -258,8 +261,48 @@
                                     {{/each}}
                                 </div>
                             </div>
+                            {{/if}}
                         </div>
-                    {{/if}}
+
+                        <!-- Method + URL Section -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="opblock-summary-method opblock-summary-method-{{toLowerCase article.type}} text-sm font-bold px-3 py-1 rounded">{{article.type}}</span>
+                                <div class="flex-1 bg-white border border-gray-300 rounded px-3 py-2 font-mono text-sm">
+                                    <span class="text-gray-600">{{../url}}</span><span class="text-gray-900 font-semibold">{{article.url}}</span>
+                                </div>
+                                <button class="copy-url-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
+                                        data-url="{{../url}}{{article.url}}"
+                                        title="Copy URL">
+                                    <i class="fa fa-copy mr-1"></i>Copy
+                                </button>
+                            </div>
+
+                            {{#if article.permission}}
+                            <div class="text-sm">
+                                <span class="text-gray-600 font-medium">Permissions:</span>
+                                {{#each article.permission}}
+                                    <span class="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                                        {{name}}
+                                        {{#if title}}
+                                            <button type="button" class="ml-1 text-blue-600 hover:text-blue-800" data-title="{{title}}" data-content="{{nl2br description}}" data-html="true" data-bs-toggle="popover" data-placement="right" data-trigger="hover">
+                                                <i class="fa fa-info-circle text-xs" aria-hidden="true"></i>
+                                            </button>
+                                        {{/if}}
+                                    </span>
+                                {{/each}}
+                            </div>
+                            {{else}}
+                            <div class="text-sm">
+                                <span class="text-gray-600 font-medium">Permissions:</span>
+                                <span class="ml-2 text-gray-500">none</span>
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+
+                    <!-- Content Section -->
+                    <div class="opblock-section p-6">
 
                     {{#if article.author}}<p class="text-gray-500 text-sm mb-3">Authored by: {{article.author}}</p>{{/if}}
 
