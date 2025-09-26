@@ -1,6 +1,4 @@
 {
-  "name": "LexCorp Api documentation",
-  "version": "4.0.0",
   "description": "Documentation for the REST api access provided at LexCorp",
   "footer": {
     "title": "Best practices",
@@ -12,20 +10,23 @@
     "filename": "header.md",
     "icon": "fa-home"
   },
-  "input": [
-    "example"
-  ],
+  "input": ["example"],
+  "login": {
+    "active": true,
+    "urlAuth": "https://bifrost.cleverty.app/apidoc-auth",
+    "value_form": {
+      "email": "email",
+      "password": "password"
+    },
+    "response_success": 200,
+    "response_error": 401
+  },
   "logo": {
     "icon": "fa-solid fa-rocket",
     "alt": "API Logo"
   },
-  "order": [
-    "Users",
-    "Company",
-    "System",
-    "City",
-    "Category"
-  ],
+  "name": "LexCorp Api documentation",
+  "order": ["Users", "Company", "System", "City", "Category"],
   "output": "/tmp/apidoc-output",
   "sampleUrl": "https://apidoc.free.beeceptor.com",
   "settings": {
@@ -59,5 +60,6 @@
     "endpointsCollapsible": true
   },
   "title": "Href ApiDoc 4",
-  "url": "https://api.example.com"
+  "url": "https://api.example.com",
+  "version": "4.0.0"
 }
