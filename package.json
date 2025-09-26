@@ -69,7 +69,11 @@
     "test:spell": "cspell --fail-fast './bin/apidoc' './example/**/*' './lib/**/*.*js' './template/index.html' './template/src/*' './test/**/*' --config ./cspell.config.json",
     "test:spell-support": "cspell --fail-fast ./README.md ./CONTRIBUTING.md ./CONTRIBUTORS.md ./SECURITY.md --config ./cspell.config.json",
     "typecheck": "tsc --noEmit",
-    "example": "npm run build:css && npm run build:example"
+    "example": "npm run build:css && npm run build:example",
+    "format": "npm run format:handlebars && prettier --write \"**/*.{ts,js,html,json}\"",
+    "format:html": "npm run format:handlebars && prettier --write \"template/**/*.html\"",
+    "format:handlebars": "node scripts/format-handlebars.js",
+    "format:check": "prettier --check \"**/*.{ts,js,html,json}\""
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
@@ -134,6 +138,7 @@
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-html": "^8.1.3",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsdoc": "^60.3.1",
     "eslint-plugin-n": "^17.23.1",

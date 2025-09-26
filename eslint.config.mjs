@@ -215,5 +215,5 @@ export default [
       '@typescript-eslint/no-unused-vars': 'off',
       'jsdoc/require-jsdoc': 'off',
     }
-  }
+  },
 ];

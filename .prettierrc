@@ -7,13 +7,18 @@
     "htmlWhitespaceSensitivity": "ignore",
     "jsonRecursiveSort": false,
     "jsonSortOrder": "{\"*\": \"lexical\"}",
-    "jsxBracketSameLine": true,
     "jsxSingleQuote": true,
     "overrides": [
         {
             "files": "*.html",
             "options": {
-                "parser": "angular"
+                "parser": "html",
+                "htmlWhitespaceSensitivity": "css",
+                "printWidth": 120,
+                "tabWidth": 4,
+                "singleAttributePerLine": false,
+                "bracketSameLine": false,
+                "indentHandlebars": true
             }
         },
         {
