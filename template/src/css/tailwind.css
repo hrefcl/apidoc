@@ -2586,3 +2586,230 @@ textarea.form-control,
     border-bottom-left-radius: 0 !important;
     border-top-left-radius: 0 !important;
 }
+
+/* ========================================
+   SWAGGER UI COLLAPSIBLE STYLES
+   ======================================== */
+
+/* Grupo Collapsible - Base */
+.opblock-tag {
+    @apply cursor-pointer select-none transition-all duration-200;
+    background-color: #f7f7f7;
+    border: 1px solid #d3d3d3;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+}
+
+.opblock-tag:hover {
+    background-color: #ebebeb;
+}
+
+/* Dark mode para grupos */
+[data-theme='dark'] .opblock-tag {
+    background-color: #2d3748;
+    border-color: #4a5568;
+}
+
+[data-theme='dark'] .opblock-tag:hover {
+    background-color: #374151;
+}
+
+/* Flecha de expand/collapse */
+.opblock-tag .arrow {
+    transition: transform 0.2s ease;
+}
+
+.opblock-tag[aria-expanded="false"] .arrow {
+    transform: rotate(-90deg);
+}
+
+.opblock-tag[aria-expanded="true"] .arrow {
+    transform: rotate(0deg);
+}
+
+/* Contenedor de endpoints */
+.opblock-tag-content {
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-left: 16px;
+    border-left: 3px solid #e2e8f0;
+    padding-left: 16px;
+}
+
+.opblock-tag-content.collapsed {
+    display: none;
+}
+
+[data-theme='dark'] .opblock-tag-content {
+    border-left-color: #4a5568;
+}
+
+/* Endpoint Individual - Estilo Swagger */
+.opblock {
+    border: 1px solid #d3d3d3;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='dark'] .opblock {
+    background: #1a202c;
+    border-color: #4a5568;
+}
+
+/* Endpoint Summary - Header clickeable */
+.opblock-summary {
+    @apply cursor-pointer;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fafafa;
+    transition: all 0.2s ease;
+}
+
+.opblock-summary:hover {
+    background: #f0f0f0;
+}
+
+[data-theme='dark'] .opblock-summary {
+    background: #2d3748;
+    border-bottom-color: #4a5568;
+}
+
+[data-theme='dark'] .opblock-summary:hover {
+    background: #374151;
+}
+
+/* Métodos HTTP con colores específicos */
+.opblock-summary-method {
+    font-weight: 700;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    min-width: 60px;
+    text-align: center;
+    margin-right: 12px;
+}
+
+/* GET - Verde */
+.opblock-get .opblock-summary {
+    border-left: 4px solid #61affe;
+}
+
+.opblock-get .opblock-summary-method {
+    background: #61affe;
+    color: white;
+}
+
+/* POST - Azul */
+.opblock-post .opblock-summary {
+    border-left: 4px solid #49cc90;
+}
+
+.opblock-post .opblock-summary-method {
+    background: #49cc90;
+    color: white;
+}
+
+/* PUT - Naranja */
+.opblock-put .opblock-summary {
+    border-left: 4px solid #fca130;
+}
+
+.opblock-put .opblock-summary-method {
+    background: #fca130;
+    color: white;
+}
+
+/* DELETE - Rojo */
+.opblock-delete .opblock-summary {
+    border-left: 4px solid #f93e3e;
+}
+
+.opblock-delete .opblock-summary-method {
+    background: #f93e3e;
+    color: white;
+}
+
+/* PATCH - Púrpura */
+.opblock-patch .opblock-summary {
+    border-left: 4px solid #50e3c2;
+}
+
+.opblock-patch .opblock-summary-method {
+    background: #50e3c2;
+    color: white;
+}
+
+/* Contenido del endpoint */
+.opblock-content {
+    transition: all 0.3s ease;
+    overflow: hidden;
+    background: #fff;
+}
+
+.opblock-content.collapsed {
+    display: none;
+}
+
+[data-theme='dark'] .opblock-content {
+    background: #1a202c;
+}
+
+/* Path del endpoint */
+.opblock-summary-path {
+    font-family: monospace;
+    font-size: 14px;
+    color: #3b4151;
+    font-weight: 600;
+}
+
+[data-theme='dark'] .opblock-summary-path {
+    color: #e2e8f0;
+}
+
+/* Descripción del endpoint */
+.opblock-summary-description {
+    color: #737373;
+    font-size: 13px;
+    flex: 1;
+    margin-left: 12px;
+}
+
+[data-theme='dark'] .opblock-summary-description {
+    color: #a0aec0;
+}
+
+/* Flecha indicadora de expansión en endpoints */
+.opblock-summary::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid #737373;
+    transition: transform 0.2s ease;
+}
+
+.opblock-summary[aria-expanded="true"]::after {
+    transform: rotate(180deg);
+}
+
+[data-theme='dark'] .opblock-summary::after {
+    border-top-color: #a0aec0;
+}
+
+/* Estados de colapso */
+.opblock.collapsed .opblock-content {
+    display: none;
+}
+
+.opblock-tag.collapsed .opblock-tag-content {
+    display: none;
+}

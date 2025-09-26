@@ -1587,6 +1587,9 @@ function init() {
 
     // Initialize Bootstrap dropdowns and fix their default state
     initBootstrapDropdowns();
+
+    // Initialize collapsible functionality
+    initializeCollapsibleFunctionality();
 }
 
 /**
@@ -1737,3 +1740,132 @@ function initManualDropdownFallback() {
         });
     });
 }
+
+/**
+ * Initialize Swagger UI style collapsible functionality
+ */
+function initializeCollapsibleFunctionality() {
+    try {
+        console.log('🔄 Initializing collapsible functionality...');
+
+        // Initialize group collapsibles
+        initializeGroupCollapsibles();
+
+        // Initialize endpoint collapsibles
+        initializeEndpointCollapsibles();
+
+        console.log('✅ Collapsible functionality initialized');
+    } catch (error) {
+        console.error('❌ Error initializing collapsible functionality:', error);
+    }
+}
+
+/**
+ * Initialize group-level collapsible functionality
+ */
+function initializeGroupCollapsibles() {
+    // Find all group headers with expand buttons
+    const groupHeaders = document.querySelectorAll('.opblock-tag .expand-operation');
+
+    groupHeaders.forEach((button) => {
+        const groupHeader = button.closest('.opblock-tag');
+        const groupContent = groupHeader?.parentElement?.querySelector('.opblock-tag-content');
+
+        if (groupHeader && groupContent) {
+            // Set initial state (expanded by default)
+            groupHeader.setAttribute('aria-expanded', 'true');
+            groupContent.classList.remove('collapsed');
+
+            // Add click handler
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleGroupCollapse(groupHeader, groupContent);
+            });
+
+            // Also allow clicking on the whole header
+            groupHeader.addEventListener('click', (e) => {
+                // Only if we didn't click on a child element
+                if (e.target === groupHeader || e.target.closest('.expand-operation')) {
+                    e.preventDefault();
+                    toggleGroupCollapse(groupHeader, groupContent);
+                }
+            });
+        }
+    });
+}
+
+/**
+ * Initialize endpoint-level collapsible functionality
+ */
+function initializeEndpointCollapsibles() {
+    // Find all endpoint summaries
+    const endpointSummaries = document.querySelectorAll('.opblock-summary');
+
+    endpointSummaries.forEach((summary) => {
+        const opblock = summary.closest('.opblock') || summary.parentElement;
+        const content = opblock?.querySelector('.opblock-content');
+
+        if (opblock && content) {
+            // Set initial state (collapsed by default for endpoints)
+            summary.setAttribute('aria-expanded', 'false');
+            content.classList.add('collapsed');
+            opblock.classList.add('collapsed');
+
+            // Add click handler
+            summary.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleEndpointCollapse(summary, content, opblock);
+            });
+        }
+    });
+}
+
+/**
+ * Toggle group collapse state
+ */
+function toggleGroupCollapse(groupHeader: Element, groupContent: Element) {
+    const isExpanded = groupHeader.getAttribute('aria-expanded') === 'true';
+    const arrow = groupHeader.querySelector('.arrow');
+
+    if (isExpanded) {
+        // Collapse
+        groupHeader.setAttribute('aria-expanded', 'false');
+        groupContent.classList.add('collapsed');
+        if (arrow) {
+            arrow.style.transform = 'rotate(-90deg)';
+        }
+    } else {
+        // Expand
+        groupHeader.setAttribute('aria-expanded', 'true');
+        groupContent.classList.remove('collapsed');
+        if (arrow) {
+            arrow.style.transform = 'rotate(0deg)';
+        }
+    }
+}
+
+/**
+ * Toggle endpoint collapse state
+ */
+function toggleEndpointCollapse(summary: Element, content: Element, opblock: Element) {
+    const isExpanded = summary.getAttribute('aria-expanded') === 'true';
+
+    if (isExpanded) {
+        // Collapse
+        summary.setAttribute('aria-expanded', 'false');
+        content.classList.add('collapsed');
+        opblock.classList.add('collapsed');
+    } else {
+        // Expand
+        summary.setAttribute('aria-expanded', 'true');
+        content.classList.remove('collapsed');
+        opblock.classList.remove('collapsed');
+    }
+}
+
+// Make collapsible functions available globally for debugging
+(window as any).initializeCollapsibleFunctionality = initializeCollapsibleFunctionality;
+(window as any).toggleGroupCollapse = toggleGroupCollapse;
+(window as any).toggleEndpointCollapse = toggleEndpointCollapse;

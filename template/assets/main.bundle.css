@@ -12307,6 +12307,9 @@ textarea.form-control-lg {
   }
 }
 @layer utilities {
+  .collapse {
+    visibility: collapse;
+  }
   .invisible {
     visibility: hidden;
   }
@@ -12415,6 +12418,9 @@ textarea.form-control-lg {
   .mr-1\.5 {
     margin-right: calc(var(--spacing) * 1.5);
   }
+  .mb-0 {
+    margin-bottom: calc(var(--spacing) * 0);
+  }
   .mb-2 {
     margin-bottom: calc(var(--spacing) * 2);
   }
@@ -12435,6 +12441,9 @@ textarea.form-control-lg {
   }
   .ml-3 {
     margin-left: calc(var(--spacing) * 3);
+  }
+  .ml-4 {
+    margin-left: calc(var(--spacing) * 4);
   }
   .ml-6 {
     margin-left: calc(var(--spacing) * 6);
@@ -12557,6 +12566,9 @@ textarea.form-control-lg {
   .animate-spin {
     animation: var(--animate-spin);
   }
+  .cursor-pointer {
+    cursor: pointer;
+  }
   .flex-col {
     flex-direction: column;
   }
@@ -12622,6 +12634,9 @@ textarea.form-control-lg {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .overflow-hidden {
+    overflow: hidden;
+  }
   .overflow-x-auto {
     overflow-x: auto;
   }
@@ -12659,6 +12674,10 @@ textarea.form-control-lg {
   .border-0 {
     border-style: var(--tw-border-style);
     border-width: 0px;
+  }
+  .border-t {
+    border-top-style: var(--tw-border-style);
+    border-top-width: 1px;
   }
   .border-r {
     border-right-style: var(--tw-border-style);
@@ -12748,6 +12767,9 @@ textarea.form-control-lg {
   .object-contain {
     -o-object-fit: contain;
        object-fit: contain;
+  }
+  .p-1 {
+    padding: calc(var(--spacing) * 1);
   }
   .p-1\.5 {
     padding: calc(var(--spacing) * 1.5);
@@ -13284,6 +13306,15 @@ textarea.form-control-lg {
       &:is(:where(.group):hover *) {
         @media (hover: hover) {
           color: var(--color-gray-100);
+        }
+      }
+    }
+  }
+  .dark\:hover\:bg-gray-600 {
+    @media (prefers-color-scheme: dark) {
+      &:hover {
+        @media (hover: hover) {
+          background-color: var(--color-gray-600);
         }
       }
     }
@@ -15849,6 +15880,181 @@ textarea.form-control,
 .form-control.sample-request-param {
   border-bottom-left-radius: 0 !important;
   border-top-left-radius: 0 !important;
+}
+.opblock-tag {
+  cursor: pointer;
+  transition-property: all;
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+  transition-duration: var(--tw-duration, var(--default-transition-duration));
+  --tw-duration: 200ms;
+  transition-duration: 200ms;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+       user-select: none;
+  background-color: #f7f7f7;
+  border: 1px solid #d3d3d3;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+}
+.opblock-tag:hover {
+  background-color: #ebebeb;
+}
+[data-theme='dark'] .opblock-tag {
+  background-color: #2d3748;
+  border-color: #4a5568;
+}
+[data-theme='dark'] .opblock-tag:hover {
+  background-color: #374151;
+}
+.opblock-tag .arrow {
+  transition: transform 0.2s ease;
+}
+.opblock-tag[aria-expanded="false"] .arrow {
+  transform: rotate(-90deg);
+}
+.opblock-tag[aria-expanded="true"] .arrow {
+  transform: rotate(0deg);
+}
+.opblock-tag-content {
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-left: 16px;
+  border-left: 3px solid #e2e8f0;
+  padding-left: 16px;
+}
+.opblock-tag-content.collapsed {
+  display: none;
+}
+[data-theme='dark'] .opblock-tag-content {
+  border-left-color: #4a5568;
+}
+.opblock {
+  border: 1px solid #d3d3d3;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+[data-theme='dark'] .opblock {
+  background: #1a202c;
+  border-color: #4a5568;
+}
+.opblock-summary {
+  cursor: pointer;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fafafa;
+  transition: all 0.2s ease;
+}
+.opblock-summary:hover {
+  background: #f0f0f0;
+}
+[data-theme='dark'] .opblock-summary {
+  background: #2d3748;
+  border-bottom-color: #4a5568;
+}
+[data-theme='dark'] .opblock-summary:hover {
+  background: #374151;
+}
+.opblock-summary-method {
+  font-weight: 700;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  min-width: 60px;
+  text-align: center;
+  margin-right: 12px;
+}
+.opblock-get .opblock-summary {
+  border-left: 4px solid #61affe;
+}
+.opblock-get .opblock-summary-method {
+  background: #61affe;
+  color: white;
+}
+.opblock-post .opblock-summary {
+  border-left: 4px solid #49cc90;
+}
+.opblock-post .opblock-summary-method {
+  background: #49cc90;
+  color: white;
+}
+.opblock-put .opblock-summary {
+  border-left: 4px solid #fca130;
+}
+.opblock-put .opblock-summary-method {
+  background: #fca130;
+  color: white;
+}
+.opblock-delete .opblock-summary {
+  border-left: 4px solid #f93e3e;
+}
+.opblock-delete .opblock-summary-method {
+  background: #f93e3e;
+  color: white;
+}
+.opblock-patch .opblock-summary {
+  border-left: 4px solid #50e3c2;
+}
+.opblock-patch .opblock-summary-method {
+  background: #50e3c2;
+  color: white;
+}
+.opblock-content {
+  transition: all 0.3s ease;
+  overflow: hidden;
+  background: #fff;
+}
+.opblock-content.collapsed {
+  display: none;
+}
+[data-theme='dark'] .opblock-content {
+  background: #1a202c;
+}
+.opblock-summary-path {
+  font-family: monospace;
+  font-size: 14px;
+  color: #3b4151;
+  font-weight: 600;
+}
+[data-theme='dark'] .opblock-summary-path {
+  color: #e2e8f0;
+}
+.opblock-summary-description {
+  color: #737373;
+  font-size: 13px;
+  flex: 1;
+  margin-left: 12px;
+}
+[data-theme='dark'] .opblock-summary-description {
+  color: #a0aec0;
+}
+.opblock-summary::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid #737373;
+  transition: transform 0.2s ease;
+}
+.opblock-summary[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+[data-theme='dark'] .opblock-summary::after {
+  border-top-color: #a0aec0;
+}
+.opblock.collapsed .opblock-content {
+  display: none;
+}
+.opblock-tag.collapsed .opblock-tag-content {
+  display: none;
 }
 @property --tw-translate-x {
   syntax: "*";
