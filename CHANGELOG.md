@@ -5,6 +5,84 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.4] - 2025-01-27
+
+### 🚀 ENHANCED - Swagger UI-Style Collapsible Interface + Complete MQTT Protocol Support
+
+**APIDoc 4.0.4 adds comprehensive MQTT support alongside the existing Swagger-style interface!**
+
+#### 📡 MQTT Protocol Features
+- **NEW**: Full MQTT publish/subscribe pattern documentation
+- **NEW**: 16 specialized MQTT documentation tags (@mqtt, @topic, @topicParam, @qos, @retain, etc.)
+- **NEW**: MQTT-specific template with distinctive purple-themed UI design
+- **NEW**: Support for QoS levels, retain flags, and topic parameters
+- **NEW**: MQTT payload schema validation with JSON Schema support
+- **NEW**: Authentication documentation for MQTT brokers
+- **NEW**: Rate limiting and error handling documentation
+- **NEW**: MQTT command examples (mosquitto_pub, mosquitto_sub)
+
+#### 🏷️ New MQTT Documentation Tags
+```javascript
+@mqtt {publish|subscribe}           // MQTT operation type
+@mqttGroup {String}                 // Group MQTT endpoints separately
+@topic {String}                     // MQTT topic pattern with parameters
+@topicParam {Type} name Description // Topic parameter documentation
+@qos {Number}                       // Quality of Service level (0,1,2)
+@retain {Boolean}                   // Message retention flag
+@payload {MIME} Description         // Message payload format
+@payloadSchema {Type}               // JSON Schema for payload validation
+@auth {String}                      // Authentication method
+@examplePublish                     // Publish command examples
+@exampleSubscribe                   // Subscribe command examples
+@responseTopic {String}             // Response topic pattern
+@responseExample                    // Response payload examples
+@ratelimit {String}                 // Rate limiting rules
+@errors {String}                    // Error scenarios
+@tags {String}                      // MQTT-specific tags
+```
+
+#### 🎨 Visual Design & User Experience
+- **NEW**: Distinctive purple color scheme for MQTT endpoints
+- **NEW**: MQTT method badges (publish, subscribe, inline)
+- **NEW**: Topic pattern display with parameter highlighting
+- **NEW**: QoS and retention status indicators
+- **NEW**: Collapsible MQTT documentation with interactive expansion
+- **NEW**: Separate navigation grouping for MQTT vs REST APIs
+- **NEW**: MQTT-specific icons and visual elements
+
+#### 🔧 Technical Implementation
+- **ADDED**: 16 new TypeScript parsers for MQTT tags in `lib/core/parsers/mqtt_*.ts`
+- **ADDED**: MQTT endpoint detection and classification system
+- **ADDED**: Dual template support (REST + MQTT) with automatic selection
+- **ADDED**: MQTT-specific Handlebars template with full feature set
+- **ADDED**: Extended parser registration system supporting MQTT patterns
+- **ENHANCED**: Collapsible functionality to support both `.opblock-content` and `.opblock-details`
+- **ENHANCED**: Navigation system to handle mixed REST/MQTT documentation
+
+#### 📚 Documentation & Examples
+- **ADDED**: Complete MQTT examples in `example/mqtt-examples.ts`
+- **ADDED**: IoT device telemetry publishing examples
+- **ADDED**: Device command subscription patterns
+- **ADDED**: Device status and alert handling examples
+- **ADDED**: Configuration management via MQTT examples
+- **ADDED**: Best practices for MQTT topic design
+- **ADDED**: Rate limiting and error handling examples
+
+#### 🧪 Quality Assurance
+- **TESTED**: Full MQTT parser functionality with comprehensive test coverage
+- **TESTED**: Template rendering for all MQTT tag combinations
+- **TESTED**: Collapsible functionality for MQTT endpoints
+- **TESTED**: Integration with existing REST API documentation
+- **TESTED**: Cross-browser compatibility for MQTT UI elements
+- **VERIFIED**: No breaking changes to existing REST API functionality
+
+#### 🚀 Use Cases Enabled
+- **IoT Documentation**: Device telemetry, commands, and status APIs
+- **Real-time Systems**: Event streaming and notification patterns
+- **Microservices**: Inter-service communication via MQTT
+- **Mobile Apps**: Push notifications and real-time updates
+- **Industrial IoT**: Sensor data collection and device control
+
 ## [4.0.4] - 2025-01-26
 
 ### 🎨 Added - Swagger UI-Style Collapsible Interface

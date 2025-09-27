@@ -188,6 +188,8 @@ ${pc.bold('OUTPUT OPTIONS:')}`
     .option('--definitions', 'Include definitions file rather than copying definitions', false)
     .option('--openapi', 'Generate OpenAPI 3.0 (swagger.json) specification alongside HTML docs', false)
     .option('--openapi-only', 'Generate only OpenAPI 3.0 specification (no HTML)', false)
+    .option('--mqtt-only', 'Generate only MQTT protocol documentation (exclude REST APIs)', false)
+    .option('--fail-on-mqtt-schema-error', 'Exit with error code if MQTT payload schemas are invalid', false)
 
     .addHelpText(
         'beforeAll',
@@ -234,6 +236,8 @@ ${pc.bold('EXAMPLES:')}
   ${pc.cyan('apidoc -c custom.json -i src/ -o doc/')} # Custom config file
   ${pc.cyan('apidoc -i src/ -o docs/ --openapi')}     # Generate HTML + OpenAPI/Swagger
   ${pc.cyan('apidoc -i src/ -o docs/ --openapi-only')} # Generate only OpenAPI/Swagger
+  ${pc.cyan('apidoc -i src/ -o docs/ --mqtt-only')}   # Generate only MQTT documentation
+  ${pc.cyan('apidoc -i src/ -o docs/ --fail-on-mqtt-schema-error')} # Strict MQTT schema validation
 
 ${pc.bold('LEARN MORE:')}
   ${pc.cyan('Homepage:')}     https://apidocts.com
@@ -334,6 +338,8 @@ const options = {
     writeJson: argv.writeJson,
     openapi: argv.openapi,
     openapiOnly: argv.openapiOnly,
+    mqttOnly: argv.mqttOnly,
+    failOnMqttSchemaError: argv.failOnMqttSchemaError,
 };
 
 if (options.debug) {

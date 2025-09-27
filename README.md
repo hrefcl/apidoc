@@ -1,14 +1,25 @@
-# @hrefcl/apidoc v4.0.0
+# @hrefcl/apidoc v4.0.4
 
-**RESTful web API Documentation Generator** - A modern TypeScript fork of the original apidoc project with active maintenance and modern tooling.
+**RESTful web API & MQTT Protocol Documentation Generator** - A modern TypeScript fork of the original apidoc project with active maintenance, modern tooling, and comprehensive MQTT support.
 
 [![License](https://img.shields.io/github/license/hrefcl/apidoc)](https://github.com/hrefcl/apidoc/blob/main/LICENSE)
 [![NPM Version](https://img.shields.io/npm/v/@hrefcl/apidoc)](https://www.npmjs.com/package/@hrefcl/apidoc)
 [![Node.js Version](https://img.shields.io/node/v/@hrefcl/apidoc)](https://nodejs.org/)
 
-## 🚀 What's New in v4.0
+## 🚀 What's New in v4.0.4
 
-### Major Improvements
+### 🌟 NEW: Complete MQTT Protocol Support
+
+**APIDoc now supports both REST APIs and MQTT protocols in a single documentation system!**
+
+- **📡 MQTT Documentation** - Full support for publish/subscribe patterns with 16 specialized tags
+- **🎨 Distinctive UI** - Purple-themed design for MQTT endpoints, separate from REST APIs
+- **🏷️ Rich MQTT Tags** - Support for topics, QoS, retain flags, authentication, examples, and more
+- **🔄 Interactive Templates** - Collapsible MQTT documentation with comprehensive details
+- **📋 Smart Grouping** - Automatic separation of MQTT and REST API documentation
+- **💡 IoT Ready** - Perfect for documenting IoT devices, real-time systems, and event-driven architectures
+
+### Major Improvements (v4.0+)
 - **✅ Full TypeScript Migration** - Complete codebase migration from JavaScript to TypeScript
 - **✅ Modern ESLint Configuration** - Advanced linting with TypeScript support and Prettier integration
 - **✅ TypeDoc API Documentation** - Auto-generated HTML documentation from TypeScript comments
@@ -202,6 +213,127 @@ These work for both local and remote authentication testing.
 ```json
 {"login": {"active": true, "admited": [/* emergency */], "urlAuth": "https://..."}}
 ```
+
+## 📡 NEW: Complete MQTT Protocol Support
+
+**APIDoc 4.0.4** introduces comprehensive MQTT protocol documentation support, enabling you to document publish/subscribe patterns alongside traditional REST APIs.
+
+### 🎯 Quick MQTT Example
+
+```javascript
+/**
+ * @api {publish} v1/{tenant}/devices/{deviceId}/telemetry Publish Device Telemetry
+ * @apiName PublishTelemetry
+ * @mqttGroup Mqtt
+ * @mqtt publish
+ * @topic v1/{tenant}/devices/{deviceId}/telemetry
+ * @topicParam {String} tenant Tenant identifier (slug format, e.g., "acme")
+ * @topicParam {String} deviceId Unique device identifier
+ * @qos 1
+ * @retain false
+ * @auth username Device credentials with TLS recommended
+ * @payload application/json Telemetry with multiple sensor channels
+ * @payloadSchema inline
+ * {
+ *   "$schema": "http://json-schema.org/draft-07/schema#",
+ *   "type": "object",
+ *   "required": ["ts","metrics"],
+ *   "properties": {
+ *     "ts": { "type": "string", "format": "date-time" },
+ *     "metrics": {
+ *       "type": "object",
+ *       "additionalProperties": { "type": "number" }
+ *     }
+ *   }
+ * }
+ * @ratelimit 10/second Maximum telemetry frequency per device
+ * @tags telemetry sensor iot-data
+ * @examplePublish
+ * mosquitto_pub -h mqtt.example.com -p 8883 \
+ *   -u "acme:device-42" -P "secret123" \
+ *   -t "v1/acme/devices/device-42/telemetry" \
+ *   -q 1 \
+ *   -m '{"ts":"2025-01-27T20:34:00Z","metrics":{"temp":22.5,"humidity":57}}'
+ *
+ * Publish device telemetry data to the MQTT broker. This endpoint accepts
+ * sensor readings and metrics from IoT devices.
+ */
+export function publishTelemetry() {
+    // Implementation would handle MQTT publishing
+}
+```
+
+### 🏷️ Complete MQTT Tag Reference
+
+| Tag | Syntax | Description | Example |
+|-----|--------|-------------|---------|
+| `@mqtt` | `{publish\|subscribe}` | MQTT operation type | `@mqtt publish` |
+| `@mqttGroup` | `{String}` | Group MQTT endpoints separately | `@mqttGroup IoT` |
+| `@topic` | `{String}` | MQTT topic pattern with parameters | `@topic v1/{tenant}/devices/{id}/data` |
+| `@topicParam` | `{Type} name Description` | Topic parameter documentation | `@topicParam {String} tenant Tenant ID` |
+| `@qos` | `{Number}` | Quality of Service level (0,1,2) | `@qos 1` |
+| `@retain` | `{Boolean}` | Message retention flag | `@retain true` |
+| `@payload` | `{MIME} Description` | Message payload format | `@payload application/json Sensor data` |
+| `@payloadSchema` | `{Type}` | JSON Schema for payload validation | `@payloadSchema inline` |
+| `@auth` | `{String}` | Authentication method | `@auth username Device credentials` |
+| `@examplePublish` | `command` | Publish command examples | `mosquitto_pub -h broker...` |
+| `@exampleSubscribe` | `command` | Subscribe command examples | `mosquitto_sub -h broker...` |
+| `@responseTopic` | `{String}` | Response topic pattern | `@responseTopic v1/{tenant}/ack` |
+| `@responseExample` | `data` | Response payload examples | JSON response data |
+| `@ratelimit` | `{String}` | Rate limiting rules | `@ratelimit 10/second` |
+| `@errors` | `{String}` | Error scenarios | `@errors Connection refused` |
+| `@tags` | `{String}` | MQTT-specific tags | `@tags telemetry iot sensor` |
+
+### 🎨 MQTT Visual Features
+
+- **🟣 Purple Theme**: Distinctive purple color scheme for MQTT endpoints
+- **📊 Method Badges**: Clear publish/subscribe/inline operation indicators
+- **🎯 Topic Display**: Topic patterns with parameter highlighting
+- **📊 QoS Indicators**: Quality of Service level badges
+- **🔄 Retain Flags**: Message retention status indicators
+- **📱 Responsive**: Perfect display on mobile and desktop devices
+
+### 🔄 MQTT Operation Types
+
+#### Publish Operations
+```javascript
+/**
+ * @api {publish} v1/sensors/{id}/data Publish Sensor Data
+ * @mqtt publish
+ * @topic v1/sensors/{id}/data
+ * @qos 1
+ * @retain false
+ */
+```
+
+#### Subscribe Operations
+```javascript
+/**
+ * @api {subscribe} v1/alerts/+ Subscribe to All Alerts
+ * @mqtt subscribe
+ * @topic v1/alerts/+
+ * @qos 2
+ * @retain false
+ */
+```
+
+#### Inline Documentation
+```javascript
+/**
+ * @api {inline} v1/config Configuration Topic
+ * @mqtt inline
+ * @topic v1/config
+ * @retain true
+ */
+```
+
+### 💡 Use Cases for MQTT Documentation
+
+- **🏭 IoT Platforms**: Document device telemetry, commands, and status APIs
+- **📱 Real-time Apps**: Event streaming and notification patterns
+- **🔧 Microservices**: Inter-service communication via MQTT
+- **📊 Analytics**: Data collection and processing pipelines
+- **🏠 Smart Home**: Device control and automation APIs
 
 ## 🚀 NEW: Native OpenAPI 3.0 Support
 

@@ -662,7 +662,7 @@ Parser.prototype._findBlockWithApiGetIndex = function (blocks) {
                 }
             }
 
-            if (blocks[i][j].name.substr(0, 3) === 'api' || blocks[i][j].name.substr(0, 7) === 'openapi') {
+            if (blocks[i][j].name.substr(0, 3) === 'api' || blocks[i][j].name.substr(0, 7) === 'openapi' || blocks[i][j].name.substr(0, 4) === 'mqtt') {
                 found = true;
             }
         }
@@ -701,9 +701,9 @@ Parser.prototype.findElements = function (block, filename) {
     // Replace Linebreak with Unicode
     block = block.replace(/\n/g, '\uffff');
 
-    // Elements start with @api or @openapi (at beginning of comment line, not in text)
+    // Elements start with @api, @openapi, or @mqtt (at beginning of comment line, not in text)
     const elementsRegExp =
-        /((?:^|\uffff)[\s*]*@(api\w*|openapi(?:-\w+)?)(?:\s*([\s\S]*?))?(?=\uffff[\s*]*@(?:api|openapi)|\*\/|$))/gm;
+        /((?:^|\uffff)[\s*]*@(api\w*|openapi(?:-\w+)?|mqtt\w*|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|auth|ratelimit|errors|tags)(?:\s*([\s\S]*?))?(?=\uffff[\s*]*@(?:api|openapi|mqtt|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|auth|ratelimit|errors|tags)|\*\/|$))/gm;
     let matches = elementsRegExp.exec(block);
     while (matches) {
         const element = {
@@ -712,6 +712,7 @@ Parser.prototype.findElements = function (block, filename) {
             sourceName: matches[2],
             content: matches[3] || '',
         };
+
 
         // reverse Unicode Linebreaks
         element.content = element.content.replace(/\uffff/g, '\n');

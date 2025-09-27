@@ -2776,6 +2776,25 @@ textarea.form-control,
     color: white;
 }
 
+/* MQTT Method Styles */
+.opblock-mqtt .opblock-summary-method,
+.opblock-summary-method-publish {
+    background: #8b5cf6;
+    color: white;
+}
+
+.opblock-mqtt .opblock-summary-method,
+.opblock-summary-method-subscribe {
+    background: #06b6d4;
+    color: white;
+}
+
+.opblock-mqtt .opblock-summary-method,
+.opblock-summary-method-inline {
+    background: #f59e0b;
+    color: white;
+}
+
 /* Contenido del endpoint */
 .opblock-content {
     transition: all 0.3s ease;

@@ -94,6 +94,10 @@ export interface ApiDocOptions {
     excludeFilters?: string[];
     /** File patterns to include in parsing */
     includeFilters?: string[];
+    /** Generate only MQTT protocol documentation (exclude REST APIs) */
+    mqttOnly?: boolean;
+    /** Exit with error code if MQTT payload schemas are invalid */
+    failOnMqttSchemaError?: boolean;
 }
 
 /**

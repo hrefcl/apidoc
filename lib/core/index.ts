@@ -119,6 +119,23 @@ const app = {
         'openapi-path': './parsers/openapi_path.js',
         'openapi-schema': './parsers/openapi_schema.js',
         'openapi-operation': './parsers/openapi_operation.js',
+        // MQTT parsers
+        mqtt: './parsers/mqtt.js',
+        mqttgroup: './parsers/mqtt_group.js',
+        topic: './parsers/mqtt_topic.js',
+        topicparam: './parsers/mqtt_topic_param.js',
+        qos: './parsers/mqtt_qos.js',
+        retain: './parsers/mqtt_retain.js',
+        payload: './parsers/mqtt_payload.js',
+        payloadschema: './parsers/mqtt_payload_schema.js',
+        auth: './parsers/mqtt_auth.js',
+        examplepublish: './parsers/mqtt_example_publish.js',
+        examplesubscribe: './parsers/mqtt_example_subscribe.js',
+        responsetopic: './parsers/mqtt_response_topic.js',
+        responseexample: './parsers/mqtt_response_example.js',
+        ratelimit: './parsers/mqtt_ratelimit.js',
+        errors: './parsers/mqtt_errors.js',
+        tags: './parsers/mqtt_tags.js',
     },
     workers: {
         // Temporarily disabled while migrating workers to TypeScript
@@ -209,7 +226,7 @@ function parse(options) {
 
             // cleanup
             app.log.verbose('run filter');
-            const blocks = app.filter.process(parsedFiles, parsedFilenames);
+            let blocks = app.filter.process(parsedFiles, parsedFilenames);
 
             // sort by group ASC, name ASC, version DESC
             blocks.sort(function (a, b) {
@@ -223,6 +240,39 @@ function parse(options) {
                 }
                 return nameA < nameB ? -1 : 1;
             });
+
+            // Filter MQTT/REST endpoints based on CLI options
+            if (app.options.mqttOnly) {
+                // Keep only MQTT endpoints
+                blocks = blocks.filter(block => {
+                    return block.type === 'publish' || block.type === 'subscribe' ||
+                           block.topic || // Has MQTT topic
+                           block.qos !== undefined || // Has QoS setting
+                           block.retain !== undefined || // Has retain setting
+                           (block.url === '' && (block.type === 'publish' || block.type === 'subscribe' || block.type === 'inline'));
+                });
+                app.log.verbose('MQTT-only mode: filtered to ' + blocks.length + ' MQTT endpoints');
+            }
+
+            // Validate MQTT schemas if option is enabled
+            if (app.options.failOnMqttSchemaError) {
+                const mqttBlocks = blocks.filter(block =>
+                    block.type === 'publish' || block.type === 'subscribe' || block.topic
+                );
+
+                for (const block of mqttBlocks) {
+                    if (block.payloadSchema && block.payloadSchema.type === 'inline') {
+                        try {
+                            // Try to parse the inline schema as JSON
+                            JSON.parse(block.payloadSchema.content);
+                        } catch (e) {
+                            app.log.error('Invalid MQTT payload schema in ' + block.name + ': ' + e.message);
+                            return false;
+                        }
+                    }
+                }
+                app.log.verbose('MQTT schema validation passed for ' + mqttBlocks.length + ' endpoints');
+            }
 
             // add apiDoc specification version
             app.packageInfos.apidoc = SPECIFICATION_VERSION;

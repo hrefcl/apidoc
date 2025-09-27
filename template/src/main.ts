@@ -274,12 +274,19 @@ function init() {
 
     const apiProject = typeof window.API_PROJECT === 'string' ? JSON.parse(window.API_PROJECT) : window.API_PROJECT || {};
 
+    // Debug: Log MQTT entries count
+    const mqttEntries = api.filter(entry =>
+        entry.type === 'publish' || entry.type === 'subscribe' || entry.topic || entry.qos !== undefined
+    );
+    console.log('📡 MQTT endpoints detected:', mqttEntries.length);
+
     // Validate and clean API data to prevent version errors
     api = api.filter((entry) => {
         if (!entry.version || typeof entry.version !== 'string' || entry.version.trim() === '') {
-            console.warn('Filtering out API entry with invalid version:', entry.name || 'unknown', 'version:', entry.version);
+            console.warn('🚨 FILTERING OUT API ENTRY with invalid version:', entry.name || 'unknown', 'version:', entry.version, 'type:', entry.type);
             return false;
         }
+        // MQTT entries pass version filter
         return true;
     });
 
@@ -306,6 +313,7 @@ function init() {
     const templateHeader = safeCompile('template-header');
     const templateFooter = safeCompile('template-footer');
     const templateArticle = safeCompile('template-article');
+    const templateMqttArticle = safeCompile('template-mqtt-article');
     const templateCompareArticle = safeCompile('template-compare-article');
     const templateGenerator = safeCompile('template-generator');
     const templateProject = safeCompile('template-project');
@@ -358,6 +366,9 @@ function init() {
             if (title) {
                 // title.toLowerCase().replace(/[]/g, function ($0) { return umlauts[$0]; });
                 titles.push(title.toLowerCase() + '#~#' + titleName); // '#~#' keep reference to titleName after sorting
+            } else {
+                // Include entries without title (like MQTT endpoints) using their name
+                titles.push((titleName || 'untitled').toLowerCase() + '#~#' + titleName);
             }
         });
         // sort by name ASC
@@ -399,6 +410,8 @@ function init() {
     apiGroups = Object.keys(apiGroups);
     apiGroups.sort();
 
+    // Groups available: ${apiGroups.length} total
+
     // custom order
     if (apiProject.order) {
         apiGroups = sortGroupsByOrder(apiGroupTitles, apiProject.order);
@@ -435,17 +448,21 @@ function init() {
         api.forEach((entry) => {
             if (entry.group === group) {
                 if (oldName !== entry.name) {
-                    nav.push({
-                        title: entry.title,
+                    const navItem = {
+                        title: entry.title || entry.name, // Use name as fallback for empty title
                         group: group,
                         name: entry.name,
                         type: entry.type,
                         version: entry.version,
                         url: entry.url,
-                    });
+                    };
+                    if (entry.type === 'publish' || entry.type === 'subscribe' || entry.topic) {
+                        console.log('📋 Adding MQTT nav item:', navItem.title, 'for group:', group);
+                    }
+                    nav.push(navItem);
                 } else {
                     nav.push({
-                        title: entry.title,
+                        title: entry.title || entry.name, // Use name as fallback for empty title
                         group: group,
                         hidden: true,
                         name: entry.name,
@@ -700,11 +717,19 @@ function init() {
                 }
 
                 try {
-                    const articleHtml = templateArticle(fields);
+                    // Detect if this is an MQTT endpoint and use appropriate template
+                    const isMqttEndpoint = entry.type === 'publish' || entry.type === 'subscribe' ||
+                                         entry.topic || // Has MQTT topic
+                                         entry.qos !== undefined || // Has QoS setting
+                                         entry.retain !== undefined || // Has retain setting
+                                         (entry.url === '' && (entry.type === 'publish' || entry.type === 'subscribe' || entry.type === 'inline'));
+
+                    const articleHtml = isMqttEndpoint ? templateMqttArticle(fields) : templateArticle(fields);
                     articles.push({
                         article: articleHtml,
                         group: entry.group,
                         name: entry.name,
+                        version: entry.version,
                         aloneDisplay: apiProject.template.aloneDisplay,
                     });
                 } catch (error) {
@@ -715,6 +740,7 @@ function init() {
                         article: '<!-- Article template error: ' + entry.name + ' -->',
                         group: entry.group,
                         name: entry.name,
+                        version: entry.version,
                         aloneDisplay: apiProject.template.aloneDisplay,
                     });
                 }
@@ -1865,7 +1891,8 @@ function initializeEndpointCollapsibles() {
 
     endpointSummaries.forEach((summary) => {
         const article = summary.closest('article');
-        const content = article?.querySelector('.opblock-content');
+        // Support both REST (.opblock-content) and MQTT (.opblock-details) templates
+        const content = article?.querySelector('.opblock-content') || article?.querySelector('.opblock-details');
 
         if (article && content) {
             if (endpointsCollapsible) {

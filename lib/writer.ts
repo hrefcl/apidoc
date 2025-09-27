@@ -304,7 +304,7 @@ class Writer {
             }
 
             // run esbuild to create the bundle file in assets (JavaScript only)
-            const entryPoint = this.path.resolve(this.path.join(this.opt.template, 'src', 'main.js'));
+            const entryPoint = this.path.resolve(this.path.join(this.opt.template, 'src', 'main.ts'));
             const outfile = this.path.join(outputPath, 'main.bundle.js');
 
             this.log.debug(`output file: ${outfile}`);
