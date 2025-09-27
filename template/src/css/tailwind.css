@@ -326,6 +326,27 @@ body.dark code:not(.hljs) {
     border: 1px solid rgb(75 85 99) !important; /* gray-600 */
 }
 
+/* Dark mode MQTT badges */
+html.dark .bg-purple-200,
+body.dark .bg-purple-200 {
+    background-color: rgb(139 92 246) !important; /* purple-500 */
+}
+
+html.dark .text-purple-800,
+body.dark .text-purple-800 {
+    color: rgb(196 181 253) !important; /* purple-200 */
+}
+
+html.dark .bg-orange-200,
+body.dark .bg-orange-200 {
+    background-color: rgb(234 88 12) !important; /* orange-600 */
+}
+
+html.dark .text-orange-800,
+body.dark .text-orange-800 {
+    color: rgb(254 215 170) !important; /* orange-200 */
+}
+
 html.dark pre,
 body.dark pre {
     background-color: rgb(17 24 39) !important; /* gray-900 */
