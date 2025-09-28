@@ -24,7 +24,7 @@
         "NPM": "https://www.npmjs.com/package/@hrefcl/apidoc"
     },
     "sidebarLinks": {
-        "Documentation": "https://apidocts.com",
+        "Documentation": "https://apidoc.app",
         "Live Demo": "http://apidocts.com/example/"
     },
     "categorizeByGroup": true,

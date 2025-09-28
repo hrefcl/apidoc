@@ -284,7 +284,7 @@ pre {
   <footer class="main-footer">
     <div class="container">
       <p>&copy; 2024 Company Name. All rights reserved.</p>
-      <p>Generated with <a href="https://apidocts.com">APIDoc 4.0</a></p>
+      <p>Generated with <a href="https://apidoc.app">APIDoc 4.0</a></p>
     </div>
   </footer>
 </body>

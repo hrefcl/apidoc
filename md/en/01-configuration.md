@@ -33,7 +33,7 @@ Complete guide for configuring APIDoc through the `apidoc.json` file with all av
   "generator": {
     "name": "@hrefcl/apidoc",
     "time": "2024-01-15T10:30:00.000Z",
-    "url": "https://apidocts.com",
+    "url": "https://apidoc.app",
     "version": "4.0.5"
   }
 }
@@ -316,7 +316,7 @@ project/
   "generator": {
     "name": "@hrefcl/apidoc",
     "time": "2024-01-15T10:30:00.000Z",
-    "url": "https://apidocts.com",
+    "url": "https://apidoc.app",
     "version": "4.0.5"
   }
 }

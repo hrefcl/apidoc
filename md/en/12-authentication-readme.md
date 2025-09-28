@@ -469,7 +469,7 @@ curl -H "Cookie: session=..." \
 ### Advanced Topics
 - [Login Interface Customization](./12-authentication-login.md)
 - [System Changelog](./12-authentication-changelog.md)
-- [Security Best Practices](./12-authentication.md#security-features)
+- [Security Best Practices](./12-authentication.md#1-security)
 
 ### Integration Guides
 - [Docker Integration](./16-docker.md)

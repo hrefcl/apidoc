@@ -148,7 +148,7 @@ Generate documentation from TypeScript interfaces:
 ## 🔗 Links & Resources
 
 - **[📦 NPM Package](https://www.npmjs.com/package/@hrefcl/apidoc)**
-- **[🏠 Official Website](https://apidocts.com)**
+- **[🏠 Official Website](https://apidoc.app)**
 - **[🚀 Live Demo](http://apidocts.com/example/)**
 - **[💻 GitHub Repository](https://github.com/hrefcl/apidoc)**
 

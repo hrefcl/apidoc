@@ -56,11 +56,11 @@ Bienvenido a la documentación completa de APIDoc 4.0. Esta guía te permitirá 
 ### Para APIs MQTT
 1. Revisa la [guía MQTT](./10-mqtt.md)
 2. Configura [parámetros MQTT](./05-apidoc-params.md#mqtt)
-3. Añade [ejemplos de mensajes](./06-examples.md#ejemplos-mqtt)
+3. Añade [ejemplos de mensajes MQTT](./06-examples.md)
 
 ### Para Proyectos TypeScript
 1. Configura [esquemas TypeScript](./11-typescript-schemas.md)
-2. Usa [validación automática](./11-typescript-schemas.md#validación)
+2. Usa [validación automática](./11-typescript-schemas.md#validación-de-ejemplos)
 3. Integra con [OpenAPI](./09-openapi.md)
 
 ### Para Documentación Protegida
