@@ -1,3 +1,9 @@
+---
+title: "Configuración de apidoc.json"
+category: "Configuración"
+order: 1
+---
+
 # 📋 Configuración de apidoc.json
 
 La configuración de APIDoc se realiza a través del archivo `apidoc.json` (o dentro de `package.json` bajo la sección `"apidoc"`).

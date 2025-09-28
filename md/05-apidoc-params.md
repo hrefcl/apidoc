@@ -1,3 +1,9 @@
+---
+title: "Parámetros APIDoc"
+category: "Referencia"
+order: 5
+---
+
 # 📖 Parámetros APIDoc
 
 Referencia completa de todos los parámetros disponibles en APIDoc para documentar tus APIs.

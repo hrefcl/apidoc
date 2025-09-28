@@ -18,6 +18,7 @@
     "name": "@hrefcl/apidoc",
     "gitRevision": "main",
     "gitRemote": "origin",
+    "projectDocuments": ["md/*.md"],
     "navigationLinks": {
         "GitHub": "https://github.com/hrefcl/apidoc",
         "NPM": "https://www.npmjs.com/package/@hrefcl/apidoc"
@@ -111,7 +112,17 @@
         "php",
         "go",
         "dart",
-        "scala"
+        "scala",
+        "bash",
+        "shell",
+        "dockerfile",
+        "nginx",
+        "apache",
+        "makefile",
+        "yaml",
+        "json",
+        "xml",
+        "mermaid"
     ],
     "searchInComments": true,
     "searchInDocuments": true,
