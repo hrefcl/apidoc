@@ -18,7 +18,7 @@
     "name": "@hrefcl/apidoc",
     "gitRevision": "main",
     "gitRemote": "origin",
-    "projectDocuments": ["md/*.md"],
+    "projectDocuments": ["md/en/*.md", "md/es/*.md"],
     "navigationLinks": {
         "GitHub": "https://github.com/hrefcl/apidoc",
         "NPM": "https://www.npmjs.com/package/@hrefcl/apidoc"

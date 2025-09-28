@@ -1,4 +1,4 @@
-# @hrefcl/apidoc v4.0.5
+# APIDoc 4.0
 
 **RESTful web API & MQTT Protocol Documentation Generator** - A modern TypeScript fork of the original apidoc project with active maintenance, modern tooling, and comprehensive MQTT support.
 
@@ -8,9 +8,9 @@
 
 ## 🚀 What's APIDoc?
 
-**APIDoc** genera documentación para APIs RESTful y protocolos MQTT desde comentarios en tu código fuente. Compatible con **C#, Go, Dart, Java, JavaScript, PHP, TypeScript, Python, Ruby** y más.
+**APIDoc** generates comprehensive documentation for RESTful APIs and MQTT protocols from source code comments. Compatible with **C#, Go, Dart, Java, JavaScript, PHP, TypeScript, Python, Ruby** and more.
 
-### Ejemplo básico:
+### Quick Example:
 
 ```javascript
 /**
@@ -25,80 +25,80 @@
  */
 ```
 
-## 🎯 Instalación y Uso Rápido
+## 🎯 Quick Start
 
 ```bash
-# Instalación global
+# Global installation
 npm install -g @hrefcl/apidoc
 
-# Generar documentación
+# Generate documentation
 apidoc -i src/ -o docs/
 
-# Ver documentación
+# View documentation
 open docs/index.html
 ```
 
-## 📚 Documentación Completa
+## 📚 Complete Documentation
 
-### 🏗️ **Configuración y Personalización**
-- **[📋 Configuración de apidoc.json](./md/01-configuration.md)** - Configuración completa del proyecto
-- **[🎨 Iconos y Personalización](./md/02-customization.md)** - Font Awesome, logos, temas
-- **[📄 Markdown Personalizado](./md/03-custom-markdown.md)** - Contenido markdown por secciones
-- **[🎨 Temas de Sintaxis](./md/04-highlight-themes.md)** - 160+ temas de resaltado de código
+### 🛠️ **Configuration & Customization**
+- **[📋 Configuration](./md/en/01-configuration.md)** - Complete apidoc.json project configuration
+- **[🎨 Icons & Customization](./md/en/02-customization.md)** - Font Awesome, logos, themes
+- **[📄 Custom Markdown](./md/en/03-custom-markdown.md)** - Custom content for sections
+- **[🌈 Syntax Themes](./md/en/04-highlight-themes.md)** - 160+ code highlighting themes
 
-### 🔧 **Funcionalidades Core**
-- **[📖 Parámetros APIDoc](./md/05-apidoc-params.md)** - Referencia completa de @api, @apiParam, etc.
-- **[📝 Ejemplos y Plantillas](./md/06-examples.md)** - Ejemplos prácticos de uso
-- **[🔄 Versionado y Herencia](./md/07-versioning.md)** - Gestión de versiones y reutilización
-- **[💻 Uso Programático](./md/08-programmatic-usage.md)** - Integración en Node.js
+### 📋 **Core Functionality**
+- **[📖 APIDoc Parameters](./md/en/05-apidoc-params.md)** - Complete @api, @apiParam reference
+- **[💡 Examples & Templates](./md/en/06-examples.md)** - Practical usage examples
+- **[🔄 Versioning & Inheritance](./md/en/07-versioning.md)** - Version management and reuse
+- **[⚙️ Programmatic Usage](./md/en/08-programmatic-usage.md)** - Node.js integration
 
-### 🌐 **Protocolos y Formatos Modernos**
-- **[🔌 OpenAPI 3.0](./md/09-openapi.md)** - Soporte nativo y exportación
-- **[📡 Protocolo MQTT](./md/10-mqtt.md)** - Documentación IoT completa
-- **[📊 Esquemas TypeScript](./md/11-typescript-schemas.md)** - Integración @apiSchema
+### 🌐 **Modern Protocols & Formats**
+- **[🔌 OpenAPI 3.0](./md/en/09-openapi.md)** - Native support and export
+- **[📡 MQTT Protocol](./md/en/10-mqtt.md)** - Complete IoT documentation
+- **[📊 TypeScript Schemas](./md/en/11-typescript-schemas.md)** - @apiSchema integration
 
-### 🔐 **Seguridad y Autenticación**
-- **[🛡️ Sistema de Autenticación](./md/12-authentication.md)** - Protección de documentación
-- **[🚀 Guía Rápida Auth](./md/13-quick-start-auth.md)** - Setup en 3 pasos
-- **[👨‍💻 Referencia de Desarrollador](./md/14-auth-developer.md)** - API técnica de autenticación
+### 🔐 **Security & Authentication**
+- **[🛡️ Authentication System](./md/en/12-authentication.md)** - Documentation protection
+- **[🚀 Quick Auth Setup](./md/en/13-quick-start-auth.md)** - Setup in 3 steps
+- **[👨‍💻 Developer Reference](./md/en/14-auth-developer.md)** - Technical authentication API
 
-### 🛠️ **Desarrollo y Deploy**
-- **[🔨 Desarrollo Local](./md/15-development.md)** - Setup del entorno de desarrollo
-- **[🐳 Docker y Containers](./md/16-docker.md)** - Uso con contenedores
-- **[🔧 Herramientas y Plugins](./md/17-build-tools.md)** - Integración con Grunt, Webpack, etc.
+### 🛠️ **Development & Deploy**
+- **[🔨 Local Development](./md/en/15-development.md)** - Development environment setup
+- **[🐳 Docker & Containers](./md/en/16-docker.md)** - Container usage and deployment
+- **[🔧 Build Tools](./md/en/17-build-tools.md)** - Integration with Grunt, Webpack, etc.
 
-## 🌟 Características Destacadas v4.0.5
+## 🌟 Key Features v4.0.5
 
-### 🆕 **Custom Markdown Content**
-Añade contenido markdown personalizado a cualquier grupo de API:
+### 📝 **Custom Markdown Content**
+Add custom markdown content to any API group with rich formatting:
 
 ```json
 {
   "settings": {
     "Users": {
       "icon": "fa-user",
-      "title": "Usuarios",
+      "title": "User Management",
       "filename": "user.md"
     }
   }
 }
 ```
 
-### 📡 **Soporte MQTT Completo**
-Documenta protocolos MQTT con 16 tags especializados:
+### 📡 **Complete MQTT Support**
+Document MQTT protocols with 16 specialized tags:
 
 ```javascript
 /**
- * @api {publish} v1/sensors/{id}/data Publish Sensor Data
- * @mqtt publish
+ * @mqtt {publish} v1/sensors/{id}/data Publish Sensor Data
+ * @mqttGroup IoT
  * @topic v1/sensors/{id}/data
  * @qos 1
  * @retain false
  */
 ```
 
-### 🔐 **Sistema de Autenticación Dual**
-Protege tu documentación con autenticación local y remota:
+### 🔐 **Dual Authentication System**
+Protect your documentation with local and remote authentication:
 
 ```json
 {
@@ -110,8 +110,8 @@ Protege tu documentación con autenticación local y remota:
 }
 ```
 
-### 🌐 **OpenAPI 3.0 Nativo**
-Escribe especificaciones OpenAPI directamente en comentarios:
+### 🌐 **Native OpenAPI 3.0**
+Write OpenAPI specifications directly in comments:
 
 ```javascript
 /**
@@ -128,23 +128,40 @@ Escribe especificaciones OpenAPI directamente en comentarios:
  */
 ```
 
-## 🎯 Links de Interés
+### 📊 **TypeScript Integration**
+Generate documentation from TypeScript interfaces:
+
+```typescript
+/**
+ * @api {get} /users/:id Get User
+ * @apiSuccess {Object} user User data
+ * @apiSchema {User} user
+ * @apiSchemaFile ../types/user.ts
+ */
+```
+
+## 🌍 Languages
+
+- **🇺🇸 English** (Primary): [Documentation](./md/en/)
+- **🇪🇸 Español**: [Documentación](./md/es/)
+
+## 🔗 Links & Resources
 
 - **[📦 NPM Package](https://www.npmjs.com/package/@hrefcl/apidoc)**
-- **[🏠 Sitio Web Oficial](https://apidocts.com)**
-- **[🚀 Demo en Vivo](http://apidocts.com/example/)**
-- **[💻 Repositorio GitHub](https://github.com/hrefcl/apidoc)**
+- **[🏠 Official Website](https://apidocts.com)**
+- **[🚀 Live Demo](http://apidocts.com/example/)**
+- **[💻 GitHub Repository](https://github.com/hrefcl/apidoc)**
 
-## 🤝 Soporte y Contribuciones
+## 🤝 Support & Contributions
 
-- **[🐛 Reportar Issues](https://github.com/hrefcl/apidoc/issues)**
-- **[💬 Discusiones](https://github.com/hrefcl/apidoc/discussions)**
-- **[📖 Guía de Contribución](./CONTRIBUTING.md)**
+- **[🐛 Report Issues](https://github.com/hrefcl/apidoc/issues)**
+- **[💬 Discussions](https://github.com/hrefcl/apidoc/discussions)**
+- **[📖 Contribution Guide](./md/en/15-development.md)**
 
-## 📄 Licencia
+## 📄 License
 
-MIT License - ver archivo [LICENSE](./LICENSE) para detalles.
+MIT License - see [LICENSE](./LICENSE) file for details.
 
 ---
 
-**Hecho con ❤️ por la comunidad APIDoc. Originalmente creado por Peter Rottmann.**
+**Made with ❤️ by the APIDoc community. Originally created by Peter Rottmann.**
