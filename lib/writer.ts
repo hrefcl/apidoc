@@ -13,6 +13,7 @@ import esbuild from 'esbuild';
 import fs from 'fs-extra';
 import path from 'path';
 import { convertToOpenApi } from './exporters/openapi-converter';
+import { createMarkdownFromApiDocData } from './markdown';
 const AuthProcessor = require('./core/auth-processor');
 
 /**
@@ -156,6 +157,76 @@ class Writer {
     }
 
     /**
+     * Generate Markdown documentation files
+     *
+     * @memberof Writer
+     */
+    async writeMarkdownDocs(): Promise<void> {
+        try {
+            this.log.verbose('🔄 Generating Markdown documentation...');
+
+            // Parse API data
+            const apiData = JSON.parse(this.api.data);
+            const projectData = JSON.parse(this.api.project);
+
+            // Ensure apiData is an array (it might be wrapped in an object)
+            const apiArray = Array.isArray(apiData) ? apiData : [apiData];
+
+            // Determine output path
+            let outputPath = this.opt.markdownExport;
+            if (outputPath === true || !outputPath) {
+                outputPath = this.opt.markdownMulti
+                    ? this.opt.dest
+                    : this.path.join(this.opt.dest, 'api.md');
+            }
+
+            // Load content from files if specified
+            const loadFileContent = async (filePath?: string) => {
+                if (!filePath) return undefined;
+                try {
+                    return await this.fs.readFile(filePath, 'utf8');
+                } catch (error) {
+                    this.log.warn(`Could not read file: ${filePath}`);
+                    return undefined;
+                }
+            };
+
+            const header = await loadFileContent(this.opt.markdownHeader);
+            const footer = await loadFileContent(this.opt.markdownFooter);
+            const prepend = await loadFileContent(this.opt.markdownPrepend);
+
+            // Create markdown documentation
+            const markdownDocs = await createMarkdownFromApiDocData(apiArray, projectData, {
+                template: this.opt.markdownTemplate,
+                multi: this.opt.markdownMulti,
+                header,
+                footer,
+                prepend
+            });
+
+            // Write files
+            if (this.opt.markdownMulti) {
+                // Multiple files mode
+                this.createDir(outputPath);
+                for (const doc of markdownDocs) {
+                    const filePath = this.path.join(outputPath, `${doc.name}.md`);
+                    this.fs.writeFileSync(filePath, doc.content);
+                    this.log.verbose(`✅ Markdown file generated: ${filePath}`);
+                }
+            } else {
+                // Single file mode
+                this.createDir(this.path.dirname(outputPath));
+                this.fs.writeFileSync(outputPath, markdownDocs[0].content);
+                this.log.verbose(`✅ Markdown documentation generated: ${outputPath}`);
+            }
+
+        } catch (error) {
+            this.log.error(`❌ Failed to generate Markdown documentation: ${error.message}`);
+            throw error;
+        }
+    }
+
+    /**
      * Generate OpenAPI 3.0 specification file (swagger.json)
      *
      * @memberof Writer
@@ -202,7 +273,7 @@ class Writer {
      * @returns {Promise<string>} Resolves as the bundling operation assets folder.
      * @memberof Writer
      */
-    createOutputFiles() {
+    async createOutputFiles() {
         this.createDir(this.opt.dest);
 
         // Generate OpenAPI specification if requested
@@ -210,9 +281,14 @@ class Writer {
             this.writeOpenApiSpec();
         }
 
-        // If openapi-only mode, skip HTML generation
-        if (this.opt.openapiOnly) {
-            this.log.verbose('🎉 OpenAPI-only mode: Skipping HTML generation');
+        // Generate Markdown documentation if requested
+        if (this.opt.markdownExport || this.opt.markdownOnly) {
+            await this.writeMarkdownDocs();
+        }
+
+        // If openapi-only or markdown-only mode, skip HTML generation
+        if (this.opt.openapiOnly || this.opt.markdownOnly) {
+            this.log.verbose('🎉 Special mode: Skipping HTML generation');
             return Promise.resolve(this.opt.dest);
         }
 

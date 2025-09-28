@@ -194,6 +194,19 @@ ${pc.bold('OUTPUT OPTIONS:')}`
     .addHelpText(
         'beforeAll',
         `
+${pc.bold('MARKDOWN EXPORT:')}`
+    )
+    .option('--markdown-export [output]', 'Export documentation to Markdown file(s)', false)
+    .option('--markdown-template <template>', 'Markdown template to use (default, bitbucket, or path to custom template)', 'default')
+    .option('--markdown-multi', 'Generate one Markdown file per API group', false)
+    .option('--markdown-header <file>', 'Markdown file to include as header', '')
+    .option('--markdown-footer <file>', 'Markdown file to include as footer', '')
+    .option('--markdown-prepend <file>', 'Markdown file to prepend before API documentation', '')
+    .option('--markdown-only', 'Generate only Markdown documentation (no HTML)', false)
+
+    .addHelpText(
+        'beforeAll',
+        `
 ${pc.bold('PARSING:')}`
     )
     .option('--encoding <encoding>', 'Set the encoding of the source code [utf8]', 'utf8')
@@ -238,6 +251,9 @@ ${pc.bold('EXAMPLES:')}
   ${pc.cyan('apidoc -i src/ -o docs/ --openapi-only')} # Generate only OpenAPI/Swagger
   ${pc.cyan('apidoc -i src/ -o docs/ --mqtt-only')}   # Generate only MQTT documentation
   ${pc.cyan('apidoc -i src/ -o docs/ --fail-on-mqtt-schema-error')} # Strict MQTT schema validation
+  ${pc.cyan('apidoc -i src/ -o docs/ --markdown-export api.md')} # Generate HTML + Markdown
+  ${pc.cyan('apidoc -i src/ -o docs/ --markdown-only --markdown-export api.md')} # Generate only Markdown
+  ${pc.cyan('apidoc -i src/ -o docs/ --markdown-multi --markdown-export docs/')} # Multiple Markdown files
 
 ${pc.bold('LEARN MORE:')}
   ${pc.cyan('Homepage:')}     https://apidocts.com
@@ -340,6 +356,13 @@ const options = {
     openapiOnly: argv.openapiOnly,
     mqttOnly: argv.mqttOnly,
     failOnMqttSchemaError: argv.failOnMqttSchemaError,
+    markdownExport: argv.markdownExport,
+    markdownTemplate: argv.markdownTemplate,
+    markdownMulti: argv.markdownMulti,
+    markdownHeader: argv.markdownHeader,
+    markdownFooter: argv.markdownFooter,
+    markdownPrepend: argv.markdownPrepend,
+    markdownOnly: argv.markdownOnly,
 };
 
 if (options.debug) {
