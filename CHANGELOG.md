@@ -5,6 +5,62 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.5] - 2025-09-28
+
+### 🆕 NEW FEATURE - Custom Markdown Content per API Section
+
+**APIDoc 4.0.5 introduces powerful custom markdown content functionality that allows you to add rich, formatted content to any API group or section.**
+
+#### ✨ Custom Markdown Features
+- **📄 Section-Level Content**: Add custom markdown content that appears at the top of each API group
+- **🎨 Rich Formatting**: Full markdown support with syntax highlighting, tables, images, and HTML
+- **🔧 Simple Configuration**: Just add `filename` to your settings in `apidoc.json`
+- **🎯 Icon Integration**: Perfectly integrates with existing Font Awesome icon system
+- **⚡ Automatic Processing**: Markdown files are processed and rendered as HTML automatically
+- **🌍 Multilingual Support**: Combine with custom titles for localized documentation
+
+#### 🚀 Quick Setup
+```json
+{
+  "settings": {
+    "Users": {
+      "icon": "fa-user",
+      "title": "User Management",
+      "filename": "docs/users.md"
+    },
+    "Company": {
+      "icon": "fa-building",
+      "title": "Company Operations",
+      "filename": "docs/company.md"
+    }
+  }
+}
+```
+
+#### 🔧 Technical Implementation
+- **NEW**: `processCustomMarkdownSettings()` method in `writer.ts`
+- **NEW**: Markdown-it integration for HTML rendering
+- **NEW**: Custom markdown container in section templates
+- **NEW**: JavaScript initialization system for markdown content
+- **ENHANCED**: Template system updated to support section-level custom content
+
+#### 📁 Documentation
+- **NEW**: Complete `CUSTOM-MARKDOWN.md` guide with examples and best practices
+- **UPDATED**: README.md with custom markdown content section
+- **ENHANCED**: Configuration documentation with new settings options
+
+### 🐛 CRITICAL FIXES
+- **FIXED**: `sortGroupsByOrder` function now correctly handles array inputs instead of objects
+- **FIXED**: JavaScript error that caused blank pages when using custom ordering
+- **FIXED**: Template placement of custom markdown moved from article-level to section-level
+- **IMPROVED**: Error handling and validation for custom markdown file loading
+
+### 📚 Documentation Updates
+- **ENHANCED**: README.md updated with v4.0.5 features and custom markdown examples
+- **NEW**: Comprehensive custom markdown documentation
+- **UPDATED**: Configuration examples and best practices
+- **IMPROVED**: Quick start guides and troubleshooting sections
+
 ## [4.0.4] - 2025-01-27
 
 ### 🚀 ENHANCED - Swagger UI-Style Collapsible Interface + Complete MQTT Protocol Support

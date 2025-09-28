@@ -1,4 +1,4 @@
-# @hrefcl/apidoc v4.0.4
+# @hrefcl/apidoc v4.0.5
 
 **RESTful web API & MQTT Protocol Documentation Generator** - A modern TypeScript fork of the original apidoc project with active maintenance, modern tooling, and comprehensive MQTT support.
 
@@ -6,9 +6,63 @@
 [![NPM Version](https://img.shields.io/npm/v/@hrefcl/apidoc)](https://www.npmjs.com/package/@hrefcl/apidoc)
 [![Node.js Version](https://img.shields.io/node/v/@hrefcl/apidoc)](https://nodejs.org/)
 
-## 🚀 What's New in v4.0.4
+## 🚀 What's New in v4.0.5
 
-### 🌟 NEW: Complete MQTT Protocol Support
+### 🆕 NEW: Custom Markdown Content per API Section
+
+**Add rich, custom markdown content to any API group/section with automatic rendering and perfect integration!**
+
+- **📄 Section-Level Markdown** - Add custom content that appears at the top of each API group
+- **🎨 Rich Formatting** - Full markdown support with syntax highlighting, tables, and more
+- **🔧 Simple Configuration** - Just add `filename` to your settings in `apidoc.json`
+- **🎯 Icon Integration** - Combine with Font Awesome icons for professional appearance
+- **⚡ Automatic Processing** - Markdown files are processed and rendered as HTML automatically
+- **🌍 Multilingual** - Perfect for localized documentation and custom explanations
+
+#### Quick Example
+
+**1. Configure in `apidoc.json`:**
+```json
+{
+  "settings": {
+    "Users": {
+      "icon": "fa-user",
+      "title": "Usuarios",
+      "filename": "user.md"
+    },
+    "Company": {
+      "icon": "fa-building",
+      "title": "Empresa",
+      "filename": "company.md"
+    }
+  }
+}
+```
+
+**2. Create markdown files:**
+```markdown
+<!-- user.md -->
+## 👥 User Management
+
+This section contains all endpoints related to user operations.
+
+### Authentication Required
+All user endpoints require a valid JWT token in the Authorization header.
+
+### Rate Limiting
+- **Standard users**: 100 requests/minute
+- **Premium users**: 1000 requests/minute
+```
+
+**3. Generate documentation:**
+```bash
+apidoc -i src/ -o docs/
+# Your custom markdown content now appears at the top of the Users section!
+```
+
+The custom markdown content integrates seamlessly with your existing API documentation, appearing above the endpoint details in each section.
+
+### 🌟 Complete MQTT Protocol Support (v4.0.4)
 
 **APIDoc now supports both REST APIs and MQTT protocols in a single documentation system!**
 
