@@ -1,13 +1,13 @@
 /**
- * Parser for @ratelimit tags - defines MQTT rate limiting recommendations
+ * Parser for ratelimit tags - defines MQTT rate limiting recommendations
  *
- * This parser handles the @ratelimit tag that defines recommended rate limits
+ * This parser handles the ratelimit tag that defines recommended rate limits
  * for MQTT publishing or subscribing. It extracts:
  * - Rate value (number)
  * - Time unit (second, minute, hour, day)
  * - Optional description
  *
- * @param content - Raw content from the @ratelimit tag
+ * @param content - Raw content from the ratelimit tag
  * @returns Parsed rate limit information, or null if parsing fails
  *
  * @example Messages per second

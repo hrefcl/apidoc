@@ -1,11 +1,11 @@
 /**
- * Parser for @qos tags - defines MQTT Quality of Service level
+ * Parser for qos tags - defines MQTT Quality of Service level
  *
- * This parser handles the @qos tag that defines MQTT QoS levels. It extracts:
+ * This parser handles the qos tag that defines MQTT QoS levels. It extracts:
  * - QoS level (0, 1, or 2)
  * - Validates QoS value is within allowed range
  *
- * @param content - Raw content from the @qos tag
+ * @param content - Raw content from the qos tag
  * @returns Parsed QoS information or null if parsing fails
  * @returns .qos - MQTT QoS level (0, 1, or 2)
  *

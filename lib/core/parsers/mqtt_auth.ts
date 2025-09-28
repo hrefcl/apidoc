@@ -1,12 +1,12 @@
 /**
- * Parser for @auth tags - defines MQTT authentication requirements
+ * Parser for auth tags - defines MQTT authentication requirements
  *
- * This parser handles the @auth tag that defines authentication methods and requirements
+ * This parser handles the auth tag that defines authentication methods and requirements
  * for MQTT connections. It extracts:
  * - Authentication type (username, tls, apikey, etc.)
  * - Optional authentication details and requirements
  *
- * @param content - Raw content from the @auth tag
+ * @param content - Raw content from the auth tag
  * @returns Parsed authentication information with type and details, or null if parsing fails
  *
  * @example Username/password authentication

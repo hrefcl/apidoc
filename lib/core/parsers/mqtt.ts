@@ -1,14 +1,13 @@
 /**
- * Parser for @mqtt tags - defines MQTT operation type (publish or subscribe)
+ * Parser for MQTT tags - defines MQTT operation type (publish or subscribe)
  *
- * This parser handles the main @mqtt tag that defines MQTT endpoints. It extracts:
+ * This parser handles the main MQTT tag that defines MQTT endpoints. It extracts:
  * - Operation type (publish or subscribe)
  * - Optional description
  *
- * @param content - Raw content from the @mqtt tag
+ * @param content - Raw content from the MQTT tag
  * @returns Parsed MQTT information or null if parsing fails
- * @returns .type - MQTT operation type ('publish' or 'subscribe')
- * @returns .title - Optional title/description
+ * @returns Object with .type (MQTT operation type 'publish' or 'subscribe') and .title (optional title/description)
  *
  * @example Basic MQTT publish
  * ```

@@ -1,11 +1,11 @@
 /**
- * Parser for @mqttGroup tags - handles MQTT endpoint grouping
+ * Parser for mqttGroup tags - handles MQTT endpoint grouping
  *
  * This parser processes @mqttGroup tags to extract and normalize MQTT endpoint groups.
  * Groups are used to organize related MQTT endpoints in the generated documentation,
  * separate from REST API groups.
  *
- * @param content - Raw content from the @mqttGroup tag
+ * @param content - Raw content from the mqttGroup tag
  * @returns Object containing the normalized group name, or null if content is empty
  *
  * @example Basic MQTT group

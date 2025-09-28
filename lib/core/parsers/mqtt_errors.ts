@@ -1,12 +1,12 @@
 /**
- * Parser for @errors tags - defines expected MQTT errors and failure scenarios
+ * Parser for errors tags - defines expected MQTT errors and failure scenarios
  *
- * This parser handles the @errors tag that defines expected errors or failure
+ * This parser handles the errors tag that defines expected errors or failure
  * scenarios for MQTT operations. It extracts:
  * - Error descriptions
  * - Multi-line error scenarios
  *
- * @param content - Raw content from the @errors tag
+ * @param content - Raw content from the errors tag
  * @returns Parsed error information with description, or null if parsing fails
  *
  * @example Connection errors

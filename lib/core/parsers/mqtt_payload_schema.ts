@@ -1,13 +1,13 @@
 /**
- * Parser for @payloadSchema tags - defines JSON Schema for MQTT payload validation
+ * Parser for payloadSchema tags - defines JSON Schema for MQTT payload validation
  *
- * This parser handles the @payloadSchema tag that defines JSON Schema for validating
+ * This parser handles the payloadSchema tag that defines JSON Schema for validating
  * MQTT message payloads. It supports:
  * - Inline JSON Schema definitions
  * - External file references
  * - Schema validation with AJV
  *
- * @param content - Raw content from the @payloadSchema tag
+ * @param content - Raw content from the payloadSchema tag
  * @returns Parsed schema information or null if parsing fails
  * @returns .type - Schema type ('inline' or 'file')
  * @returns .schema - The JSON Schema object (for inline) or file path (for file)

@@ -1,13 +1,13 @@
 /**
- * Parser for @exampleSubscribe tags - provides MQTT subscribe examples
+ * Parser for exampleSubscribe tags - provides MQTT subscribe examples
  *
- * This parser handles the @exampleSubscribe tag that provides examples of subscribing
+ * This parser handles the exampleSubscribe tag that provides examples of subscribing
  * to MQTT topics. It supports:
  * - mosquitto_sub command examples
  * - Expected message examples
  * - Multi-line content
  *
- * @param content - Raw content from the @exampleSubscribe tag
+ * @param content - Raw content from the exampleSubscribe tag
  * @returns Parsed example information with title and content, or null if parsing fails
  *
  * @example mosquitto_sub command

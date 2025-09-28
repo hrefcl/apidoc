@@ -1,12 +1,12 @@
 /**
- * Parser for @tags tags - defines taxonomical tags for MQTT operations
+ * Parser for tags tags - defines taxonomical tags for MQTT operations
  *
- * This parser handles the @tags tag that provides taxonomical classification
+ * This parser handles the tags tag that provides taxonomical classification
  * for MQTT operations. It extracts:
  * - Multiple tags separated by spaces or commas
  * - Tag normalization and validation
  *
- * @param content - Raw content from the @tags tag
+ * @param content - Raw content from the tags tag
  * @returns Parsed tags information with array of tags, or null if parsing fails
  *
  * @example Space-separated tags

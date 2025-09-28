@@ -1,13 +1,13 @@
 /**
- * Parser for @responseTopic tags - defines MQTT response topic paths
+ * Parser for responseTopic tags - defines MQTT response topic paths
  *
- * This parser handles the @responseTopic tag that defines where responses or
+ * This parser handles the responseTopic tag that defines where responses or
  * acknowledgments should be published for command/response patterns in MQTT.
  * It extracts:
  * - Response topic path with placeholders
  * - Validates topic format
  *
- * @param content - Raw content from the @responseTopic tag
+ * @param content - Raw content from the responseTopic tag
  * @returns Parsed response topic information with topic path, or null if parsing fails
  *
  * @example Command acknowledgment topic

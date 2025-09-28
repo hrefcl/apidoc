@@ -1,13 +1,13 @@
 /**
- * Parser for @responseExample tags - provides MQTT response examples
+ * Parser for responseExample tags - provides MQTT response examples
  *
- * This parser handles the @responseExample tag that provides examples of response
+ * This parser handles the responseExample tag that provides examples of response
  * messages for MQTT command/response patterns. It supports:
  * - JSON response examples
  * - Acknowledgment message examples
  * - Multi-line content
  *
- * @param content - Raw content from the @responseExample tag
+ * @param content - Raw content from the responseExample tag
  * @returns Parsed response example with title and content, or null if parsing fails
  *
  * @example JSON acknowledgment

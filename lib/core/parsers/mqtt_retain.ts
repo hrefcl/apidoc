@@ -1,12 +1,12 @@
 /**
- * Parser for @retain tags - defines MQTT retain flag
+ * Parser for retain tags - defines MQTT retain flag
  *
- * This parser handles the @retain tag that defines whether MQTT messages should be retained by the broker.
+ * This parser handles the retain tag that defines whether MQTT messages should be retained by the broker.
  * It extracts:
  * - Retain flag (true or false)
  * - Validates boolean value
  *
- * @param content - Raw content from the @retain tag
+ * @param content - Raw content from the retain tag
  * @returns Parsed retain information or null if parsing fails
  * @returns .retain - MQTT retain flag (true or false)
  *

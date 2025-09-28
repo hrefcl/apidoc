@@ -1,5 +1,5 @@
 /**
- * Parser for @topicParam tags - handles MQTT topic parameter documentation
+ * Parser for topicParam tags - handles MQTT topic parameter documentation
  *
  * This parser processes @topicParam tags to extract parameter definitions for MQTT topic placeholders.
  * It supports:
@@ -7,7 +7,7 @@
  * - Parameter descriptions
  * - Parameter validation rules
  *
- * @param content - Raw content from the @topicParam tag
+ * @param content - Raw content from the topicParam tag
  * @returns Parsed parameter information or null if parsing fails
  *
  * @example Basic topic parameter

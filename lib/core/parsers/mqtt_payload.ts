@@ -1,12 +1,12 @@
 /**
- * Parser for @payload tags - defines MQTT message payload type and description
+ * Parser for payload tags - defines MQTT message payload type and description
  *
- * This parser handles the @payload tag that defines MQTT message payload format.
+ * This parser handles the payload tag that defines MQTT message payload format.
  * It extracts:
  * - MIME type (application/json, text/plain, etc.)
  * - Optional description of payload content
  *
- * @param content - Raw content from the @payload tag
+ * @param content - Raw content from the payload tag
  * @returns Parsed payload information with mimeType and description, or null if parsing fails
  *
  * @example JSON payload

@@ -1,13 +1,13 @@
 /**
- * Parser for @examplePublish tags - provides MQTT publish examples
+ * Parser for examplePublish tags - provides MQTT publish examples
  *
- * This parser handles the @examplePublish tag that provides examples of publishing
+ * This parser handles the examplePublish tag that provides examples of publishing
  * MQTT messages. It supports:
  * - mosquitto_pub command examples
  * - Payload examples
  * - Multi-line content
  *
- * @param content - Raw content from the @examplePublish tag
+ * @param content - Raw content from the examplePublish tag
  * @returns Parsed example information with title and content, or null if parsing fails
  *
  * @example mosquitto_pub command

@@ -1,11 +1,11 @@
 /**
- * Parser for @topic tags - defines MQTT topic path with placeholders
+ * Parser for topic tags - defines MQTT topic path with placeholders
  *
- * This parser handles the @topic tag that defines MQTT topic paths. It extracts:
+ * This parser handles the topic tag that defines MQTT topic paths. It extracts:
  * - Complete topic path with placeholders
  * - Validates topic format
  *
- * @param content - Raw content from the @topic tag
+ * @param content - Raw content from the topic tag
  * @returns Parsed topic information or null if parsing fails
  * @returns .topic - MQTT topic path (e.g., 'v1/{tenant}/devices/{deviceId}/telemetry')
  *
