@@ -432,8 +432,57 @@ Incluye bloques definidos con @apiDefine.
  */
 ```
 
+## 📡 Parámetros MQTT {#mqtt}
+
+### @mqtt
+
+Define operaciones MQTT.
+
+```javascript
+/**
+ * @mqtt {publish} sensors/temperature Temperature Data
+ * @mqtt {subscribe} alerts/+/critical Critical Alerts
+ */
+```
+
+### @topic
+
+Especifica el patrón del topic MQTT.
+
+```javascript
+/**
+ * @topic sensors/{deviceId}/temperature
+ * @topic alerts/+/critical
+ */
+```
+
+### @payload
+
+Documenta la estructura del payload.
+
+```javascript
+/**
+ * @payload {Object} data Sensor data
+ * @payload {Number} data.temperature Temperature in Celsius
+ * @payload {Number} data.humidity Humidity percentage
+ */
+```
+
+### @qos
+
+Define el nivel de Quality of Service.
+
+```javascript
+/**
+ * @qos 0  // Fire and forget
+ * @qos 1  // At least once
+ * @qos 2  // Exactly once
+ */
+```
+
 ## 📚 Referencias Adicionales
 
 - **[📝 Ejemplos y Plantillas](./06-examples.md)** - Ejemplos prácticos
 - **[🔄 Versionado y Herencia](./07-versioning.md)** - Gestión de versiones
 - **[📊 Esquemas TypeScript](./11-typescript-schemas.md)** - Integración con TypeScript
+- **[📡 Protocolo MQTT](./10-mqtt.md)** - Documentación completa MQTT

@@ -254,7 +254,7 @@ APIDoc 4.0 includes a comprehensive authentication system to protect your API do
 }
 ```
 
-## 🔒 Security Features
+## 🔒 Security Features {#security-features}
 
 ### Password Security
 ```json

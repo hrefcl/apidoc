@@ -568,8 +568,73 @@ function getUser(id) {
  */
 ```
 
+## 📡 Ejemplos MQTT {#ejemplos-mqtt}
+
+### Publicación de Datos de Sensores
+
+```javascript
+/**
+ * @mqtt {publish} sensors/{deviceId}/temperature Temperature Reading
+ * @mqttGroup IoT
+ * @apiName PublishTemperature
+ * @apiVersion 1.0.0
+ *
+ * @topic sensors/{deviceId}/temperature
+ * @topicParam {String} deviceId Unique device identifier
+ *
+ * @payload {Object} reading Temperature reading data
+ * @payload {Number} reading.value Temperature in Celsius
+ * @payload {String} reading.unit Unit of measurement
+ * @payload {Number} reading.timestamp Unix timestamp
+ * @payload {String} reading.deviceId Device identifier
+ *
+ * @qos 1
+ * @retain false
+ *
+ * @examplePublish {json} Temperature Data:
+ * {
+ *   "value": 23.5,
+ *   "unit": "celsius",
+ *   "timestamp": 1642248000,
+ *   "deviceId": "sensor-001"
+ * }
+ */
+```
+
+### Suscripción a Alertas
+
+```javascript
+/**
+ * @mqtt {subscribe} alerts/+/critical Critical Alerts
+ * @mqttGroup Monitoring
+ * @apiName SubscribeCriticalAlerts
+ * @apiVersion 1.0.0
+ *
+ * @topic alerts/+/critical
+ * @topicParam {String} + Device or system identifier
+ *
+ * @payload {Object} alert Alert information
+ * @payload {String} alert.type Alert type
+ * @payload {String} alert.severity Alert severity level
+ * @payload {String} alert.message Alert message
+ * @payload {Number} alert.timestamp Alert timestamp
+ *
+ * @qos 2
+ * @retain true
+ *
+ * @exampleSubscribe {json} Critical Alert:
+ * {
+ *   "type": "temperature_high",
+ *   "severity": "critical",
+ *   "message": "Temperature exceeded 40°C",
+ *   "timestamp": 1642248000
+ * }
+ */
+```
+
 ## 📚 Referencias Adicionales
 
 - **[📖 Parámetros APIDoc](./05-apidoc-params.md)** - Referencia completa de parámetros
 - **[🔄 Versionado y Herencia](./07-versioning.md)** - Gestión avanzada de versiones
 - **[📊 Esquemas TypeScript](./11-typescript-schemas.md)** - Integración con TypeScript
+- **[📡 Protocolo MQTT](./10-mqtt.md)** - Documentación completa MQTT

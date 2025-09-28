@@ -140,9 +140,11 @@ Combina ambos métodos (local + remota):
 
 ### 📚 Guías Disponibles
 
-- **[🚀 Quick Start](./QUICK-START-AUTH.md)** - Configuración en 3 pasos
-- **[📖 Documentación Completa](./AUTHENTICATION.md)** - Guía detallada
-- **[🛠️ Guía del Desarrollador](./AUTH-DEVELOPER-GUIDE.md)** - API técnica y extensión
+- **[🚀 Quick Start](./13-quick-start-auth.md)** - Configuración en 3 pasos
+- **[📖 Documentación Completa](./12-authentication.md)** - Guía detallada
+- **[🛠️ Guía del Desarrollador](./14-auth-developer.md)** - API técnica y extensión
+
+### 🛡️ Seguridad
 
 ### 🔧 Configuración Avanzada
 
@@ -417,9 +419,9 @@ npm test
 ## 📞 Soporte
 
 ### 🆘 Ayuda Rápida
-- **Problemas de login**: Ver [Troubleshooting](./AUTHENTICATION.md#solución-de-problemas)
-- **Configuración**: Ver [Quick Start](./QUICK-START-AUTH.md)
-- **API Integration**: Ver [Developer Guide](./AUTH-DEVELOPER-GUIDE.md)
+- **Problemas de login**: Ver [Troubleshooting](./12-authentication.md#solución-de-problemas)
+- **Configuración**: Ver [Quick Start](./13-quick-start-auth.md)
+- **API Integration**: Ver [Developer Guide](./14-auth-developer.md)
 
 ### 💬 Comunidad
 - **GitHub Issues**: [Reportar problemas](https://github.com/hrefcl/apidoc/issues)
@@ -434,14 +436,14 @@ Para soporte dedicado, consultoría e implementación custom:
 
 ## 📄 Licencia
 
-MIT License - Ver [LICENSE](./LICENSE) para detalles completos.
+MIT License - Ver archivo LICENSE para detalles completos.
 
 ## 🙏 Créditos
 
 - **Original Project**: [apidoc](https://github.com/apidoc/apidoc) by Peter Rottmann
 - **Current Maintainer**: [hrefcl](https://github.com/hrefcl)
 - **Authentication System**: Developed specifically for APIDoc 4.0
-- **Contributors**: Ver [CONTRIBUTORS.md](./CONTRIBUTORS.md)
+- **Contributors**: Ver archivo CONTRIBUTORS.md en el repositorio
 
 ---
 
@@ -449,7 +451,7 @@ MIT License - Ver [LICENSE](./LICENSE) para detalles completos.
 
 **🚀 ¿Listo para proteger tu documentación API?**
 
-[📖 Documentación](./AUTHENTICATION.md) • [🚀 Quick Start](./QUICK-START-AUTH.md) • [🛠️ Developer Guide](./AUTH-DEVELOPER-GUIDE.md)
+[📖 Documentación](./12-authentication.md) • [🚀 Quick Start](./13-quick-start-auth.md) • [🛠️ Developer Guide](./14-auth-developer.md)
 
 **Hecho con ❤️ para la comunidad de desarrolladores**
 

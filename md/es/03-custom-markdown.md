@@ -505,10 +505,10 @@ This creates a professional API documentation site with custom markdown content 
 
 ## 🔗 Related Features
 
-- **[Font Awesome Icons](README.md#-custom-icons--localization)** - Complete icon customization guide
-- **[Authentication System](README.md#-new-dual-authentication-system)** - Protect your documentation
-- **[MQTT Support](README.md#-new-complete-mqtt-protocol-support)** - Document MQTT APIs
-- **[OpenAPI Integration](README.md#-new-native-openapi-30-support)** - Use OpenAPI specifications
+- **[Font Awesome Icons](./02-customization.md)** - Complete icon customization guide
+- **[Authentication System](./12-authentication.md)** - Protect your documentation
+- **[MQTT Support](./10-mqtt.md)** - Document MQTT APIs
+- **[OpenAPI Integration](./09-openapi.md)** - Use OpenAPI specifications
 
 ---
 

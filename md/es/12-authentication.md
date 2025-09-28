@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ---
 
-## Seguridad
+## Seguridad {#seguridad}
 
 ### 🔒 Medidas Implementadas
 

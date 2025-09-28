@@ -361,7 +361,7 @@ await generateOpenAPISchemas({
 });
 ```
 
-## 🔍 Validación y Testing
+## 🔍 Validación y Testing {#validación}
 
 ### Validación de Ejemplos
 ```typescript

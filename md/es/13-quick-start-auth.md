@@ -110,7 +110,7 @@ Estas funcionan tanto para autenticación local como remota.
 
 ## 📚 Documentación Completa
 
-Ver [AUTHENTICATION.md](./AUTHENTICATION.md) para:
+Ver [AUTHENTICATION.md](./12-authentication.md) para:
 - Configuración avanzada
 - Seguridad y mejores prácticas
 - Solución de problemas
