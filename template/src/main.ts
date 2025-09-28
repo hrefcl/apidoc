@@ -36,6 +36,7 @@ declare global {
     interface Window {
         API_DATA: any;
         API_PROJECT: any;
+        CUSTOM_MARKDOWN: any;
         Handlebars: typeof Handlebars;
     }
 }
@@ -274,6 +275,9 @@ function init() {
 
     const apiProject = typeof window.API_PROJECT === 'string' ? JSON.parse(window.API_PROJECT) : window.API_PROJECT || {};
 
+    // Load custom markdown data
+    const customMarkdown = typeof window.CUSTOM_MARKDOWN === 'string' ? JSON.parse(window.CUSTOM_MARKDOWN) : window.CUSTOM_MARKDOWN || {};
+
     // Debug: Log MQTT entries count
     const mqttEntries = api.filter(entry =>
         entry.type === 'publish' || entry.type === 'subscribe' || entry.topic || entry.qos !== undefined
@@ -402,7 +406,9 @@ function init() {
 
     $.each(api, (index, entry) => {
         apiGroups[entry.group] = 1;
-        apiGroupTitles[entry.group] = entry.groupTitle || entry.group;
+        // Use custom title from settings if available, otherwise use groupTitle or group name
+        const customSettings = customMarkdown[entry.group];
+        apiGroupTitles[entry.group] = (customSettings && customSettings.title) || entry.groupTitle || entry.group;
         apiVersions[entry.version] = 1;
     });
 
@@ -414,7 +420,7 @@ function init() {
 
     // custom order
     if (apiProject.order) {
-        apiGroups = sortGroupsByOrder(apiGroupTitles, apiProject.order);
+        apiGroups = sortGroupsByOrder(apiGroups, apiProject.order);
     }
 
     // sort versions DESC with error handling
@@ -1529,23 +1535,29 @@ function init() {
      */
     function sortGroupsByOrder(groups, order) {
         const results = [];
+        // Handle order array
         order.forEach((sortKey) => {
-            Object.keys(groups).forEach((name) => {
-                if (groups[name].replace(/_/g, ' ') === sortKey) {
-                    results.push(name);
+            groups.forEach((group) => {
+                if (group === sortKey || group.replace(/_/g, ' ') === sortKey) {
+                    if (results.indexOf(group) === -1) {
+                        results.push(group);
+                    }
                 }
             });
         });
         // Append all other entries that are not defined in order
-        Object.keys(groups).forEach((name) => {
-            if (results.indexOf(name) === -1) {
-                results.push(name);
+        groups.forEach((group) => {
+            if (results.indexOf(group) === -1) {
+                results.push(group);
             }
         });
         return results;
     }
 
     initDynamic();
+
+    // Initialize custom markdown rendering
+    initCustomMarkdown(customMarkdown);
 
     // Theme toggle setup moved to DOMContentLoaded
 
@@ -2128,6 +2140,61 @@ function showCopyFeedback(button: HTMLElement, message: string) {
         button.className = originalClasses;
         button.removeAttribute('disabled');
     }, 2000);
+}
+
+/**
+ * Initialize custom markdown rendering for each group
+ */
+function initCustomMarkdown(customMarkdown: Record<string, any>) {
+    if (!customMarkdown || Object.keys(customMarkdown).length === 0) {
+        console.log('📝 No custom markdown data found');
+        return;
+    }
+
+    console.log('📝 Initializing custom markdown for groups:', Object.keys(customMarkdown));
+
+    Object.entries(customMarkdown).forEach(([groupName, markdownData]) => {
+        const container = document.getElementById(`custom-markdown-${groupName}`);
+        if (container && markdownData.html) {
+            // Create the markdown section with styling
+            const markdownSection = document.createElement('div');
+            markdownSection.className = 'custom-markdown-content bg-blue-50 border-l-4 border-blue-400 p-6 mb-6 rounded-r-lg';
+
+            // Add icon and title if available
+            if (markdownData.icon || markdownData.title) {
+                const header = document.createElement('div');
+                header.className = 'flex items-center mb-4';
+
+                if (markdownData.icon) {
+                    const icon = document.createElement('i');
+                    icon.className = `${markdownData.icon} text-blue-600 text-xl mr-3`;
+                    header.appendChild(icon);
+                }
+
+                if (markdownData.title) {
+                    const title = document.createElement('h3');
+                    title.className = 'text-lg font-semibold text-blue-800 m-0';
+                    title.textContent = markdownData.title;
+                    header.appendChild(title);
+                }
+
+                markdownSection.appendChild(header);
+            }
+
+            // Add the markdown content
+            const content = document.createElement('div');
+            content.className = 'prose prose-sm max-w-none text-gray-700';
+            content.innerHTML = markdownData.html;
+            markdownSection.appendChild(content);
+
+            // Insert the markdown section
+            container.appendChild(markdownSection);
+
+            console.log(`📝 Rendered custom markdown for group: ${groupName}`);
+        } else if (!container) {
+            console.warn(`📝 Container not found for group: ${groupName}`);
+        }
+    });
 }
 
 // Make collapsible functions available globally for debugging

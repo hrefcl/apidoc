@@ -210,6 +210,9 @@
                     {{/if}}
                 </h3>
                 <div class="opblock-tag-content">
+                    <div class="custom-markdown-section" id="custom-markdown-{{group}}">
+                        <!-- Content will be injected by JavaScript based on CUSTOM_MARKDOWN data -->
+                    </div>
                     {{#each articles}}
                         <div id="api-{{group}}-{{name}}" class="relative {{#if aloneDisplay}}hidden{{/if}}" data-group="{{group}}" data-name="{{name}}" data-version="{{version}}">
                             {{{article}}}
@@ -243,6 +246,7 @@
                     </div>
                 </div>
                 {{/if}}
+
 
                 <div class="opblock-content" {{#if template.endpointsCollapsible}}style="display: none;"{{/if}}>
                     <!-- Request Information Section -->

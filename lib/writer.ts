@@ -12,6 +12,7 @@
 import esbuild from 'esbuild';
 import fs from 'fs-extra';
 import path from 'path';
+import MarkdownIt from 'markdown-it';
 import { convertToOpenApi } from './exporters/openapi-converter';
 import { createMarkdownFromApiDocData } from './markdown';
 const AuthProcessor = require('./core/auth-processor');
@@ -450,6 +451,55 @@ class Writer {
     }
 
     /**
+     * Process custom markdown settings from apidoc.json
+     *
+     * @param projectInfo Project configuration from apidoc.json
+     * @returns Object containing processed markdown content for each group
+     */
+    processCustomMarkdownSettings(projectInfo: any): Record<string, any> {
+        const customMarkdown: Record<string, any> = {};
+
+        if (!projectInfo.settings) {
+            return customMarkdown;
+        }
+
+        const md = new MarkdownIt({
+            html: true,
+            linkify: true,
+            typographer: true
+        });
+
+        // Process each group setting
+        Object.entries(projectInfo.settings).forEach(([groupName, settings]: [string, any]) => {
+            if (settings.filename) {
+                try {
+                    // Try to read the markdown file
+                    const markdownPath = this.path.resolve(this.opt.src[0], settings.filename);
+                    if (this.fs.existsSync(markdownPath)) {
+                        const markdownContent = this.fs.readFileSync(markdownPath, 'utf8');
+                        const htmlContent = md.render(markdownContent);
+
+                        customMarkdown[groupName] = {
+                            title: settings.title || groupName,
+                            icon: settings.icon || 'fa-folder',
+                            html: htmlContent,
+                            raw: markdownContent
+                        };
+
+                        this.log.verbose(`📝 Loaded custom markdown for group: ${groupName}`);
+                    } else {
+                        this.log.warn(`📝 Markdown file not found for group ${groupName}: ${markdownPath}`);
+                    }
+                } catch (error) {
+                    this.log.error(`📝 Error processing markdown for group ${groupName}: ${error.message}`);
+                }
+            }
+        });
+
+        return customMarkdown;
+    }
+
+    /**
      * Generate and return the content of the `index.html` file for the API documentation.
      *
      * Replaces predefined tokens with dynamic values such as the project title, description,
@@ -462,6 +512,9 @@ class Writer {
         const projectInfo = JSON.parse(this.api.project);
         const title = projectInfo.title || projectInfo.name || 'Loading...';
         const description = projectInfo.description || projectInfo.name || 'API Documentation';
+
+        // Process custom markdown settings
+        const customMarkdown = this.processCustomMarkdownSettings(projectInfo);
 
         // Check for StencilJS template first, fallback to regular template
         const stencilTemplate = this.path.join(this.opt.template, 'index-stencil.html');
@@ -491,6 +544,7 @@ class Writer {
         // Inject API data as global variables
         const apiDataJson = JSON.stringify(this.api.data, null, 0);
         const apiProjectJson = JSON.stringify(this.api.project, null, 0);
+        const customMarkdownJson = JSON.stringify(customMarkdown, null, 0);
 
         // Check if this is a StencilJS template
         const isStencilTemplate = templateFile.includes('index-stencil.html');
@@ -501,6 +555,7 @@ class Writer {
       window.apiDocData = ${apiDataJson};
       window.API_DATA = ${apiDataJson};
       window.API_PROJECT = ${apiProjectJson};
+      window.CUSTOM_MARKDOWN = ${customMarkdownJson};
     </script>`;
 
             // Insert data script before the bundle script - match actual cache-busted filename
@@ -520,6 +575,7 @@ class Writer {
             const dataScript = `<script>
       window.API_DATA = ${apiDataJson};
       window.API_PROJECT = ${apiProjectJson};
+      window.CUSTOM_MARKDOWN = ${customMarkdownJson};
     </script>`;
 
             // Insert data script before the bundle script - match actual cache-busted filename
