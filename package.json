@@ -91,7 +91,8 @@
     "test:e2e": "cd e2e-tests && npx playwright test",
     "example:apicat": "npm run build:apicat",
     "apicat": "npm run build && ./bin/apicat -v",
-    "build:apicat": "cd apps/apicat-template && npm run build && cd ../.. && npm run build && ./bin/apidoc -v -i examples/apicat/ -o ./tmp/apicat-output -t apps/apicat-template/dist/"
+    "build:apicat": "cd apps/apicat-template && npm run build && cd ../.. && npm run build && ./bin/apidoc -v -i examples/apicat/ -o ./tmp/apicat-output -t apps/apicat-template/dist/",
+    "dev:apicat-template": "npm run build && ./bin/apidoc -v -i examples/apicat/ -o ./tmp/apicat-output && node scripts/copy-apicat-json.js && cd apps/apicat-template && npm run dev"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",

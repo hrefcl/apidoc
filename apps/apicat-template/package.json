@@ -1,16 +1,26 @@
 {
-  "name": "apicat-template",
-  "version": "1.0.0",
-  "description": "apiCAT - Enhanced APIDoc Template",
+  "name": "@apidoc/apicat-template",
+  "version": "5.0.0",
+  "type": "module",
+  "description": "APIcat Vue 3 Template with SSG for encrypted/unencrypted JSON documentation",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --outDir dist && npm run copy-assets && npm run fix-structure",
-    "copy-assets": "cp -r assets/* dist/ 2>/dev/null || true",
-    "fix-structure": "mv dist/src/index.html dist/index.html 2>/dev/null && rm -rf dist/src 2>/dev/null || true",
-    "preview": "vite preview"
+    "build": "vite-ssg build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+  },
+  "dependencies": {
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0",
+    "pinia": "^2.1.7",
+    "highlight.js": "^11.9.0"
   },
   "devDependencies": {
-    "vite": "^5.0.0"
-  },
-  "dependencies": {}
+    "@vitejs/plugin-vue": "^5.0.4",
+    "vite": "^5.1.6",
+    "vite-ssg": "^0.23.6",
+    "autoprefixer": "^10.4.18",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1"
+  }
 }
