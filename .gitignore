@@ -43,3 +43,4 @@ e2e-tests/test-results/
 e2e-tests/playwright-report/
 e2e-tests/test-results-*/
 apps/apicat-template/public/data
+apps/apidoc-template-v5/public/data

@@ -12,6 +12,16 @@
   resolved "file:apps/apicat-template"
   dependencies:
     highlight.js "^11.9.0"
+    lucide-vue-next "^0.544.0"
+    pinia "^2.1.7"
+    vue "^3.4.21"
+    vue-router "^4.3.0"
+
+"@apidoc/template-v5@file:/Users/href/Href/href_proyect/apidoc/apps/apidoc-template-v5":
+  version "5.0.0"
+  resolved "file:apps/apidoc-template-v5"
+  dependencies:
+    lucide-vue-next "^0.544.0"
     pinia "^2.1.7"
     vue "^3.4.21"
     vue-router "^4.3.0"

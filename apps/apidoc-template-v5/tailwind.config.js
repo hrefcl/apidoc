@@ -1,0 +1,71 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        border: 'var(--border)',
+        input: 'var(--input)',
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        card: {
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
+        },
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
+        primary: {
+          50: 'oklch(0.98 0.02 260)',
+          100: 'oklch(0.95 0.04 260)',
+          200: 'oklch(0.90 0.08 260)',
+          300: 'oklch(0.82 0.12 260)',
+          400: 'oklch(0.70 0.16 260)',
+          500: 'oklch(0.60 0.20 260)',
+          600: 'oklch(0.52 0.18 260)',
+          700: 'oklch(0.44 0.15 260)',
+          800: 'oklch(0.36 0.12 260)',
+          900: 'oklch(0.30 0.09 260)',
+          950: 'oklch(0.20 0.06 260)',
+        },
+        blue: {
+          50: 'oklch(0.98 0.02 240)',
+          100: 'oklch(0.95 0.04 240)',
+          200: 'oklch(0.90 0.08 240)',
+          300: 'oklch(0.82 0.12 240)',
+          400: 'oklch(0.70 0.16 240)',
+          500: 'oklch(0.60 0.20 240)',
+          600: 'oklch(0.52 0.18 240)',
+          700: 'oklch(0.44 0.15 240)',
+          800: 'oklch(0.36 0.12 240)',
+          900: 'oklch(0.30 0.09 240)',
+          950: 'oklch(0.20 0.06 240)',
+        },
+        purple: {
+          50: 'oklch(0.98 0.02 280)',
+          100: 'oklch(0.95 0.04 280)',
+          200: 'oklch(0.90 0.08 280)',
+          300: 'oklch(0.82 0.12 280)',
+          400: 'oklch(0.70 0.16 280)',
+          500: 'oklch(0.60 0.20 280)',
+          600: 'oklch(0.52 0.18 280)',
+          700: 'oklch(0.44 0.15 280)',
+          800: 'oklch(0.36 0.12 280)',
+          900: 'oklch(0.30 0.09 280)',
+          950: 'oklch(0.20 0.06 280)',
+        },
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
+    },
+  },
+  plugins: [],
+}

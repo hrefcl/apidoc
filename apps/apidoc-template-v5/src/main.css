@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary-hue: 260;
+    --radius: 0.75rem;
+
+    --background: oklch(0.99 0.005 260);
+    --foreground: oklch(0.15 0.01 260);
+
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.15 0.01 260);
+
+    --border: oklch(0.92 0.01 260);
+    --input: oklch(0.92 0.01 260);
+
+    --muted: oklch(0.96 0.005 260);
+    --muted-foreground: oklch(0.50 0.02 260);
+  }
+
+  .dark {
+    --background: oklch(0.12 0.01 260);
+    --foreground: oklch(0.98 0 0);
+
+    --card: oklch(0.15 0.01 260);
+    --card-foreground: oklch(0.98 0 0);
+
+    --border: oklch(0.25 0.02 260);
+    --input: oklch(0.25 0.02 260);
+
+    --muted: oklch(0.20 0.02 260);
+    --muted-foreground: oklch(0.70 0.02 260);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Scrollbar personalizado */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-700 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-600;
+  }
+
+  /* Prose styles para documentación */
+  .prose {
+    @apply max-w-none text-foreground;
+  }
+
+  .prose h1 {
+    @apply text-4xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+  }
+
+  .prose h2 {
+    @apply text-3xl font-semibold mb-4 mt-8 text-foreground;
+  }
+
+  .prose h3 {
+    @apply text-2xl font-semibold mb-3 mt-6 text-foreground;
+  }
+
+  .prose h4 {
+    @apply text-xl font-semibold mb-2 mt-4 text-foreground;
+  }
+
+  .prose p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  .prose code {
+    @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-primary-600 dark:text-primary-400;
+  }
+
+  .prose pre {
+    @apply bg-card border border-border rounded-lg p-4 overflow-x-auto mb-4;
+  }
+
+  .prose pre code {
+    @apply bg-transparent p-0 text-foreground;
+  }
+
+  .prose a {
+    @apply text-blue-600 dark:text-blue-400 hover:underline;
+  }
+
+  .prose ul, .prose ol {
+    @apply mb-4 pl-6;
+  }
+
+  .prose li {
+    @apply mb-2;
+  }
+
+  .prose table {
+    @apply w-full border border-border rounded-lg overflow-hidden mb-4;
+  }
+
+  .prose th {
+    @apply bg-muted px-4 py-2 text-left font-semibold;
+  }
+
+  .prose td {
+    @apply border-t border-border px-4 py-2;
+  }
+
+  .prose blockquote {
+    @apply border-l-4 border-primary-500 pl-4 italic my-4 text-muted-foreground;
+  }
+}
