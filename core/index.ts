@@ -31,7 +31,9 @@ const SPECIFICATION_VERSION = '4.0.0';
 
 const defaults = {
     excludeFilters: [],
-    includeFilters: ['.*\\.(clj|cls|coffee|cpp|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|litcoffee|lua|p|php?|pl|pm|py|rb|scala|ts|vue)$'],
+    includeFilters: [
+        '.*\\.(clj|cls|coffee|cpp|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|litcoffee|lua|p|php?|pl|pm|py|rb|scala|ts|vue)$',
+    ],
 
     src: path.join(__dirname, '../../example/'),
 
@@ -247,7 +249,8 @@ function parse(options) {
                         block.topic || // Has MQTT topic
                         block.qos !== undefined || // Has QoS setting
                         block.retain !== undefined || // Has retain setting
-                        (block.url === '' && (block.type === 'publish' || block.type === 'subscribe' || block.type === 'inline'))
+                        (block.url === '' &&
+                            (block.type === 'publish' || block.type === 'subscribe' || block.type === 'inline'))
                     );
                 });
                 app.log.verbose('MQTT-only mode: filtered to ' + blocks.length + ' MQTT endpoints');
@@ -255,7 +258,9 @@ function parse(options) {
 
             // Validate MQTT schemas if option is enabled
             if (app.options.failOnMqttSchemaError) {
-                const mqttBlocks = blocks.filter((block) => block.type === 'publish' || block.type === 'subscribe' || block.topic);
+                const mqttBlocks = blocks.filter(
+                    (block) => block.type === 'publish' || block.type === 'subscribe' || block.topic
+                );
 
                 for (const block of mqttBlocks) {
                     if (block.payloadSchema && block.payloadSchema.type === 'inline') {
@@ -500,4 +505,12 @@ function applyHook(name /* , ...args */) {
     return args[0];
 }
 
-export { getSpecificationVersion, parse, parseSource, setGeneratorInfos, setLogger, setMarkdownParser, setPackageInfos };
+export {
+    getSpecificationVersion,
+    parse,
+    parseSource,
+    setGeneratorInfos,
+    setLogger,
+    setMarkdownParser,
+    setPackageInfos,
+};

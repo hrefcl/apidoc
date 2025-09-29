@@ -36,7 +36,6 @@ try {
 
 /**
  * Transform parameters to object
- *
  * @param {string|Array<string>} filters
  * @returns {object|void}
  */
@@ -61,7 +60,6 @@ function transformToObject(filters) {
 
 /**
  * Extract information from package.json for apidoc.json generation
- *
  * @param {string} projectPath - Path to search for package.json
  * @returns {object|null} - Extracted package info or null if not found
  */
@@ -94,7 +92,6 @@ function extractPackageInfo(projectPath = process.cwd()) {
 
 /**
  * Generate apidoc.json configuration file
- *
  * @param {string} outputPath - Where to write apidoc.json
  * @param {object} packageInfo - Information extracted from package.json
  */
@@ -515,7 +512,7 @@ async function createDocumentation() {
 
 // Llamar la función principal
 if (!argv.watch) {
-    createDocumentation().catch(error => {
+    createDocumentation().catch((error) => {
         console.error('Error:', error);
         process.exit(1);
     });

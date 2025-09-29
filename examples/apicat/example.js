@@ -51,7 +51,7 @@
  *       "error": "NoAccessRight"
  *     }
  */
-function getUser () { }
+function getUser() {}
 
 /**
  * @api {post} /user Create a new User
@@ -85,7 +85,7 @@ function getUser () { }
  *
  * @apiUse CreateUserError
  */
-function postUser () { }
+function postUser() {}
 
 /**
  * @api {put} /user/:id Change a User
@@ -102,7 +102,7 @@ function postUser () { }
  *
  * @apiUse CreateUserError
  */
-function putUser () { }
+function putUser() {}
 
 /**
  * @api {delete} /user/:id Delete user
@@ -145,7 +145,7 @@ function putUser () { }
  *       "error": "NoAccessRight"
  *     }
  */
-function deleteUser () { }
+function deleteUser() {}
 
 /**
  * @api {post} /user/:id Thank a user: this is quite a long name indeed
@@ -156,7 +156,7 @@ function deleteUser () { }
  * @apiSampleRequest off
  * @apiParam {Number} id <code>id</code> of the user.
  */
-function thankUser () { }
+function thankUser() {}
 
 /**
  * @api {post} /city Create a new city
@@ -169,7 +169,7 @@ function thankUser () { }
  * @apiQuery {String=Aerial,Land,Underwater} view=Aerial Type of view.
  * @apiQuery {Number} zoom Zoom.
  */
-function createCity () { }
+function createCity() {}
 
 /**
  * @api {get} /category Get a category
@@ -181,7 +181,7 @@ function createCity () { }
  * @apiQuery {Number} id Category ID.
  * @apiBody {String} custom.id Custom ID with dot.
  */
-function getCategory () { }
+function getCategory() {}
 
 /**
  * @api {delete} /category Delete a category
@@ -208,4 +208,4 @@ function getCategory () { }
  *      }
  *   }
  */
-function deleteCategory () { }
+function deleteCategory() {}

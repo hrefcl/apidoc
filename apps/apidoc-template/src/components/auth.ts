@@ -11,327 +11,323 @@
 import CryptoJS from 'crypto-js';
 
 interface LoginConfig {
-  active: boolean;
-  admited?: Array<{ email: string; passwordHash?: string; password?: string }>;
-  urlAuth?: string;
-  value_form?: { email: string; password: string };
-  response_success?: number;
-  response_error?: number;
+    active: boolean;
+    admited?: Array<{ email: string; passwordHash?: string; password?: string }>;
+    urlAuth?: string;
+    value_form?: { email: string; password: string };
+    response_success?: number;
+    response_error?: number;
 }
 
 interface AuthSession {
-  email: string;
-  authenticated: boolean;
-  expires: number;
-  method: 'local' | 'remote';
+    email: string;
+    authenticated: boolean;
+    expires: number;
+    method: 'local' | 'remote';
 }
 
 class AuthManager {
-  private config: LoginConfig | null = null;
-  private session: AuthSession | null = null;
-  private encryptionKey: string = '';
+    private config: LoginConfig | null = null;
+    private session: AuthSession | null = null;
+    private encryptionKey: string = '';
 
-  /**
-   * Initialize authentication system with config from apidoc.json
-   */
-  init(loginConfig: LoginConfig): void {
-    this.config = loginConfig;
-    this.loadSession();
+    /**
+     * Initialize authentication system with config from apidoc.json
+     */
+    init(loginConfig: LoginConfig): void {
+        this.config = loginConfig;
+        this.loadSession();
 
-    if (this.isLoginRequired()) {
-      this.checkAuthentication();
-    }
-  }
-
-  /**
-   * Check if login is required based on config
-   */
-  isLoginRequired(): boolean {
-    return this.config?.active === true;
-  }
-
-  /**
-   * Check current authentication status
-   */
-  isAuthenticated(): boolean {
-    if (!this.session) return false;
-    if (Date.now() > this.session.expires) {
-      this.logout();
-      return false;
-    }
-    return this.session.authenticated;
-  }
-
-  /**
-   * Attempt login with provided credentials
-   */
-  async login(email: string, password: string): Promise<{ success: boolean; message: string }> {
-    try {
-      let localResult = { success: false, message: '' };
-      let remoteResult = { success: false, message: '' };
-
-      // Try local authentication if configured
-      if (this.config?.admited) {
-        localResult = this.authenticateLocal(email, password);
-        if (localResult.success) {
-          await this.createSession(email, 'local');
-          return localResult;
+        if (this.isLoginRequired()) {
+            this.checkAuthentication();
         }
-      }
+    }
 
-      // Try remote authentication if configured
-      if (this.config?.urlAuth) {
-        remoteResult = await this.authenticateRemote(email, password);
-        if (remoteResult.success) {
-          await this.createSession(email, 'remote');
-          return remoteResult;
+    /**
+     * Check if login is required based on config
+     */
+    isLoginRequired(): boolean {
+        return this.config?.active === true;
+    }
+
+    /**
+     * Check current authentication status
+     */
+    isAuthenticated(): boolean {
+        if (!this.session) return false;
+        if (Date.now() > this.session.expires) {
+            this.logout();
+            return false;
         }
-      }
-
-      // If both methods are configured but both failed, provide appropriate error message
-      if (this.config?.admited && this.config?.urlAuth) {
-        return { success: false, message: 'Invalid credentials (checked both local and remote)' };
-      } else if (this.config?.admited) {
-        return { success: false, message: localResult.message || 'Invalid local credentials' };
-      } else if (this.config?.urlAuth) {
-        return { success: false, message: remoteResult.message || 'Invalid remote credentials' };
-      }
-
-      return { success: false, message: 'No authentication method configured' };
-    } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, message: 'Authentication failed' };
-    }
-  }
-
-  /**
-   * Authenticate against local user list
-   */
-  private authenticateLocal(email: string, password: string): { success: boolean; message: string } {
-    const users = this.config?.admited || [];
-
-    const user = users.find(u => {
-      if (u.email !== email) return false;
-
-      // Check if we have a hashed password (from server-side processing)
-      if (u.passwordHash) {
-        const expectedHash = this.hashPassword(password, email);
-        return u.passwordHash === expectedHash;
-      }
-
-      // Fallback to plain text comparison (for backward compatibility)
-      if (u.password) {
-        return u.password === password;
-      }
-
-      return false;
-    });
-
-    if (user) {
-      return { success: true, message: 'Local authentication successful' };
+        return this.session.authenticated;
     }
 
-    return { success: false, message: 'Invalid local credentials' };
-  }
+    /**
+     * Attempt login with provided credentials
+     */
+    async login(email: string, password: string): Promise<{ success: boolean; message: string }> {
+        try {
+            let localResult = { success: false, message: '' };
+            let remoteResult = { success: false, message: '' };
 
-  /**
-   * Hash password for client-side verification (matching server-side logic)
-   */
-  private hashPassword(password: string, salt: string): string {
-    return CryptoJS.SHA256(password + salt + 'apidoc-salt').toString();
-  }
+            // Try local authentication if configured
+            if (this.config?.admited) {
+                localResult = this.authenticateLocal(email, password);
+                if (localResult.success) {
+                    await this.createSession(email, 'local');
+                    return localResult;
+                }
+            }
 
-  /**
-   * Authenticate against remote API
-   */
-  private async authenticateRemote(email: string, password: string): Promise<{ success: boolean; message: string }> {
-    const urlAuth = this.config?.urlAuth;
-    const valueForm = this.config?.value_form;
-    const successCode = this.config?.response_success || 200;
-    const errorCode = this.config?.response_error || 400;
+            // Try remote authentication if configured
+            if (this.config?.urlAuth) {
+                remoteResult = await this.authenticateRemote(email, password);
+                if (remoteResult.success) {
+                    await this.createSession(email, 'remote');
+                    return remoteResult;
+                }
+            }
 
-    if (!urlAuth || !valueForm) {
-      return { success: false, message: 'Remote authentication not properly configured' };
-    }
+            // If both methods are configured but both failed, provide appropriate error message
+            if (this.config?.admited && this.config?.urlAuth) {
+                return { success: false, message: 'Invalid credentials (checked both local and remote)' };
+            } else if (this.config?.admited) {
+                return { success: false, message: localResult.message || 'Invalid local credentials' };
+            } else if (this.config?.urlAuth) {
+                return { success: false, message: remoteResult.message || 'Invalid remote credentials' };
+            }
 
-    try {
-      const formData = new FormData();
-      formData.append(valueForm.email, email);
-      formData.append(valueForm.password, password);
-
-      const response = await fetch(urlAuth, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Accept': 'application/json',
+            return { success: false, message: 'No authentication method configured' };
+        } catch (error) {
+            console.error('Login error:', error);
+            return { success: false, message: 'Authentication failed' };
         }
-      });
-
-      if (response.status === successCode) {
-        return { success: true, message: 'Remote authentication successful' };
-      } else if (response.status === errorCode) {
-        return { success: false, message: 'Invalid remote credentials' };
-      } else {
-        return { success: false, message: `Unexpected response: ${response.status}` };
-      }
-    } catch (error) {
-      console.error('Remote authentication error:', error);
-      return { success: false, message: 'Remote authentication failed' };
-    }
-  }
-
-  /**
-   * Create and store authentication session
-   */
-  private async createSession(email: string, method: 'local' | 'remote'): Promise<void> {
-    const expires = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
-
-    this.session = {
-      email,
-      authenticated: true,
-      expires,
-      method
-    };
-
-    // Generate encryption key for content decryption
-    this.encryptionKey = this.generateEncryptionKey(email);
-
-    // Store encrypted session in localStorage
-    const sessionData = CryptoJS.AES.encrypt(
-      JSON.stringify(this.session),
-      this.encryptionKey
-    ).toString();
-
-    // Store encrypted email for session recovery
-    const encryptedEmail = CryptoJS.AES.encrypt(email, 'apidoc-email-key').toString();
-
-    localStorage.setItem('apidoc_session', sessionData);
-    localStorage.setItem('apidoc_email', encryptedEmail);
-  }
-
-  /**
-   * Load existing session from storage
-   */
-  private loadSession(): void {
-    try {
-      const sessionData = localStorage.getItem('apidoc_session');
-      const encryptedEmail = localStorage.getItem('apidoc_email');
-
-      if (!sessionData || !encryptedEmail) return;
-
-      // Decrypt the stored email
-      const decryptedEmailBytes = CryptoJS.AES.decrypt(encryptedEmail, 'apidoc-email-key');
-      const email = decryptedEmailBytes.toString(CryptoJS.enc.Utf8);
-
-      if (!email) return;
-
-      this.encryptionKey = this.generateEncryptionKey(email);
-
-      const decrypted = CryptoJS.AES.decrypt(sessionData, this.encryptionKey);
-      const sessionObj = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
-
-      if (sessionObj && Date.now() < sessionObj.expires) {
-        this.session = sessionObj;
-      }
-    } catch (error) {
-      console.warn('Could not load session:', error);
-      this.clearSession();
-    }
-  }
-
-  /**
-   * Generate encryption key from user email
-   */
-  private generateEncryptionKey(email: string): string {
-    return CryptoJS.PBKDF2(email, 'apidoc-salt-2024', {
-      keySize: 256/32,
-      iterations: 1000
-    }).toString();
-  }
-
-
-  /**
-   * Decrypt protected content
-   */
-  decryptContent(encryptedContent: string): string {
-    if (!this.encryptionKey) {
-      throw new Error('No encryption key available');
     }
 
-    try {
-      const decrypted = CryptoJS.AES.decrypt(encryptedContent, this.encryptionKey);
-      return decrypted.toString(CryptoJS.enc.Utf8);
-    } catch (error) {
-      console.error('Content decryption failed:', error);
-      throw new Error('Failed to decrypt content');
-    }
-  }
+    /**
+     * Authenticate against local user list
+     */
+    private authenticateLocal(email: string, password: string): { success: boolean; message: string } {
+        const users = this.config?.admited || [];
 
-  /**
-   * Logout and clear session
-   */
-  logout(): void {
-    this.session = null;
-    this.encryptionKey = '';
-    this.clearSession();
+        const user = users.find((u) => {
+            if (u.email !== email) return false;
 
-    // Reload page to show login form
-    window.location.reload();
-  }
+            // Check if we have a hashed password (from server-side processing)
+            if (u.passwordHash) {
+                const expectedHash = this.hashPassword(password, email);
+                return u.passwordHash === expectedHash;
+            }
 
-  /**
-   * Clear stored session data
-   */
-  private clearSession(): void {
-    localStorage.removeItem('apidoc_session');
-    localStorage.removeItem('apidoc_email');
-  }
+            // Fallback to plain text comparison (for backward compatibility)
+            if (u.password) {
+                return u.password === password;
+            }
 
-  /**
-   * Check authentication and show login form if needed
-   */
-  checkAuthentication(): void {
-    if (!this.isLoginRequired()) {
-      return; // No login required
+            return false;
+        });
+
+        if (user) {
+            return { success: true, message: 'Local authentication successful' };
+        }
+
+        return { success: false, message: 'Invalid local credentials' };
     }
 
-    // Delay authentication check to allow DOM initialization
-    setTimeout(() => {
-      if (this.isAuthenticated()) {
-        this.showProtectedContent();
-      } else {
-        this.showLoginForm();
-      }
-    }, 1000); // Wait 1 second for templates to initialize
-  }
-
-  /**
-   * Show login form and hide main content
-   */
-  private showLoginForm(): void {
-    // Hide main content without destroying it
-    const mainContent = document.querySelector('.flex.h-screen') as HTMLElement;
-    if (mainContent) {
-      mainContent.style.display = 'none';
+    /**
+     * Hash password for client-side verification (matching server-side logic)
+     */
+    private hashPassword(password: string, salt: string): string {
+        return CryptoJS.SHA256(password + salt + 'apidoc-salt').toString();
     }
 
-    // Create overlay for login form
-    const loginOverlay = document.createElement('div');
-    loginOverlay.id = 'auth-overlay';
-    loginOverlay.className = 'fixed inset-0 bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center z-50';
+    /**
+     * Authenticate against remote API
+     */
+    private async authenticateRemote(email: string, password: string): Promise<{ success: boolean; message: string }> {
+        const urlAuth = this.config?.urlAuth;
+        const valueForm = this.config?.value_form;
+        const successCode = this.config?.response_success || 200;
+        const errorCode = this.config?.response_error || 400;
 
-    const loginHTML = this.generateLoginForm();
-    loginOverlay.innerHTML = loginHTML;
+        if (!urlAuth || !valueForm) {
+            return { success: false, message: 'Remote authentication not properly configured' };
+        }
 
-    document.body.appendChild(loginOverlay);
-    this.bindLoginEvents();
-  }
+        try {
+            const formData = new FormData();
+            formData.append(valueForm.email, email);
+            formData.append(valueForm.password, password);
 
-  /**
-   * Generate login form HTML
-   */
-  private generateLoginForm(): string {
-    return `
+            const response = await fetch(urlAuth, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    Accept: 'application/json',
+                },
+            });
+
+            if (response.status === successCode) {
+                return { success: true, message: 'Remote authentication successful' };
+            } else if (response.status === errorCode) {
+                return { success: false, message: 'Invalid remote credentials' };
+            } else {
+                return { success: false, message: `Unexpected response: ${response.status}` };
+            }
+        } catch (error) {
+            console.error('Remote authentication error:', error);
+            return { success: false, message: 'Remote authentication failed' };
+        }
+    }
+
+    /**
+     * Create and store authentication session
+     */
+    private async createSession(email: string, method: 'local' | 'remote'): Promise<void> {
+        const expires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+        this.session = {
+            email,
+            authenticated: true,
+            expires,
+            method,
+        };
+
+        // Generate encryption key for content decryption
+        this.encryptionKey = this.generateEncryptionKey(email);
+
+        // Store encrypted session in localStorage
+        const sessionData = CryptoJS.AES.encrypt(JSON.stringify(this.session), this.encryptionKey).toString();
+
+        // Store encrypted email for session recovery
+        const encryptedEmail = CryptoJS.AES.encrypt(email, 'apidoc-email-key').toString();
+
+        localStorage.setItem('apidoc_session', sessionData);
+        localStorage.setItem('apidoc_email', encryptedEmail);
+    }
+
+    /**
+     * Load existing session from storage
+     */
+    private loadSession(): void {
+        try {
+            const sessionData = localStorage.getItem('apidoc_session');
+            const encryptedEmail = localStorage.getItem('apidoc_email');
+
+            if (!sessionData || !encryptedEmail) return;
+
+            // Decrypt the stored email
+            const decryptedEmailBytes = CryptoJS.AES.decrypt(encryptedEmail, 'apidoc-email-key');
+            const email = decryptedEmailBytes.toString(CryptoJS.enc.Utf8);
+
+            if (!email) return;
+
+            this.encryptionKey = this.generateEncryptionKey(email);
+
+            const decrypted = CryptoJS.AES.decrypt(sessionData, this.encryptionKey);
+            const sessionObj = JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+
+            if (sessionObj && Date.now() < sessionObj.expires) {
+                this.session = sessionObj;
+            }
+        } catch (error) {
+            console.warn('Could not load session:', error);
+            this.clearSession();
+        }
+    }
+
+    /**
+     * Generate encryption key from user email
+     */
+    private generateEncryptionKey(email: string): string {
+        return CryptoJS.PBKDF2(email, 'apidoc-salt-2024', {
+            keySize: 256 / 32,
+            iterations: 1000,
+        }).toString();
+    }
+
+    /**
+     * Decrypt protected content
+     */
+    decryptContent(encryptedContent: string): string {
+        if (!this.encryptionKey) {
+            throw new Error('No encryption key available');
+        }
+
+        try {
+            const decrypted = CryptoJS.AES.decrypt(encryptedContent, this.encryptionKey);
+            return decrypted.toString(CryptoJS.enc.Utf8);
+        } catch (error) {
+            console.error('Content decryption failed:', error);
+            throw new Error('Failed to decrypt content');
+        }
+    }
+
+    /**
+     * Logout and clear session
+     */
+    logout(): void {
+        this.session = null;
+        this.encryptionKey = '';
+        this.clearSession();
+
+        // Reload page to show login form
+        window.location.reload();
+    }
+
+    /**
+     * Clear stored session data
+     */
+    private clearSession(): void {
+        localStorage.removeItem('apidoc_session');
+        localStorage.removeItem('apidoc_email');
+    }
+
+    /**
+     * Check authentication and show login form if needed
+     */
+    checkAuthentication(): void {
+        if (!this.isLoginRequired()) {
+            return; // No login required
+        }
+
+        // Delay authentication check to allow DOM initialization
+        setTimeout(() => {
+            if (this.isAuthenticated()) {
+                this.showProtectedContent();
+            } else {
+                this.showLoginForm();
+            }
+        }, 1000); // Wait 1 second for templates to initialize
+    }
+
+    /**
+     * Show login form and hide main content
+     */
+    private showLoginForm(): void {
+        // Hide main content without destroying it
+        const mainContent = document.querySelector('.flex.h-screen') as HTMLElement;
+        if (mainContent) {
+            mainContent.style.display = 'none';
+        }
+
+        // Create overlay for login form
+        const loginOverlay = document.createElement('div');
+        loginOverlay.id = 'auth-overlay';
+        loginOverlay.className = 'fixed inset-0 bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center z-50';
+
+        const loginHTML = this.generateLoginForm();
+        loginOverlay.innerHTML = loginHTML;
+
+        document.body.appendChild(loginOverlay);
+        this.bindLoginEvents();
+    }
+
+    /**
+     * Generate login form HTML
+     */
+    private generateLoginForm(): string {
+        return `
       <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
         <div class="text-center mb-8">
           <div class="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-4">
@@ -405,118 +401,118 @@ class AuthManager {
         </div>
       </div>
     `;
-  }
+    }
 
-  /**
-   * Bind events to login form
-   */
-  private bindLoginEvents(): void {
-    const form = document.getElementById('login-form') as HTMLFormElement;
-    const errorDiv = document.getElementById('login-error') as HTMLElement;
-    const errorMessage = document.getElementById('error-message') as HTMLElement;
-    const loginButton = document.getElementById('login-button') as HTMLButtonElement;
-    const loginText = document.getElementById('login-text') as HTMLElement;
-    const loginSpinner = document.getElementById('login-spinner') as HTMLElement;
-    const themeToggle = document.getElementById('toggle-theme-login') as HTMLButtonElement;
+    /**
+     * Bind events to login form
+     */
+    private bindLoginEvents(): void {
+        const form = document.getElementById('login-form') as HTMLFormElement;
+        const errorDiv = document.getElementById('login-error') as HTMLElement;
+        const errorMessage = document.getElementById('error-message') as HTMLElement;
+        const loginButton = document.getElementById('login-button') as HTMLButtonElement;
+        const loginText = document.getElementById('login-text') as HTMLElement;
+        const loginSpinner = document.getElementById('login-spinner') as HTMLElement;
+        const themeToggle = document.getElementById('toggle-theme-login') as HTMLButtonElement;
 
-    // Theme toggle functionality
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        // Theme toggle functionality
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
 
-      if (newTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    });
+            if (newTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
 
-    // Login form submission
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+        // Login form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-      const emailInput = document.getElementById('email') as HTMLInputElement;
-      const passwordInput = document.getElementById('password') as HTMLInputElement;
+            const emailInput = document.getElementById('email') as HTMLInputElement;
+            const passwordInput = document.getElementById('password') as HTMLInputElement;
 
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
 
-      if (!email || !password) {
-        this.showLoginError('Please enter both email and password');
-        return;
-      }
+            if (!email || !password) {
+                this.showLoginError('Please enter both email and password');
+                return;
+            }
 
-      // Show loading state
-      loginButton.disabled = true;
-      loginText.textContent = 'Signing in...';
-      loginSpinner.classList.remove('hidden');
-      errorDiv.classList.add('hidden');
+            // Show loading state
+            loginButton.disabled = true;
+            loginText.textContent = 'Signing in...';
+            loginSpinner.classList.remove('hidden');
+            errorDiv.classList.add('hidden');
 
-      try {
-        const result = await this.login(email, password);
+            try {
+                const result = await this.login(email, password);
 
-        if (result.success) {
-          // Redirect to main content
-          window.location.reload();
-        } else {
-          this.showLoginError(result.message);
+                if (result.success) {
+                    // Redirect to main content
+                    window.location.reload();
+                } else {
+                    this.showLoginError(result.message);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                this.showLoginError('An unexpected error occurred');
+            } finally {
+                // Reset loading state
+                loginButton.disabled = false;
+                loginText.textContent = 'Sign In';
+                loginSpinner.classList.add('hidden');
+            }
+        });
+    }
+
+    /**
+     * Show login error message
+     */
+    private showLoginError(message: string): void {
+        const errorDiv = document.getElementById('login-error') as HTMLElement;
+        const errorMessage = document.getElementById('error-message') as HTMLElement;
+
+        errorMessage.textContent = message;
+        errorDiv.classList.remove('hidden');
+    }
+
+    /**
+     * Show protected content after successful authentication
+     */
+    private showProtectedContent(): void {
+        // Remove login overlay if it exists
+        const overlay = document.getElementById('auth-overlay');
+        if (overlay) {
+            overlay.remove();
         }
-      } catch (error) {
-        console.error('Login error:', error);
-        this.showLoginError('An unexpected error occurred');
-      } finally {
-        // Reset loading state
-        loginButton.disabled = false;
-        loginText.textContent = 'Sign In';
-        loginSpinner.classList.add('hidden');
-      }
-    });
-  }
 
-  /**
-   * Show login error message
-   */
-  private showLoginError(message: string): void {
-    const errorDiv = document.getElementById('login-error') as HTMLElement;
-    const errorMessage = document.getElementById('error-message') as HTMLElement;
+        // Show main content
+        const mainContent = document.querySelector('.flex.h-screen') as HTMLElement;
+        if (mainContent) {
+            mainContent.style.display = 'flex';
+        }
 
-    errorMessage.textContent = message;
-    errorDiv.classList.remove('hidden');
-  }
-
-  /**
-   * Show protected content after successful authentication
-   */
-  private showProtectedContent(): void {
-    // Remove login overlay if it exists
-    const overlay = document.getElementById('auth-overlay');
-    if (overlay) {
-      overlay.remove();
+        // Content will be shown by the normal page load process
+        // This method can be extended to decrypt and inject protected content
+        console.log('User authenticated, showing protected content');
     }
 
-    // Show main content
-    const mainContent = document.querySelector('.flex.h-screen') as HTMLElement;
-    if (mainContent) {
-      mainContent.style.display = 'flex';
+    /**
+     * Get current session info (for debugging/admin purposes)
+     */
+    getSessionInfo(): AuthSession | null {
+        return this.session;
     }
-
-    // Content will be shown by the normal page load process
-    // This method can be extended to decrypt and inject protected content
-    console.log('User authenticated, showing protected content');
-  }
-
-  /**
-   * Get current session info (for debugging/admin purposes)
-   */
-  getSessionInfo(): AuthSession | null {
-    return this.session;
-  }
 }
 
 // Export the class as default for instantiation
 export default AuthManager;
 export { AuthManager };
-export type { LoginConfig, AuthSession };
+export type { AuthSession, LoginConfig };

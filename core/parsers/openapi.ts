@@ -310,7 +310,8 @@ function generateOperationName(method: string, path: string): string {
     // e.g., GET /users/{id} -> getUsersId
     const cleanPath = path.replace(/[{}/:]/g, ' ').trim();
     const words = cleanPath.split(/\s+/).filter((w) => w.length > 0);
-    const camelCase = method.toLowerCase() + words.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+    const camelCase =
+        method.toLowerCase() + words.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
     return camelCase;
 }
 
@@ -383,7 +384,13 @@ function isSchemaDefinition(obj: any): boolean {
     if (!obj || typeof obj !== 'object') return false;
 
     // Check for schema properties
-    return obj.type !== undefined || obj.properties !== undefined || obj.allOf !== undefined || obj.oneOf !== undefined || obj.anyOf !== undefined;
+    return (
+        obj.type !== undefined ||
+        obj.properties !== undefined ||
+        obj.allOf !== undefined ||
+        obj.oneOf !== undefined ||
+        obj.anyOf !== undefined
+    );
 }
 
 /**
@@ -394,7 +401,12 @@ function isOperationDefinition(obj: any): boolean {
     if (!obj || typeof obj !== 'object') return false;
 
     // Check for operation properties
-    return obj.responses !== undefined || obj.parameters !== undefined || obj.requestBody !== undefined || obj.operationId !== undefined;
+    return (
+        obj.responses !== undefined ||
+        obj.parameters !== undefined ||
+        obj.requestBody !== undefined ||
+        obj.operationId !== undefined
+    );
 }
 
 /**

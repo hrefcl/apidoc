@@ -11,7 +11,9 @@ import { loadFromCliParamOrApiDocProject, loadTemplate, mkdirp, pathExists, temp
  * @param options Documentation generator parameters
  * @returns The single or multi file EJS compiler, ready for usage
  */
-export const generate = async (options: Omit<MarkdownConfigurationObject, 'template'> & { ejsCompiler: ejs.AsyncTemplateFunction }): Promise<MarkdownDocumentationOutput[]> => {
+export const generate = async (
+    options: Omit<MarkdownConfigurationObject, 'template'> & { ejsCompiler: ejs.AsyncTemplateFunction }
+): Promise<MarkdownDocumentationOutput[]> => {
     let apiByGroupAndName: any[];
 
     // Fix missing titles by using name as fallback (common in MQTT)
@@ -24,7 +26,10 @@ export const generate = async (options: Omit<MarkdownConfigurationObject, 'templ
     // Throw error if one element is still missing both title and name
     const elementsWithoutTitle = options.apiDocApiData.filter((x) => !x.title && !x.name);
     if (elementsWithoutTitle.length > 0)
-        throw new Error('Missing both `title` and `name` key in one or more elements. Elements without title/name: ' + `${JSON.stringify(elementsWithoutTitle.slice(0, 3), null, 2)}`);
+        throw new Error(
+            'Missing both `title` and `name` key in one or more elements. Elements without title/name: ' +
+                `${JSON.stringify(elementsWithoutTitle.slice(0, 3), null, 2)}`
+        );
 
     // Group apiDoc data by group and name
     apiByGroupAndName = unique(Object.values(options.apiDocApiData).map((x) => x.group))
@@ -61,7 +66,9 @@ export const generate = async (options: Omit<MarkdownConfigurationObject, 'templ
         // Filter items in/not in the project order setting array
         const inOrderArr: any[] = [];
         const notInOrderArr: any[] = [];
-        apiByGroupAndName.forEach((x) => (orderLowerCase.indexOf(x.name.toLowerCase()) === -1 ? notInOrderArr.push(x) : inOrderArr.push(x)));
+        apiByGroupAndName.forEach((x) =>
+            orderLowerCase.indexOf(x.name.toLowerCase()) === -1 ? notInOrderArr.push(x) : inOrderArr.push(x)
+        );
 
         // Sorted, with the ones not in the project order setting array appended to it
         apiByGroupAndName = [
@@ -110,15 +117,19 @@ export const generateMarkdown = async (options: MarkdownConfigurationObject): Pr
  * @returns Generated documentation
  * @throws Some CLI command parameters are missing or invalid
  */
-export const generateMarkdownFileSystem = async (options: MarkdownConfigurationObjectCLI): Promise<MarkdownDocumentationOutput[]> => {
+export const generateMarkdownFileSystem = async (
+    options: MarkdownConfigurationObjectCLI
+): Promise<MarkdownDocumentationOutput[]> => {
     // Check the output path exists (only parent directory if unique file)
     if (!options.output) throw new Error('`output` is required but was not provided.');
 
     // Recursively create directory arborescence if cli option is true
-    if (options.createPath) await mkdirp(options.output.toLowerCase().endsWith('.md') ? path.dirname(options.output) : options.output);
+    if (options.createPath)
+        await mkdirp(options.output.toLowerCase().endsWith('.md') ? path.dirname(options.output) : options.output);
 
     const outputPath = options.multi ? options.output : path.parse(path.resolve('.', options.output)).dir;
-    if (!(await pathExists(outputPath))) throw new Error(`The \`output\` path does not exist or is not readable. Path: ${outputPath}`);
+    if (!(await pathExists(outputPath)))
+        throw new Error(`The \`output\` path does not exist or is not readable. Path: ${outputPath}`);
 
     // Check header, footer and prepend file path exist
     const header = await loadFromCliParamOrApiDocProject('header', options.headerFile, options.apiDocProjectData);

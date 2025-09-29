@@ -76,7 +76,11 @@ export class ApiCatPlugin {
      * @param projectInfo
      * @param outputPath
      */
-    private async generateModularStructure(apiData: any, projectInfo: ApiDocProject, outputPath: string): Promise<void> {
+    private async generateModularStructure(
+        apiData: any,
+        projectInfo: ApiDocProject,
+        outputPath: string
+    ): Promise<void> {
         // Create subdirectories
         await fs.ensureDir(path.join(outputPath, 'cat.api'));
         await fs.ensureDir(path.join(outputPath, 'cat.docs'));
@@ -232,7 +236,10 @@ export class ApiCatPlugin {
                 generatedAt: new Date().toISOString(),
             };
 
-            await fs.writeFile(path.join(outputPath, 'cat.api', `${group.toLowerCase()}.json`), JSON.stringify(shard, null, 2));
+            await fs.writeFile(
+                path.join(outputPath, 'cat.api', `${group.toLowerCase()}.json`),
+                JSON.stringify(shard, null, 2)
+            );
         }
     }
 
@@ -337,8 +344,10 @@ export class ApiCatPlugin {
         }
 
         // Generate header and footer
-        let headerHtml = '<div class="header-docs"><h1>API Documentation</h1><p>Welcome to the API documentation.</p></div>';
-        let footerHtml = '<div class="footer-docs"><p>Generated with apiCAT v5.0 - <a href="https://apidoc.app">Learn more</a></p></div>';
+        let headerHtml =
+            '<div class="header-docs"><h1>API Documentation</h1><p>Welcome to the API documentation.</p></div>';
+        let footerHtml =
+            '<div class="footer-docs"><p>Generated with apiCAT v5.0 - <a href="https://apidoc.app">Learn more</a></p></div>';
 
         if (customMarkdown.header) {
             headerHtml = `<div class="header-docs custom-markdown">${customMarkdown.header.html}</div>`;
@@ -357,7 +366,10 @@ export class ApiCatPlugin {
 
         for (const [moduleName, moduleData] of Object.entries(tsdocData)) {
             // Save JSON data
-            await fs.writeFile(path.join(outputPath, 'cat.tsdoc', `${moduleName}.json`), JSON.stringify(moduleData, null, 2));
+            await fs.writeFile(
+                path.join(outputPath, 'cat.tsdoc', `${moduleName}.json`),
+                JSON.stringify(moduleData, null, 2)
+            );
 
             // Generate HTML documentation
             const htmlDoc = this.generateTSDocHTML(moduleData as any);
@@ -688,7 +700,10 @@ export class ApiCatPlugin {
         for (const comment of jsDocComments) {
             if (ts.isJSDoc(comment)) {
                 if (comment.comment) {
-                    summary = typeof comment.comment === 'string' ? comment.comment : comment.comment.map((c: any) => c.text || c).join('');
+                    summary =
+                        typeof comment.comment === 'string'
+                            ? comment.comment
+                            : comment.comment.map((c: any) => c.text || c).join('');
                 }
             }
         }
@@ -697,7 +712,11 @@ export class ApiCatPlugin {
         for (const tag of jsDocTags) {
             tags.push({
                 name: tag.tagName?.text || 'unknown',
-                text: tag.comment ? (typeof tag.comment === 'string' ? tag.comment : tag.comment.map((c: any) => c.text || c).join('')) : '',
+                text: tag.comment
+                    ? typeof tag.comment === 'string'
+                        ? tag.comment
+                        : tag.comment.map((c: any) => c.text || c).join('')
+                    : '',
             });
         }
 
@@ -1110,7 +1129,12 @@ export class ApiCatPlugin {
      * @param text
      */
     private escapeHtml(text: string): string {
-        return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;');
     }
 
     /**

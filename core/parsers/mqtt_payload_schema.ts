@@ -61,7 +61,14 @@ export function parse(content: string): { type: string; schema: any; isValid: bo
             }
 
             // Check for basic JSON Schema structure
-            const isValidSchema = schema.type || schema.properties || schema.items || schema.$ref || schema.anyOf || schema.oneOf || schema.allOf;
+            const isValidSchema =
+                schema.type ||
+                schema.properties ||
+                schema.items ||
+                schema.$ref ||
+                schema.anyOf ||
+                schema.oneOf ||
+                schema.allOf;
 
             return {
                 type: 'inline',
@@ -110,7 +117,14 @@ export function parse(content: string): { type: string; schema: any; isValid: bo
                 };
             }
 
-            const isValidSchema = schema.type || schema.properties || schema.items || schema.$ref || schema.anyOf || schema.oneOf || schema.allOf;
+            const isValidSchema =
+                schema.type ||
+                schema.properties ||
+                schema.items ||
+                schema.$ref ||
+                schema.anyOf ||
+                schema.oneOf ||
+                schema.allOf;
 
             return {
                 type: 'inline',

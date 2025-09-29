@@ -3,213 +3,213 @@
  */
 
 export interface NavItem {
-  title?: string;
-  isHeader?: boolean;
-  isFixed?: boolean;
-  group?: string;
-  name?: string;
-  version?: string;
-  url?: string;
-  hidden?: boolean;
-  type?: string; // GET, POST, PUT, DELETE, etc.
+    title?: string;
+    isHeader?: boolean;
+    isFixed?: boolean;
+    group?: string;
+    name?: string;
+    version?: string;
+    url?: string;
+    hidden?: boolean;
+    type?: string; // GET, POST, PUT, DELETE, etc.
 }
 
 export interface GroupSettings {
-  icon?: string; // Font Awesome icon class (e.g., 'fa-user', 'fa-shield')
-  title?: string; // Custom title for the group
+    icon?: string; // Font Awesome icon class (e.g., 'fa-user', 'fa-shield')
+    title?: string; // Custom title for the group
 }
 
 export class SidebarComponent {
-  private container: HTMLElement;
-  private navData: NavItem[] = [];
-  private expandedGroups: Set<string> = new Set();
-  private selectedItem: string = '';
-  private isMobileMenuOpen: boolean = false;
-  private projectSettings: Record<string, GroupSettings> = {};
+    private container: HTMLElement;
+    private navData: NavItem[] = [];
+    private expandedGroups: Set<string> = new Set();
+    private selectedItem: string = '';
+    private isMobileMenuOpen: boolean = false;
+    private projectSettings: Record<string, GroupSettings> = {};
 
-  constructor(container: HTMLElement) {
-    this.container = container;
-    this.loadProjectSettings();
-  }
-
-  private loadProjectSettings() {
-    try {
-      // Load project configuration from global variable
-      if (typeof (window as any).API_PROJECT !== 'undefined') {
-        const project = JSON.parse((window as any).API_PROJECT);
-        this.projectSettings = project.settings || {};
-      }
-    } catch (error) {
-      console.warn('Could not load project settings:', error);
-      this.projectSettings = {};
-    }
-  }
-
-  setData(navData: NavItem[]) {
-    this.navData = navData;
-    this.render();
-  }
-
-  private toggleGroup(group: string) {
-    if (this.expandedGroups.has(group)) {
-      this.expandedGroups.delete(group);
-    } else {
-      this.expandedGroups.add(group);
-    }
-    this.updateVisibility();
-  }
-
-  private selectItem(itemId: string, event: Event) {
-    event.preventDefault();
-    this.selectedItem = itemId;
-
-    // Actualizar clases activas
-    const allItems = this.container.querySelectorAll('.sidebar-nav-item');
-    allItems.forEach(item => item.classList.remove('active'));
-
-    const selectedElement = this.container.querySelector(`[data-item-id="${itemId}"]`);
-    if (selectedElement) {
-      selectedElement.classList.add('active');
+    constructor(container: HTMLElement) {
+        this.container = container;
+        this.loadProjectSettings();
     }
 
-    // Navegar al elemento
-    const targetElement = document.querySelector(`#${itemId}`);
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth' });
+    private loadProjectSettings() {
+        try {
+            // Load project configuration from global variable
+            if (typeof (window as any).API_PROJECT !== 'undefined') {
+                const project = JSON.parse((window as any).API_PROJECT);
+                this.projectSettings = project.settings || {};
+            }
+        } catch (error) {
+            console.warn('Could not load project settings:', error);
+            this.projectSettings = {};
+        }
     }
-  }
 
-  private updateVisibility() {
-    const submenuItems = this.container.querySelectorAll('.sidebar-nav-submenu');
-    submenuItems.forEach((submenu: HTMLElement) => {
-      const header = submenu.previousElementSibling as HTMLElement;
-      if (header && header.dataset.group) {
-        const group = header.dataset.group;
-        const isFixed = header.classList.contains('nav-fixed');
-        const isExpanded = this.expandedGroups.has(group);
+    setData(navData: NavItem[]) {
+        this.navData = navData;
+        this.render();
+    }
 
-        if (isFixed) {
-          submenu.classList.remove('hidden');
+    private toggleGroup(group: string) {
+        if (this.expandedGroups.has(group)) {
+            this.expandedGroups.delete(group);
         } else {
-          if (isExpanded) {
-            submenu.classList.remove('hidden');
-          } else {
-            submenu.classList.add('hidden');
-          }
+            this.expandedGroups.add(group);
         }
-
-        // Update chevron rotation
-        const chevron = header.querySelector('.transition-transform');
-        if (chevron && !isFixed) {
-          if (isExpanded) {
-            chevron.classList.add('rotate-180');
-          } else {
-            chevron.classList.remove('rotate-180');
-          }
-        }
-      }
-    });
-
-    // Handle individual items visibility based on hidden state
-    const items = this.container.querySelectorAll('.sidebar-nav-item[data-group]:not(.nav-header)');
-    items.forEach((item: HTMLElement) => {
-      if (item.classList.contains('hide')) {
-        item.style.display = 'none';
-      } else {
-        item.style.display = 'block';
-      }
-    });
-  }
-
-  private underscoreToSpace(text: string): string {
-    if (!text) return '';
-    return text.replace(/_/g, ' ');
-  }
-
-  private getIconForGroup(group: string): string {
-    // Check for special header/footer icons from project configuration
-    if (group === '_header' || group === '_footer') {
-      try {
-        if (typeof (window as any).API_PROJECT !== 'undefined') {
-          const project = JSON.parse((window as any).API_PROJECT);
-          const section = group === '_header' ? project.header : project.footer;
-          if (section && section.icon) {
-            return section.icon;
-          }
-        }
-      } catch (error) {
-        console.warn('Could not load header/footer icon settings:', error);
-      }
+        this.updateVisibility();
     }
 
-    // Check if there's a custom icon configured for this group
-    const customSettings = this.projectSettings[group];
-    if (customSettings && customSettings.icon) {
-      return customSettings.icon;
-    }
+    private selectItem(itemId: string, event: Event) {
+        event.preventDefault();
+        this.selectedItem = itemId;
 
-    // Default Font Awesome icons for common groups
-    const defaultIconMap: Record<string, string> = {
-      'User': 'fa-user',
-      'Users': 'fa-users',
-      'Account': 'fa-user-circle',
-      'Auth': 'fa-shield-alt',
-      'Authentication': 'fa-key',
-      'API': 'fa-code',
-      'Endpoints': 'fa-sitemap',
-      'Company': 'fa-building',
-      'System': 'fa-cogs',
-      'City': 'fa-map-marker-alt',
-      'Category': 'fa-tags',
-      '_header': 'fa-home',
-      '_footer': 'fa-info-circle',
-      'default': 'fa-file-alt'
-    };
+        // Actualizar clases activas
+        const allItems = this.container.querySelectorAll('.sidebar-nav-item');
+        allItems.forEach((item) => item.classList.remove('active'));
 
-    return defaultIconMap[group] || defaultIconMap['default'];
-  }
-
-  private getTitleForGroup(group: string): string {
-    // Check for special header/footer titles from project configuration
-    if (group === '_header' || group === '_footer') {
-      try {
-        if (typeof (window as any).API_PROJECT !== 'undefined') {
-          const project = JSON.parse((window as any).API_PROJECT);
-          const section = group === '_header' ? project.header : project.footer;
-          if (section && section.title) {
-            return section.title;
-          }
+        const selectedElement = this.container.querySelector(`[data-item-id="${itemId}"]`);
+        if (selectedElement) {
+            selectedElement.classList.add('active');
         }
-      } catch (error) {
-        console.warn('Could not load header/footer title settings:', error);
-      }
+
+        // Navegar al elemento
+        const targetElement = document.querySelector(`#${itemId}`);
+        if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth' });
+        }
     }
 
-    // Check if there's a custom title configured for this group
-    const customSettings = this.projectSettings[group];
-    if (customSettings && customSettings.title) {
-      return customSettings.title;
+    private updateVisibility() {
+        const submenuItems = this.container.querySelectorAll('.sidebar-nav-submenu');
+        submenuItems.forEach((submenu: HTMLElement) => {
+            const header = submenu.previousElementSibling as HTMLElement;
+            if (header && header.dataset.group) {
+                const group = header.dataset.group;
+                const isFixed = header.classList.contains('nav-fixed');
+                const isExpanded = this.expandedGroups.has(group);
+
+                if (isFixed) {
+                    submenu.classList.remove('hidden');
+                } else {
+                    if (isExpanded) {
+                        submenu.classList.remove('hidden');
+                    } else {
+                        submenu.classList.add('hidden');
+                    }
+                }
+
+                // Update chevron rotation
+                const chevron = header.querySelector('.transition-transform');
+                if (chevron && !isFixed) {
+                    if (isExpanded) {
+                        chevron.classList.add('rotate-180');
+                    } else {
+                        chevron.classList.remove('rotate-180');
+                    }
+                }
+            }
+        });
+
+        // Handle individual items visibility based on hidden state
+        const items = this.container.querySelectorAll('.sidebar-nav-item[data-group]:not(.nav-header)');
+        items.forEach((item: HTMLElement) => {
+            if (item.classList.contains('hide')) {
+                item.style.display = 'none';
+            } else {
+                item.style.display = 'block';
+            }
+        });
     }
 
-    // Return the original group name with underscores converted to spaces
-    return this.underscoreToSpace(group);
-  }
+    private underscoreToSpace(text: string): string {
+        if (!text) return '';
+        return text.replace(/_/g, ' ');
+    }
 
-  private getMethodClass(type: string): string {
-    const classMap: Record<string, string> = {
-      'GET': 'meth-get',
-      'POST': 'meth-post',
-      'PUT': 'meth-put',
-      'PATCH': 'meth-patch',
-      'DELETE': 'meth-delete',
-      'default': 'meth-get'
-    };
+    private getIconForGroup(group: string): string {
+        // Check for special header/footer icons from project configuration
+        if (group === '_header' || group === '_footer') {
+            try {
+                if (typeof (window as any).API_PROJECT !== 'undefined') {
+                    const project = JSON.parse((window as any).API_PROJECT);
+                    const section = group === '_header' ? project.header : project.footer;
+                    if (section && section.icon) {
+                        return section.icon;
+                    }
+                }
+            } catch (error) {
+                console.warn('Could not load header/footer icon settings:', error);
+            }
+        }
 
-    return classMap[type?.toUpperCase()] || classMap['default'];
-  }
+        // Check if there's a custom icon configured for this group
+        const customSettings = this.projectSettings[group];
+        if (customSettings && customSettings.icon) {
+            return customSettings.icon;
+        }
 
-  private createSidebarHeader(): string {
-    return `
+        // Default Font Awesome icons for common groups
+        const defaultIconMap: Record<string, string> = {
+            User: 'fa-user',
+            Users: 'fa-users',
+            Account: 'fa-user-circle',
+            Auth: 'fa-shield-alt',
+            Authentication: 'fa-key',
+            API: 'fa-code',
+            Endpoints: 'fa-sitemap',
+            Company: 'fa-building',
+            System: 'fa-cogs',
+            City: 'fa-map-marker-alt',
+            Category: 'fa-tags',
+            _header: 'fa-home',
+            _footer: 'fa-info-circle',
+            default: 'fa-file-alt',
+        };
+
+        return defaultIconMap[group] || defaultIconMap['default'];
+    }
+
+    private getTitleForGroup(group: string): string {
+        // Check for special header/footer titles from project configuration
+        if (group === '_header' || group === '_footer') {
+            try {
+                if (typeof (window as any).API_PROJECT !== 'undefined') {
+                    const project = JSON.parse((window as any).API_PROJECT);
+                    const section = group === '_header' ? project.header : project.footer;
+                    if (section && section.title) {
+                        return section.title;
+                    }
+                }
+            } catch (error) {
+                console.warn('Could not load header/footer title settings:', error);
+            }
+        }
+
+        // Check if there's a custom title configured for this group
+        const customSettings = this.projectSettings[group];
+        if (customSettings && customSettings.title) {
+            return customSettings.title;
+        }
+
+        // Return the original group name with underscores converted to spaces
+        return this.underscoreToSpace(group);
+    }
+
+    private getMethodClass(type: string): string {
+        const classMap: Record<string, string> = {
+            GET: 'meth-get',
+            POST: 'meth-post',
+            PUT: 'meth-put',
+            PATCH: 'meth-patch',
+            DELETE: 'meth-delete',
+            default: 'meth-get',
+        };
+
+        return classMap[type?.toUpperCase()] || classMap['default'];
+    }
+
+    private createSidebarHeader(): string {
+        return `
       <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
         <div class="flex items-center space-x-3">
           <div class="w-8 h-8 bg-blue-600 dark:bg-blue-500 text-white rounded-lg flex items-center justify-center">
@@ -229,22 +229,22 @@ export class SidebarComponent {
         </button>
       </div>
     `;
-  }
+    }
 
-  private createNavItemHtml(item: NavItem): string {
-    if (!item.title) return '';
+    private createNavItemHtml(item: NavItem): string {
+        if (!item.title) return '';
 
-    const isHeader = item.isHeader;
-    const isFixed = item.isFixed;
-    const group = item.group || '';
-    const isExpanded = this.expandedGroups.has(group);
+        const isHeader = item.isHeader;
+        const isFixed = item.isFixed;
+        const group = item.group || '';
+        const isExpanded = this.expandedGroups.has(group);
 
-    if (isHeader) {
-      const headerClass = isFixed ? 'nav-fixed' : '';
-      const iconClass = this.getIconForGroup(group);
-      const groupTitle = this.getTitleForGroup(group);
+        if (isHeader) {
+            const headerClass = isFixed ? 'nav-fixed' : '';
+            const iconClass = this.getIconForGroup(group);
+            const groupTitle = this.getTitleForGroup(group);
 
-      return `
+            return `
         <div class="sidebar-nav-group">
           <button
             type="button"
@@ -259,25 +259,29 @@ export class SidebarComponent {
               <i class="fas ${iconClass} w-5 h-5 text-center"></i>
             </span>
             <span class="ml-3 flex-1 text-left">${groupTitle}</span>
-            ${!isFixed ? `
+            ${
+                !isFixed
+                    ? `
               <span class="ml-3 flex-shrink-0" aria-hidden="true">
                 <svg class="w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
               </span>
-            ` : ''}
+            `
+                    : ''
+            }
           </button>
 
           <div role="menu" class="mt-1 space-y-1 sidebar-nav-submenu ${isExpanded ? '' : 'hidden'}" aria-label="${this.underscoreToSpace(item.title)}">
         `;
-    } else {
-      // Item regular de endpoint
-      const itemId = `api-${group}-${item.name}`;
-      const isSelected = this.selectedItem === itemId;
-      const hiddenClass = item.hidden ? 'hide' : '';
-      const methodClass = this.getMethodClass(item.type || '');
+        } else {
+            // Item regular de endpoint
+            const itemId = `api-${group}-${item.name}`;
+            const isSelected = this.selectedItem === itemId;
+            const hiddenClass = item.hidden ? 'hide' : '';
+            const methodClass = this.getMethodClass(item.type || '');
 
-      return `
+            return `
             <a
               href="#${itemId}"
               title="${item.title} ${item.url ? '- ' + item.url : ''}"
@@ -293,56 +297,56 @@ export class SidebarComponent {
               ${item.type ? `<span class="absolute right-[0.2rem] top-[0.7rem] method inline-flex items-center px-1.5 py-0.5 text-xs font-medium text-white rounded-lg uppercase ${methodClass} ml-2 flex-shrink-0" style="font-size: 10px; min-width: auto;">${item.type.toLowerCase()}</span>` : ''}
             </a>
       `;
+        }
     }
-  }
 
-  private closeGroupHtml(): string {
-    return `
+    private closeGroupHtml(): string {
+        return `
           </div>
         </div>
     `;
-  }
+    }
 
-  private toggleMobileMenu() {
-    // For now, keep it simple since we're using flexbox layout
-    console.log('Mobile menu toggle clicked');
-  }
+    private toggleMobileMenu() {
+        // For now, keep it simple since we're using flexbox layout
+        console.log('Mobile menu toggle clicked');
+    }
 
-  private render() {
-    if (!this.navData || !Array.isArray(this.navData)) {
-      this.container.innerHTML = `
+    private render() {
+        if (!this.navData || !Array.isArray(this.navData)) {
+            this.container.innerHTML = `
         <div class="h-full flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
           ${this.createSidebarHeader()}
           <nav aria-label="Main" class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
             <div class="sidebar-loading text-gray-500 dark:text-gray-400 text-center py-4">Cargando navegación...</div>
           </nav>
         </div>`;
-      return;
-    }
-
-    let navItemsHtml = '';
-    let needsClose = false;
-
-    this.navData.forEach((item, index) => {
-      if (item.isHeader) {
-        // Cerrar grupo anterior si existe
-        if (needsClose) {
-          navItemsHtml += this.closeGroupHtml();
+            return;
         }
 
-        navItemsHtml += this.createNavItemHtml(item);
-        needsClose = true;
-      } else {
-        navItemsHtml += this.createNavItemHtml(item);
-      }
+        let navItemsHtml = '';
+        let needsClose = false;
 
-      // Cerrar el último grupo si es necesario
-      if (index === this.navData.length - 1 && needsClose) {
-        navItemsHtml += this.closeGroupHtml();
-      }
-    });
+        this.navData.forEach((item, index) => {
+            if (item.isHeader) {
+                // Cerrar grupo anterior si existe
+                if (needsClose) {
+                    navItemsHtml += this.closeGroupHtml();
+                }
 
-    this.container.innerHTML = `
+                navItemsHtml += this.createNavItemHtml(item);
+                needsClose = true;
+            } else {
+                navItemsHtml += this.createNavItemHtml(item);
+            }
+
+            // Cerrar el último grupo si es necesario
+            if (index === this.navData.length - 1 && needsClose) {
+                navItemsHtml += this.closeGroupHtml();
+            }
+        });
+
+        this.container.innerHTML = `
       <div class="h-full flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
         ${this.createSidebarHeader()}
         <nav aria-label="Main" class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
@@ -350,54 +354,54 @@ export class SidebarComponent {
         </nav>
       </div>`;
 
-    this.attachEventListeners();
-    this.updateVisibility();
-  }
-
-  private attachEventListeners() {
-    // Event delegation para manejar clicks
-    this.container.addEventListener('click', (event) => {
-      const target = event.target as HTMLElement;
-      const link = target.closest('[data-action]') as HTMLElement;
-
-      if (!link) return;
-
-      const action = link.dataset.action;
-
-      if (action === 'toggle-group') {
-        event.preventDefault();
-        const group = link.dataset.group;
-        if (group) {
-          this.toggleGroup(group);
-        }
-      } else if (action === 'select-item') {
-        const itemId = link.dataset.itemId;
-        if (itemId) {
-          this.selectItem(itemId, event);
-          // Close mobile menu on item selection
-          if (this.isMobileMenuOpen) {
-            this.toggleMobileMenu();
-          }
-        }
-      }
-    });
-
-    // Mobile menu close button
-    this.container.addEventListener('click', (event) => {
-      const target = event.target as HTMLElement;
-      if (target.closest('#mobile-menu-close')) {
-        event.preventDefault();
-        this.toggleMobileMenu();
-      }
-    });
-
-    // Mobile menu toggle from navbar
-    const mobileToggle = document.querySelector('[data-action="toggle-mobile-menu"]');
-    if (mobileToggle) {
-      mobileToggle.addEventListener('click', (event) => {
-        event.preventDefault();
-        this.toggleMobileMenu();
-      });
+        this.attachEventListeners();
+        this.updateVisibility();
     }
-  }
+
+    private attachEventListeners() {
+        // Event delegation para manejar clicks
+        this.container.addEventListener('click', (event) => {
+            const target = event.target as HTMLElement;
+            const link = target.closest('[data-action]') as HTMLElement;
+
+            if (!link) return;
+
+            const action = link.dataset.action;
+
+            if (action === 'toggle-group') {
+                event.preventDefault();
+                const group = link.dataset.group;
+                if (group) {
+                    this.toggleGroup(group);
+                }
+            } else if (action === 'select-item') {
+                const itemId = link.dataset.itemId;
+                if (itemId) {
+                    this.selectItem(itemId, event);
+                    // Close mobile menu on item selection
+                    if (this.isMobileMenuOpen) {
+                        this.toggleMobileMenu();
+                    }
+                }
+            }
+        });
+
+        // Mobile menu close button
+        this.container.addEventListener('click', (event) => {
+            const target = event.target as HTMLElement;
+            if (target.closest('#mobile-menu-close')) {
+                event.preventDefault();
+                this.toggleMobileMenu();
+            }
+        });
+
+        // Mobile menu toggle from navbar
+        const mobileToggle = document.querySelector('[data-action="toggle-mobile-menu"]');
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', (event) => {
+                event.preventDefault();
+                this.toggleMobileMenu();
+            });
+        }
+    }
 }

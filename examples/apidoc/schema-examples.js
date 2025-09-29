@@ -47,7 +47,7 @@
  * }
  */
 function updateCompanyPricing() {
-  // Implementation
+    // Implementation
 }
 
 /**
@@ -92,7 +92,7 @@ function updateCompanyPricing() {
  * }
  */
 function getUsers() {
-  // Implementation
+    // Implementation
 }
 
 /**
@@ -132,7 +132,7 @@ function getUsers() {
  * }
  */
 function getUserProfile() {
-  // Implementation
+    // Implementation
 }
 
 /**
@@ -172,7 +172,7 @@ function getUserProfile() {
  * }
  */
 function updateUserProfile() {
-  // Implementation
+    // Implementation
 }
 
 /**
@@ -203,7 +203,7 @@ function updateUserProfile() {
  * }
  */
 function createSoftUpdate() {
-  // Implementation
+    // Implementation
 }
 
 /**
@@ -228,7 +228,7 @@ function createSoftUpdate() {
  * }
  */
 function createGenericResponse() {
-  // Implementation
+    // Implementation
 }
 
 /**
@@ -255,7 +255,7 @@ function createGenericResponse() {
  * }
  */
 function updateComplexResponse() {
-  // Implementation
+    // Implementation
 }
 
 /**
@@ -287,5 +287,5 @@ function updateComplexResponse() {
  * }
  */
 function healthCheck() {
-  // Implementation
+    // Implementation
 }

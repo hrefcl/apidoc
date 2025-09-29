@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-      "checkJs": true,
-      "resolveJsonModule": true,
-      "esModuleInterop": true
+    "checkJs": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "exclude": ["node_modules", "doc", "tmp"]
 }

@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * Script de verificación de migración
  * Verifica que la estructura del monorepo esté correcta
@@ -15,66 +13,47 @@ console.log('🔍 Verificando estructura del monorepo...\n');
 const requiredDirs = ['apps', 'packages', 'examples', 'tests', 'docs', 'scripts'];
 console.log('📁 Verificando directorios principales:');
 for (const dir of requiredDirs) {
-  const exists = fs.existsSync(dir);
-  console.log(`  ${exists ? '✅' : '❌'} ${dir}/`);
-  if (!exists) {
-    console.error(`Error: Directorio ${dir}/ no encontrado`);
-    process.exit(1);
-  }
+    const exists = fs.existsSync(dir);
+    console.log(`  ${exists ? '✅' : '❌'} ${dir}/`);
+    if (!exists) {
+        console.error(`Error: Directorio ${dir}/ no encontrado`);
+        process.exit(1);
+    }
 }
 
 // Verificar packages de APIDoc
-const apidocPackages = [
-  'apidoc-core',
-  'apidoc-cli',
-  'apidoc-template',
-  'apidoc-exporters',
-  'apidoc-defaults',
-  'apidoc-reader-writer',
-  'apidoc-types'
-];
+const apidocPackages = ['apidoc-core', 'apidoc-cli', 'apidoc-template', 'apidoc-exporters', 'apidoc-defaults', 'apidoc-reader-writer', 'apidoc-types'];
 
 console.log('\n📦 Verificando packages APIDoc:');
 for (const pkg of apidocPackages) {
-  const exists = fs.existsSync(path.join('packages', pkg));
-  console.log(`  ${exists ? '✅' : '❌'} packages/${pkg}/`);
+    const exists = fs.existsSync(path.join('packages', pkg));
+    console.log(`  ${exists ? '✅' : '❌'} packages/${pkg}/`);
 }
 
 // Verificar packages de apiCAT
-const apicatPackages = [
-  'apicat-core',
-  'apicat-adapter-apidoc',
-  'apicat-exporters',
-  'apicat-plugins',
-  'shared-ui',
-  'shared-utils'
-];
+const apicatPackages = ['apicat-core', 'apicat-adapter-apidoc', 'apicat-exporters', 'apicat-plugins', 'shared-ui', 'shared-utils'];
 
 console.log('\n🐱 Verificando packages apiCAT:');
 for (const pkg of apicatPackages) {
-  const exists = fs.existsSync(path.join('packages', pkg));
-  console.log(`  ${exists ? '✅' : '❌'} packages/${pkg}/`);
+    const exists = fs.existsSync(path.join('packages', pkg));
+    console.log(`  ${exists ? '✅' : '❌'} packages/${pkg}/`);
 }
 
 // Verificar apps
 const apps = ['apicat-desktop', 'apicat-export-static'];
 console.log('\n🖥️  Verificando apps:');
 for (const app of apps) {
-  const exists = fs.existsSync(path.join('apps', app));
-  console.log(`  ${exists ? '✅' : '❌'} apps/${app}/`);
+    const exists = fs.existsSync(path.join('apps', app));
+    console.log(`  ${exists ? '✅' : '❌'} apps/${app}/`);
 }
 
 // Verificar archivos de configuración
-const configFiles = [
-  'tsconfig.base.json',
-  'package.json',
-  'package.json.legacy'
-];
+const configFiles = ['tsconfig.base.json', 'package.json', 'package.json.legacy'];
 
 console.log('\n⚙️  Verificando configuración:');
 for (const file of configFiles) {
-  const exists = fs.existsSync(file);
-  console.log(`  ${exists ? '✅' : '❌'} ${file}`);
+    const exists = fs.existsSync(file);
+    console.log(`  ${exists ? '✅' : '❌'} ${file}`);
 }
 
 // Verificar que el package.json sea el del monorepo

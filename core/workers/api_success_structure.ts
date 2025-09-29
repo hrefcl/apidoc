@@ -6,7 +6,8 @@ const _messages = {
     common: {
         element: 'apiSuccessStructure',
         usage: '@apiSuccessStructure group',
-        example: '@apiDefine MyValidSuccessStructureGroup Some title\n@apiSuccessStructure MyValidSuccessStructureGroup',
+        example:
+            '@apiDefine MyValidSuccessStructureGroup Some title\n@apiSuccessStructure MyValidSuccessStructureGroup',
     },
 };
 
@@ -34,7 +35,15 @@ function preProcess(parsedFiles, filenames, packageInfos) {
  * @param packageInfos - Collection of package-level details and information.
  */
 function postProcess(parsedFiles, filenames, preProcess, packageInfos) {
-    apiWorker.postProcess(parsedFiles, filenames, preProcess, packageInfos, 'defineSuccessStructure', 'successStructure', _messages);
+    apiWorker.postProcess(
+        parsedFiles,
+        filenames,
+        preProcess,
+        packageInfos,
+        'defineSuccessStructure',
+        'successStructure',
+        _messages
+    );
 }
 
 /**

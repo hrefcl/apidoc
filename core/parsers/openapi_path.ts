@@ -161,7 +161,8 @@ function generateOperationName(method: string, path: string): string {
     // e.g., GET /users/{id} -> getUsersId
     const cleanPath = path.replace(/[{}/:]/g, ' ').trim();
     const words = cleanPath.split(/\s+/).filter((w) => w.length > 0);
-    const camelCase = method.toLowerCase() + words.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+    const camelCase =
+        method.toLowerCase() + words.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
     return camelCase;
 }
 

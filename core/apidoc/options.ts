@@ -90,7 +90,11 @@ function process(options: Partial<ApiDocOptions>): ApiDocOptions {
             }
 
             // do the same for input
-            if (apidocConfig.input instanceof Array && Array.isArray(mergedOptions.src) && mergedOptions.src[0] === DEFAULT_SRC[0]) {
+            if (
+                apidocConfig.input instanceof Array &&
+                Array.isArray(mergedOptions.src) &&
+                mergedOptions.src[0] === DEFAULT_SRC[0]
+            ) {
                 // keep a trailing slash
                 const input = apidocConfig.input.map((p) => path.resolve(p) + path.sep);
                 mergedOptions.src = input;

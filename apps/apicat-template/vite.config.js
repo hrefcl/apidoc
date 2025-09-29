@@ -1,17 +1,17 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-  build: {
-    outDir: 'dist',
-    rollupOptions: {
-      input: 'src/index.html',
-      output: {
-        entryFileNames: 'assets/[name].js',
-        chunkFileNames: 'assets/[name].js',
-        assetFileNames: 'assets/[name].[ext]'
-      }
+    build: {
+        outDir: 'dist',
+        rollupOptions: {
+            input: 'src/index.html',
+            output: {
+                entryFileNames: 'assets/[name].js',
+                chunkFileNames: 'assets/[name].js',
+                assetFileNames: 'assets/[name].[ext]',
+            },
+        },
+        copyPublicDir: false,
     },
-    copyPublicDir: false
-  },
-  publicDir: 'assets'
-})
+    publicDir: 'assets',
+});

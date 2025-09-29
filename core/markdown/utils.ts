@@ -146,7 +146,11 @@ export const loadTemplate = async (templateName?: string, isFilePath = true): Pr
  * @param cliParam
  * @param apiDocProjectData
  */
-export const loadFromCliParamOrApiDocProject = async (type: 'header' | 'footer' | 'prepend', cliParam?: string, apiDocProjectData?: Record<string, any>): Promise<string | undefined> => {
+export const loadFromCliParamOrApiDocProject = async (
+    type: 'header' | 'footer' | 'prepend',
+    cliParam?: string,
+    apiDocProjectData?: Record<string, any>
+): Promise<string | undefined> => {
     // First check CLI parameter
     if (cliParam && (await pathExists(cliParam))) {
         return await fs.readFile(cliParam, 'utf8');

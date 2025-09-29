@@ -39,9 +39,7 @@ const worker_error_1 = require('./errors/worker_error');
 const SPECIFICATION_VERSION = '4.0.0';
 const defaults = {
     excludeFilters: [],
-    includeFilters: [
-        '.*\\.(clj|cls|coffee|cpp|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|litcoffee|lua|p|php?|pl|pm|py|rb|scala|ts|vue)$',
-    ],
+    includeFilters: ['.*\\.(clj|cls|coffee|cpp|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|litcoffee|lua|p|php?|pl|pm|py|rb|scala|ts|vue)$'],
     src: path_1.default.join(__dirname, '../../example/'),
     filters: {},
     languages: {},
@@ -195,7 +193,6 @@ const defaultApidocConf = {
 };
 /**
  * Return the used version.
- *
  * @returns {string}
  */
 function getSpecificationVersion() {
@@ -206,7 +203,6 @@ function getSpecificationVersion() {
  *
  * Handles parsing of source directories/files, processing of parsing results,
  * and generating output data (e.g., API data and project metadata).
- *
  * @param options - Configuration options. Overwrite default options.
  * @returns {{data: string, project: string}|boolean} If successful, an object containing API data (`data`) and project information (`project`)
  *     is returned, otherwise returns `true` if no data is parsed, or `false` if an error occurs.
@@ -262,17 +258,14 @@ function parse(options) {
                         block.topic || // Has MQTT topic
                         block.qos !== undefined || // Has QoS setting
                         block.retain !== undefined || // Has retain setting
-                        (block.url === '' &&
-                            (block.type === 'publish' || block.type === 'subscribe' || block.type === 'inline'))
+                        (block.url === '' && (block.type === 'publish' || block.type === 'subscribe' || block.type === 'inline'))
                     );
                 });
                 app.log.verbose('MQTT-only mode: filtered to ' + blocks.length + ' MQTT endpoints');
             }
             // Validate MQTT schemas if option is enabled
             if (app.options.failOnMqttSchemaError) {
-                const mqttBlocks = blocks.filter(
-                    (block) => block.type === 'publish' || block.type === 'subscribe' || block.topic
-                );
+                const mqttBlocks = blocks.filter((block) => block.type === 'publish' || block.type === 'subscribe' || block.topic);
                 for (const block of mqttBlocks) {
                     if (block.payloadSchema && block.payloadSchema.type === 'inline') {
                         try {
@@ -355,7 +348,6 @@ function parse(options) {
 }
 /**
  * Parse a source using application parser config.
- *
  * @param source - Source to be parsed.
  * @param options - Configuration options. Overwrite default options.
  * @returns {Array<object>|undefined|*} Parsed result from source, or `undefined` if an error occurs.
@@ -370,7 +362,6 @@ function parseSource(source, options) {
 }
 /**
  * initApp
- *
  * @param options - Overwrite default options.
  * @returns {void}
  */
@@ -405,7 +396,6 @@ function initApp(options) {
 }
 /**
  * Set generator information.
- *
  * @param generator - The generator instance to be set.
  *     - `generator.name` {string}: Generator name (UI-Name)
  *     - `generator.time` {string}: Time for the generated doc
@@ -417,7 +407,6 @@ function setGeneratorInfos(generator) {
 }
 /**
  * Set a logger
- *
  * @param logger - Logger instance (@see https://github.com/winstonjs/winston for details)
  *     Interface:
  *     - debug(msg, meta)
@@ -431,7 +420,6 @@ function setLogger(logger) {
 }
 /**
  * Set a markdown parser
- *
  * @param [markdownParser] - Markdown parser instance
  */
 function setMarkdownParser(markdownParser) {
@@ -439,7 +427,6 @@ function setMarkdownParser(markdownParser) {
 }
 /**
  * Set package infos.
- *
  * @param packageInfos - Collected from apidoc.json / package.json.
  */
 function setPackageInfos(packageInfos) {
@@ -449,7 +436,6 @@ function setPackageInfos(packageInfos) {
  * Register a hook function.
  *
  * Add a new hook to the application hook list with the specified name, function, and priority.
- *
  * @param name - Name of the hook. Hook overview: https://github.com/apidoc/apidoc/wiki/Hooks
  * @param func - Callback function when the hook is triggered.
  * @param [priority] - Hook priority. Defaults to `100` if not provided. A lower value will be executed first. The "same value" will
@@ -481,7 +467,6 @@ function addHook(name, func, priority) {
  * Execute registered hooks for the given hook name with the provided arguments.
  *
  * If no hooks are registered for the specified name, returns the first argument passed.
- *
  * @param name - Name of the hook to execute.
  * @returns {*} The first argument provided, or the modified value after applying the hooks.
  */

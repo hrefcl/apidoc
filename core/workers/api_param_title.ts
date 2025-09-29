@@ -92,7 +92,15 @@ function preProcess(parsedFiles: ParsedFile[], filenames: string[], packageInfos
  * @param [target] - Relative path to the tree (local.), where the data should be modified.
  * @param [messages] - Messages used for error reporting.
  */
-function postProcess(parsedFiles: ParsedFile[], filenames: string[], preProcess: any, packageInfos: PackageInfos, source?: string, target?: string, messages?: any): void {
+function postProcess(
+    parsedFiles: ParsedFile[],
+    filenames: string[],
+    preProcess: any,
+    packageInfos: PackageInfos,
+    source?: string,
+    target?: string,
+    messages?: any
+): void {
     source = source || 'defineParamTitle';
     target = target || 'parameter';
     messages = messages || _messages;
@@ -150,9 +158,14 @@ function postProcess(parsedFiles: ParsedFile[], filenames: string[], preProcess:
                             });
 
                             if (foundIndex === -1) {
-                                const extra = [{ Groupname: name }, { Version: version }, { 'Defined versions': versionKeys }];
+                                const extra = [
+                                    { Groupname: name },
+                                    { Version: version },
+                                    { 'Defined versions': versionKeys },
+                                ];
                                 throw new WorkerError(
-                                    'Referenced definition has no matching or a higher version. ' + 'Check version number in referenced define block.',
+                                    'Referenced definition has no matching or a higher version. ' +
+                                        'Check version number in referenced define block.',
                                     filenames[parsedFileIndex],
                                     block.index.toString(),
                                     messages.common.element,

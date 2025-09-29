@@ -34,7 +34,15 @@ function preProcess(parsedFiles, filenames, packageInfos) {
  * @param packageInfos - Collection of package-level details and information.
  */
 function postProcess(parsedFiles, filenames, preProcess, packageInfos) {
-    apiWorker.postProcess(parsedFiles, filenames, preProcess, packageInfos, 'defineHeaderStructure', 'headerStructure', _messages);
+    apiWorker.postProcess(
+        parsedFiles,
+        filenames,
+        preProcess,
+        packageInfos,
+        'defineHeaderStructure',
+        'headerStructure',
+        _messages
+    );
 }
 
 /**

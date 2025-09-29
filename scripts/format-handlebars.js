@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * Custom formatter for Handlebars templates embedded in HTML scripts
  * Prettier has limitations with embedded template languages, so this script
@@ -41,20 +39,16 @@ function formatHandlebarsTemplate(content) {
             let currentIndent = scriptIndentLevel + baseIndent.length;
 
             // Decrease indent BEFORE processing certain tags
-            if (trimmedLine.startsWith('{{/') ||
-                trimmedLine.startsWith('</') ||
-                trimmedLine === '{{else}}') {
+            if (trimmedLine.startsWith('{{/') || trimmedLine.startsWith('</') || trimmedLine === '{{else}}') {
                 indentLevel = Math.max(0, indentLevel - 1);
             }
 
             // Apply indentation
-            const indent = ' '.repeat(currentIndent + (indentLevel * baseIndent.length));
+            const indent = ' '.repeat(currentIndent + indentLevel * baseIndent.length);
             formatted.push(indent + trimmedLine);
 
             // Increase indent AFTER processing opening tags
-            if (isOpeningTag(trimmedLine) ||
-                trimmedLine.startsWith('{{#') ||
-                trimmedLine === '{{else}}') {
+            if (isOpeningTag(trimmedLine) || trimmedLine.startsWith('{{#') || trimmedLine === '{{else}}') {
                 indentLevel++;
             }
         } else if (inScriptTag) {

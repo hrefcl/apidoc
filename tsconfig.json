@@ -28,22 +28,8 @@
     "types": ["node", "mocha", "jquery"],
     "typeRoots": ["./node_modules/@types", "./core/types"]
   },
-  "include": [
-    "core/**/*",
-    "bin/**/*",
-    "scripts/**/*",
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "tmp",
-    "tests/**/*",
-    "examples/**/*",
-    "apps/**/*",
-    "**/*.d.ts",
-    "**/*.js"
-  ],
+  "exclude": ["node_modules", "dist", "tmp", "tests/**/*", "examples/**/*", "apps/**/*", "**/*.d.ts", "scripts/**/*.js"],
+  "include": ["core/**/*", "bin/**/*", "scripts/**/*.ts", "src/**/*"],
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node"

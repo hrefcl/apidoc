@@ -39,11 +39,21 @@ function parse(content, source, messages) {
     }
 
     if (matches[0] === '') {
-        throw new ParameterError('No arguments found.', messages.common.element, messages.common.usage, messages.common.example);
+        throw new ParameterError(
+            'No arguments found.',
+            messages.common.element,
+            messages.common.usage,
+            messages.common.example
+        );
     }
 
     if (matches[2] !== '') {
-        throw new ParameterError('Name must contain only alphanumeric and colon characters.', messages.common.element, messages.common.usage, messages.common.example);
+        throw new ParameterError(
+            'Name must contain only alphanumeric and colon characters.',
+            messages.common.element,
+            messages.common.usage,
+            messages.common.example
+        );
     }
 
     const name = matches[1];

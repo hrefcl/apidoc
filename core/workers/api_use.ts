@@ -94,7 +94,15 @@ function preProcess(parsedFiles: any[], filenames: string[], packageInfos: any, 
  * @since 4.0.0
  * @internal
  */
-function postProcess(parsedFiles: any[], filenames: string[], preProcess: any, packageInfos: any, source?: string, target?: string, messages?: any): void {
+function postProcess(
+    parsedFiles: any[],
+    filenames: string[],
+    preProcess: any,
+    packageInfos: any,
+    source?: string,
+    target?: string,
+    messages?: any
+): void {
     source = source || 'define';
     target = target || 'use';
     messages = messages || _messages;
@@ -159,7 +167,8 @@ function postProcess(parsedFiles: any[], filenames: string[], preProcess: any, p
 
                         if (foundIndex === -1) {
                             throw new WorkerError(
-                                'Referenced definition has no matching or a higher version. ' + 'Check version number in referenced define block.',
+                                'Referenced definition has no matching or a higher version. ' +
+                                    'Check version number in referenced define block.',
                                 filenames[parsedFileIndex],
                                 block.index,
                                 messages.common.element,

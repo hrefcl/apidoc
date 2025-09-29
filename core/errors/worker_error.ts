@@ -76,7 +76,15 @@ export class WorkerError extends Error {
      * );
      * ```
      */
-    constructor(message: string, file: string, block: string, element: string, definition: string, example: string, extra?: any) {
+    constructor(
+        message: string,
+        file: string,
+        block: string,
+        element: string,
+        definition: string,
+        example: string,
+        extra?: any
+    ) {
         super(message);
         this.name = this.constructor.name;
 

@@ -42,14 +42,7 @@
       "@shared/utils/*": ["packages/shared-utils/src/*"]
     }
   },
-  "include": [
-    "packages/*/src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "tmp",
-    "*.config.*"
-  ],
+  "exclude": ["node_modules", "dist", "tmp", "*.config.*"],
+  "include": ["packages/*/src/**/*"],
   "references": []
 }

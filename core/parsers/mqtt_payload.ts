@@ -42,7 +42,8 @@ export function parse(content: string): { mimeType: string; description: string 
 
     // Extract MIME type and optional description
     // Example: "application/json Device telemetry data"
-    const parseRegExp = /^([a-zA-Z0-9][a-zA-Z0-9!#$&\-\^_]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&\-\^_.]*(?:\+[a-zA-Z0-9][a-zA-Z0-9!#$&\-\^_]*)?)\s*(.*)?$/;
+    const parseRegExp =
+        /^([a-zA-Z0-9][a-zA-Z0-9!#$&\-\^_]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&\-\^_.]*(?:\+[a-zA-Z0-9][a-zA-Z0-9!#$&\-\^_]*)?)\s*(.*)?$/;
     const matches = parseRegExp.exec(firstLine);
 
     if (!matches) {

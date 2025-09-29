@@ -51,9 +51,9 @@ class ApiCat {
     // Method Filters
     setupFilters() {
         const filterBtns = document.querySelectorAll('.filter-btn');
-        filterBtns.forEach(btn => {
+        filterBtns.forEach((btn) => {
             btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.classList.remove('active'));
+                filterBtns.forEach((b) => b.classList.remove('active'));
                 btn.classList.add('active');
                 this.filterMethod = btn.dataset.method;
                 this.filterEndpoints();
@@ -107,7 +107,7 @@ class ApiCat {
         const endpoints = document.querySelectorAll('.endpoint');
         let visibleCount = 0;
 
-        endpoints.forEach(endpoint => {
+        endpoints.forEach((endpoint) => {
             const method = endpoint.dataset.method;
             const text = endpoint.textContent.toLowerCase();
 
@@ -132,22 +132,30 @@ class ApiCat {
     // Render navigation sidebar
     renderNavigation() {
         const groups = {};
-        window.API_DATA.forEach(api => {
+        window.API_DATA.forEach((api) => {
             if (!groups[api.group]) groups[api.group] = [];
             groups[api.group].push(api);
         });
 
         const navigation = document.getElementById('navigation');
-        navigation.innerHTML = Object.entries(groups).map(([group, apis]) => `
+        navigation.innerHTML = Object.entries(groups)
+            .map(
+                ([group, apis]) => `
             <div class="nav-group">
                 <h4>${group} (${apis.length})</h4>
                 <ul>
-                    ${apis.map(api => `
+                    ${apis
+                        .map(
+                            (api) => `
                         <li><a href="#endpoint-${api.name}">${api.title || api.name}</a></li>
-                    `).join('')}
+                    `
+                        )
+                        .join('')}
                 </ul>
             </div>
-        `).join('');
+        `
+            )
+            .join('');
     }
 
     // Export collection to Postman format
@@ -157,16 +165,16 @@ class ApiCat {
                 name: window.PROJECT.name,
                 description: window.PROJECT.description,
                 version: window.PROJECT.version,
-                schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+                schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
             },
             item: this.generatePostmanItems(),
             variable: [
                 {
-                    key: "baseUrl",
-                    value: window.PROJECT.sampleUrl || window.PROJECT.url || "{{baseUrl}}",
-                    type: "string"
-                }
-            ]
+                    key: 'baseUrl',
+                    value: window.PROJECT.sampleUrl || window.PROJECT.url || '{{baseUrl}}',
+                    type: 'string',
+                },
+            ],
         };
 
         this.downloadJSON(collection, `${window.PROJECT.name}-collection.json`);
@@ -178,14 +186,14 @@ class ApiCat {
     // Generate Postman items from API data
     generatePostmanItems() {
         const groups = {};
-        window.API_DATA.forEach(api => {
+        window.API_DATA.forEach((api) => {
             if (!groups[api.group]) groups[api.group] = [];
             groups[api.group].push(api);
         });
 
         return Object.entries(groups).map(([groupName, apis]) => ({
             name: groupName,
-            item: apis.map(api => this.convertToPostmanItem(api))
+            item: apis.map((api) => this.convertToPostmanItem(api)),
         }));
     }
 
@@ -198,11 +206,11 @@ class ApiCat {
                 header: this.extractHeaders(api),
                 url: {
                     raw: `{{baseUrl}}${api.url}`,
-                    host: ["{{baseUrl}}"],
-                    path: api.url.split('/').filter(Boolean)
+                    host: ['{{baseUrl}}'],
+                    path: api.url.split('/').filter(Boolean),
                 },
-                description: api.description || ''
-            }
+                description: api.description || '',
+            },
         };
 
         // Add body for POST/PUT requests
@@ -214,9 +222,9 @@ class ApiCat {
                     raw: JSON.stringify(bodyParams, null, 2),
                     options: {
                         raw: {
-                            language: 'json'
-                        }
-                    }
+                            language: 'json',
+                        },
+                    },
                 };
             }
         }
@@ -226,23 +234,23 @@ class ApiCat {
             item.response = [];
 
             if (api.success && api.success.examples) {
-                api.success.examples.forEach(example => {
+                api.success.examples.forEach((example) => {
                     item.response.push({
                         name: example.title || 'Success Response',
                         status: 'OK',
                         code: 200,
-                        body: example.content || ''
+                        body: example.content || '',
                     });
                 });
             }
 
             if (api.error && api.error.examples) {
-                api.error.examples.forEach(example => {
+                api.error.examples.forEach((example) => {
                     item.response.push({
                         name: example.title || 'Error Response',
                         status: 'Bad Request',
                         code: 400,
-                        body: example.content || ''
+                        body: example.content || '',
                     });
                 });
             }
@@ -255,14 +263,14 @@ class ApiCat {
     extractHeaders(api) {
         const headers = [];
         if (api.header && api.header.fields) {
-            Object.values(api.header.fields).forEach(group => {
+            Object.values(api.header.fields).forEach((group) => {
                 if (Array.isArray(group)) {
-                    group.forEach(header => {
+                    group.forEach((header) => {
                         headers.push({
                             key: header.field,
                             value: header.defaultValue || '',
                             description: header.description || '',
-                            disabled: header.optional || false
+                            disabled: header.optional || false,
                         });
                     });
                 }
@@ -271,12 +279,12 @@ class ApiCat {
 
         // Add default Content-Type for requests with body
         if (['POST', 'PUT', 'PATCH'].includes(api.type)) {
-            const hasContentType = headers.some(h => h.key.toLowerCase() === 'content-type');
+            const hasContentType = headers.some((h) => h.key.toLowerCase() === 'content-type');
             if (!hasContentType) {
                 headers.push({
                     key: 'Content-Type',
                     value: 'application/json',
-                    type: 'text'
+                    type: 'text',
                 });
             }
         }
@@ -288,9 +296,9 @@ class ApiCat {
     extractBodyParams(api) {
         const bodyParams = {};
         if (api.parameter && api.parameter.fields) {
-            Object.values(api.parameter.fields).forEach(group => {
+            Object.values(api.parameter.fields).forEach((group) => {
                 if (Array.isArray(group)) {
-                    group.forEach(param => {
+                    group.forEach((param) => {
                         if (param.field && !param.field.includes(':')) {
                             bodyParams[param.field] = param.defaultValue || this.getDefaultValueByType(param.type);
                         }
@@ -304,12 +312,12 @@ class ApiCat {
     // Get default value by parameter type
     getDefaultValueByType(type) {
         const typeMap = {
-            'String': '',
-            'Number': 0,
-            'Boolean': false,
-            'Array': [],
-            'Object': {},
-            'Date': new Date().toISOString()
+            String: '',
+            Number: 0,
+            Boolean: false,
+            Array: [],
+            Object: {},
+            Date: new Date().toISOString(),
         };
         return typeMap[type] || '';
     }
@@ -373,19 +381,17 @@ class ApiCat {
 }
 
 // Global functions for HTML interactions
-window.toggleEndpoint = function(name) {
+window.toggleEndpoint = function (name) {
     const endpoint = document.getElementById(`endpoint-${name}`);
     const details = endpoint.querySelector('.endpoint-details');
     const icon = endpoint.querySelector('.toggle-icon');
 
     details.classList.toggle('collapsed');
-    icon.style.transform = details.classList.contains('collapsed')
-        ? 'rotate(-90deg)'
-        : 'rotate(0deg)';
+    icon.style.transform = details.classList.contains('collapsed') ? 'rotate(-90deg)' : 'rotate(0deg)';
 };
 
-window.tryEndpoint = function(name) {
-    const api = window.API_DATA.find(a => a.name === name);
+window.tryEndpoint = function (name) {
+    const api = window.API_DATA.find((a) => a.name === name);
     if (!api) return;
 
     window.apiCat.currentEndpoint = api;
@@ -404,7 +410,8 @@ window.tryEndpoint = function(name) {
 
     if (api.parameter && api.parameter.fields && api.parameter.fields.Parameter) {
         paramsSection.classList.remove('hidden');
-        paramsInputs.innerHTML = api.parameter.fields.Parameter.map(param => `
+        paramsInputs.innerHTML = api.parameter.fields.Parameter.map(
+            (param) => `
             <div class="form-group">
                 <label for="param-${param.field}">
                     ${param.field}
@@ -420,7 +427,8 @@ window.tryEndpoint = function(name) {
                     value="${param.defaultValue || ''}"
                 >
             </div>
-        `).join('');
+        `
+        ).join('');
     } else {
         paramsSection.classList.add('hidden');
     }
@@ -432,18 +440,18 @@ window.tryEndpoint = function(name) {
     };
 };
 
-window.closeTryModal = function() {
+window.closeTryModal = function () {
     window.apiCat.closeTryModal();
 };
 
-window.clearResponse = function() {
+window.clearResponse = function () {
     const responseSection = document.getElementById('response-section');
     responseSection.classList.add('hidden');
     document.getElementById('response-body').innerHTML = '';
 };
 
 // Execute API request
-ApiCat.prototype.executeRequest = function(api) {
+ApiCat.prototype.executeRequest = function (api) {
     const baseUrl = document.getElementById('base-url').value.replace(/\/$/, '');
     const startTime = Date.now();
 
@@ -453,7 +461,7 @@ ApiCat.prototype.executeRequest = function(api) {
     // Replace URL parameters
     const urlParams = url.match(/:(\w+)/g);
     if (urlParams) {
-        urlParams.forEach(param => {
+        urlParams.forEach((param) => {
             const paramName = param.substring(1);
             const paramValue = formData.get(paramName);
             if (paramValue) {
@@ -469,14 +477,15 @@ ApiCat.prototype.executeRequest = function(api) {
         method: api.type,
         headers: {
             'Content-Type': 'application/json',
-        }
+        },
     };
 
     // Add body for POST/PUT/PATCH requests
     if (['POST', 'PUT', 'PATCH'].includes(api.type)) {
         const bodyData = {};
         for (let [key, value] of formData.entries()) {
-            if (!api.url.includes(`:${key}`)) { // Not a URL parameter
+            if (!api.url.includes(`:${key}`)) {
+                // Not a URL parameter
                 bodyData[key] = value;
             }
         }
@@ -490,7 +499,7 @@ ApiCat.prototype.executeRequest = function(api) {
 
     // Execute request
     fetch(fullUrl, options)
-        .then(async response => {
+        .then(async (response) => {
             const endTime = Date.now();
             const responseTime = endTime - startTime;
 
@@ -504,41 +513,32 @@ ApiCat.prototype.executeRequest = function(api) {
             }
 
             // Update response display
-            document.getElementById('response-status').textContent =
-                `${response.status} ${response.statusText}`;
-            document.getElementById('response-status').className =
-                response.ok ? 'status-success' : 'status-error';
+            document.getElementById('response-status').textContent = `${response.status} ${response.statusText}`;
+            document.getElementById('response-status').className = response.ok ? 'status-success' : 'status-error';
             document.getElementById('response-time').textContent = `${responseTime}ms`;
 
-            const formattedResponse = typeof responseData === 'object'
-                ? JSON.stringify(responseData, null, 2)
-                : responseData;
+            const formattedResponse = typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData;
 
-            document.getElementById('response-body').innerHTML =
-                `<code>${this.escapeHtml(formattedResponse)}</code>`;
+            document.getElementById('response-body').innerHTML = `<code>${this.escapeHtml(formattedResponse)}</code>`;
 
             // Show success notification
-            this.showNotification(
-                `✅ Request completed in ${responseTime}ms`,
-                response.ok ? 'success' : 'error'
-            );
+            this.showNotification(`✅ Request completed in ${responseTime}ms`, response.ok ? 'success' : 'error');
         })
-        .catch(error => {
+        .catch((error) => {
             const endTime = Date.now();
             const responseTime = endTime - startTime;
 
             document.getElementById('response-status').textContent = 'Network Error';
             document.getElementById('response-status').className = 'status-error';
             document.getElementById('response-time').textContent = `${responseTime}ms`;
-            document.getElementById('response-body').innerHTML =
-                `<code>Error: ${this.escapeHtml(error.message)}</code>`;
+            document.getElementById('response-body').innerHTML = `<code>Error: ${this.escapeHtml(error.message)}</code>`;
 
             this.showNotification('❌ Request failed: ' + error.message, 'error');
         });
 };
 
 // HTML escape utility
-ApiCat.prototype.escapeHtml = function(text) {
+ApiCat.prototype.escapeHtml = function (text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;

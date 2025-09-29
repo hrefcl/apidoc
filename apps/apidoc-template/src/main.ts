@@ -279,9 +279,7 @@ function init() {
     const customMarkdown = typeof window.CUSTOM_MARKDOWN === 'string' ? JSON.parse(window.CUSTOM_MARKDOWN) : window.CUSTOM_MARKDOWN || {};
 
     // Debug: Log MQTT entries count
-    const mqttEntries = api.filter(entry =>
-        entry.type === 'publish' || entry.type === 'subscribe' || entry.topic || entry.qos !== undefined
-    );
+    const mqttEntries = api.filter((entry) => entry.type === 'publish' || entry.type === 'subscribe' || entry.topic || entry.qos !== undefined);
     console.log('📡 MQTT endpoints detected:', mqttEntries.length);
 
     // Validate and clean API data to prevent version errors
@@ -724,11 +722,13 @@ function init() {
 
                 try {
                     // Detect if this is an MQTT endpoint and use appropriate template
-                    const isMqttEndpoint = entry.type === 'publish' || entry.type === 'subscribe' ||
-                                         entry.topic || // Has MQTT topic
-                                         entry.qos !== undefined || // Has QoS setting
-                                         entry.retain !== undefined || // Has retain setting
-                                         (entry.url === '' && (entry.type === 'publish' || entry.type === 'subscribe' || entry.type === 'inline'));
+                    const isMqttEndpoint =
+                        entry.type === 'publish' ||
+                        entry.type === 'subscribe' ||
+                        entry.topic || // Has MQTT topic
+                        entry.qos !== undefined || // Has QoS setting
+                        entry.retain !== undefined || // Has retain setting
+                        (entry.url === '' && (entry.type === 'publish' || entry.type === 'subscribe' || entry.type === 'inline'));
 
                     const articleHtml = isMqttEndpoint ? templateMqttArticle(fields) : templateArticle(fields);
                     articles.push({
@@ -2008,7 +2008,7 @@ function initializeCopyUrlFunctionality() {
 
         // Add event listeners to all copy URL buttons
         const copyButtons = document.querySelectorAll('.copy-url-btn');
-        copyButtons.forEach(button => {
+        copyButtons.forEach((button) => {
             button.addEventListener('click', handleCopyUrl);
         });
 
@@ -2054,12 +2054,15 @@ function handleCopyUrl(event: Event) {
     try {
         // Use modern clipboard API if available
         if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(url).then(() => {
-                showCopyFeedback(button, 'copied!');
-            }).catch(() => {
-                // Fallback to older method
-                fallbackCopyToClipboard(url, button);
-            });
+            navigator.clipboard
+                .writeText(url)
+                .then(() => {
+                    showCopyFeedback(button, 'copied!');
+                })
+                .catch(() => {
+                    // Fallback to older method
+                    fallbackCopyToClipboard(url, button);
+                });
         } else {
             // Fallback for older browsers or non-secure contexts
             fallbackCopyToClipboard(url, button);

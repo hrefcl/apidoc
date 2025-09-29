@@ -19,7 +19,11 @@ function postProcess(parsedFiles, filenames, preProcess, packageInfos) {
                 block.local[targetName].forEach(function (entry) {
                     if (entry.url !== 'off') {
                         // Check if is an internal url
-                        if (packageInfos.sampleUrl && typeof packageInfos.sampleUrl === 'string' && !entry.url.match(/^http/i)) {
+                        if (
+                            packageInfos.sampleUrl &&
+                            typeof packageInfos.sampleUrl === 'string' &&
+                            !entry.url.match(/^http/i)
+                        ) {
                             // Prepend sampleUrl
                             entry.url = packageInfos.sampleUrl + entry.url;
                         }

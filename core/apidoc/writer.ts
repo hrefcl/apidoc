@@ -14,6 +14,7 @@ import MarkdownIt from 'markdown-it';
 import path from 'path';
 import { convertToOpenApi } from '../exporters/openapi-converter';
 import { createMarkdownFromApiDocData } from '../markdown';
+import { JSONEncryption, createEncryption, encryptDirectoryJSON } from '../utils/encryption';
 const AuthProcessor = require('../auth-processor');
 
 /**
@@ -47,6 +48,7 @@ class Writer {
     public fs: typeof fs;
     public path: typeof path;
     private authProcessor: any;
+    private encryption: JSONEncryption | null;
     /**
      * Creates a new Writer instance for generating documentation output
      * @param api - Parsed API data and project information from the core parser
@@ -522,7 +524,9 @@ class Writer {
 
         // Check for StencilJS template first, fallback to regular template
         const stencilTemplate = this.path.join(this.opt.template, 'index-stencil.html');
-        const templateFile = this.fs.existsSync(stencilTemplate) ? stencilTemplate : this.path.join(this.opt.template, 'index.html');
+        const templateFile = this.fs.existsSync(stencilTemplate)
+            ? stencilTemplate
+            : this.path.join(this.opt.template, 'index.html');
 
         let indexHtml = this.fs.readFileSync(templateFile, 'utf8').toString();
 
@@ -561,7 +565,10 @@ class Writer {
     </script>`;
 
             // Insert data script before the bundle script - match actual cache-busted filename
-            const scriptReplaced = indexHtml.replace(/<script src="assets\/main\.bundle\.js[^"]*"><\/script>/, dataScript + '\n  $&');
+            const scriptReplaced = indexHtml.replace(
+                /<script src="assets\/main\.bundle\.js[^"]*"><\/script>/,
+                dataScript + '\n  $&'
+            );
 
             if (scriptReplaced === indexHtml) {
                 // Fallback: insert before closing body tag if script tag not found
@@ -578,7 +585,10 @@ class Writer {
     </script>`;
 
             // Insert data script before the bundle script - match actual cache-busted filename
-            const scriptReplaced = indexHtml.replace(/<script src="assets\/main\.bundle\.js[^"]*"><\/script>/, dataScript + '\n    $&');
+            const scriptReplaced = indexHtml.replace(
+                /<script src="assets\/main\.bundle\.js[^"]*"><\/script>/,
+                dataScript + '\n    $&'
+            );
 
             if (scriptReplaced === indexHtml) {
                 // Fallback: insert before closing body tag if script tag not found
@@ -681,7 +691,13 @@ class Writer {
             this.createDir(highlightThemesDir);
 
             // Find highlight.js styles directory
-            const highlightStylesPath = this.path.join(this.opt.template, '..', 'node_modules', 'highlight.js', 'styles');
+            const highlightStylesPath = this.path.join(
+                this.opt.template,
+                '..',
+                'node_modules',
+                'highlight.js',
+                'styles'
+            );
 
             if (this.fs.existsSync(highlightStylesPath)) {
                 // Copy all CSS theme files

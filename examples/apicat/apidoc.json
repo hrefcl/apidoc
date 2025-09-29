@@ -1,4 +1,10 @@
 {
+  "apicat": {
+    "enabled": true,
+    "outputDir": "./apicat-output",
+    "generateCollections": true,
+    "enableLocalTesting": true
+  },
   "description": "Documentation for the REST api access provided at LexCorp",
   "footer": {
     "title": "Best practices",
@@ -66,11 +72,5 @@
   },
   "title": "Href ApiDoc 4",
   "url": "https://api.example.com",
-  "version": "4.0.0",
-  "apicat": {
-    "enabled": true,
-    "outputDir": "./apicat-output",
-    "generateCollections": true,
-    "enableLocalTesting": true
-  }
+  "version": "4.0.0"
 }

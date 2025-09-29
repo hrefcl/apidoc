@@ -287,15 +287,21 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
             const elementParser = self.parsers[element.name];
 
             if (!elementParser) {
-                app.log.warn(`parser plugin '${element.name}' not found in block: '${blockIndex}' in file: '${filename}'`);
+                app.log.warn(
+                    `parser plugin '${element.name}' not found in block: '${blockIndex}' in file: '${filename}'`
+                );
             } else if (!element.sourceName.endsWith('Example') && element.source.match(/[^\s:]\[[^\]]/)) {
-                app.log.warn(`The use of square brackets for object properties is deprecated. Please use dot notation instead: "${element.source}"`);
+                app.log.warn(
+                    `The use of square brackets for object properties is deprecated. Please use dot notation instead: "${element.source}"`
+                );
             } else {
                 app.log.debug('found @' + element.sourceName + ' in block: ' + blockIndex);
 
                 // Deprecation warning
                 if (elementParser.deprecated) {
-                    self.countDeprecated[element.sourceName] = self.countDeprecated[element.sourceName] ? self.countDeprecated[element.sourceName] + 1 : 1;
+                    self.countDeprecated[element.sourceName] = self.countDeprecated[element.sourceName]
+                        ? self.countDeprecated[element.sourceName] + 1
+                        : 1;
 
                     let message = '@' + element.sourceName + ' is deprecated';
                     if (elementParser.alternative) {
@@ -342,21 +348,41 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
                     }
 
                     if (!pathTo) {
-                        throw new ParserError('pathTo is not defined in the parser file.', '', '', element.sourceName, '');
+                        throw new ParserError(
+                            'pathTo is not defined in the parser file.',
+                            '',
+                            '',
+                            element.sourceName,
+                            ''
+                        );
                     }
 
                     // method how the values should be attached (insert or push)
                     attachMethod = elementParser.method || 'push';
 
                     if (attachMethod !== 'insert' && attachMethod !== 'push') {
-                        throw new ParserError('Only push or insert are allowed parser method values.', '', '', element.sourceName, '');
+                        throw new ParserError(
+                            'Only push or insert are allowed parser method values.',
+                            '',
+                            '',
+                            element.sourceName,
+                            ''
+                        );
                     }
 
                     // TODO: put this into "converters"
                     if (values) {
                         // Markdown.
-                        if (app.markdownParser && elementParser.markdownFields && elementParser.markdownFields.length > 0) {
-                            for (let markdownIndex = 0; markdownIndex < elementParser.markdownFields.length; markdownIndex += 1) {
+                        if (
+                            app.markdownParser &&
+                            elementParser.markdownFields &&
+                            elementParser.markdownFields.length > 0
+                        ) {
+                            for (
+                                let markdownIndex = 0;
+                                markdownIndex < elementParser.markdownFields.length;
+                                markdownIndex += 1
+                            ) {
                                 const field = elementParser.markdownFields[markdownIndex];
                                 let value = get(values, field);
                                 if (value) {
@@ -370,7 +396,11 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
                                     set(values, field, value);
 
                                     // TODO: Little hacky, not sure to handle this here or in template
-                                    if (elementParser.markdownRemovePTags && elementParser.markdownRemovePTags.length > 0 && elementParser.markdownRemovePTags.indexOf(field) !== -1) {
+                                    if (
+                                        elementParser.markdownRemovePTags &&
+                                        elementParser.markdownRemovePTags.length > 0 &&
+                                        elementParser.markdownRemovePTags.indexOf(field) !== -1
+                                    ) {
                                         // Remove p-Tags
                                         value = value.replace(/(<p>|<\/p>)/g, '');
                                         set(values, field, value);
@@ -388,20 +418,45 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
                         if (e.example) {
                             extra.push({ Example: e.example });
                         }
-                        throw new ParserError(e.message, self.filename, blockIndex + 1, element.sourceName, element.source, extra);
+                        throw new ParserError(
+                            e.message,
+                            self.filename,
+                            blockIndex + 1,
+                            element.sourceName,
+                            element.source,
+                            extra
+                        );
                     }
-                    throw new ParserError('Undefined error.', self.filename, blockIndex + 1, element.sourceName, element.source);
+                    throw new ParserError(
+                        'Undefined error.',
+                        self.filename,
+                        blockIndex + 1,
+                        element.sourceName,
+                        element.source
+                    );
                 }
 
                 if (!values) {
-                    throw new ParserError('Empty parser result.', self.filename, blockIndex + 1, element.sourceName, element.source);
+                    throw new ParserError(
+                        'Empty parser result.',
+                        self.filename,
+                        blockIndex + 1,
+                        element.sourceName,
+                        element.source
+                    );
                 }
 
                 if (preventGlobal) {
                     // Check if count global namespace entries > count allowed
                     // (e.g. @successTitle is global, but should co-exist with @apiErrorStructure)
                     if (Object.keys(blockData.global).length > countAllowedMultiple) {
-                        throw new ParserError('Only one definition or usage is allowed in the same block.', self.filename, blockIndex + 1, element.sourceName, element.source);
+                        throw new ParserError(
+                            'Only one definition or usage is allowed in the same block.',
+                            self.filename,
+                            blockIndex + 1,
+                            element.sourceName,
+                            element.source
+                        );
                     }
                 }
 
@@ -411,11 +466,23 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
                         countAllowedMultiple += 1;
                     } else {
                         if (Object.keys(blockData.global).length > 0) {
-                            throw new ParserError('Only one definition is allowed in the same block.', self.filename, blockIndex + 1, element.sourceName, element.source);
+                            throw new ParserError(
+                                'Only one definition is allowed in the same block.',
+                                self.filename,
+                                blockIndex + 1,
+                                element.sourceName,
+                                element.source
+                            );
                         }
 
                         if (preventGlobal) {
-                            throw new ParserError('Only one definition or usage is allowed in the same block.', self.filename, blockIndex + 1, element.sourceName, element.source);
+                            throw new ParserError(
+                                'Only one definition or usage is allowed in the same block.',
+                                self.filename,
+                                blockIndex + 1,
+                                element.sourceName,
+                                element.source
+                            );
                         }
                     }
                 }
@@ -575,7 +642,10 @@ Parser.prototype._findBlockWithApiGetIndex = function (blocks) {
                 if (blocks[i][j].name.substr(0, 9) === 'apidefine') {
                     isDefine = true;
                 }
-                if (blocks[i][j].name.substr(0, filterTag.length) === filterTag && blocks[i][j].content === valueToFilter) {
+                if (
+                    blocks[i][j].name.substr(0, filterTag.length) === filterTag &&
+                    blocks[i][j].content === valueToFilter
+                ) {
                     isToFilterBy = true;
                 }
             }
@@ -585,7 +655,22 @@ Parser.prototype._findBlockWithApiGetIndex = function (blocks) {
                 blocks[i][j].name.substr(0, 7) === 'openapi' ||
                 blocks[i][j].name.substr(0, 4) === 'mqtt' ||
                 // JSDoc/TSDoc tags
-                ['file', 'author', 'copyright', 'license', 'package', 'see', 'param', 'returns', 'remarks', 'example', 'public', 'internal', 'alpha', 'beta'].includes(blocks[i][j].name)
+                [
+                    'file',
+                    'author',
+                    'copyright',
+                    'license',
+                    'package',
+                    'see',
+                    'param',
+                    'returns',
+                    'remarks',
+                    'example',
+                    'public',
+                    'internal',
+                    'alpha',
+                    'beta',
+                ].includes(blocks[i][j].name)
             ) {
                 found = true;
             }
@@ -692,15 +777,22 @@ function _sanityChecks(parsedBlocks, log, filename) {
             }
         }
         for (const urlParam of urlParams) {
-            if (!paramFields.some((pf) => pf.field === urlParam) && !paramFieldsDefinedOutside.some((pf) => pf.field === urlParam)) {
-                log.warn(`URL contains a parameter ':${urlParam}' that is not documented as @apiParam in @api '${block.local.title}' in file: '${filename}'`);
+            if (
+                !paramFields.some((pf) => pf.field === urlParam) &&
+                !paramFieldsDefinedOutside.some((pf) => pf.field === urlParam)
+            ) {
+                log.warn(
+                    `URL contains a parameter ':${urlParam}' that is not documented as @apiParam in @api '${block.local.title}' in file: '${filename}'`
+                );
             }
         }
         if (!block.global.define) {
             for (const paramField of paramFields) {
                 // Emit the warning only if the field is mandatory.
                 if (!paramField.optional && !urlParams.some((up) => up === paramField.field)) {
-                    log.warn(`@apiParam '${paramField.field}' was defined but does not appear in URL of @api '${block.local.title}' in file: '${filename}'`);
+                    log.warn(
+                        `@apiParam '${paramField.field}' was defined but does not appear in URL of @api '${block.local.title}' in file: '${filename}'`
+                    );
                 }
             }
         }

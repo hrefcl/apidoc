@@ -109,5 +109,5 @@ module.exports = {
     getProductById,
     createUserFromExternal,
     inlineOpenApiExample,
-    multipleExternalReferences
+    multipleExternalReferences,
 };

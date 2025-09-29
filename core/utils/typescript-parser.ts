@@ -479,7 +479,11 @@ function removeCommentsAndStrings(content: string): string {
  * @public
  * @since 4.0.0
  */
-export function interfaceToApiDocElements(iface: ParsedInterface, elementType: string = 'apiParam', group?: string): Array<any> {
+export function interfaceToApiDocElements(
+    iface: ParsedInterface,
+    elementType: string = 'apiParam',
+    group?: string
+): Array<any> {
     const elements: Array<any> = [];
 
     for (const prop of iface.properties) {

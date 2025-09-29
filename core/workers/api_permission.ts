@@ -126,9 +126,14 @@ function postProcess(parsedFiles, filenames, preProcess, packageInfos, source, t
                         });
 
                         if (foundIndex === -1) {
-                            const extra = [{ Groupname: name }, { Version: version }, { 'Defined versions': versionKeys }];
+                            const extra = [
+                                { Groupname: name },
+                                { Version: version },
+                                { 'Defined versions': versionKeys },
+                            ];
                             throw new WorkerError(
-                                'Referenced definition has no matching or a higher version. ' + 'Check version number in referenced define block.',
+                                'Referenced definition has no matching or a higher version. ' +
+                                    'Check version number in referenced define block.',
                                 filenames[parsedFileIndex],
                                 block.index,
                                 messages.common.element,

@@ -57,7 +57,10 @@ export function parse(content: string): ExampleInfo | null {
 
     // If first line doesn't start with code block or is not code-like,
     // treat it as title
-    const looksLikeCode = /^```|^\/\/|^#|^\s*\*|^\s*const|^\s*let|^\s*var|^\s*function|^\s*class|^\s*interface|^\s*type/.test(firstLine || '');
+    const looksLikeCode =
+        /^```|^\/\/|^#|^\s*\*|^\s*const|^\s*let|^\s*var|^\s*function|^\s*class|^\s*interface|^\s*type/.test(
+            firstLine || ''
+        );
 
     if (lines.length === 1 || looksLikeCode) {
         // No title, just code

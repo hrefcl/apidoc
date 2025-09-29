@@ -49,7 +49,9 @@
  * @since 5.0.0
  * @public
  */
-export function parse(content: string): { packageName: string; packageNamespace?: string; packageModule?: string } | null {
+export function parse(
+    content: string
+): { packageName: string; packageNamespace?: string; packageModule?: string } | null {
     const packageName = content.trim();
 
     if (packageName.length === 0) {

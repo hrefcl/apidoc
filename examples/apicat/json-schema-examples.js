@@ -66,7 +66,7 @@
  * }
  */
 function createUser() {
-  // Implementation
+    // Implementation
 }
 
 /**
@@ -131,7 +131,7 @@ function createUser() {
  * }
  */
 function loginUser() {
-  // Implementation
+    // Implementation
 }
 
 /**
@@ -173,5 +173,5 @@ function loginUser() {
  * }
  */
 function uploadFile() {
-  // Implementation
+    // Implementation
 }

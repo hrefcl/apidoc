@@ -181,7 +181,13 @@ function generateExampleFromSchema(schema: any): any {
 
         case 'integer':
         case 'number':
-            return schema.minimum !== undefined ? schema.minimum : schema.maximum !== undefined ? schema.maximum : schema.multipleOf !== undefined ? schema.multipleOf : 0;
+            return schema.minimum !== undefined
+                ? schema.minimum
+                : schema.maximum !== undefined
+                  ? schema.maximum
+                  : schema.multipleOf !== undefined
+                    ? schema.multipleOf
+                    : 0;
 
         case 'boolean':
             return true;

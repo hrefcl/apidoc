@@ -50,11 +50,7 @@ export function createGreeting(name: string, age?: number): string {
  * ```
  * @internal
  */
-export async function connectToDatabase(
-    host: string,
-    port: number,
-    credentials: { username: string; password: string }
-): Promise<any> {
+export async function connectToDatabase(host: string, port: number, credentials: { username: string; password: string }): Promise<any> {
     // Implementation would go here
     return {};
 }
@@ -96,12 +92,9 @@ export function validateUserAdvanced(userData: any): { isValid: boolean; errors:
  * ```
  * @beta
  */
-export async function processPaymentBeta(
-    amount: number,
-    currency: string
-): Promise<{ success: boolean; transactionId?: string; error?: string }> {
+export async function processPaymentBeta(amount: number, currency: string): Promise<{ success: boolean; transactionId?: string; error?: string }> {
     // Beta implementation
-    return { success: true, transactionId: "tx_123456" };
+    return { success: true, transactionId: 'tx_123456' };
 }
 
 /**
@@ -145,12 +138,12 @@ export function processData(
 ): {
     processed: boolean;
     data?: any;
-    errors?: string[]
+    errors?: string[];
 } {
     // Comprehensive processing logic would go here
     return {
         processed: true,
         data: input.value,
-        errors: []
+        errors: [],
     };
 }
