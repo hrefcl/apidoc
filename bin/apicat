@@ -11,7 +11,7 @@
  * Output: Self-contained dist/ with modular JSON structure
  */
 
-const os = require('os');
+// const os = require('os'); // Unused, commented out
 const path = require('path');
 const fs = require('fs');
 const { Command } = require('commander');
@@ -22,7 +22,7 @@ const ora = require('ora');
 let apidoc;
 try {
     apidoc = require(path.join(__dirname, '..', 'dist', 'core', 'apidoc', 'index.js'));
-} catch (e) {
+} catch (_e) {
     apidoc = require(path.join(__dirname, '..', 'core', 'apidoc', 'index'));
 }
 
@@ -30,7 +30,7 @@ try {
 let adapter;
 try {
     adapter = require(path.join(__dirname, '..', 'dist', 'core', 'adapters', 'apidoc-to-apicat.js'));
-} catch (e) {
+} catch (_e) {
     adapter = require(path.join(__dirname, '..', 'core', 'adapters', 'apidoc-to-apicat'));
 }
 
@@ -178,7 +178,7 @@ ${pc.cyan('🐱 apiCAT')} ${pc.dim('v' + pkgJson.version)} - ${pc.dim('Modern AP
             console.error('\nStack trace:');
             console.error(error.stack);
         }
-        process.exit(1);
+        throw error;
     }
 }
 

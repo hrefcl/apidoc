@@ -44,14 +44,12 @@ export function parse(content: string): { title: string; content: string; type: 
     if (content.includes('mosquitto_sub')) {
         type = 'bash';
         title = 'mosquitto_sub Command';
-    }
-    // Check if it looks like JSON
-    else if (content.trim().startsWith('{') && content.trim().endsWith('}')) {
+    } else if (content.trim().startsWith('{') && content.trim().endsWith('}')) {
+        // Check if it looks like JSON
         type = 'json';
         title = 'Expected Message';
-    }
-    // Check if it looks like a shell command
-    else if (content.includes('$') || content.includes('#!/')) {
+    } else if (content.includes('$') || content.includes('#!/')) {
+        // Check if it looks like a shell command
         type = 'bash';
         title = 'Command Example';
     }

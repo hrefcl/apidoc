@@ -107,7 +107,7 @@ export class ApiCatPlugin {
                 shards: this.generateShardList(apicatData.groups),
             },
             docs: this.generateDocsMap(apicatData.groups),
-            tsdoc: ['cat.tsdoc/core.json', 'cat.tsdoc/models.json'],
+            tsdoc: await this.generateTSDocMap(),
             search: 'cat.search.json',
             assets: 'cat.assets.json',
         };
@@ -162,15 +162,30 @@ export class ApiCatPlugin {
      */
     private generateDocsMap(groups: string[]): Record<string, string> {
         const docsMap: Record<string, string> = {
-            header: 'cat.docs/header.html',
-            footer: 'cat.docs/footer.html',
+            header: 'cat.docs/header.json',
+            footer: 'cat.docs/footer.json',
         };
 
         groups.forEach((group) => {
-            docsMap[`group.${group}`] = `cat.docs/group.${group}.html`;
+            docsMap[`group.${group}`] = `cat.docs/group.${group}.json`;
         });
 
         return docsMap;
+    }
+
+    /**
+     * Generate TSDoc map for manifest
+     */
+    private async generateTSDocMap(): Promise<string[]> {
+        const tsdocData = await this.generateTSDocData();
+        const tsdocFiles: string[] = [];
+
+        for (const moduleName of Object.keys(tsdocData)) {
+            tsdocFiles.push(`cat.tsdoc/${moduleName}.json`);
+            tsdocFiles.push(`cat.docs/tsdoc.${moduleName}.json`);
+        }
+
+        return tsdocFiles;
     }
 
     /**
@@ -340,7 +355,18 @@ export class ApiCatPlugin {
                 </div>`;
             }
 
-            await fs.writeFile(path.join(outputPath, 'cat.docs', `group.${group}.html`), groupHtml);
+            // Generate JSON instead of HTML for encryption compatibility
+            const groupData = {
+                group: group,
+                type: 'group-documentation',
+                html: groupHtml,
+                generatedAt: new Date().toISOString(),
+                version: '5.0.0',
+            };
+            await fs.writeFile(
+                path.join(outputPath, 'cat.docs', `group.${group}.json`),
+                JSON.stringify(groupData, null, 2)
+            );
         }
 
         // Generate header and footer
@@ -357,9 +383,22 @@ export class ApiCatPlugin {
             footerHtml = `<div class="footer-docs custom-markdown">${customMarkdown.footer.html}</div>`;
         }
 
-        await fs.writeFile(path.join(outputPath, 'cat.docs', 'header.html'), headerHtml);
+        // Generate JSON instead of HTML for encryption compatibility
+        const headerData = {
+            type: 'header-documentation',
+            html: headerHtml,
+            generatedAt: new Date().toISOString(),
+            version: '5.0.0',
+        };
+        await fs.writeFile(path.join(outputPath, 'cat.docs', 'header.json'), JSON.stringify(headerData, null, 2));
 
-        await fs.writeFile(path.join(outputPath, 'cat.docs', 'footer.html'), footerHtml);
+        const footerData = {
+            type: 'footer-documentation',
+            html: footerHtml,
+            generatedAt: new Date().toISOString(),
+            version: '5.0.0',
+        };
+        await fs.writeFile(path.join(outputPath, 'cat.docs', 'footer.json'), JSON.stringify(footerData, null, 2));
 
         // Generate TSDoc documentation
         const tsdocData = await this.generateTSDocData();
@@ -371,9 +410,19 @@ export class ApiCatPlugin {
                 JSON.stringify(moduleData, null, 2)
             );
 
-            // Generate HTML documentation
+            // Generate JSON instead of HTML for encryption compatibility
             const htmlDoc = this.generateTSDocHTML(moduleData as any);
-            await fs.writeFile(path.join(outputPath, 'cat.docs', `tsdoc.${moduleName}.html`), htmlDoc);
+            const tsdocData = {
+                module: moduleName,
+                type: 'tsdoc-documentation',
+                html: htmlDoc,
+                generatedAt: new Date().toISOString(),
+                version: '5.0.0',
+            };
+            await fs.writeFile(
+                path.join(outputPath, 'cat.docs', `tsdoc.${moduleName}.json`),
+                JSON.stringify(tsdocData, null, 2)
+            );
         }
     }
 
@@ -545,22 +594,16 @@ export class ApiCatPlugin {
             if (ts.isClassDeclaration(node) && node.name) {
                 const symbol = this.extractClassSymbol(node, filePath, ts);
                 if (symbol) symbols.push(symbol);
-            }
-
-            // Extract functions
-            else if (ts.isFunctionDeclaration(node) && node.name) {
+            } else if (ts.isFunctionDeclaration(node) && node.name) {
+                // Extract functions
                 const symbol = this.extractFunctionSymbol(node, filePath, ts);
                 if (symbol) symbols.push(symbol);
-            }
-
-            // Extract interfaces
-            else if (ts.isInterfaceDeclaration(node) && node.name) {
+            } else if (ts.isInterfaceDeclaration(node) && node.name) {
+                // Extract interfaces
                 const symbol = this.extractInterfaceSymbol(node, filePath, ts);
                 if (symbol) symbols.push(symbol);
-            }
-
-            // Extract type aliases
-            else if (ts.isTypeAliasDeclaration(node) && node.name) {
+            } else if (ts.isTypeAliasDeclaration(node) && node.name) {
+                // Extract type aliases
                 const symbol = this.extractTypeAliasSymbol(node, filePath, ts);
                 if (symbol) symbols.push(symbol);
             }

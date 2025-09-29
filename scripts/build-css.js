@@ -43,7 +43,7 @@ if (fs.existsSync(outputFile) && !forceRebuild) {
     console.log(`✅ Pre-compiled CSS found: ${path.basename(outputFile)} (${sizeKb}kb)`);
     console.log('💡 Use --force to rebuild');
     console.log('🎉 CSS build complete!');
-    process.exit(0);
+    return;
 }
 
 console.log('🔄 Compiling TailwindCSS with PostCSS...');
@@ -76,7 +76,7 @@ async function buildCSS() {
                 success = true;
                 console.log('✅ TailwindCSS v4 CLI succeeded');
             }
-        } catch (v4Error) {
+        } catch {
             console.log('⚠️  TailwindCSS v4 CLI failed, trying v3...');
         }
 
@@ -99,7 +99,7 @@ async function buildCSS() {
                     success = true;
                     console.log('✅ TailwindCSS v3 CLI succeeded');
                 }
-            } catch (v3Error) {
+            } catch {
                 console.log('⚠️  TailwindCSS v3 CLI also failed, trying PostCSS...');
             }
         }
@@ -210,7 +210,7 @@ async function buildCSS() {
         }
     } catch (error) {
         console.error('❌ CSS compilation completely failed:', error.message);
-        process.exit(1);
+        throw error;
     }
 }
 
@@ -221,5 +221,5 @@ buildCSS()
     })
     .catch((error) => {
         console.error('❌ Fatal error:', error.message);
-        process.exit(1);
+        throw error;
     });

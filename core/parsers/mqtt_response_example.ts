@@ -44,14 +44,12 @@ export function parse(content: string): { title: string; content: string; type: 
     if (content.trim().startsWith('{') && content.trim().endsWith('}')) {
         type = 'json';
         title = 'Response Example';
-    }
-    // Check if it looks like XML
-    else if (content.trim().startsWith('<') && content.trim().endsWith('>')) {
+    } else if (content.trim().startsWith('<') && content.trim().endsWith('>')) {
+        // Check if it looks like XML
         type = 'xml';
         title = 'XML Response';
-    }
-    // Check if it contains acknowledgment patterns
-    else if (content.toLowerCase().includes('ack') || content.toLowerCase().includes('status')) {
+    } else if (content.toLowerCase().includes('ack') || content.toLowerCase().includes('status')) {
+        // Check if it contains acknowledgment patterns
         title = 'Acknowledgment Example';
     }
 

@@ -67,10 +67,12 @@ export class JSONEncryption {
     private config: EncryptionConfig;
     private key: Buffer;
     private keyPath: string;
+    private providedKey?: string;
 
-    constructor(config: Partial<EncryptionConfig> = {}) {
+    constructor(config: Partial<EncryptionConfig> = {}, encryptionKey?: string) {
         this.config = { ...DEFAULT_CONFIG, ...config };
         this.keyPath = path.join(process.cwd(), '.apicat-key');
+        this.providedKey = encryptionKey;
         this.key = this.loadOrCreateKey();
     }
 
@@ -79,12 +81,31 @@ export class JSONEncryption {
      * @returns Encryption key buffer
      */
     private loadOrCreateKey(): Buffer {
+        // Use provided key from config if available
+        if (this.providedKey) {
+            console.info('🔐 Using encryption key from apidoc.json configuration');
+            // Support both hex and base64 encoded keys
+            try {
+                if (this.providedKey.length === 64) {
+                    // Assume hex encoding for 64-character strings
+                    return Buffer.from(this.providedKey, 'hex');
+                } else {
+                    // Assume base64 encoding
+                    return Buffer.from(this.providedKey, 'base64');
+                }
+            } catch (error) {
+                console.warn('Invalid encryption key format in config, generating new one');
+            }
+        }
+
+        // Try to load existing key from file
         try {
             if (fs.existsSync(this.keyPath)) {
                 const keyData = fs.readFileSync(this.keyPath, 'utf8');
+                console.info('🔐 Using existing encryption key from:', this.keyPath);
                 return Buffer.from(keyData, 'base64');
             }
-        } catch (error) {
+        } catch (_error) {
             console.warn('Could not load existing encryption key, generating new one');
         }
 
@@ -93,7 +114,10 @@ export class JSONEncryption {
         try {
             fs.writeFileSync(this.keyPath, newKey.toString('base64'), { mode: 0o600 });
             console.info('🔐 Generated new encryption key at:', this.keyPath);
-        } catch (error) {
+            console.info(
+                `💡 Add this to your apidoc.json to use the same key: "encryptionKey": "${newKey.toString('base64')}"`
+            );
+        } catch (_error) {
             console.warn('Could not save encryption key to file, using in-memory key');
         }
 
@@ -113,7 +137,7 @@ export class JSONEncryption {
         const jsonString = JSON.stringify(data, null, 2);
         const iv = crypto.randomBytes(this.config.ivLength);
 
-        const cipher = crypto.createCipher(this.config.algorithm, this.key);
+        const cipher = crypto.createCipheriv(this.config.algorithm, this.key, iv) as crypto.CipherGCM;
         cipher.setAAD(Buffer.from('apicat-json'));
 
         let encrypted = cipher.update(jsonString, 'utf8', 'base64');
@@ -145,7 +169,7 @@ export class JSONEncryption {
         const tag = Buffer.from(encryptedFile.tag, 'base64');
         const encrypted = encryptedFile.data;
 
-        const decipher = crypto.createDecipher(encryptedFile.algorithm, this.key);
+        const decipher = crypto.createDecipheriv(encryptedFile.algorithm, this.key, iv) as crypto.DecipherGCM;
         decipher.setAAD(Buffer.from('apicat-json'));
         decipher.setAuthTag(tag);
 
@@ -211,41 +235,67 @@ export function createEncryption(loginConfig: any): JSONEncryption | null {
         return null;
     }
 
-    return new JSONEncryption({
+    // Pass encryption key if provided in config
+    const config: Partial<EncryptionConfig> = {
         enabled: true,
-    });
+    };
+
+    return new JSONEncryption(config, loginConfig.encryptionKey);
 }
 
 /**
- * Utility function to encrypt all JSON files in a directory
+ * Utility function to encrypt all JSON files in a directory (recursive)
  * @param directory - Directory containing JSON files
  * @param encryption - Encryption instance
  * @param pattern - File pattern to match (default: *.json)
  */
-export function encryptDirectoryJSON(directory: string, encryption: JSONEncryption, pattern: string = '*.json'): void {
+export function encryptDirectoryJSON(directory: string, encryption: JSONEncryption, _pattern: string = '*.json'): void {
     if (!encryption.isEnabled()) {
         return;
     }
 
-    const files = fs.readdirSync(directory);
-    const jsonFiles = files.filter(
-        (file) => file.endsWith('.json') && !file.endsWith('.encrypted.json') && !file.includes('.key')
-    );
+    const jsonFiles = findJSONFilesRecursive(directory);
+    console.info(`🔐 Encrypting ${jsonFiles.length} JSON files in ${directory} (recursive)`);
 
-    console.info(`🔐 Encrypting ${jsonFiles.length} JSON files in ${directory}`);
-
-    for (const file of jsonFiles) {
-        const filePath = path.join(directory, file);
+    for (const filePath of jsonFiles) {
         try {
             const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
             encryption.encryptAndSaveJSON(filePath, data);
 
-            // Optionally remove original file
-            // fs.unlinkSync(filePath);
+            // Remove original file for security
+            fs.unlinkSync(filePath);
+            console.info(`🗑️  Removed original: ${path.relative(directory, filePath)}`);
         } catch (error) {
-            console.error(`Failed to encrypt ${file}:`, error);
+            console.error(`Failed to encrypt ${path.relative(directory, filePath)}:`, error);
         }
     }
 
     console.info('🔐 JSON encryption completed');
+}
+
+/**
+ * Find all JSON files in a directory recursively
+ * @param directory - Directory to search
+ * @returns Array of JSON file paths
+ */
+function findJSONFilesRecursive(directory: string): string[] {
+    const jsonFiles: string[] = [];
+
+    function scanDirectory(dir: string): void {
+        const files = fs.readdirSync(dir);
+
+        for (const file of files) {
+            const filePath = path.join(dir, file);
+            const stat = fs.statSync(filePath);
+
+            if (stat.isDirectory()) {
+                scanDirectory(filePath);
+            } else if (file.endsWith('.json') && !file.endsWith('.encrypted.json') && !file.includes('.key')) {
+                jsonFiles.push(filePath);
+            }
+        }
+    }
+
+    scanDirectory(directory);
+    return jsonFiles;
 }

@@ -25,7 +25,8 @@
       "password": "password"
     },
     "response_success": 200,
-    "response_error": 401
+    "response_error": 401,
+    "encryptionKey": "TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ="
   },
   "logo": {
     "icon": "fa-solid fa-rocket",

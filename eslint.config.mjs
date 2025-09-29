@@ -72,7 +72,6 @@ export default [
             '@typescript-eslint/no-require-imports': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-unused-vars': 'off',
-
             // JSDoc rules (relaxed for JS files)
             'jsdoc/require-jsdoc': 'off',
             'jsdoc/require-param': 'off',

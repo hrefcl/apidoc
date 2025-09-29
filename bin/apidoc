@@ -30,7 +30,7 @@ const ora = require('ora');
 let apidoc;
 try {
     apidoc = require(path.join(__dirname, '..', 'dist', 'core', 'apidoc', 'index.js'));
-} catch (e) {
+} catch (_e) {
     apidoc = require(path.join(__dirname, '..', 'core', 'apidoc', 'index'));
 }
 
@@ -83,7 +83,7 @@ function extractPackageInfo(projectPath = process.cwd()) {
                 keywords: packageJson.keywords || [],
             };
         }
-    } catch (error) {
+    } catch (_error) {
         // Silently fail if package.json is invalid
     }
 
@@ -276,7 +276,7 @@ if (argv.init !== '') {
         if (fs.existsSync(configPath)) {
             spinner.fail(`${pc.red('Error:')} apidoc.json already exists at ${configPath}`);
             console.log(`${pc.yellow('Tip:')} Use --force to overwrite or delete the existing file first.`);
-            process.exit(1);
+            throw new Error('Configuration file already exists');
         }
 
         // Extract package.json info
@@ -311,10 +311,10 @@ if (argv.init !== '') {
             },
             packageInfo ? 1000 : 100
         );
-    } catch (error) {
+    } catch (_error) {
         spinner.fail(`${pc.red('Error:')} Failed to initialize configuration`);
-        console.error(`${pc.red('Details:')} ${error.message}`);
-        process.exit(1);
+        console.error(`${pc.red('Details:')} ${_error.message}`);
+        throw _error;
     }
 
     // Exit after init
@@ -456,7 +456,7 @@ async function createDocumentation() {
         } else {
             console.error('[error] apidoc encountered an error during documentation generation!');
         }
-        process.exit(1);
+        throw new Error('Documentation generation failed');
     } else {
         if (spinner) {
             spinner.succeed(`${pc.green('✅ Documentation generated successfully')}`);

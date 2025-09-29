@@ -77,6 +77,7 @@ class Writer {
 
         // Initialize authentication processor
         this.authProcessor = new AuthProcessor();
+        this.encryption = null;
         this.initializeAuthentication();
     }
 
@@ -101,6 +102,17 @@ class Writer {
 
                 // Initialize auth processor
                 this.authProcessor.init(projectInfo.login);
+
+                // Initialize encryption if login is active
+                if (projectInfo.login.active) {
+                    this.log.info('🔐 Enabling JSON encryption for protected documentation...');
+                    this.encryption = createEncryption(projectInfo.login);
+
+                    if (this.encryption) {
+                        const fingerprint = this.encryption.getKeyFingerprint();
+                        this.log.info(`🔑 Encryption key loaded: ${fingerprint}`);
+                    }
+                }
 
                 const stats = this.authProcessor.getStats();
                 this.log.info(`✅ Authentication configured:`, stats);
@@ -242,6 +254,25 @@ class Writer {
             this.fs.writeFileSync(openApiPath, JSON.stringify(openApiSpec, null, 2));
 
             this.log.verbose(`✅ OpenAPI specification generated: ${openApiPath}`);
+
+            // Apply JSON encryption if authentication is active
+            if (this.encryption && this.encryption.isEnabled()) {
+                this.log.info('🔐 Encrypting OpenAPI JSON files...');
+                try {
+                    // Only encrypt the OpenAPI files just generated
+                    this.encryption.encryptAndSaveJSON(swaggerPath, openApiSpec);
+                    this.encryption.encryptAndSaveJSON(openApiPath, openApiSpec);
+
+                    // Remove original files for security
+                    this.fs.unlinkSync(swaggerPath);
+                    this.fs.unlinkSync(openApiPath);
+                    this.log.info('🗑️  Removed original OpenAPI files');
+
+                    this.log.info('✅ OpenAPI JSON encryption completed');
+                } catch (error) {
+                    this.log.error('❌ OpenAPI JSON encryption failed:', error);
+                }
+            }
         } catch (error) {
             this.log.error(`❌ Failed to generate OpenAPI specification: ${error.message}`);
             throw error;
@@ -331,7 +362,20 @@ class Writer {
 
         // Always run bundler to generate CSS and JS assets
         // StencilJS components are additional, not replacement for core functionality
-        return this.runBundler(this.path.resolve(assetsPath));
+        const result = await this.runBundler(this.path.resolve(assetsPath));
+
+        // Apply JSON encryption if authentication is active
+        if (this.encryption && this.encryption.isEnabled()) {
+            this.log.info('🔐 Encrypting JSON files...');
+            try {
+                encryptDirectoryJSON(this.opt.dest, this.encryption);
+                this.log.info('✅ JSON encryption completed');
+            } catch (error) {
+                this.log.error('❌ JSON encryption failed:', error);
+            }
+        }
+
+        return result;
     }
 
     /**

@@ -3,7 +3,7 @@
  * Watches for TypeScript changes and automatically rebuilds the documentation
  */
 
-const { spawn, exec } = require('child_process');
+const { exec } = require('child_process');
 const { watch } = require('fs');
 const path = require('path');
 
@@ -24,7 +24,7 @@ function rebuild() {
 
     const startTime = Date.now();
 
-    exec('npm run build:example', (error, stdout, stderr) => {
+    exec('npm run build:example', (error, _stdout, _stderr) => {
         const endTime = Date.now();
         const duration = endTime - startTime;
 

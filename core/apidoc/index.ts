@@ -33,6 +33,7 @@
 import * as pkgJson from '../../package.json';
 import * as core from '../parser-core';
 import { ApiDocOptions, ApiDocParseResult, AppContext, LoggerInterface, MarkdownParser } from '../types';
+import { createEncryption, encryptDirectoryJSON } from '../utils/encryption';
 import * as defaults from './defaults';
 import * as optionsProcessor from './options';
 import { ApiCatPlugin } from './plugins/apicat';
@@ -224,6 +225,20 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
                 await apiCatPlugin.process(parsedData, projectData);
 
                 app.log.verbose('🐱 apiCAT: Processing completed');
+
+                // Apply JSON encryption after apiCAT processing if authentication is active
+                if (projectData.login?.active) {
+                    app.log.info('🔐 Encrypting apiCAT JSON files...');
+                    try {
+                        const encryption = createEncryption(projectData.login);
+                        if (encryption) {
+                            encryptDirectoryJSON(app.options.dest, encryption);
+                            app.log.info('✅ apiCAT JSON encryption completed');
+                        }
+                    } catch (error) {
+                        app.log.error(`❌ apiCAT JSON encryption failed: ${error}`);
+                    }
+                }
             } catch (error) {
                 app.log.warn(`⚠️ apiCAT: Plugin error: ${error.message}`);
                 app.log.debug(`⚠️ apiCAT: Stack trace: ${error.stack}`);

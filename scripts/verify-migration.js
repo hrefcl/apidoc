@@ -17,7 +17,7 @@ for (const dir of requiredDirs) {
     console.log(`  ${exists ? '✅' : '❌'} ${dir}/`);
     if (!exists) {
         console.error(`Error: Directorio ${dir}/ no encontrado`);
-        process.exit(1);
+        throw new Error(`Missing directory: ${dir}/`);
     }
 }
 
