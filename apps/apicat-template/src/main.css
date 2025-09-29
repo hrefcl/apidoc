@@ -2,8 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Highlight.js theme override */
 @layer base {
+  :root {
+    --primary-hue: 260;
+    --gray-hue: 260;
+    --radius: 0.75rem;
+
+    --background: oklch(0.99 0.005 260);
+    --foreground: oklch(0.15 0.01 260);
+
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.15 0.01 260);
+
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.15 0.01 260);
+
+    --border: oklch(0.92 0.01 260);
+    --input: oklch(0.92 0.01 260);
+
+    --muted: oklch(0.96 0.005 260);
+    --muted-foreground: oklch(0.50 0.02 260);
+
+    --accent: oklch(0.96 0.01 260);
+    --accent-foreground: oklch(0.15 0.01 260);
+  }
+
+  .dark {
+    --background: oklch(0.12 0.01 260);
+    --foreground: oklch(0.98 0 0);
+
+    --card: oklch(0.15 0.01 260);
+    --card-foreground: oklch(0.98 0 0);
+
+    --popover: oklch(0.15 0.01 260);
+    --popover-foreground: oklch(0.98 0 0);
+
+    --border: oklch(0.25 0.02 260);
+    --input: oklch(0.25 0.02 260);
+
+    --muted: oklch(0.20 0.02 260);
+    --muted-foreground: oklch(0.70 0.02 260);
+
+    --accent: oklch(0.20 0.02 260);
+    --accent-foreground: oklch(0.98 0 0);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Highlight.js theme override */
   pre code.hljs {
     @apply block overflow-x-auto p-4 rounded-lg;
   }

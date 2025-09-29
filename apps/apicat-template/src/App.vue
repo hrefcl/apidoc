@@ -1,15 +1,7 @@
 <template>
-  <div id="app">
-    <router-view />
-  </div>
+  <DashboardLayout />
 </template>
 
 <script setup>
-// Main App Component
+import DashboardLayout from './layouts/DashboardLayout.vue'
 </script>
-
-<style scoped>
-#app {
-  min-height: 100vh;
-}
-</style>
