@@ -662,7 +662,12 @@ Parser.prototype._findBlockWithApiGetIndex = function (blocks) {
                 }
             }
 
-            if (blocks[i][j].name.substr(0, 3) === 'api' || blocks[i][j].name.substr(0, 7) === 'openapi' || blocks[i][j].name.substr(0, 4) === 'mqtt') {
+            if (blocks[i][j].name.substr(0, 3) === 'api' ||
+                blocks[i][j].name.substr(0, 7) === 'openapi' ||
+                blocks[i][j].name.substr(0, 4) === 'mqtt' ||
+                // JSDoc/TSDoc tags
+                ['file', 'author', 'copyright', 'license', 'package', 'see',
+                 'param', 'returns', 'remarks', 'example', 'public', 'internal', 'alpha', 'beta'].includes(blocks[i][j].name)) {
                 found = true;
             }
         }
@@ -703,7 +708,7 @@ Parser.prototype.findElements = function (block, filename) {
 
     // Elements start with @api, @openapi, or @mqtt (at beginning of comment line, not in text)
     const elementsRegExp =
-        /((?:^|\uffff)[\s*]*@(api\w*|openapi(?:-\w+)?|mqtt\w*|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|auth|ratelimit|errors|tags)(?:\s*([\s\S]*?))?(?=\uffff[\s*]*@(?:api|openapi|mqtt|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|auth|ratelimit|errors|tags)|\*\/|$))/gm;
+        /((?:^|\uffff)[\s*]*@(api\w*|openapi(?:-\w+)?|mqtt\w*|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|author|ratelimit|errors|tags|auth|file|copyright|license|package|see|param|returns|remarks|example|public|internal|alpha|beta)(?:\s*([\s\S]*?))?(?=\uffff[\s*]*@(?:api|openapi|mqtt|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|author|ratelimit|errors|tags|auth|file|copyright|license|package|see|param|returns|remarks|example|public|internal|alpha|beta)|\*\/|$))/gm;
     let matches = elementsRegExp.exec(block);
     while (matches) {
         const element = {

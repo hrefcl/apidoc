@@ -137,6 +137,22 @@ const app = {
         ratelimit: './parsers/mqtt_ratelimit.js',
         errors: './parsers/mqtt_errors.js',
         tags: './parsers/mqtt_tags.js',
+        // JSDoc parsers
+        file: './parsers-jsdoc/jsdoc_file.js',
+        author: './parsers-jsdoc/jsdoc_author.js',
+        copyright: './parsers-jsdoc/jsdoc_copyright.js',
+        license: './parsers-jsdoc/jsdoc_license.js',
+        package: './parsers-jsdoc/jsdoc_package.js',
+        see: './parsers-jsdoc/jsdoc_see.js',
+        // TSDoc parsers
+        param: './parsers-jsdoc/tsdoc_param.js',
+        returns: './parsers-jsdoc/tsdoc_returns.js',
+        remarks: './parsers-jsdoc/tsdoc_remarks.js',
+        example: './parsers-jsdoc/tsdoc_example.js',
+        public: './parsers-jsdoc/tsdoc_public.js',
+        internal: './parsers-jsdoc/tsdoc_internal.js',
+        alpha: './parsers-jsdoc/tsdoc_alpha.js',
+        beta: './parsers-jsdoc/tsdoc_beta.js',
     },
     workers: {
         // Temporarily disabled while migrating workers to TypeScript
