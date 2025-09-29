@@ -90,7 +90,7 @@
     "apidoc": "4.0.0",
     "generator": {
       "name": "@hrefcl/apidoc-ecosystem",
-      "time": "Mon Sep 29 2025 10:06:09 GMT-0300 (hora de verano de Chile)",
+      "time": "Mon Sep 29 2025 10:41:08 GMT-0300 (hora de verano de Chile)",
       "url": "https://apidoc.app",
       "version": "5.0.0-alpha.1"
     }
@@ -7119,5 +7119,5 @@
       }
     ]
   },
-  "generatedAt": "2025-09-29T13:06:09.704Z"
+  "generatedAt": "2025-09-29T13:41:08.872Z"
 }
