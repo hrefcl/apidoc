@@ -15,7 +15,7 @@
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
- * @since 4.0.0
+ * @since 5.0.0
  * @internal
  */
 
@@ -42,7 +42,7 @@ import hljs from 'highlight.js';
  * });
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @internal
  */
 function initSampleRequest() {
@@ -91,7 +91,7 @@ function initSampleRequest() {
  * // Returns: '/users'
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @internal
  */
 function convertPathParams(url) {
@@ -117,7 +117,7 @@ function convertPathParams(url) {
  * // Returns: '/users/123/posts/456?limit=10'
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @internal
  */
 function getHydratedUrl(root, queryParameters) {
@@ -152,7 +152,7 @@ function getHydratedUrl(root, queryParameters) {
  * }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @internal
  */
 function collectValues(root) {
@@ -216,7 +216,7 @@ function collectValues(root) {
  * sendSampleRequest('User', 'GetUser', '1.0.0', 'GET');
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @internal
  */
 function sendSampleRequest(group, name, version, method) {
@@ -331,7 +331,7 @@ function sendSampleRequest(group, name, version, method) {
  * clearSampleRequest('User', 'GetUser', '1.0.0');
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @internal
  */
 function clearSampleRequest(group, name, version) {

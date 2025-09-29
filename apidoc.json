@@ -1,0 +1,7 @@
+{
+  "name": "JSDoc Parser Test",
+  "version": "1.0.0",
+  "description": "Testing JSDoc parsers integration",
+  "title": "JSDoc Test API",
+  "url": "https://api.example.com"
+}

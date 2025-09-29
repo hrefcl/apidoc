@@ -15,14 +15,14 @@
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
- * @since 4.0.0
+ * @since 5.0.0
  * @internal
  */
 
 /**
  * Represents a field item with metadata for JSON generation
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @internal
  */
 interface FieldItem {
@@ -42,7 +42,7 @@ interface FieldItem {
 /**
  * Represents a context entry for JSON body generation
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @internal
  */
 interface ContextEntry {
@@ -55,7 +55,7 @@ interface ContextEntry {
 /**
  * Tuple representing a field and its value for JSON generation
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @internal
  */
 type FieldEntry = [FieldItem, any];
@@ -80,7 +80,7 @@ type FieldEntry = [FieldItem, any];
  * // Returns: '{\n    "name": "John Doe",\n    "age": 30\n}'
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @internal
  */
 const fieldsToJson = (items: FieldEntry[]): string => {
@@ -160,7 +160,7 @@ const fieldsToJson = (items: FieldEntry[]): string => {
  * // }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 function beautify(obj: any): string {
@@ -195,7 +195,7 @@ function beautify(obj: any): string {
  * // }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 function body2json(context: ContextEntry[]): string {

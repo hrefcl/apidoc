@@ -114,7 +114,7 @@ const defaultConfig: DefaultConfig = {
  * 3. Default values (lowest priority)
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 class Reader {
@@ -204,7 +204,7 @@ class Reader {
      * }
      * ```
      *
-     * @since 4.0.0
+     * @since 5.0.0
      * @public
      */
     read(): Config {

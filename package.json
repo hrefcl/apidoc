@@ -48,7 +48,7 @@
   "scripts": {
     "build": "npm run build:css && tsc && npm run build:copy-core",
     "build:css": "node scripts/build-css.js",
-    "build:copy-core": "cp core/*.js dist/core/ 2>/dev/null && cp -r core/errors core/filters core/languages core/parsers core/utils core/workers dist/core/ 2>/dev/null || true",
+    "build:copy-core": "cp core/*.js dist/core/ 2>/dev/null && cp -r core/errors core/filters core/languages core/parsers core/parsers-jsdoc core/utils core/workers dist/core/ 2>/dev/null || true",
     "build:css:dev": "node scripts/build-css.js --dev",
     "build:clean": "rm -rf dist && npm run build:css && npm run build",
     "build:debug": "npm run build:example -- --debug",

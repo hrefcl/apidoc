@@ -8,7 +8,7 @@
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 
@@ -29,7 +29,7 @@
  * };
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export interface Logger {
@@ -68,7 +68,7 @@ export interface Logger {
  * };
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export interface App {

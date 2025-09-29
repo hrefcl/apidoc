@@ -5,7 +5,7 @@
  * This is a RESTful web API Documentation Generator with TypeScript support.
  *
  * @package
- * @version 4.0.0
+ * @version 5.0.0
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -159,7 +159,7 @@ process.on('uncaughtException', (err: Error) => {
  *
  * @see {@link https://apidocjs.com} Complete documentation
  * @see {@link https://apidocjs.com/example} Live example
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | boolean> {

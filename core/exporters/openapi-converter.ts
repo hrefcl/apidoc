@@ -3,7 +3,7 @@
  *
  * Converts APIDoc parsed data to OpenAPI 3.0 specification
  *
- * @since 4.0.0
+ * @since 5.0.0
  */
 
 import * as _ from 'lodash';

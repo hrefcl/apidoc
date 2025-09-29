@@ -8,7 +8,7 @@
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 
@@ -40,7 +40,7 @@
  * }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export interface ApiDocOptions {
@@ -141,7 +141,7 @@ export interface ApiDocOptions {
  * }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export interface ApiDocProject {
@@ -222,7 +222,7 @@ export interface ApiDocProject {
  * }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export interface ApiDocEntry {
@@ -289,7 +289,7 @@ export interface ApiDocEntry {
  * }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export interface ApiDocFields {
@@ -329,7 +329,7 @@ export interface ApiDocFields {
  * }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export interface ApiDocField {
@@ -375,7 +375,7 @@ export interface ApiDocField {
  * }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export interface ApiDocExample {
@@ -424,7 +424,7 @@ export interface ApiDocSampleRequest {
  * }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export interface ApiDocParseResult {
@@ -473,7 +473,7 @@ export interface ApiDocLanguage {
  * }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export interface LoggerInterface {
@@ -553,7 +553,7 @@ export interface ApiDocError extends Error {
  * }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export interface PluginInterface {

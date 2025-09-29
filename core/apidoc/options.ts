@@ -16,7 +16,7 @@
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 import * as fs from 'fs';

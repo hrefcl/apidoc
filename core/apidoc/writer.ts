@@ -41,7 +41,7 @@ const AuthProcessor = require('../auth-processor');
  * await writer.write();
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 class Writer {

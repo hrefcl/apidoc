@@ -8,7 +8,7 @@
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 
@@ -49,7 +49,7 @@ import { twMerge } from 'tailwind-merge';
  * })
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export function cn(...inputs: any[]): string {
@@ -74,7 +74,7 @@ export function cn(...inputs: any[]): string {
  *   type === 'enter' ? animations.fadeIn : animations.slideUp
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export const animations = {
@@ -123,7 +123,7 @@ export const animations = {
  * </nav>
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export const variants = {
@@ -175,7 +175,7 @@ export const variants = {
  * const isMobile = window.innerWidth < parseInt(breakpoints.md)
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export const breakpoints = {
@@ -210,7 +210,7 @@ export const breakpoints = {
  *   statusColors[method as keyof typeof statusColors] || 'text-gray-600 bg-gray-50'
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export const statusColors = {
@@ -257,7 +257,7 @@ export const statusColors = {
  * }
  * ```
  *
- * @since 4.0.0
+ * @since 5.0.0
  * @public
  */
 export const theme = {

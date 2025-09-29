@@ -1,1 +1,0 @@
-{"version":3,"file":"api_group.d.ts","sourceRoot":"","sources":["../../../../lib/core/parsers/api_group.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AAEH;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;GA8BG;AACH,iBAAS,KAAK,CAAC,OAAO,EAAE,MAAM,GAAG;IAAE,KAAK,EAAE,MAAM,CAAA;CAAE,GAAG,IAAI,CAUxD;AAED;;GAEG;AACH,OAAO,EAAE,KAAK,EAAE,CAAC;AACjB,eAAO,MAAM,IAAI,UAAU,CAAC;AAC5B,eAAO,MAAM,MAAM,WAAW,CAAC"}
