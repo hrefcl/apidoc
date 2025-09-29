@@ -22,7 +22,6 @@ const _messages = {
  *
  * Pre-processes the given parsed files, filenames, and package information
  * to extract and organize permission definitions.
- *
  * @param parsedFiles - Array of parsed file objects to process.
  * @param filenames - Array of filenames corresponding to the parsed files.
  * @param packageInfos - Object containing package information to apply during processing.
@@ -64,7 +63,6 @@ function preProcess(parsedFiles, filenames, packageInfos, target) {
  *
  * Processes the parsed files and metadata after the initial processing is completed.
  * Handles permission definitions, versioning, and updates permission information.
- *
  * @param parsedFiles - Array of objects containing the parsed file data.
  * @param filenames - Array of filenames associated with the parsed files.
  * @param preProcess - Pre-processing results containing defined permissions.
@@ -128,14 +126,9 @@ function postProcess(parsedFiles, filenames, preProcess, packageInfos, source, t
                         });
 
                         if (foundIndex === -1) {
-                            const extra = [
-                                { Groupname: name },
-                                { Version: version },
-                                { 'Defined versions': versionKeys },
-                            ];
+                            const extra = [{ Groupname: name }, { Version: version }, { 'Defined versions': versionKeys }];
                             throw new WorkerError(
-                                'Referenced definition has no matching or a higher version. ' +
-                                    'Check version number in referenced define block.',
+                                'Referenced definition has no matching or a higher version. ' + 'Check version number in referenced define block.',
                                 filenames[parsedFileIndex],
                                 block.index,
                                 messages.common.element,

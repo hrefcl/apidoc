@@ -3,7 +3,6 @@
  *
  * This parser processes @license tags to extract license type and URL information.
  * License information is used for legal compliance in generated documentation.
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -26,16 +25,13 @@ interface LicenseInfo {
  * Processes @license tags supporting various formats including license names,
  * URLs, and combined formats. Recognizes common open source licenses and
  * extracts structured information for documentation generation.
- *
  * @param content - Raw content from the @license tag
  * @returns Object containing license information, or null if content is empty
- *
  * @example Simple license name
  * ```
  * // Input: "MIT"
  * // Output: { license: "MIT", licenseType: "MIT" }
  * ```
- *
  * @example License with URL
  * ```
  * // Input: "MIT https://opensource.org/licenses/MIT"
@@ -45,7 +41,6 @@ interface LicenseInfo {
  * //   licenseUrl: "https://opensource.org/licenses/MIT"
  * // }
  * ```
- *
  * @example URL only
  * ```
  * // Input: "https://example.com/license"
@@ -54,13 +49,11 @@ interface LicenseInfo {
  * //   licenseUrl: "https://example.com/license"
  * // }
  * ```
- *
  * @example Complex license
  * ```
  * // Input: "Apache-2.0"
  * // Output: { license: "Apache-2.0", licenseType: "Apache-2.0" }
  * ```
- *
  * @since 5.0.0
  * @public
  */

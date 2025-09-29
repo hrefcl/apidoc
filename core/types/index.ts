@@ -4,7 +4,6 @@
  * Core types and interfaces for the APIDoc documentation generator.
  * Provides comprehensive type safety for all APIDoc components including
  * configuration options, parsed data structures, and plugin interfaces.
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -18,7 +17,6 @@
  * Defines all available configuration options for customizing the APIDoc
  * generation process. These options can be provided via CLI arguments,
  * configuration files, or programmatic API calls.
- *
  * @example Basic configuration
  * ```typescript
  * const options: ApiDocOptions = {
@@ -28,7 +26,6 @@
  *   verbose: true
  * }
  * ```
- *
  * @example Advanced configuration with filters
  * ```typescript
  * const options: ApiDocOptions = {
@@ -39,7 +36,6 @@
  *   filterBy: 'version=1.0.0'
  * }
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -113,7 +109,6 @@ export interface ApiDocOptions {
  * Contains project-level information and template configuration options.
  * This data is typically read from package.json and apidoc.json files
  * and used to customize the generated documentation appearance and behavior.
- *
  * @example Basic project configuration
  * ```typescript
  * const project: ApiDocProject = {
@@ -123,7 +118,6 @@ export interface ApiDocOptions {
  *   url: 'https://api.example.com'
  * }
  * ```
- *
  * @example Advanced project with template options
  * ```typescript
  * const project: ApiDocProject = {
@@ -140,7 +134,6 @@ export interface ApiDocOptions {
  *   }
  * }
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -198,7 +191,6 @@ export interface ApiDocProject {
  * Contains all parsed information for a single API endpoint including
  * metadata, parameters, responses, and examples. This is the core data
  * structure that represents each documented API endpoint.
- *
  * @example Complete API endpoint
  * ```typescript
  * const apiEntry: ApiDocEntry = {
@@ -221,7 +213,6 @@ export interface ApiDocProject {
  *   }
  * }
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -271,7 +262,6 @@ export interface ApiDocEntry {
  *
  * Organizes related API fields (parameters, headers, responses) into
  * logical groups. Each group can contain multiple fields and examples.
- *
  * @example Parameter fields
  * ```typescript
  * const paramFields: ApiDocFields = {
@@ -288,7 +278,6 @@ export interface ApiDocEntry {
  *   }]
  * }
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -304,7 +293,6 @@ export interface ApiDocFields {
  *
  * Represents a single parameter, header, or response field with its
  * type information, constraints, and documentation.
- *
  * @example Required parameter
  * ```typescript
  * const userIdField: ApiDocField = {
@@ -315,7 +303,6 @@ export interface ApiDocFields {
  *   description: 'Unique identifier for the user'
  * }
  * ```
- *
  * @example Optional field with constraints
  * ```typescript
  * const statusField: ApiDocField = {
@@ -328,7 +315,6 @@ export interface ApiDocFields {
  *   description: 'User account status'
  * }
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -356,7 +342,6 @@ export interface ApiDocField {
  *
  * Represents a code example with syntax highlighting support.
  * Used for request/response examples, usage demonstrations, etc.
- *
  * @example cURL example
  * ```typescript
  * const curlExample: ApiDocExample = {
@@ -365,7 +350,6 @@ export interface ApiDocField {
  *   type: 'curl'
  * }
  * ```
- *
  * @example JSON response example
  * ```typescript
  * const jsonExample: ApiDocExample = {
@@ -374,7 +358,6 @@ export interface ApiDocField {
  *   type: 'json'
  * }
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -402,7 +385,6 @@ export interface ApiDocSampleRequest {
  *
  * Contains the complete parsed API documentation including all endpoints
  * and project metadata. This is the main output of the parsing process.
- *
  * @example Parse result
  * ```typescript
  * const result: ApiDocParseResult = {
@@ -423,7 +405,6 @@ export interface ApiDocSampleRequest {
  *   }
  * }
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -461,7 +442,6 @@ export interface ApiDocLanguage {
  *
  * Defines the contract for logging implementations used throughout APIDoc.
  * Supports multiple log levels for different types of output.
- *
  * @example Custom logger implementation
  * ```typescript
  * const customLogger: LoggerInterface = {
@@ -472,7 +452,6 @@ export interface ApiDocLanguage {
  *   error: (msg) => console.error(`[ERROR] ${msg}`)
  * }
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -529,7 +508,6 @@ export interface ApiDocError extends Error {
  *
  * Defines the structure for APIDoc plugins that can extend parsing,
  * processing, filtering, and language support capabilities.
- *
  * @example Plugin implementation
  * ```typescript
  * const myPlugin: PluginInterface = {
@@ -552,7 +530,6 @@ export interface ApiDocError extends Error {
  *   }
  * }
  * ```
- *
  * @since 5.0.0
  * @public
  */

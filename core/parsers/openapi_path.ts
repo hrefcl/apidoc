@@ -3,7 +3,6 @@
  *
  * Allows defining specific OpenAPI paths with their operations and converts them
  * to APIDoc-compatible format for seamless navigation integration.
- *
  * @example OpenAPI path definition
  * ```javascript
  * /**
@@ -17,12 +16,11 @@
  *  required: true
  *  schema:
  *  type: integer
- *  *   responses:
- *  *     200:
- *  *       description: Success
- *  * /
+ *  responses:
+ *  200:
+ *  description: Success
+ *  /
  * ```
- *
  * @since 4.0.0
  * @public
  */
@@ -48,10 +46,8 @@ interface ApiDocCompatibleResult {
  * Parse @openapi-path content and convert to APIDoc-compatible format
  *
  * Expected format:
- *
  * @openapi-path /path/to/endpoint
  * operation_definition_in_yaml_or_json
- *
  * @param content - Raw content from the @openapi-path tag
  * @returns APIDoc-compatible result or null if parsing fails
  */
@@ -112,6 +108,8 @@ export function parse(content: string): ApiDocCompatibleResult | null {
 
 /**
  * Process the path and operations definition for APIDoc compatibility
+ * @param path
+ * @param operations
  */
 function processPathDefinition(path: string, operations: any): ApiDocCompatibleResult | null {
     // Find the first HTTP method in the operations
@@ -147,6 +145,7 @@ function processPathDefinition(path: string, operations: any): ApiDocCompatibleR
 /**
  * Convert OpenAPI path format to APIDoc format
  * Converts {param} to :param for APIDoc compatibility
+ * @param openApiPath
  */
 function convertOpenApiPathToApiDoc(openApiPath: string): string {
     return openApiPath.replace(/\{([^}]+)\}/g, ':$1');
@@ -154,20 +153,22 @@ function convertOpenApiPathToApiDoc(openApiPath: string): string {
 
 /**
  * Generate operation name from method and path
+ * @param method
+ * @param path
  */
 function generateOperationName(method: string, path: string): string {
     // Convert path to camelCase operation name
     // e.g., GET /users/{id} -> getUsersId
     const cleanPath = path.replace(/[{}/:]/g, ' ').trim();
     const words = cleanPath.split(/\s+/).filter((w) => w.length > 0);
-    const camelCase =
-        method.toLowerCase() + words.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+    const camelCase = method.toLowerCase() + words.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
     return camelCase;
 }
 
 /**
  * Extract version from OpenAPI operation
  * Looks for version in various places: x-version extension, tags, etc.
+ * @param operation
  */
 function extractVersionFromOperation(operation: any): string | null {
     // Check for x-version extension

@@ -3,7 +3,6 @@
  *
  * This parser processes @file tags to extract file-level descriptions and metadata.
  * File-level documentation provides context about the entire file's purpose and contents.
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -17,16 +16,13 @@
  * Processes @file tags by extracting the description text that follows the tag.
  * This information is used to generate file-level documentation sections that
  * appear at the top of generated documentation.
- *
  * @param content - Raw content from the @file tag
  * @returns Object containing the file description, or null if content is empty
- *
  * @example Basic file description
  * ```
  * // Input: "Main entry point for the APIDoc library"
  * // Output: { fileDescription: "Main entry point for the APIDoc library" }
  * ```
- *
  * @example Multi-line description
  * ```
  * // Input: "Authentication utilities\n\nProvides JWT and OAuth2 helpers"
@@ -35,7 +31,6 @@
  * //   fileDescriptionLong: "Authentication utilities\n\nProvides JWT and OAuth2 helpers"
  * // }
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -53,12 +48,12 @@ export function parse(content: string): { fileDescription: string; fileDescripti
     if (parts.length > 1) {
         return {
             fileDescription: shortDescription,
-            fileDescriptionLong: description
+            fileDescriptionLong: description,
         };
     }
 
     return {
-        fileDescription: shortDescription
+        fileDescription: shortDescription,
     };
 }
 

@@ -3,7 +3,6 @@
  *
  * This parser processes @copyright tags to extract copyright notices and year information.
  * Copyright information is used for legal attribution in generated documentation.
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -26,10 +25,8 @@ interface CopyrightInfo {
  * Processes @copyright tags supporting various formats including year-only,
  * holder-only, and combined year/holder formats. Handles standard copyright
  * notation patterns.
- *
  * @param content - Raw content from the @copyright tag
  * @returns Object containing copyright information, or null if content is empty
- *
  * @example Year and holder
  * ```
  * // Input: "2025 Href SpA"
@@ -39,7 +36,6 @@ interface CopyrightInfo {
  * //   copyrightHolder: "Href SpA"
  * // }
  * ```
- *
  * @example Year range
  * ```
  * // Input: "2020-2025 MyCompany Inc."
@@ -49,7 +45,6 @@ interface CopyrightInfo {
  * //   copyrightHolder: "MyCompany Inc."
  * // }
  * ```
- *
  * @example Holder only
  * ```
  * // Input: "Acme Corporation"
@@ -58,7 +53,6 @@ interface CopyrightInfo {
  * //   copyrightHolder: "Acme Corporation"
  * // }
  * ```
- *
  * @example Year only
  * ```
  * // Input: "2025"
@@ -67,7 +61,6 @@ interface CopyrightInfo {
  * //   copyrightYear: "2025"
  * // }
  * ```
- *
  * @since 5.0.0
  * @public
  */

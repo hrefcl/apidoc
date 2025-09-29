@@ -31,20 +31,17 @@ const _messages = {
  * First phase of group processing that scans parsed files to collect @apiDefine
  * blocks that define group metadata (titles and descriptions). These definitions
  * will be used later to enhance group information in API endpoints.
- *
  * @param parsedFiles - Array of parsed file objects containing group definitions
  * @param filenames - Array of filenames for the parsed files
  * @param packageInfos - Package information for version handling
  * @param target - Target key in result object for storing group definitions
  * @returns Object containing group definitions organized by name and version
- *
  * @example Group definition collection
  * ```typescript
  * // Collects @apiDefine blocks for groups
  * const result = preProcess(parsedFiles, filenames, packageInfos, 'defineGroup');
  * // Returns: { defineGroup: { "User": { "1.0.0": { title: "User Management", description: "..." } } } }
  * ```
- *
  * @since 4.0.0
  * @internal
  */
@@ -85,7 +82,6 @@ function preProcess(parsedFiles, filenames, packageInfos, target) {
  * Second phase of group processing that assigns group information to API endpoints.
  * For endpoints without explicit groups, uses filename as fallback. Normalizes group
  * names for URL safety and applies group titles and descriptions from definitions.
- *
  * @param parsedFiles - Array of parsed file objects to process for group assignment
  * @param filenames - Array of filenames for fallback group names and error reporting
  * @param preProcess - Previously collected group definitions from preprocessing
@@ -93,28 +89,17 @@ function preProcess(parsedFiles, filenames, packageInfos, target) {
  * @param source - Key in preProcess object containing group definitions
  * @param target - Key in block.local for group information storage
  * @param messages - Error message templates for consistent error reporting
- *
  * @throws {WorkerError} When referenced group definition has version mismatch
- *
  * @example Group assignment and normalization
  * ```typescript
  * // Before: block.local.group = "User Management"
  * postProcess(parsedFiles, filenames, preProcess, packageInfos);
  * // After: block.local.group = "User_Management", block.local.groupTitle = "User Management"
  * ```
- *
  * @since 4.0.0
  * @internal
  */
-function postProcess(
-    parsedFiles: any[],
-    filenames: string[],
-    preProcess: any,
-    packageInfos: any,
-    source?: string,
-    target?: string,
-    messages?: any
-): void {
+function postProcess(parsedFiles: any[], filenames: string[], preProcess: any, packageInfos: any, source?: string, target?: string, messages?: any): void {
     source = source || 'defineGroup';
     target = target || 'group';
     messages = messages || _messages;
@@ -202,8 +187,7 @@ function postProcess(
                     if (foundIndex === -1) {
                         const extra = [{ Groupname: name }, { Version: version }, { 'Defined versions': versionKeys }];
                         throw new WorkerError(
-                            'Referenced definition has no matching or a higher version. ' +
-                                'Check version number in referenced define block.',
+                            'Referenced definition has no matching or a higher version. ' + 'Check version number in referenced define block.',
                             filenames[parsedFileIndex],
                             block.index,
                             messages.common.element,

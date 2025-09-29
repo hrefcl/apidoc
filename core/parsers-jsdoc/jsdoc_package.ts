@@ -3,7 +3,6 @@
  *
  * This parser processes @package tags to extract package name and namespace information.
  * Package information is used for organizing documentation by module or namespace.
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -17,16 +16,13 @@
  * Processes @package tags to identify the module, namespace, or package that
  * the documented code belongs to. This is used for organizing documentation
  * hierarchically and generating proper navigation structures.
- *
  * @param content - Raw content from the @package tag
  * @returns Object containing package information, or null if content is empty
- *
  * @example Simple package name
  * ```
  * // Input: "MyPackage"
  * // Output: { packageName: "MyPackage" }
  * ```
- *
  * @example Namespaced package
  * ```
  * // Input: "MyCompany.MyPackage"
@@ -36,7 +32,6 @@
  * //   packageModule: "MyPackage"
  * // }
  * ```
- *
  * @example Deep namespace
  * ```
  * // Input: "com.example.utils.auth"
@@ -46,13 +41,11 @@
  * //   packageModule: "auth"
  * // }
  * ```
- *
  * @example Empty content
  * ```
  * // Input: "   "
  * // Output: null
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -74,7 +67,7 @@ export function parse(content: string): { packageName: string; packageNamespace?
         return {
             ...result,
             packageNamespace: namespace,
-            packageModule: module
+            packageModule: module,
         };
     }
 

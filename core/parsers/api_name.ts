@@ -11,28 +11,23 @@
  * Processes @apiName tags by trimming whitespace and converting spaces to underscores
  * to create valid identifiers. Names are used for cross-referencing between API
  * documentation sections and generating internal links.
- *
  * @param content - Raw content from the @apiName tag
  * @returns Object containing the normalized name, or null if content is empty
- *
  * @example Basic name
  * ```
  * // Input: "GetUser"
  * // Output: { name: "GetUser" }
  * ```
- *
  * @example Name with spaces
  * ```
  * // Input: "Get User Profile"
  * // Output: { name: "Get_User_Profile" }
  * ```
- *
  * @example Empty content
  * ```
  * // Input: "   "
  * // Output: null
  * ```
- *
  * @since 4.0.0
  * @public
  */

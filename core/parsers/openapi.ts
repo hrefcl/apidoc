@@ -6,7 +6,6 @@
  *
  * This parser processes OpenAPI definitions and converts them into APIDoc-compatible
  * data structures that integrate seamlessly with APIDoc's navigation and grouping system.
- *
  * @example Basic OpenAPI path definition
  * ```javascript
  * /**
@@ -20,13 +19,12 @@
  *  in: path
  *  required: true
  *  schema:
- *  *           type: integer
- *  *     responses:
- *  *       200:
- *  *         description: User details
- *  * /
+ *  type: integer
+ *  responses:
+ *  200:
+ *  description: User details
+ *  /
  * ```
- *
  * @since 4.0.0
  * @public
  */
@@ -70,8 +68,8 @@ interface ApiDocCompatibleResult {
  *
  * This function processes OpenAPI YAML/JSON content and converts it into the exact
  * format that APIDoc expects for navigation, grouping, and display purposes.
- *
  * @param content - Raw YAML/JSON content from the @openapi tag
+ * @param filePath
  * @returns APIDoc-compatible result or null if parsing fails
  */
 function parse(content: string, filePath?: string): ApiDocCompatibleResult | null {
@@ -132,6 +130,8 @@ function parse(content: string, filePath?: string): ApiDocCompatibleResult | nul
  *
  * This function extracts the first operation from an OpenAPI specification
  * and converts it to the format expected by APIDoc's navigation system.
+ * @param openapi
+ * @param rawContent
  */
 function processOpenApiForApiDoc(openapi: any, rawContent: string): ApiDocCompatibleResult | null {
     // Handle path definitions (most common case)
@@ -154,6 +154,8 @@ function processOpenApiForApiDoc(openapi: any, rawContent: string): ApiDocCompat
 
 /**
  * Extract the first operation from OpenAPI paths and convert to APIDoc format
+ * @param paths
+ * @param components
  */
 function extractFirstOperation(paths: any, components?: any): ApiDocCompatibleResult | null {
     const pathKeys = Object.keys(paths);
@@ -228,6 +230,7 @@ function extractFirstOperation(paths: any, components?: any): ApiDocCompatibleRe
 
 /**
  * Process standalone operation (operation without path context)
+ * @param operation
  */
 function processStandaloneOperation(operation: any): ApiDocCompatibleResult {
     const result: ApiDocCompatibleResult = {
@@ -254,6 +257,7 @@ function processStandaloneOperation(operation: any): ApiDocCompatibleResult {
 
 /**
  * Create documentation entry for components, schemas, info, etc.
+ * @param openapi
  */
 function createDocumentationEntry(openapi: any): ApiDocCompatibleResult {
     const result: ApiDocCompatibleResult = {
@@ -290,6 +294,7 @@ function createDocumentationEntry(openapi: any): ApiDocCompatibleResult {
 /**
  * Convert OpenAPI path format to APIDoc format
  * Converts {param} to :param for APIDoc compatibility
+ * @param openApiPath
  */
 function convertOpenApiPathToApiDoc(openApiPath: string): string {
     return openApiPath.replace(/\{([^}]+)\}/g, ':$1');
@@ -297,20 +302,22 @@ function convertOpenApiPathToApiDoc(openApiPath: string): string {
 
 /**
  * Generate operation name from method and path
+ * @param method
+ * @param path
  */
 function generateOperationName(method: string, path: string): string {
     // Convert path to camelCase operation name
     // e.g., GET /users/{id} -> getUsersId
     const cleanPath = path.replace(/[{}/:]/g, ' ').trim();
     const words = cleanPath.split(/\s+/).filter((w) => w.length > 0);
-    const camelCase =
-        method.toLowerCase() + words.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+    const camelCase = method.toLowerCase() + words.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
     return camelCase;
 }
 
 /**
  * Extract version from OpenAPI operation
  * Looks for version in various places: x-version extension, tags, etc.
+ * @param operation
  */
 function extractVersionFromOperation(operation: any): string | null {
     // Check for x-version extension
@@ -340,6 +347,7 @@ function extractVersionFromOperation(operation: any): string | null {
 /**
  * Extract version from full OpenAPI specification
  * Looks for version in info.version or x-version extension
+ * @param openapi
  */
 function extractVersionFromOpenAPI(openapi: any): string | null {
     // Check for x-version extension at root level
@@ -357,6 +365,7 @@ function extractVersionFromOpenAPI(openapi: any): string | null {
 
 /**
  * Check if the object represents a path definition
+ * @param obj
  */
 function isPathDefinition(obj: any): boolean {
     if (!obj || typeof obj !== 'object') return false;
@@ -368,37 +377,29 @@ function isPathDefinition(obj: any): boolean {
 
 /**
  * Check if the object represents a schema definition
+ * @param obj
  */
 function isSchemaDefinition(obj: any): boolean {
     if (!obj || typeof obj !== 'object') return false;
 
     // Check for schema properties
-    return (
-        obj.type !== undefined ||
-        obj.properties !== undefined ||
-        obj.allOf !== undefined ||
-        obj.oneOf !== undefined ||
-        obj.anyOf !== undefined
-    );
+    return obj.type !== undefined || obj.properties !== undefined || obj.allOf !== undefined || obj.oneOf !== undefined || obj.anyOf !== undefined;
 }
 
 /**
  * Check if the object represents an operation definition
+ * @param obj
  */
 function isOperationDefinition(obj: any): boolean {
     if (!obj || typeof obj !== 'object') return false;
 
     // Check for operation properties
-    return (
-        obj.responses !== undefined ||
-        obj.parameters !== undefined ||
-        obj.requestBody !== undefined ||
-        obj.operationId !== undefined
-    );
+    return obj.responses !== undefined || obj.parameters !== undefined || obj.requestBody !== undefined || obj.operationId !== undefined;
 }
 
 /**
  * Convert OpenAPI parameters to APIDoc parameter format
+ * @param parameters
  */
 function convertParametersToApiDoc(parameters: any[]): any[] {
     return parameters.map((param) => ({
@@ -413,6 +414,8 @@ function convertParametersToApiDoc(parameters: any[]): any[] {
 
 /**
  * Convert OpenAPI requestBody to APIDoc body format
+ * @param requestBody
+ * @param components
  */
 function convertRequestBodyToApiDoc(requestBody: any, components?: any): any[] {
     const bodyFields = [];
@@ -433,6 +436,8 @@ function convertRequestBodyToApiDoc(requestBody: any, components?: any): any[] {
 
 /**
  * Convert OpenAPI responses to APIDoc success/error format
+ * @param responses
+ * @param components
  */
 function convertResponsesToApiDoc(responses: any, components?: any): { success: any[]; error: any[] } {
     const success = [];
@@ -478,6 +483,10 @@ function convertResponsesToApiDoc(responses: any, components?: any): { success: 
 
 /**
  * Extract fields from OpenAPI schema
+ * @param schema
+ * @param contentType
+ * @param statusCode
+ * @param components
  */
 function extractSchemaFields(schema: any, contentType?: string, statusCode?: string, components?: any): any[] {
     const fields = [];
@@ -545,6 +554,8 @@ function extractSchemaFields(schema: any, contentType?: string, statusCode?: str
 
 /**
  * Resolve OpenAPI $ref references
+ * @param schema
+ * @param components
  */
 function resolveSchemaReference(schema: any, components?: any): any {
     if (!schema || !schema.$ref || !components) {
@@ -566,6 +577,7 @@ function resolveSchemaReference(schema: any, components?: any): any {
 
 /**
  * Convert OpenAPI schema type to APIDoc type
+ * @param schema
  */
 function getApiDocType(schema: any): string {
     if (!schema) return 'String';
@@ -595,6 +607,9 @@ function getApiDocType(schema: any): string {
 
 /**
  * Parse external OpenAPI file reference and load content
+ * @param pathSpec
+ * @param filePath
+ * @param currentFilePath
  */
 function parseExternalOpenApiFile(pathSpec: string, filePath: string, currentFilePath?: string): any | null {
     try {
@@ -659,6 +674,8 @@ function parseExternalOpenApiFile(pathSpec: string, filePath: string, currentFil
 
 /**
  * Extract specific operation from OpenAPI specification for external files
+ * @param openapi
+ * @param pathSpec
  */
 function extractSpecificOperationFromFile(openapi: any, pathSpec: string): any | null {
     // If pathSpec looks like a path (starts with /), find it in paths
@@ -683,6 +700,9 @@ function extractSpecificOperationFromFile(openapi: any, pathSpec: string): any |
 
 /**
  * Convert external OpenAPI to APIDoc elements
+ * @param openapi
+ * @param sourceFile
+ * @param pathSpec
  */
 function convertOpenApiToElements(openapi: any, sourceFile: string, pathSpec: string): any[] {
     const elements: any[] = [];
@@ -738,6 +758,10 @@ function convertOpenApiToElements(openapi: any, sourceFile: string, pathSpec: st
 
 /**
  * Hook processor for @openapi tags with external file references
+ * @param elements
+ * @param element
+ * @param block
+ * @param filename
  */
 function externalFileProcessor(elements: Array<any>, element: any, block: any, filename: string): Array<any> {
     if (element.name !== 'openapi') {
@@ -779,6 +803,7 @@ function externalFileProcessor(elements: Array<any>, element: any, block: any, f
 
 /**
  * Initialize the external OpenAPI file processor
+ * @param app
  */
 function init(app: any) {
     app.addHook('parser-find-elements', externalFileProcessor, 190); // Run before @apiSchema (priority 200)

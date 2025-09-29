@@ -18,7 +18,6 @@ let app: any = {};
 
 /**
  * Set the provided app instance with worker modules.
- *
  * @param _app Application instance
  */
 function Worker(_app) {
@@ -51,7 +50,6 @@ util.inherits(Worker, Object);
 
 /**
  * Add a worker to the "workers" collection.
- *
  * @param name - Name of the worker to be added.
  * @param worker - Object assigned to the passed name.
  * @memberof Worker.prototype
@@ -69,7 +67,6 @@ Worker.prototype.addWorker = function (name, worker) {
  * - Iterates over parsed file data to normalize and augment block information by ensuring required fields like `type`, `url`, `version`, and `filename` are populated.
  * - Applies transformations (e.g., converting directory delimiters to the standard format).
  * - Invokes pre-processing and post-processing steps for workers, allowing modular operations on the parsed data.
- *
  * @param parsedFiles - Array of parsed files, where each file is an array of block objects with global and local configurations.
  * @param parsedFilenames - Array of filenames corresponding to parsed files. Used to enrich block data with file-specific metadata.
  * @param packageInfos - An object containing package-level information, such as the default version, used to populate block data when specific fields are not provided.

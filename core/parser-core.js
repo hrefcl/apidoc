@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /*
  * apidocts
  * https://apidocts.com
@@ -11,10 +11,12 @@
  *
  * This project is a TypeScript refactor inspired by the original apidoc project.
  */
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
+var __importDefault =
+    (this && this.__importDefault) ||
+    function (mod) {
+        return mod && mod.__esModule ? mod : { default: mod };
+    };
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.getSpecificationVersion = getSpecificationVersion;
 exports.parse = parse;
 exports.parseSource = parseSource;
@@ -22,17 +24,17 @@ exports.setGeneratorInfos = setGeneratorInfos;
 exports.setLogger = setLogger;
 exports.setMarkdownParser = setMarkdownParser;
 exports.setPackageInfos = setPackageInfos;
-const lodash_1 = __importDefault(require("lodash"));
-const os_1 = __importDefault(require("os"));
-const path_1 = __importDefault(require("path"));
-const semver_1 = __importDefault(require("semver"));
-const filter_1 = __importDefault(require("./filter"));
-const parser_1 = __importDefault(require("./parser"));
-const worker_1 = __importDefault(require("./worker"));
-const plugin_loader_1 = __importDefault(require("./plugin_loader"));
-const file_error_1 = require("./errors/file_error");
-const parser_error_1 = require("./errors/parser_error");
-const worker_error_1 = require("./errors/worker_error");
+const lodash_1 = __importDefault(require('lodash'));
+const os_1 = __importDefault(require('os'));
+const path_1 = __importDefault(require('path'));
+const semver_1 = __importDefault(require('semver'));
+const filter_1 = __importDefault(require('./filter'));
+const parser_1 = __importDefault(require('./parser'));
+const worker_1 = __importDefault(require('./worker'));
+const plugin_loader_1 = __importDefault(require('./plugin_loader'));
+const file_error_1 = require('./errors/file_error');
+const parser_error_1 = require('./errors/parser_error');
+const worker_error_1 = require('./errors/worker_error');
 // const
 const SPECIFICATION_VERSION = '4.0.0';
 const defaults = {
@@ -226,8 +228,7 @@ function parse(options) {
                 folderOptions.src = path_1.default.join(folder, './');
                 app.parser.parseFiles(folderOptions, parsedFiles, parsedFilenames);
             });
-        }
-        else {
+        } else {
             // if the input option for source is a single folder, parse as usual.
             options.src = path_1.default.join(options.src, './');
             app.parser.parseFiles(options, parsedFiles, parsedFilenames);
@@ -254,25 +255,30 @@ function parse(options) {
             // Filter MQTT/REST endpoints based on CLI options
             if (app.options.mqttOnly) {
                 // Keep only MQTT endpoints
-                blocks = blocks.filter(block => {
-                    return block.type === 'publish' || block.type === 'subscribe' ||
+                blocks = blocks.filter((block) => {
+                    return (
+                        block.type === 'publish' ||
+                        block.type === 'subscribe' ||
                         block.topic || // Has MQTT topic
                         block.qos !== undefined || // Has QoS setting
                         block.retain !== undefined || // Has retain setting
-                        (block.url === '' && (block.type === 'publish' || block.type === 'subscribe' || block.type === 'inline'));
+                        (block.url === '' &&
+                            (block.type === 'publish' || block.type === 'subscribe' || block.type === 'inline'))
+                    );
                 });
                 app.log.verbose('MQTT-only mode: filtered to ' + blocks.length + ' MQTT endpoints');
             }
             // Validate MQTT schemas if option is enabled
             if (app.options.failOnMqttSchemaError) {
-                const mqttBlocks = blocks.filter(block => block.type === 'publish' || block.type === 'subscribe' || block.topic);
+                const mqttBlocks = blocks.filter(
+                    (block) => block.type === 'publish' || block.type === 'subscribe' || block.topic
+                );
                 for (const block of mqttBlocks) {
                     if (block.payloadSchema && block.payloadSchema.type === 'inline') {
                         try {
                             // Try to parse the inline schema as JSON
                             JSON.parse(block.payloadSchema.content);
-                        }
-                        catch (e) {
+                        } catch (e) {
                             app.log.error('Invalid MQTT payload schema in ' + block.name + ': ' + e.message);
                             return false;
                         }
@@ -296,16 +302,14 @@ function parse(options) {
             };
         }
         return true;
-    }
-    catch (e) {
+    } catch (e) {
         // display error by instance
         let extra;
         let meta = {};
         if (e instanceof file_error_1.FileError) {
             meta = { Path: e.path };
             app.log.error(e.message, meta);
-        }
-        else if (e instanceof parser_error_1.ParserError) {
+        } else if (e instanceof parser_error_1.ParserError) {
             extra = e.extra;
             if (e.source) {
                 extra.unshift({ Source: e.source });
@@ -324,8 +328,7 @@ function parse(options) {
                 meta[key] = obj[key];
             });
             app.log.error(e.message, meta);
-        }
-        else if (e instanceof worker_error_1.WorkerError) {
+        } else if (e instanceof worker_error_1.WorkerError) {
             extra = e.extra;
             if (e.definition) {
                 extra.push({ Definition: e.definition });
@@ -341,8 +344,7 @@ function parse(options) {
                 meta[key] = obj[key];
             });
             app.log.error(e.message, meta);
-        }
-        else {
+        } else {
             app.log.error(e.message);
             if (e.stack) {
                 app.log.debug(e.stack);
@@ -362,8 +364,7 @@ function parseSource(source, options) {
     try {
         initApp(options);
         return app.parser.parseSource(source, app.options.encoding, app.options.filename);
-    }
-    catch (e) {
+    } catch (e) {
         app.log.error(e.message);
     }
 }
@@ -467,8 +468,7 @@ function addHook(name, func, priority) {
         if (priority === entry.priority) {
             pos = index;
             replace = 1;
-        }
-        else if (priority > entry.priority) {
+        } else if (priority > entry.priority) {
             pos = index + 1;
         }
     });

@@ -1,13 +1,11 @@
 /**
  * @file Parser for @apiSchema tags - handles API schema documentation
- *
  * @description This parser processes @apiSchema tags to extract schema definitions including:
  * - TypeScript interfaces from .ts files
  * - JSON Schema files (external references)
  * - Automatic parameter/success/error generation
  * - Type validation and documentation
  * - Group support for organizing parameters
- *
  * @example Basic Usage
  * ```typescript
  * // In your API documentation:
@@ -17,7 +15,6 @@
  *  @apiSchema {jsonschema=./schemas/user.json} apiParam
  *  \/
  * ```
- *
  * @author hrefcl
  * @since 4.0.0
  * @version 4.0.0
@@ -29,7 +26,6 @@ import { findInterface, interfaceToApiDocElements } from '../utils/typescript-pa
 
 /**
  * Current schema group being processed
- *
  * @internal
  * @deprecated This global variable is maintained for legacy compatibility but not actively used
  */
@@ -37,7 +33,6 @@ const group = '';
 
 /**
  * Parses TypeScript interface definitions and converts them to APIDoc elements
- *
  * @description This function extracts properties from TypeScript interface definitions
  * and converts them into APIDoc-compatible parameter definitions. It handles:
  * - Basic types (string, number, boolean)
@@ -45,12 +40,9 @@ const group = '';
  * - Nested objects and arrays
  * - Union types and string literals
  * - JSDoc comments for descriptions
- *
  * @param interfaceContent - The raw interface content as a string
  * @param interfaceName - The name of the interface being parsed
- *
  * @returns Array of APIDoc elements with parsed properties
- *
  * @example
  * ```typescript
  * const elements = parseTypeScriptInterface(`
@@ -66,7 +58,6 @@ const group = '';
  * //   { source: '@apiParam {String="admin","user"} role ...', ... }
  * // ]
  * ```
- *
  * @internal
  * @since 4.0.0
  */
@@ -128,7 +119,6 @@ function parseTypeScriptInterface(interfaceContent: string, interfaceName: strin
 
 /**
  * Converts TypeScript type definitions to APIDoc-compatible type strings
- *
  * @description This function normalizes TypeScript types into the format expected by APIDoc.
  * It handles complex type transformations including:
  * - Basic primitive types (string → String, number → Number, etc.)
@@ -137,30 +127,24 @@ function parseTypeScriptInterface(interfaceContent: string, interfaceName: strin
  * - Generic types (simplified to base type)
  * - String literal types with quoted values
  * - Complex nested types (fallback to Object)
- *
  * @param typeDefinition - The TypeScript type definition as a string
- *
  * @returns Object containing the normalized APIDoc type and optional constraints
- *
  * @example Basic Types
  * ```typescript
  * parseTypeScriptType('string') // { type: 'String' }
  * parseTypeScriptType('number') // { type: 'Number' }
  * parseTypeScriptType('boolean') // { type: 'Boolean' }
  * ```
- *
  * @example Array Types
  * ```typescript
  * parseTypeScriptType('string[]') // { type: 'String[]' }
  * parseTypeScriptType('Array<number>') // { type: 'Number[]' }
  * ```
- *
  * @example Union Types
  * ```typescript
  * parseTypeScriptType("'admin' | 'user'") // { type: 'String="admin","user"' }
  * parseTypeScriptType('string | number') // { type: 'String/Number' }
  * ```
- *
  * @internal
  * @since 4.0.0
  */
@@ -212,7 +196,6 @@ function parseTypeScriptType(typeDefinition: string): { type: string; constraint
 
 /**
  * Parses JSON Schema files and converts them to APIDoc parameter definitions
- *
  * @description This function reads external JSON Schema files and converts their
  * property definitions into APIDoc-compatible parameter documentation. It supports:
  * - Standard JSON Schema format (draft-07)
@@ -220,12 +203,9 @@ function parseTypeScriptType(typeDefinition: string): { type: string; constraint
  * - Required vs optional field detection
  * - Type conversion from JSON Schema to APIDoc types
  * - Recursive traversal of nested objects
- *
  * @param schemaPath - Relative path to the JSON Schema file
  * @param relativeTo - Base file path to resolve the schema path against
- *
  * @returns Array of APIDoc elements generated from the schema
- *
  * @example
  * ```typescript
  * // For schema file: ./schemas/user.json
@@ -236,9 +216,7 @@ function parseTypeScriptType(typeDefinition: string): { type: string; constraint
  * //   { source: '@apiParam {String} [role] User role', ... }
  * // ]
  * ```
- *
  * @throws Will log warning if schema file cannot be read or parsed
- *
  * @public
  * @since 4.0.0
  */
@@ -270,17 +248,13 @@ function parseJsonSchema(schemaPath: string, relativeTo: string): Array<any> {
 
 /**
  * Recursively traverses JSON Schema objects to extract parameter definitions
- *
  * @description This function performs deep traversal of JSON Schema structures,
  * converting nested object properties into flattened APIDoc parameter definitions.
  * It handles the recursive nature of JSON Schema objects and maintains proper
  * field naming with dot notation for nested properties.
- *
  * @param schema - The JSON Schema object or sub-schema to traverse
  * @param prefix - Current property path prefix for nested traversal (e.g., "user.preferences")
- *
  * @returns Record mapping field names to their APIDoc parameter definition strings
- *
  * @example Basic object traversal
  * ```typescript
  * const schema = {
@@ -298,7 +272,6 @@ function parseJsonSchema(schemaPath: string, relativeTo: string): Array<any> {
  * //   'age': '{Number} [age] User age'
  * // }
  * ```
- *
  * @example Nested object traversal
  * ```typescript
  * const schema = {
@@ -325,7 +298,6 @@ function parseJsonSchema(schemaPath: string, relativeTo: string): Array<any> {
  * //   'user.profile.name': '{String} [user.profile.name] Profile name'
  * // }
  * ```
- *
  * @internal
  * @since 4.0.0
  */
@@ -357,16 +329,12 @@ function traverseJsonSchema(schema: any, prefix = ''): Record<string, string> {
 
 /**
  * Converts JSON Schema type definitions to APIDoc-compatible type strings
- *
  * @description This function maps JSON Schema type definitions to the format expected
  * by APIDoc documentation. It handles all standard JSON Schema types including complex
  * array types with nested item definitions. The conversion ensures that generated
  * documentation uses consistent APIDoc type notation.
- *
  * @param schema - The JSON Schema type definition object
- *
  * @returns APIDoc-compatible type string (e.g., 'String', 'Number[]', 'Object')
- *
  * @example Basic type conversion
  * ```typescript
  * getJsonSchemaType({ type: 'string' })     // Returns: 'String'
@@ -374,7 +342,6 @@ function traverseJsonSchema(schema: any, prefix = ''): Record<string, string> {
  * getJsonSchemaType({ type: 'boolean' })    // Returns: 'Boolean'
  * getJsonSchemaType({ type: 'integer' })    // Returns: 'Number'
  * ```
- *
  * @example Array type conversion
  * ```typescript
  * getJsonSchemaType({
@@ -389,14 +356,12 @@ function traverseJsonSchema(schema: any, prefix = ''): Record<string, string> {
  *
  * getJsonSchemaType({ type: 'array' })  // Returns: 'Array' (no items defined)
  * ```
- *
  * @example Complex type conversion
  * ```typescript
  * getJsonSchemaType({ type: 'object' })     // Returns: 'Object'
  * getJsonSchemaType({ type: 'null' })       // Returns: 'Mixed'
  * getJsonSchemaType({})                     // Returns: 'Mixed' (unknown type)
  * ```
- *
  * @internal
  * @since 4.0.0
  */
@@ -418,17 +383,13 @@ function getJsonSchemaType(schema: any): string {
 
 /**
  * Parses @apiSchema tag content and extracts schema configuration
- *
  * @description This function processes the content of @apiSchema tags to extract
  * the schema type, value, target element, and optional group information. It supports
  * both TypeScript interface references and external JSON Schema file paths with
  * flexible syntax for different APIDoc elements.
- *
  * @param content - The raw content string from the @apiSchema tag
  * @param source - The complete source line (used for error reporting)
- *
  * @returns Parsed schema configuration object or null if parsing fails
- *
  * @example Supported syntax patterns
  * ```typescript
  * // TypeScript interface with group
@@ -443,7 +404,6 @@ function getJsonSchemaType(schema: any): string {
  * parse("{interface=ResponseError}", "@apiSchema ...")
  * // Returns: { group: "", schemaType: "interface", schemaValue: "ResponseError", element: "apiParam" }
  * ```
- *
  * @example Return object structure
  * ```typescript
  * interface ParseResult {
@@ -453,9 +413,7 @@ function getJsonSchemaType(schema: any): string {
  *   element: string;      // Target APIDoc element (apiParam, apiSuccess, apiError, etc.)
  * }
  * ```
- *
  * @returns null for invalid syntax, multiline content, or commented content
- *
  * @public
  * @since 4.0.0
  */
@@ -494,19 +452,15 @@ function parse(content: string, source: string): any {
 
 /**
  * Main processor function that converts @apiSchema tags into APIDoc elements
- *
  * @description This is the core processing function that transforms @apiSchema tags
  * into appropriate APIDoc elements (@apiParam, @apiSuccess, @apiError, etc.).
  * It handles both TypeScript interface resolution and JSON Schema file processing,
  * with proper error handling and fallback mechanisms.
- *
  * @param elements - Current array of parsed APIDoc elements for the block
  * @param element - The @apiSchema element being processed
  * @param block - The complete documentation block context (unused but required for hook interface)
  * @param filename - Source file path for resolving relative schema paths and interface lookups
- *
  * @returns Updated elements array with @apiSchema replaced by generated parameter/success elements
- *
  * @example TypeScript interface processing
  * ```typescript
  * // Input: @apiSchema {interface=UserProfile} apiParam
@@ -519,7 +473,6 @@ function parse(content: string, source: string): any {
  * const result = processor(elements, apiSchemaElement, block, '/api/users.js');
  * // Returns: elements array with @apiSchema removed and @apiParam elements added
  * ```
- *
  * @example JSON Schema processing
  * ```typescript
  * // Input: @apiSchema {jsonschema=./schemas/user.json} apiSuccess
@@ -532,7 +485,6 @@ function parse(content: string, source: string): any {
  * const result = processor(elements, apiSchemaElement, block, '/api/users.js');
  * // Returns: elements array with @apiSchema removed and @apiSuccess elements added
  * ```
- *
  * @example Error handling
  * ```typescript
  * // When interface is not found:
@@ -545,7 +497,6 @@ function parse(content: string, source: string): any {
  * // - Returns original elements array unchanged
  * // - Allows build to continue
  * ```
- *
  * @hook This function is registered as a 'parser-find-elements' hook with priority 200
  * @public
  * @since 4.0.0
@@ -620,20 +571,16 @@ function processor(elements: Array<any>, element: any, block: any, filename: str
 
 /**
  * Initializes the @apiSchema parser by registering the processor hook
- *
  * @description This initialization function registers the @apiSchema processor
  * with the APIDoc parser hook system. It sets up the parser to intercept
  * and process @apiSchema tags during the documentation generation phase.
- *
  * @param app - The APIDoc application instance with hook registration capabilities
- *
  * @example Hook registration
  * ```typescript
  * // Registers processor function as 'parser-find-elements' hook with priority 200
  * init(apiDocApp);
  * // Now @apiSchema tags will be processed during documentation generation
  * ```
- *
  * @hook Registers processor function with 'parser-find-elements' event at priority 200
  * @priority 200 - Runs after basic element parsing but before final processing
  * @public

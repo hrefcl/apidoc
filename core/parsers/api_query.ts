@@ -3,7 +3,6 @@ import * as apiParser from './api_param';
 
 /**
  * Parse to extract API query
- *
  * @param content - The content to be parsed.
  * @param source - UNUSED
  * @returns {{

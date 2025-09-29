@@ -13,11 +13,9 @@ import unindent from '../utils/unindent';
  * Processes @apiExample tags to extract example code snippets with optional
  * type and title information. Supports various formats including JSON, XML,
  * cURL commands, and other code examples.
- *
  * @param content - Raw example content from the @apiExample tag
  * @param source - Source metadata containing type and title information
  * @returns Object containing title, content, and type, or null if no content
- *
  * @example Basic JSON example
  * ```
  * // Input: "@apiExample {json} Request
@@ -26,21 +24,18 @@ import unindent from '../utils/unindent';
  * //          }"
  * // Output: { title: "Request", content: "{\n  \"name\": \"John\"\n}", type: "json" }
  * ```
- *
  * @example cURL example
  * ```
  * // Input: "@apiExample {curl} Example usage
  * //          curl -X GET http://api.example.com/users"
  * // Output: { title: "Example usage", content: "curl -X GET http://api.example.com/users", type: "curl" }
  * ```
- *
  * @example Example without type (defaults to json)
  * ```
  * // Input: "@apiExample Simple example
  * //          { "status": "ok" }"
  * // Output: { title: "Simple example", content: "{ \"status\": \"ok\" }", type: "json" }
  * ```
- *
  * @since 4.0.0
  * @public
  */

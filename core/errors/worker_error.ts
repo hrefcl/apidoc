@@ -8,7 +8,6 @@
  * WorkerError extends the base Error class to provide detailed context about
  * parsing failures, including file location, block information, and usage examples.
  * This helps developers quickly identify and fix documentation syntax issues.
- *
  * @example Basic usage
  * ```typescript
  * throw new WorkerError(
@@ -21,7 +20,6 @@
  *   { line: 15, column: 10 }
  * );
  * ```
- *
  * @example Error handling
  * ```typescript
  * try {
@@ -34,7 +32,6 @@
  *   }
  * }
  * ```
- *
  * @since 4.0.0
  * @public
  */
@@ -59,7 +56,6 @@ export class WorkerError extends Error {
 
     /**
      * Creates a new WorkerError with detailed context information
-     *
      * @param message - Primary error message describing what went wrong
      * @param file - Source file path where the error occurred
      * @param block - Block identifier, line number, or position in the file
@@ -67,7 +63,6 @@ export class WorkerError extends Error {
      * @param definition - Correct syntax/usage for the element
      * @param example - Example showing proper usage of the element
      * @param extra - Additional context like line/column numbers, validation details
-     *
      * @example
      * ```typescript
      * throw new WorkerError(
@@ -81,15 +76,7 @@ export class WorkerError extends Error {
      * );
      * ```
      */
-    constructor(
-        message: string,
-        file: string,
-        block: string,
-        element: string,
-        definition: string,
-        example: string,
-        extra?: any
-    ) {
+    constructor(message: string, file: string, block: string, element: string, definition: string, example: string, extra?: any) {
         super(message);
         this.name = this.constructor.name;
 

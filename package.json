@@ -78,6 +78,7 @@
     "test:spell": "cspell --fail-fast './bin/apidoc' './example/**/*' './lib/**/*.*js' './template/index.html' './template/src/*' './test/**/*' --config ./cspell.config.json",
     "test:spell-support": "cspell --fail-fast ./README.md ./CONTRIBUTING.md ./CONTRIBUTORS.md ./SECURITY.md --config ./cspell.config.json",
     "typecheck": "tsc --noEmit",
+    "eslint": "eslint .",
     "example": "npm run build:apidoc",
     "format": "npm run format:handlebars && prettier --write \"**/*.{ts,js,html,json}\"",
     "format:html": "npm run format:handlebars && prettier --write \"template/**/*.html\"",

@@ -2,7 +2,6 @@
  * OpenAPI 3.0 Converter for APIDoc 4.0
  *
  * Converts APIDoc parsed data to OpenAPI 3.0 specification
- *
  * @since 5.0.0
  */
 
@@ -159,6 +158,8 @@ export class OpenApiConverter {
 
     /**
      * Main conversion method
+     * @param apidocData
+     * @param projectData
      */
     convert(apidocData: ApiDocItem[], projectData: ProjectData): OpenApiSpec {
         this.swagger.info = this.addInfo(projectData);
@@ -174,6 +175,7 @@ export class OpenApiConverter {
 
     /**
      * Adds project information to OpenAPI info object
+     * @param projectData
      */
     private addInfo(projectData: ProjectData): OpenApiSpec['info'] {
         return {
@@ -185,6 +187,7 @@ export class OpenApiConverter {
 
     /**
      * Adds server information from project data
+     * @param projectData
      */
     private addServers(projectData: ProjectData): OpenApiSpec['servers'] {
         const servers = [];
@@ -208,6 +211,7 @@ export class OpenApiConverter {
 
     /**
      * Removes HTML tags from text
+     * @param text
      */
     private removeTags(text?: string): string {
         const tagsRegex = /(<([^>]+)>)/gi;
@@ -216,6 +220,7 @@ export class OpenApiConverter {
 
     /**
      * Groups API endpoints by URL
+     * @param apidocData
      */
     private groupByUrl(apidocData: ApiDocItem[]): Array<{ verbs: ApiDocItem[] }> {
         const apiByUrl = _.groupBy(apidocData, 'url');
@@ -224,6 +229,7 @@ export class OpenApiConverter {
 
     /**
      * Extracts paths from APIDoc data
+     * @param apidocData
      */
     private extractPaths(apidocData: ApiDocItem[]): Record<string, any> {
         const apiPaths = this.groupByUrl(apidocData);
@@ -253,6 +259,7 @@ export class OpenApiConverter {
 
     /**
      * Generates a path item for OpenAPI
+     * @param verb
      */
     private generatePathItem(verb: ApiDocItem): any {
         const pathItem: any = {
@@ -284,6 +291,8 @@ export class OpenApiConverter {
 
     /**
      * Adds parameters to path item
+     * @param pathItem
+     * @param verb
      */
     private addParameters(pathItem: any, verb: ApiDocItem): void {
         const parameters = pathItem.parameters;
@@ -340,6 +349,8 @@ export class OpenApiConverter {
 
     /**
      * Adds request body for POST/PUT/PATCH methods
+     * @param pathItem
+     * @param verb
      */
     private addRequestBody(pathItem: any, verb: ApiDocItem): void {
         if (!verb.parameter?.fields?.Body && !verb.parameter?.examples) {
@@ -369,6 +380,8 @@ export class OpenApiConverter {
 
     /**
      * Adds responses to path item
+     * @param pathItem
+     * @param verb
      */
     private addResponses(pathItem: any, verb: ApiDocItem): void {
         // Default 200 response
@@ -425,6 +438,7 @@ export class OpenApiConverter {
 
     /**
      * Generates JSON schema from APIDoc fields
+     * @param fields
      */
     private generateSchemaFromFields(fields: any[]): any {
         if (!fields || fields.length === 0) {
@@ -464,6 +478,7 @@ export class OpenApiConverter {
 
     /**
      * Converts APIDoc types to OpenAPI types
+     * @param type
      */
     private convertType(type: string): string {
         if (!type) return 'string';
@@ -482,6 +497,8 @@ export class OpenApiConverter {
 
 /**
  * Convenience function to convert APIDoc data to OpenAPI
+ * @param apidocData
+ * @param projectData
  */
 export function convertToOpenApi(apidocData: ApiDocItem[], projectData: ProjectData): OpenApiSpec {
     const converter = new OpenApiConverter();

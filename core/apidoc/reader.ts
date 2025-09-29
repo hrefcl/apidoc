@@ -3,7 +3,6 @@
  *
  * Handles reading project configuration files (apidoc.json, package.json),
  * header/footer content files, and manages project metadata.
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -99,21 +98,18 @@ const defaultConfig: DefaultConfig = {
  * - Loading header and footer content from markdown files
  * - Merging configuration from multiple sources with proper precedence
  * - Providing validated project metadata for documentation generation
- *
  * @example Basic usage
  * ```typescript
  * const reader = new Reader(appContext);
  * const projectInfo = reader.read();
  * console.log('Project:', projectInfo.name, 'v' + projectInfo.version);
  * ```
- *
  * @example Configuration precedence
  * ```
  * 1. apidoc.json (highest priority)
  * 2. package.json (apidoc field)
  * 3. Default values (lowest priority)
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -127,9 +123,7 @@ class Reader {
      *
      * Sets up the reader with application context including logger and options.
      * The reader will use the provided configuration for file paths and processing options.
-     *
      * @param app - Application context containing logger, options, and other shared state
-     *
      * @example
      * ```typescript
      * const appContext: AppContext = {
@@ -156,16 +150,13 @@ class Reader {
      * 4. Default values - Built-in fallback configuration (lowest priority)
      *
      * The method also reads header and footer content files if specified in the configuration.
-     *
      * @returns Merged configuration object containing:
      *   - Project metadata (name, version, description, etc.)
      *   - Header content and title (if specified)
      *   - Footer content and title (if specified)
      *   - API base URL and sample URL
      *   - Template and styling options
-     *
      * @throws {Error} When configuration files exist but contain invalid JSON
-     *
      * @example Configuration file precedence
      * ```
      * // 1. apidoc.json (if exists)
@@ -184,7 +175,6 @@ class Reader {
      *   }
      * }
      * ```
-     *
      * @example Return value structure
      * ```typescript
      * const config = reader.read();
@@ -203,7 +193,6 @@ class Reader {
      *   }
      * }
      * ```
-     *
      * @since 5.0.0
      * @public
      */
@@ -224,7 +213,6 @@ class Reader {
 
     /**
      * Search for API documentation configuration files in specified directories.
-     *
      * @returns Merged configuration object
      */
     search(): Config {
@@ -261,7 +249,6 @@ class Reader {
      *
      * Retrieves and processes header and footer configurations by reading content from the specified files
      * and rendering it with a Markdown parser if available.
-     *
      * @param config - Configuration object containing details about header and footer settings.
      * @returns Object containing processed header and footer content, including their titles.
      * @throws If the header or footer file cannot be read.
@@ -325,7 +312,6 @@ class Reader {
 
     /**
      * Search for a configuration file in a specified directory.
-     *
      * @param filename - Name of the configuration file to locate.
      * @param dir - Directory to scan
      * @returns Configuration data if the file is found, or an empty object if not found.
@@ -366,7 +352,6 @@ class Reader {
      * Look for a file in each of the input folders.
      *
      * If multiple files with the same name exist in different directories, the method returns the first valid file it finds.
-     *
      * @param filename - Name of the file to search for
      * @returns Resolved path of the found file, or an empty string if not.
      */

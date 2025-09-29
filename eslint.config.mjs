@@ -26,17 +26,16 @@ export default [
   includeIgnoreFile(join(process.cwd(), '.gitignore')),
   {
     ignores: [
-      'example/**/*',
+      'examples/**/*',
       '**/vendor/**/*',
-      'test/**/*',
+      'tests/**/*',
       '**/*.json',
       '**/*.pem',
       'dist/**/*',
-      'template/dist/**/*',
       'tmp/**/*',
       'node_modules/**/*',
       '.stencil/**/*',
-      'template/src/components/**/*' // Ignore Stencil components for now
+      'apps/**/*' // Ignore all apps directory
     ]
   },
   // Base configurations

@@ -28,7 +28,6 @@ const parents = {};
  * - Optional parameters: `[paramName]`
  * - Default values: `[paramName="default value"]`
  * - Array parameters: `paramName[]`
- *
  * @example Supported syntax patterns
  * ```
  * @apiParam {String} name User name
@@ -46,7 +45,6 @@ const parents = {};
  * - `o` -> optional (wrapper for optional elements)
  * - `w` -> wrapper (container for elements)
  * - `name` -> field name or value identifier
- *
  * @internal
  */
 const regExp = {
@@ -95,7 +93,6 @@ const regExp = {
 
 /**
  * Flatten all string values within an object, and nested objects, into a single concatenated string.
- *
  * @param obj - The input object whose string values need to be concatenated.
  * @returns {string}
  * @private
@@ -115,7 +112,6 @@ function _objectValuesToString(obj) {
 /**
  * Retrieve the parent node object of a given field by traversing the field string
  * to find a matching path in the parent object.
- *
  * @param field - The string representing the field path to search for a parent node.
  * @returns {{ path: string }|undefined}
  * @private
@@ -141,7 +137,6 @@ const allowedValuesRegExp = /[^,\s]+/g;
 
 /**
  * Parse to extract API param
- *
  * @param content Raw input string to be parsed. May contain line breaks and metadata formatted in a predefined syntax.
  * @param source - UNUSED
  * @param defaultGroup - Name to use if no group is identified in the content.
@@ -226,7 +221,6 @@ function parse(content, source, defaultGroup) {
 /**
  * Construct and return a string representing a structured path for parameter fields
  * based on a group retrieved from the API parser.
- *
  * @returns {string}
  */
 function path() {
@@ -235,7 +229,6 @@ function path() {
 
 /**
  * Retrieve the current group.
- *
  * @returns {string}
  */
 function getGroup() {

@@ -4,7 +4,6 @@
  * Allows defining reusable OpenAPI schemas and components that integrate
  * seamlessly with APIDoc's navigation and grouping system.
  * These schemas can be referenced by other endpoints.
- *
  * @example OpenAPI schema definition
  * ```javascript
  * /**
@@ -18,17 +17,16 @@
  *  id:
  *  type: integer
  *  format: int64
- *  *     example: 12345
- *  *   name:
- *  *     type: string
- *  *     example: "John Doe"
- *  *   email:
- *  *     type: string
- *  *     format: email
- *  *     example: "john@example.com"
- *  * /
+ *  example: 12345
+ *  name:
+ *  type: string
+ *  example: "John Doe"
+ *  email:
+ *  type: string
+ *  format: email
+ *  example: "john@example.com"
+ *  /
  * ```
- *
  * @since 4.0.0
  * @public
  */
@@ -53,10 +51,8 @@ interface ApiDocCompatibleResult {
  * Parse @openapi-schema content and convert to APIDoc-compatible format
  *
  * Expected format:
- *
  * @openapi-schema SchemaName
  * schema_definition_in_yaml_or_json
- *
  * @param content - Raw content from the @openapi-schema tag
  * @returns APIDoc-compatible result or null if parsing fails
  */
@@ -110,6 +106,8 @@ export function parse(content: string): ApiDocCompatibleResult | null {
 
 /**
  * Process the schema definition for APIDoc compatibility
+ * @param name
+ * @param schema
  */
 function processSchemaDefinition(name: string, schema: any): ApiDocCompatibleResult {
     const result: ApiDocCompatibleResult = {
@@ -138,6 +136,7 @@ function processSchemaDefinition(name: string, schema: any): ApiDocCompatibleRes
 
 /**
  * Generate example from schema
+ * @param schema
  */
 function generateExampleFromSchema(schema: any): any {
     if (!schema || typeof schema !== 'object') {
@@ -182,13 +181,7 @@ function generateExampleFromSchema(schema: any): any {
 
         case 'integer':
         case 'number':
-            return schema.minimum !== undefined
-                ? schema.minimum
-                : schema.maximum !== undefined
-                  ? schema.maximum
-                  : schema.multipleOf !== undefined
-                    ? schema.multipleOf
-                    : 0;
+            return schema.minimum !== undefined ? schema.minimum : schema.maximum !== undefined ? schema.maximum : schema.multipleOf !== undefined ? schema.multipleOf : 0;
 
         case 'boolean':
             return true;
@@ -200,6 +193,7 @@ function generateExampleFromSchema(schema: any): any {
 
 /**
  * Validate schema definition
+ * @param schema
  */
 function validateSchema(schema: any): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
@@ -232,6 +226,7 @@ function validateSchema(schema: any): { valid: boolean; errors: string[] } {
 /**
  * Extract version from OpenAPI schema
  * Looks for version in various places: x-version extension, etc.
+ * @param schema
  */
 function extractVersionFromSchema(schema: any): string | null {
     // Check for x-version extension

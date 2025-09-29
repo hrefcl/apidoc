@@ -1,7 +1,6 @@
 /**
  * apiCAT Plugin for APIDoc
  * Extends APIDoc functionality with local testing and collection management
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -35,7 +34,7 @@ export class ApiCatPlugin {
             outputDir: './apicat-output',
             generateCollections: true,
             enableLocalTesting: true,
-            ...config
+            ...config,
         };
 
         this.outputDir = this.config.outputDir || './apicat-output';
@@ -43,6 +42,8 @@ export class ApiCatPlugin {
 
     /**
      * Process APIDoc data and generate apiCAT collections
+     * @param apiData
+     * @param projectInfo
      */
     public async process(apiData: any, projectInfo: ApiDocProject): Promise<void> {
         if (!this.config.enabled) {
@@ -63,7 +64,6 @@ export class ApiCatPlugin {
             await this.copyTemplateAssets(outputPath);
 
             console.log(`✅ apiCAT: Modular structure generated in ${outputPath}`);
-
         } catch (error) {
             console.error('❌ apiCAT: Error processing documentation:', error);
             throw error;
@@ -72,6 +72,9 @@ export class ApiCatPlugin {
 
     /**
      * Generate modular JSON structure for apiCAT v5
+     * @param apiData
+     * @param projectInfo
+     * @param outputPath
      */
     private async generateModularStructure(apiData: any, projectInfo: ApiDocProject, outputPath: string): Promise<void> {
         // Create subdirectories
@@ -86,42 +89,43 @@ export class ApiCatPlugin {
 
         // Generate main manifest (cat.json)
         const manifest = {
-            schemaVersion: "5.0.0",
+            schemaVersion: '5.0.0',
             generatedAt: new Date().toISOString(),
             generator: {
-                name: "apiCAT",
-                version: "5.0.0-alpha.1",
-                url: "https://apidoc.app"
+                name: 'apiCAT',
+                version: '5.0.0-alpha.1',
+                url: 'https://apidoc.app',
             },
-            meta: "cat.meta.json",
-            navigation: "cat.navigation.json",
+            meta: 'cat.meta.json',
+            navigation: 'cat.navigation.json',
             api: {
-                index: "cat.api.index.json",
-                shards: this.generateShardList(apicatData.groups)
+                index: 'cat.api.index.json',
+                shards: this.generateShardList(apicatData.groups),
             },
             docs: this.generateDocsMap(apicatData.groups),
-            tsdoc: ["cat.tsdoc/core.json", "cat.tsdoc/models.json"],
-            search: "cat.search.json",
-            assets: "cat.assets.json"
+            tsdoc: ['cat.tsdoc/core.json', 'cat.tsdoc/models.json'],
+            search: 'cat.search.json',
+            assets: 'cat.assets.json',
         };
 
-        await fs.writeFile(
-            path.join(outputPath, 'cat.json'),
-            JSON.stringify(manifest, null, 2)
-        );
+        await fs.writeFile(path.join(outputPath, 'cat.json'), JSON.stringify(manifest, null, 2));
 
         // Generate meta
         await fs.writeFile(
             path.join(outputPath, 'cat.meta.json'),
-            JSON.stringify({
-                name: apicatData.project.name,
-                version: apicatData.project.version,
-                description: apicatData.project.description,
-                title: apicatData.project.title,
-                url: apicatData.project.url,
-                sampleUrl: apicatData.project.sampleUrl,
-                generatedAt: manifest.generatedAt
-            }, null, 2)
+            JSON.stringify(
+                {
+                    name: apicatData.project.name,
+                    version: apicatData.project.version,
+                    description: apicatData.project.description,
+                    title: apicatData.project.title,
+                    url: apicatData.project.url,
+                    sampleUrl: apicatData.project.sampleUrl,
+                    generatedAt: manifest.generatedAt,
+                },
+                null,
+                2
+            )
         );
 
         // Generate navigation
@@ -142,21 +146,23 @@ export class ApiCatPlugin {
 
     /**
      * Generate shard list for manifest
+     * @param groups
      */
     private generateShardList(groups: string[]): string[] {
-        return groups.map(group => `cat.api/${group.toLowerCase()}.json`);
+        return groups.map((group) => `cat.api/${group.toLowerCase()}.json`);
     }
 
     /**
      * Generate docs map for manifest
+     * @param groups
      */
     private generateDocsMap(groups: string[]): Record<string, string> {
         const docsMap: Record<string, string> = {
-            header: "cat.docs/header.html",
-            footer: "cat.docs/footer.html"
+            header: 'cat.docs/header.html',
+            footer: 'cat.docs/footer.html',
         };
 
-        groups.forEach(group => {
+        groups.forEach((group) => {
             docsMap[`group.${group}`] = `cat.docs/group.${group}.html`;
         });
 
@@ -165,15 +171,15 @@ export class ApiCatPlugin {
 
     /**
      * Generate navigation structure
+     * @param apicatData
+     * @param outputPath
      */
     private async generateNavigation(apicatData: any, outputPath: string): Promise<void> {
         const groups = apicatData.groups.map((groupName: string) => ({
             id: groupName,
             title: groupName,
             icon: this.getGroupIcon(groupName),
-            endpoints: apicatData.endpoints
-                .filter((ep: any) => ep.group === groupName)
-                .map((ep: any) => ep.id)
+            endpoints: apicatData.endpoints.filter((ep: any) => ep.group === groupName).map((ep: any) => ep.id),
         }));
 
         const navigation = {
@@ -182,18 +188,17 @@ export class ApiCatPlugin {
             stats: {
                 totalEndpoints: apicatData.endpoints.length,
                 totalGroups: groups.length,
-                lastUpdated: new Date().toISOString()
-            }
+                lastUpdated: new Date().toISOString(),
+            },
         };
 
-        await fs.writeFile(
-            path.join(outputPath, 'cat.navigation.json'),
-            JSON.stringify(navigation, null, 2)
-        );
+        await fs.writeFile(path.join(outputPath, 'cat.navigation.json'), JSON.stringify(navigation, null, 2));
     }
 
     /**
      * Generate API index and shards
+     * @param apicatData
+     * @param outputPath
      */
     private async generateApiStructure(apicatData: any, outputPath: string): Promise<void> {
         // API Index
@@ -205,20 +210,17 @@ export class ApiCatPlugin {
                 group: ep.group,
                 summary: ep.title,
                 version: ep.version,
-                shard: `cat.api/${ep.group.toLowerCase()}.json`
+                shard: `cat.api/${ep.group.toLowerCase()}.json`,
             })),
             stats: {
                 totalEndpoints: apicatData.endpoints.length,
                 byGroup: this.getStatsByGroup(apicatData.endpoints),
-                byMethod: this.getStatsByMethod(apicatData.endpoints)
+                byMethod: this.getStatsByMethod(apicatData.endpoints),
             },
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date().toISOString(),
         };
 
-        await fs.writeFile(
-            path.join(outputPath, 'cat.api.index.json'),
-            JSON.stringify(apiIndex, null, 2)
-        );
+        await fs.writeFile(path.join(outputPath, 'cat.api.index.json'), JSON.stringify(apiIndex, null, 2));
 
         // Generate shards by group
         const groups = apicatData.groups;
@@ -227,23 +229,22 @@ export class ApiCatPlugin {
             const shard = {
                 group,
                 endpoints: groupEndpoints,
-                generatedAt: new Date().toISOString()
+                generatedAt: new Date().toISOString(),
             };
 
-            await fs.writeFile(
-                path.join(outputPath, 'cat.api', `${group.toLowerCase()}.json`),
-                JSON.stringify(shard, null, 2)
-            );
+            await fs.writeFile(path.join(outputPath, 'cat.api', `${group.toLowerCase()}.json`), JSON.stringify(shard, null, 2));
         }
     }
 
     /**
      * Generate search index
+     * @param apicatData
+     * @param outputPath
      */
     private async generateSearchIndex(apicatData: any, outputPath: string): Promise<void> {
         const documents = apicatData.endpoints.map((ep: any) => ({
             id: ep.id,
-            type: "endpoint",
+            type: 'endpoint',
             title: ep.title,
             path: ep.url,
             group: ep.group,
@@ -251,66 +252,64 @@ export class ApiCatPlugin {
             tags: [ep.group.toLowerCase(), ep.method.toLowerCase(), ...ep.title.toLowerCase().split(' ')],
             summary: ep.description,
             ref: {
-                type: "endpoint",
+                type: 'endpoint',
                 id: ep.id,
-                shard: `cat.api/${ep.group.toLowerCase()}.json`
-            }
+                shard: `cat.api/${ep.group.toLowerCase()}.json`,
+            },
         }));
 
         const searchIndex = {
             documents,
             stats: {
                 totalDocuments: documents.length,
-                byType: { endpoint: documents.length }
+                byType: { endpoint: documents.length },
             },
-            generatedAt: new Date().toISOString()
+            generatedAt: new Date().toISOString(),
         };
 
-        await fs.writeFile(
-            path.join(outputPath, 'cat.search.json'),
-            JSON.stringify(searchIndex, null, 2)
-        );
+        await fs.writeFile(path.join(outputPath, 'cat.search.json'), JSON.stringify(searchIndex, null, 2));
     }
 
     /**
      * Generate assets manifest
+     * @param outputPath
      */
     private async generateAssetsManifest(outputPath: string): Promise<void> {
         const assets = {
             favicon: {
-                path: "assets/favicon.svg",
-                hash: "sha256-placeholder",
+                path: 'assets/favicon.svg',
+                hash: 'sha256-placeholder',
                 size: 1024,
-                mime: "image/svg+xml"
+                mime: 'image/svg+xml',
             },
             logo: { light: null, dark: null },
             stylesheets: [
                 {
-                    path: "assets/apicat.css",
-                    hash: "sha256-placeholder",
+                    path: 'assets/apicat.css',
+                    hash: 'sha256-placeholder',
                     size: 45000,
-                    mime: "text/css"
-                }
+                    mime: 'text/css',
+                },
             ],
             scripts: [
                 {
-                    path: "assets/apicat.js",
-                    hash: "sha256-placeholder",
+                    path: 'assets/apicat.js',
+                    hash: 'sha256-placeholder',
                     size: 25000,
-                    mime: "application/javascript"
-                }
+                    mime: 'application/javascript',
+                },
             ],
-            generatedAt: new Date().toISOString()
+            generatedAt: new Date().toISOString(),
         };
 
-        await fs.writeFile(
-            path.join(outputPath, 'cat.assets.json'),
-            JSON.stringify(assets, null, 2)
-        );
+        await fs.writeFile(path.join(outputPath, 'cat.assets.json'), JSON.stringify(assets, null, 2));
     }
 
     /**
      * Generate docs and tsdoc content using real markdown files
+     * @param apicatData
+     * @param projectInfo
+     * @param outputPath
      */
     private async generateDocumentationContent(apicatData: any, projectInfo: any, outputPath: string): Promise<void> {
         // Process custom markdown settings
@@ -334,10 +333,7 @@ export class ApiCatPlugin {
                 </div>`;
             }
 
-            await fs.writeFile(
-                path.join(outputPath, 'cat.docs', `group.${group}.html`),
-                groupHtml
-            );
+            await fs.writeFile(path.join(outputPath, 'cat.docs', `group.${group}.html`), groupHtml);
         }
 
         // Generate header and footer
@@ -352,37 +348,26 @@ export class ApiCatPlugin {
             footerHtml = `<div class="footer-docs custom-markdown">${customMarkdown.footer.html}</div>`;
         }
 
-        await fs.writeFile(
-            path.join(outputPath, 'cat.docs', 'header.html'),
-            headerHtml
-        );
+        await fs.writeFile(path.join(outputPath, 'cat.docs', 'header.html'), headerHtml);
 
-        await fs.writeFile(
-            path.join(outputPath, 'cat.docs', 'footer.html'),
-            footerHtml
-        );
+        await fs.writeFile(path.join(outputPath, 'cat.docs', 'footer.html'), footerHtml);
 
         // Generate TSDoc documentation
         const tsdocData = await this.generateTSDocData();
 
         for (const [moduleName, moduleData] of Object.entries(tsdocData)) {
             // Save JSON data
-            await fs.writeFile(
-                path.join(outputPath, 'cat.tsdoc', `${moduleName}.json`),
-                JSON.stringify(moduleData, null, 2)
-            );
+            await fs.writeFile(path.join(outputPath, 'cat.tsdoc', `${moduleName}.json`), JSON.stringify(moduleData, null, 2));
 
             // Generate HTML documentation
             const htmlDoc = this.generateTSDocHTML(moduleData as any);
-            await fs.writeFile(
-                path.join(outputPath, 'cat.docs', `tsdoc.${moduleName}.html`),
-                htmlDoc
-            );
+            await fs.writeFile(path.join(outputPath, 'cat.docs', `tsdoc.${moduleName}.html`), htmlDoc);
         }
     }
 
     /**
      * Process custom markdown settings from apidoc.json (copied from writer.ts)
+     * @param projectInfo
      */
     private async processCustomMarkdownSettings(projectInfo: any): Promise<Record<string, any>> {
         const customMarkdown: Record<string, any> = {};
@@ -395,7 +380,7 @@ export class ApiCatPlugin {
         const md = new MarkdownIt({
             html: true,
             linkify: true,
-            typographer: true
+            typographer: true,
         });
 
         // Process header and footer (they come already processed from writer)
@@ -404,7 +389,7 @@ export class ApiCatPlugin {
                 title: projectInfo.header.title || 'Header',
                 icon: projectInfo.header.icon || 'fa-home',
                 html: projectInfo.header.content,
-                raw: '' // Not available since it's already processed
+                raw: '', // Not available since it's already processed
             };
         }
 
@@ -413,7 +398,7 @@ export class ApiCatPlugin {
                 title: projectInfo.footer.title || 'Footer',
                 icon: projectInfo.footer.icon || 'fa-lightbulb',
                 html: projectInfo.footer.content,
-                raw: '' // Not available since it's already processed
+                raw: '', // Not available since it's already processed
             };
         }
 
@@ -431,7 +416,7 @@ export class ApiCatPlugin {
                                 title: settings.title || groupName,
                                 icon: settings.icon || 'fa-folder',
                                 html: htmlContent,
-                                raw: markdownContent
+                                raw: markdownContent,
                             };
                         }
                     } catch (error) {
@@ -457,12 +442,12 @@ export class ApiCatPlugin {
 
             // Parse files by module groups
             const moduleGroups = {
-                'core': coreFiles.filter(f => f.includes('/apidoc/') || f.includes('/types/')),
-                'exporters': coreFiles.filter(f => f.includes('/exporters/')),
-                'markdown': coreFiles.filter(f => f.includes('/markdown/')),
-                'parsers': coreFiles.filter(f => f.includes('/parsers/')),
-                'filters': coreFiles.filter(f => f.includes('/filters/')),
-                'plugins': coreFiles.filter(f => f.includes('/plugins/'))
+                core: coreFiles.filter((f) => f.includes('/apidoc/') || f.includes('/types/')),
+                exporters: coreFiles.filter((f) => f.includes('/exporters/')),
+                markdown: coreFiles.filter((f) => f.includes('/markdown/')),
+                parsers: coreFiles.filter((f) => f.includes('/parsers/')),
+                filters: coreFiles.filter((f) => f.includes('/filters/')),
+                plugins: coreFiles.filter((f) => f.includes('/plugins/')),
             };
 
             for (const [moduleName, files] of Object.entries(moduleGroups)) {
@@ -473,12 +458,7 @@ export class ApiCatPlugin {
                 for (const filePath of files) {
                     try {
                         const fileContent = await fs.readFile(filePath, 'utf8');
-                        const sourceFile = ts.createSourceFile(
-                            filePath,
-                            fileContent,
-                            ts.ScriptTarget.ES2020,
-                            true
-                        );
+                        const sourceFile = ts.createSourceFile(filePath, fileContent, ts.ScriptTarget.ES2020, true);
 
                         const fileSymbols = this.extractTSDocSymbols(sourceFile, filePath, ts);
                         symbols.push(...fileSymbols);
@@ -492,7 +472,7 @@ export class ApiCatPlugin {
                     description: this.getModuleDescription(moduleName),
                     symbols,
                     fileCount: files.length,
-                    generatedAt: new Date().toISOString()
+                    generatedAt: new Date().toISOString(),
                 };
             }
 
@@ -501,24 +481,25 @@ export class ApiCatPlugin {
             console.warn('TSDoc generation failed:', error.message);
             // Fallback to placeholder data
             return {
-                'core': {
-                    module: "core",
-                    description: "Core APIDoc functionality",
+                core: {
+                    module: 'core',
+                    description: 'Core APIDoc functionality',
                     symbols: [],
-                    generatedAt: new Date().toISOString()
-                }
+                    generatedAt: new Date().toISOString(),
+                },
             };
         }
     }
 
     /**
      * Find all TypeScript files in given directories
+     * @param directories
      */
     private async findTypeScriptFiles(directories: string[]): Promise<string[]> {
         const files: string[] = [];
 
         for (const dir of directories) {
-            if (!await fs.pathExists(dir)) continue;
+            if (!(await fs.pathExists(dir))) continue;
 
             const entries = await fs.readdir(dir, { withFileTypes: true });
 
@@ -540,6 +521,9 @@ export class ApiCatPlugin {
 
     /**
      * Extract TSDoc symbols from a TypeScript source file
+     * @param sourceFile
+     * @param filePath
+     * @param ts
      */
     private extractTSDocSymbols(sourceFile: any, filePath: string, ts: any): any[] {
         const symbols: any[] = [];
@@ -578,6 +562,9 @@ export class ApiCatPlugin {
 
     /**
      * Extract class symbol with JSDoc comments
+     * @param node
+     * @param filePath
+     * @param ts
      */
     private extractClassSymbol(node: any, filePath: string, ts: any): any {
         const jsDocComment = this.getJSDocComment(node, ts);
@@ -594,7 +581,7 @@ export class ApiCatPlugin {
                     returnType: this.getTypeString(member.type, ts),
                     isStatic: member.modifiers?.some((m: any) => m.kind === ts.SyntaxKind.StaticKeyword),
                     isPrivate: member.modifiers?.some((m: any) => m.kind === ts.SyntaxKind.PrivateKeyword),
-                    documentation: methodDoc
+                    documentation: methodDoc,
                 });
             }
         }
@@ -606,12 +593,15 @@ export class ApiCatPlugin {
             line: this.getLineNumber(node, ts),
             documentation: jsDocComment,
             methods,
-            isExported: this.isExported(node, ts)
+            isExported: this.isExported(node, ts),
         };
     }
 
     /**
      * Extract function symbol with JSDoc comments
+     * @param node
+     * @param filePath
+     * @param ts
      */
     private extractFunctionSymbol(node: any, filePath: string, ts: any): any {
         const jsDocComment = this.getJSDocComment(node, ts);
@@ -624,12 +614,15 @@ export class ApiCatPlugin {
             parameters: this.extractParameters(node.parameters || [], ts),
             returnType: this.getTypeString(node.type, ts),
             documentation: jsDocComment,
-            isExported: this.isExported(node, ts)
+            isExported: this.isExported(node, ts),
         };
     }
 
     /**
      * Extract interface symbol with JSDoc comments
+     * @param node
+     * @param filePath
+     * @param ts
      */
     private extractInterfaceSymbol(node: any, filePath: string, ts: any): any {
         const jsDocComment = this.getJSDocComment(node, ts);
@@ -643,7 +636,7 @@ export class ApiCatPlugin {
                     name: member.name.text,
                     type: this.getTypeString(member.type, ts),
                     optional: !!member.questionToken,
-                    documentation: propDoc
+                    documentation: propDoc,
                 });
             }
         }
@@ -655,12 +648,15 @@ export class ApiCatPlugin {
             line: this.getLineNumber(node, ts),
             properties,
             documentation: jsDocComment,
-            isExported: this.isExported(node, ts)
+            isExported: this.isExported(node, ts),
         };
     }
 
     /**
      * Extract type alias symbol
+     * @param node
+     * @param filePath
+     * @param ts
      */
     private extractTypeAliasSymbol(node: any, filePath: string, ts: any): any {
         const jsDocComment = this.getJSDocComment(node, ts);
@@ -672,12 +668,14 @@ export class ApiCatPlugin {
             line: this.getLineNumber(node, ts),
             aliasType: this.getTypeString(node.type, ts),
             documentation: jsDocComment,
-            isExported: this.isExported(node, ts)
+            isExported: this.isExported(node, ts),
         };
     }
 
     /**
      * Get JSDoc comment from a node
+     * @param node
+     * @param ts
      */
     private getJSDocComment(node: any, ts: any): any {
         const jsDocTags = ts.getJSDocTags(node);
@@ -690,8 +688,7 @@ export class ApiCatPlugin {
         for (const comment of jsDocComments) {
             if (ts.isJSDoc(comment)) {
                 if (comment.comment) {
-                    summary = typeof comment.comment === 'string' ? comment.comment :
-                             comment.comment.map((c: any) => c.text || c).join('');
+                    summary = typeof comment.comment === 'string' ? comment.comment : comment.comment.map((c: any) => c.text || c).join('');
                 }
             }
         }
@@ -700,41 +697,49 @@ export class ApiCatPlugin {
         for (const tag of jsDocTags) {
             tags.push({
                 name: tag.tagName?.text || 'unknown',
-                text: tag.comment ? (typeof tag.comment === 'string' ? tag.comment :
-                     tag.comment.map((c: any) => c.text || c).join('')) : ''
+                text: tag.comment ? (typeof tag.comment === 'string' ? tag.comment : tag.comment.map((c: any) => c.text || c).join('')) : '',
             });
         }
 
         return {
             summary: summary.trim(),
-            tags
+            tags,
         };
     }
 
     /**
      * Extract parameters from function/method
+     * @param parameters
+     * @param ts
      */
     private extractParameters(parameters: any[], ts: any): any[] {
-        return parameters.map(param => ({
+        return parameters.map((param) => ({
             name: param.name?.text || 'unknown',
             type: this.getTypeString(param.type, ts),
             optional: !!param.questionToken,
-            defaultValue: param.initializer ? 'has default' : undefined
+            defaultValue: param.initializer ? 'has default' : undefined,
         }));
     }
 
     /**
      * Get type string from TypeScript type node
+     * @param typeNode
+     * @param ts
      */
     private getTypeString(typeNode: any, ts: any): string {
         if (!typeNode) return 'any';
 
         switch (typeNode.kind) {
-            case ts.SyntaxKind.StringKeyword: return 'string';
-            case ts.SyntaxKind.NumberKeyword: return 'number';
-            case ts.SyntaxKind.BooleanKeyword: return 'boolean';
-            case ts.SyntaxKind.VoidKeyword: return 'void';
-            case ts.SyntaxKind.AnyKeyword: return 'any';
+            case ts.SyntaxKind.StringKeyword:
+                return 'string';
+            case ts.SyntaxKind.NumberKeyword:
+                return 'number';
+            case ts.SyntaxKind.BooleanKeyword:
+                return 'boolean';
+            case ts.SyntaxKind.VoidKeyword:
+                return 'void';
+            case ts.SyntaxKind.AnyKeyword:
+                return 'any';
             default:
                 if (typeNode.typeName) {
                     return typeNode.typeName.text || 'unknown';
@@ -745,6 +750,8 @@ export class ApiCatPlugin {
 
     /**
      * Get line number of a node
+     * @param node
+     * @param ts
      */
     private getLineNumber(node: any, ts: any): number {
         const sourceFile = node.getSourceFile();
@@ -757,24 +764,25 @@ export class ApiCatPlugin {
 
     /**
      * Check if a declaration is exported
+     * @param node
+     * @param ts
      */
     private isExported(node: any, ts: any): boolean {
-        return node.modifiers?.some((modifier: any) =>
-            modifier.kind === ts.SyntaxKind.ExportKeyword
-        ) || false;
+        return node.modifiers?.some((modifier: any) => modifier.kind === ts.SyntaxKind.ExportKeyword) || false;
     }
 
     /**
      * Get module description based on module name
+     * @param moduleName
      */
     private getModuleDescription(moduleName: string): string {
         const descriptions: Record<string, string> = {
-            'core': 'Core APIDoc functionality including writers, types, and main processing logic',
-            'exporters': 'Export utilities for converting APIDoc data to various formats (OpenAPI, Markdown, etc.)',
-            'markdown': 'Markdown processing and generation utilities',
-            'parsers': 'API comment parsers for extracting documentation from source code',
-            'filters': 'Post-processing filters for API documentation data',
-            'plugins': 'Plugin system for extending APIDoc functionality'
+            core: 'Core APIDoc functionality including writers, types, and main processing logic',
+            exporters: 'Export utilities for converting APIDoc data to various formats (OpenAPI, Markdown, etc.)',
+            markdown: 'Markdown processing and generation utilities',
+            parsers: 'API comment parsers for extracting documentation from source code',
+            filters: 'Post-processing filters for API documentation data',
+            plugins: 'Plugin system for extending APIDoc functionality',
         };
 
         return descriptions[moduleName] || `${moduleName} module documentation`;
@@ -782,6 +790,7 @@ export class ApiCatPlugin {
 
     /**
      * Generate HTML documentation from TSDoc data
+     * @param moduleData
      */
     private generateTSDocHTML(moduleData: any): string {
         const { module: moduleName, description, symbols, fileCount, generatedAt } = moduleData;
@@ -874,6 +883,7 @@ export class ApiCatPlugin {
 
     /**
      * Generate HTML for a class
+     * @param cls
      */
     private generateClassHTML(cls: any): string {
         const { name, documentation, methods, file, line, isExported } = cls;
@@ -933,6 +943,7 @@ export class ApiCatPlugin {
 
     /**
      * Generate HTML for a function
+     * @param func
      */
     private generateFunctionHTML(func: any): string {
         const { name, documentation, parameters, returnType, file, line, isExported } = func;
@@ -971,6 +982,7 @@ export class ApiCatPlugin {
 
     /**
      * Generate HTML for an interface
+     * @param iface
      */
     private generateInterfaceHTML(iface: any): string {
         const { name, documentation, properties, file, line, isExported } = iface;
@@ -1024,6 +1036,7 @@ export class ApiCatPlugin {
 
     /**
      * Generate HTML for a type alias
+     * @param type
      */
     private generateTypeHTML(type: any): string {
         const { name, documentation, aliasType, file, line, isExported } = type;
@@ -1056,69 +1069,68 @@ export class ApiCatPlugin {
 
     /**
      * Format parameters for display
+     * @param parameters
      */
     private formatParameters(parameters: any[]): string {
-        return parameters.map(param =>
-            `${param.name}${param.optional ? '?' : ''}: ${param.type}`
-        ).join(', ');
+        return parameters.map((param) => `${param.name}${param.optional ? '?' : ''}: ${param.type}`).join(', ');
     }
 
     /**
      * Format JSDoc tags as HTML
+     * @param tags
      */
     private formatJSDocTags(tags: any[]): string {
-        return tags.map(tag => {
-            if (tag.name === 'param' && tag.text) {
-                return `<div class="tsdoc-tag tsdoc-param">
+        return tags
+            .map((tag) => {
+                if (tag.name === 'param' && tag.text) {
+                    return `<div class="tsdoc-tag tsdoc-param">
                     <strong>@${tag.name}</strong> ${this.escapeHtml(tag.text)}
                 </div>`;
-            } else if (tag.name === 'returns' && tag.text) {
-                return `<div class="tsdoc-tag tsdoc-returns">
+                } else if (tag.name === 'returns' && tag.text) {
+                    return `<div class="tsdoc-tag tsdoc-returns">
                     <strong>@${tag.name}</strong> ${this.escapeHtml(tag.text)}
                 </div>`;
-            } else if (tag.name === 'example' && tag.text) {
-                return `<div class="tsdoc-tag tsdoc-example">
+                } else if (tag.name === 'example' && tag.text) {
+                    return `<div class="tsdoc-tag tsdoc-example">
                     <strong>@${tag.name}</strong>
                     <pre><code>${this.escapeHtml(tag.text)}</code></pre>
                 </div>`;
-            } else if (tag.text) {
-                return `<div class="tsdoc-tag">
+                } else if (tag.text) {
+                    return `<div class="tsdoc-tag">
                     <strong>@${tag.name}</strong> ${this.escapeHtml(tag.text)}
                 </div>`;
-            }
-            return '';
-        }).join('');
+                }
+                return '';
+            })
+            .join('');
     }
 
     /**
      * Escape HTML entities
+     * @param text
      */
     private escapeHtml(text: string): string {
-        return text
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#x27;');
+        return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
     }
 
     /**
      * Helper methods
+     * @param groupName
      */
     private getGroupIcon(groupName: string): string {
         const iconMap: Record<string, string> = {
-            'Users': 'fa-users',
-            'Company': 'fa-building',
-            'System': 'fa-cogs',
-            'City': 'fa-map-marker-alt',
-            'Category': 'fa-tags'
+            Users: 'fa-users',
+            Company: 'fa-building',
+            System: 'fa-cogs',
+            City: 'fa-map-marker-alt',
+            Category: 'fa-tags',
         };
         return iconMap[groupName] || 'fa-folder';
     }
 
     private getStatsByGroup(endpoints: any[]): Record<string, number> {
         const stats: Record<string, number> = {};
-        endpoints.forEach(ep => {
+        endpoints.forEach((ep) => {
             stats[ep.group] = (stats[ep.group] || 0) + 1;
         });
         return stats;
@@ -1126,7 +1138,7 @@ export class ApiCatPlugin {
 
     private getStatsByMethod(endpoints: any[]): Record<string, number> {
         const stats: Record<string, number> = {};
-        endpoints.forEach(ep => {
+        endpoints.forEach((ep) => {
             stats[ep.method] = (stats[ep.method] || 0) + 1;
         });
         return stats;
@@ -1134,13 +1146,14 @@ export class ApiCatPlugin {
 
     /**
      * Copy template assets to output directory
+     * @param outputPath
      */
     private async copyTemplateAssets(outputPath: string): Promise<void> {
         try {
             // Path to the built template assets
             const templatePath = path.resolve('./apps/apicat-template/dist');
 
-            if (!await fs.pathExists(templatePath)) {
+            if (!(await fs.pathExists(templatePath))) {
                 console.log('⚠️  Template not built. Building apiCAT template...');
                 // Build the template first
                 const { exec } = require('child_process');
@@ -1177,6 +1190,8 @@ export class ApiCatPlugin {
 
     /**
      * Generate Postman/Insomnia compatible collection
+     * @param apiData
+     * @param projectInfo
      */
     private generateCollection(apiData: any, projectInfo: ApiDocProject): any {
         const collection = {
@@ -1184,11 +1199,11 @@ export class ApiCatPlugin {
                 name: projectInfo.name || 'API Collection',
                 description: projectInfo.description || 'Generated by apiCAT',
                 version: projectInfo.version || '1.0.0',
-                schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'
+                schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
             },
             item: [],
             variable: [],
-            auth: null
+            auth: null,
         };
 
         // Process API endpoints
@@ -1198,7 +1213,7 @@ export class ApiCatPlugin {
             Object.entries(groups).forEach(([groupName, endpoints]: [string, any[]]) => {
                 const folder = {
                     name: groupName,
-                    item: endpoints.map(endpoint => this.convertEndpoint(endpoint))
+                    item: endpoints.map((endpoint) => this.convertEndpoint(endpoint)),
                 };
                 collection.item.push(folder);
             });
@@ -1209,11 +1224,12 @@ export class ApiCatPlugin {
 
     /**
      * Group endpoints by their API group
+     * @param apiData
      */
     private groupEndpoints(apiData: any[]): Record<string, any[]> {
         const groups: Record<string, any[]> = {};
 
-        apiData.forEach(endpoint => {
+        apiData.forEach((endpoint) => {
             const groupName = endpoint.group || 'General';
             if (!groups[groupName]) {
                 groups[groupName] = [];
@@ -1226,6 +1242,7 @@ export class ApiCatPlugin {
 
     /**
      * Convert APIDoc endpoint to Postman format
+     * @param endpoint
      */
     private convertEndpoint(endpoint: any): any {
         const url = endpoint.url || '';
@@ -1239,17 +1256,18 @@ export class ApiCatPlugin {
                 url: {
                     raw: `{{baseUrl}}${url}`,
                     host: ['{{baseUrl}}'],
-                    path: url.split('/').filter(Boolean)
+                    path: url.split('/').filter(Boolean),
                 },
                 body: this.extractBody(endpoint),
-                description: endpoint.description || ''
+                description: endpoint.description || '',
             },
-            response: this.extractExamples(endpoint)
+            response: this.extractExamples(endpoint),
         };
     }
 
     /**
      * Extract headers from endpoint definition
+     * @param endpoint
      */
     private extractHeaders(endpoint: any): any[] {
         const headers: any[] = [];
@@ -1257,12 +1275,12 @@ export class ApiCatPlugin {
         if (endpoint.header && endpoint.header.fields) {
             Object.values(endpoint.header.fields).forEach((group: any) => {
                 if (Array.isArray(group)) {
-                    group.forEach(header => {
+                    group.forEach((header) => {
                         headers.push({
                             key: header.field,
                             value: header.defaultValue || '',
                             description: header.description || '',
-                            disabled: header.optional || false
+                            disabled: header.optional || false,
                         });
                     });
                 }
@@ -1274,6 +1292,7 @@ export class ApiCatPlugin {
 
     /**
      * Extract request body from endpoint
+     * @param endpoint
      */
     private extractBody(endpoint: any): any {
         if (!endpoint.parameter || !endpoint.parameter.fields) {
@@ -1284,8 +1303,9 @@ export class ApiCatPlugin {
 
         Object.values(endpoint.parameter.fields).forEach((group: any) => {
             if (Array.isArray(group)) {
-                group.forEach(param => {
-                    if (param.field && !param.field.includes(':')) { // Skip URL params
+                group.forEach((param) => {
+                    if (param.field && !param.field.includes(':')) {
+                        // Skip URL params
                         bodyParams[param.field] = param.defaultValue || '';
                     }
                 });
@@ -1301,14 +1321,15 @@ export class ApiCatPlugin {
             raw: JSON.stringify(bodyParams, null, 2),
             options: {
                 raw: {
-                    language: 'json'
-                }
-            }
+                    language: 'json',
+                },
+            },
         };
     }
 
     /**
      * Extract example responses
+     * @param endpoint
      */
     private extractExamples(endpoint: any): any[] {
         const examples: any[] = [];
@@ -1321,7 +1342,7 @@ export class ApiCatPlugin {
                     status: 'OK',
                     code: 200,
                     header: [],
-                    body: example.content || ''
+                    body: example.content || '',
                 });
             });
         }
@@ -1331,23 +1352,25 @@ export class ApiCatPlugin {
 
     /**
      * Generate testing scenarios for local testing
+     * @param apiData
      */
     private generateTestingScenarios(apiData: any[]): any {
         return {
-            scenarios: apiData.map(endpoint => ({
+            scenarios: apiData.map((endpoint) => ({
                 id: `${endpoint.type}_${endpoint.url}`.replace(/[^a-zA-Z0-9]/g, '_'),
                 name: endpoint.title || `${endpoint.type} ${endpoint.url}`,
                 method: endpoint.type?.toUpperCase() || 'GET',
                 url: endpoint.url || '',
                 description: endpoint.description || '',
                 group: endpoint.group || 'General',
-                expectedResponses: this.extractExpectedResponses(endpoint)
-            }))
+                expectedResponses: this.extractExpectedResponses(endpoint),
+            })),
         };
     }
 
     /**
      * Extract expected responses for testing
+     * @param endpoint
      */
     private extractExpectedResponses(endpoint: any): any[] {
         const responses: any[] = [];
@@ -1359,7 +1382,7 @@ export class ApiCatPlugin {
                     type: 'success',
                     status: 200,
                     body: example.content || '',
-                    description: example.title || 'Success'
+                    description: example.title || 'Success',
                 });
             });
         }
@@ -1371,7 +1394,7 @@ export class ApiCatPlugin {
                     type: 'error',
                     status: 400,
                     body: example.content || '',
-                    description: example.title || 'Error'
+                    description: example.title || 'Error',
                 });
             });
         }
@@ -1381,6 +1404,7 @@ export class ApiCatPlugin {
 
     /**
      * Write collection to file
+     * @param collection
      */
     private async writeCollection(collection: any): Promise<void> {
         const filePath = path.join(this.outputDir, 'collection.json');
@@ -1390,13 +1414,13 @@ export class ApiCatPlugin {
 
     /**
      * Write testing scenarios to file
+     * @param scenarios
      */
     private async writeTestingScenarios(scenarios: any): Promise<void> {
         const filePath = path.join(this.outputDir, 'test-scenarios.json');
         await fs.writeJSON(filePath, scenarios, { spaces: 2 });
         console.log(`🧪 Test scenarios saved: ${filePath}`);
     }
-
 
     /**
      * Read generated collection

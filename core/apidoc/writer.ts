@@ -3,7 +3,6 @@
  *
  * Handles the generation of HTML documentation files, bundling of assets,
  * and management of output directory structure.
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -11,11 +10,10 @@
 
 import esbuild from 'esbuild';
 import fs from 'fs-extra';
-import path from 'path';
 import MarkdownIt from 'markdown-it';
+import path from 'path';
 import { convertToOpenApi } from '../exporters/openapi-converter';
 import { createMarkdownFromApiDocData } from '../markdown';
-import { ApiCatPlugin } from './plugins/apicat';
 const AuthProcessor = require('../auth-processor');
 
 /**
@@ -27,20 +25,17 @@ const AuthProcessor = require('../auth-processor');
  * - Managing output directory structure and file copying
  * - Handling template processing and content generation
  * - Cache busting for static assets
- *
  * @example Basic usage
  * ```typescript
  * const writer = new Writer(apiData, appContext);
  * await writer.write();
  * console.log('Documentation generated successfully');
  * ```
- *
  * @example Custom cache busting
  * ```typescript
  * const writer = new Writer(apiData, appContext, 'v=1.2.0');
  * await writer.write();
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -54,12 +49,10 @@ class Writer {
     private authProcessor: any;
     /**
      * Creates a new Writer instance for generating documentation output
-     *
      * @param api - Parsed API data and project information from the core parser
      * @param app - Application context containing shared instances and configuration
      * @param cacheBustingQueryParam - Cache-busting query parameter for static assets.
      *   Defaults to current timestamp to ensure fresh assets on each build.
-     *
      * @example
      * ```typescript
      * const writer = new Writer(
@@ -67,7 +60,6 @@ class Writer {
      *   { log: logger, options: { dest: './docs' } }
      * );
      * ```
-     *
      * @example With custom cache busting
      * ```typescript
      * const writer = new Writer(apiData, appContext, 'v=2.1.0');
@@ -122,7 +114,6 @@ class Writer {
      * If dry run mode is enabled, no files are created, and the method simply logs the operation and
      * resolves the promise. Otherwise, it creates the necessary files either as a single file or
      * multiple output files based on the specified options.
-     *
      * @returns {Promise<void>} Promise that resolves when file writing is complete.
      * @memberof Writer
      */
@@ -144,7 +135,6 @@ class Writer {
     /**
      * Attempt to locate the specified asset file path and retrieve its resolved path.
      * If the file cannot be resolved, an error is logged.
-     *
      * @param assetPath - Relative file path of the asset to find.
      * @returns {string|undefined} Return the resolved file path
      * @memberof Writer
@@ -160,7 +150,6 @@ class Writer {
 
     /**
      * Generate Markdown documentation files
-     *
      * @memberof Writer
      */
     async writeMarkdownDocs(): Promise<void> {
@@ -177,9 +166,7 @@ class Writer {
             // Determine output path
             let outputPath = this.opt.markdownExport;
             if (outputPath === true || !outputPath) {
-                outputPath = this.opt.markdownMulti
-                    ? this.opt.dest
-                    : this.path.join(this.opt.dest, 'api.md');
+                outputPath = this.opt.markdownMulti ? this.opt.dest : this.path.join(this.opt.dest, 'api.md');
             }
 
             // Load content from files if specified
@@ -203,7 +190,7 @@ class Writer {
                 multi: this.opt.markdownMulti,
                 header,
                 footer,
-                prepend
+                prepend,
             });
 
             // Write files
@@ -221,7 +208,6 @@ class Writer {
                 this.fs.writeFileSync(outputPath, markdownDocs[0].content);
                 this.log.verbose(`✅ Markdown documentation generated: ${outputPath}`);
             }
-
         } catch (error) {
             this.log.error(`❌ Failed to generate Markdown documentation: ${error.message}`);
             throw error;
@@ -230,7 +216,6 @@ class Writer {
 
     /**
      * Generate OpenAPI 3.0 specification file (swagger.json)
-     *
      * @memberof Writer
      */
     writeOpenApiSpec(): void {
@@ -271,7 +256,6 @@ class Writer {
      * - Optionally saves a parsed API file as `api-data.json` into the assets folder if the `writeJson` option is enabled.
      * - Generates OpenAPI specification if requested
      * - Executes a bundler operation for the assets folder.
-     *
      * @returns {Promise<string>} Resolves as the bundling operation assets folder.
      * @memberof Writer
      */
@@ -350,7 +334,6 @@ class Writer {
 
     /**
      * Run the bundler to create a bundled JS file using esbuild.
-     *
      * @param outputPath - Path where the bundler will output
      * @returns {Promise<string>} Resolves with the output path upon successful bundling,
      *     or rejects with an error if the bundling process fails.
@@ -401,7 +384,6 @@ class Writer {
 
                 this.log.debug('Pre-built assets copied successfully');
                 return resolve(outputPath);
-
             } else if (this.fs.existsSync(esbuildConfig)) {
                 // This is a source template, run esbuild
                 const entryPoint = this.path.resolve(this.path.join(this.opt.template, 'src', 'main.ts'));
@@ -448,7 +430,6 @@ class Writer {
      * - The tokens are used as keys to represent the Base64-encoded strings of the images.
      * - Images are sourced from the "img" subdirectory of the specified template path.
      * - Only valid files within the directory are processed. And the MIME type is determined based on the file extension.
-     *
      * @returns {object} A mapping of token keys to Base64-encoded image strings, where each
      *     key is in the format "IMAGE_LINK_TOKEN_<filename>".
      * @memberof Writer
@@ -477,7 +458,6 @@ class Writer {
 
     /**
      * Process custom markdown settings from apidoc.json
-     *
      * @param projectInfo Project configuration from apidoc.json
      * @returns Object containing processed markdown content for each group
      */
@@ -491,7 +471,7 @@ class Writer {
         const md = new MarkdownIt({
             html: true,
             linkify: true,
-            typographer: true
+            typographer: true,
         });
 
         // Process each group setting
@@ -508,7 +488,7 @@ class Writer {
                             title: settings.title || groupName,
                             icon: settings.icon || 'fa-folder',
                             html: htmlContent,
-                            raw: markdownContent
+                            raw: markdownContent,
                         };
 
                         this.log.verbose(`📝 Loaded custom markdown for group: ${groupName}`);
@@ -529,7 +509,6 @@ class Writer {
      *
      * Replaces predefined tokens with dynamic values such as the project title, description,
      * and cache-busting query parameters.
-     *
      * @returns {string} Processed HTML content for the index page of the API documentation.
      * @memberof Writer
      */
@@ -543,9 +522,7 @@ class Writer {
 
         // Check for StencilJS template first, fallback to regular template
         const stencilTemplate = this.path.join(this.opt.template, 'index-stencil.html');
-        const templateFile = this.fs.existsSync(stencilTemplate)
-            ? stencilTemplate
-            : this.path.join(this.opt.template, 'index.html');
+        const templateFile = this.fs.existsSync(stencilTemplate) ? stencilTemplate : this.path.join(this.opt.template, 'index.html');
 
         let indexHtml = this.fs.readFileSync(templateFile, 'utf8').toString();
 
@@ -584,10 +561,7 @@ class Writer {
     </script>`;
 
             // Insert data script before the bundle script - match actual cache-busted filename
-            const scriptReplaced = indexHtml.replace(
-                /<script src="assets\/main\.bundle\.js[^"]*"><\/script>/,
-                dataScript + '\n  $&'
-            );
+            const scriptReplaced = indexHtml.replace(/<script src="assets\/main\.bundle\.js[^"]*"><\/script>/, dataScript + '\n  $&');
 
             if (scriptReplaced === indexHtml) {
                 // Fallback: insert before closing body tag if script tag not found
@@ -604,10 +578,7 @@ class Writer {
     </script>`;
 
             // Insert data script before the bundle script - match actual cache-busted filename
-            const scriptReplaced = indexHtml.replace(
-                /<script src="assets\/main\.bundle\.js[^"]*"><\/script>/,
-                dataScript + '\n    $&'
-            );
+            const scriptReplaced = indexHtml.replace(/<script src="assets\/main\.bundle\.js[^"]*"><\/script>/, dataScript + '\n    $&');
 
             if (scriptReplaced === indexHtml) {
                 // Fallback: insert before closing body tag if script tag not found
@@ -630,7 +601,6 @@ class Writer {
      * - modify the main index HTML content to embed CSS, JS directly
      * - remove external links to assets
      * - save the final file to the destination directory
-     *
      * @returns {Promise<void>} A promise that resolves once the single HTML file is successfully created.
      * @memberof Writer
      */
@@ -667,7 +637,6 @@ class Writer {
 
     /**
      * Write a JSON file with the provided data.
-     *
      * @param dest - Destination file path where the file will be written.
      * @param data - File data
      * @memberof Writer
@@ -679,7 +648,6 @@ class Writer {
 
     /**
      * Write a JS file with the provided data.
-     *
      * @param dest - Destination file path where the file will be written.
      * @param data - File data
      * @memberof Writer
@@ -701,7 +669,6 @@ class Writer {
 
     /**
      * Copy all highlight.js themes for dynamic theme loading
-     *
      * @param assetsPath - Path to the assets directory
      * @memberof Writer
      */
@@ -714,13 +681,7 @@ class Writer {
             this.createDir(highlightThemesDir);
 
             // Find highlight.js styles directory
-            const highlightStylesPath = this.path.join(
-                this.opt.template,
-                '..',
-                'node_modules',
-                'highlight.js',
-                'styles'
-            );
+            const highlightStylesPath = this.path.join(this.opt.template, '..', 'node_modules', 'highlight.js', 'styles');
 
             if (this.fs.existsSync(highlightStylesPath)) {
                 // Copy all CSS theme files
@@ -746,7 +707,6 @@ class Writer {
 
     /**
      * Create a directory
-     *
      * @param dir - Path of the directory to create
      * @memberof Writer
      */

@@ -12,7 +12,6 @@
  * - Path normalization and validation
  * - Option merging and inheritance
  * - Type-safe configuration handling
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -51,7 +50,6 @@ const defaultOptions: ApiDocOptions = {
 /**
  * Process options by merging with defaults, validating configuration paths,
  * and normalizing settings such as destinations, source paths, and line endings.
- *
  * @param options - User provided options
  * @param options.config - Path to the configuration file
  * @param options.src - Array of source paths to process. May be overridden by the configuration file settings.
@@ -92,11 +90,7 @@ function process(options: Partial<ApiDocOptions>): ApiDocOptions {
             }
 
             // do the same for input
-            if (
-                apidocConfig.input instanceof Array &&
-                Array.isArray(mergedOptions.src) &&
-                mergedOptions.src[0] === DEFAULT_SRC[0]
-            ) {
+            if (apidocConfig.input instanceof Array && Array.isArray(mergedOptions.src) && mergedOptions.src[0] === DEFAULT_SRC[0]) {
                 // keep a trailing slash
                 const input = apidocConfig.input.map((p) => path.resolve(p) + path.sep);
                 mergedOptions.src = input;
@@ -104,7 +98,7 @@ function process(options: Partial<ApiDocOptions>): ApiDocOptions {
 
             // Merge additional configuration properties from config file
             // CLI options take precedence over config file options
-            Object.keys(apidocConfig).forEach(key => {
+            Object.keys(apidocConfig).forEach((key) => {
                 if (key !== 'output' && key !== 'input' && apidocConfig[key] !== undefined) {
                     // Only use config file value if the option is not explicitly set from CLI
                     if (mergedOptions[key] === undefined || mergedOptions[key] === defaultOptions[key]) {

@@ -21,7 +21,6 @@ import { ApiDocOptions, LoggerInterface, MarkdownParser } from '../types';
 
 /**
  * Create and return a logger instance
- *
  * @param options - Configuration options
  * @param options.logFormat - Log format ('json' or default)
  * @param options.colorize - Enable colorized output
@@ -57,7 +56,6 @@ function getLogger(options: ApiDocOptions): LoggerInterface {
 
 /**
  * Get the markdown parser
- *
  * @param options - Configuration options
  * @param options.markdown - Markdown parser behavior:
  *     - `true` to use the default Markdown parser with specific settings.

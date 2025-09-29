@@ -4,7 +4,6 @@
  * Defines the fundamental interfaces for the APIDoc application context
  * and logging system. These types are used throughout the application
  * to ensure type safety and provide structure for core components.
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -17,7 +16,6 @@
  *
  * Provides a consistent logging interface with multiple log levels.
  * Used by all components for status reporting, debugging, and error handling.
- *
  * @example Logger implementation
  * ```typescript
  * const logger: Logger = {
@@ -28,7 +26,6 @@
  *   error: (msg) => console.error(`[ERROR] ${msg}`)
  * };
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -51,7 +48,6 @@ export interface Logger {
  * Represents the core application state and dependencies. This interface
  * defines the structure of the main app object that is passed between
  * components throughout the APIDoc processing pipeline.
- *
  * @example App context usage
  * ```typescript
  * const app: App = {
@@ -67,7 +63,6 @@ export interface Logger {
  *   hooks: {}
  * };
  * ```
- *
  * @since 5.0.0
  * @public
  */

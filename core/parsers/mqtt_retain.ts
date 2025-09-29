@@ -5,23 +5,19 @@
  * It extracts:
  * - Retain flag (true or false)
  * - Validates boolean value
- *
  * @param content - Raw content from the retain tag
  * @returns Parsed retain information or null if parsing fails
  * @returns .retain - MQTT retain flag (true or false)
- *
  * @example Retain enabled
  * ```
  * // Input: "true"
  * // Output: { retain: true }
  * ```
- *
  * @example Retain disabled
  * ```
  * // Input: "false"
  * // Output: { retain: false }
  * ```
- *
  * @example Alternative boolean values
  * ```
  * // Input: "1" or "yes" or "on"
@@ -29,7 +25,6 @@
  * // Input: "0" or "no" or "off"
  * // Output: { retain: false }
  * ```
- *
  * @since 4.1.0
  * @public
  */
@@ -64,14 +59,12 @@ export function parse(content: string): { retain: boolean } | null {
 
 /**
  * Target location in the data structure where parsed results are stored
- *
  * @internal
  */
 export const path = 'local';
 
 /**
  * Processing method for this parser
- *
  * @internal
  */
 export const method = 'insert';

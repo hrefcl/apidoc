@@ -4,7 +4,6 @@
  * Allows defining specific OpenAPI operations with detailed parameters,
  * request bodies, and responses using standard OpenAPI syntax. Operations
  * are automatically converted to APIDoc-compatible format for navigation.
- *
  * @example OpenAPI operation definition
  * ```javascript
  * /**
@@ -18,14 +17,13 @@
  *  required: true
  *  content:
  *  application/json:
- *  *       schema:
- *  *         $ref: '#/components/schemas/CreateUserRequest'
- *  * responses:
- *  *   201:
- *  *     description: User created successfully
- *  * /
+ *  schema:
+ *  $ref: '#/components/schemas/CreateUserRequest'
+ *  responses:
+ *  201:
+ *  description: User created successfully
+ *  /
  * ```
- *
  * @since 4.0.0
  * @public
  */
@@ -48,7 +46,6 @@ interface ApiDocCompatibleResult {
 
 /**
  * Parse @openapi-operation content and convert to APIDoc-compatible format
- *
  * @param content - Raw content from the @openapi-operation tag
  * @returns APIDoc-compatible result or null if parsing fails
  */
@@ -84,6 +81,7 @@ export function parse(content: string): ApiDocCompatibleResult | null {
 
 /**
  * Process the operation definition for APIDoc compatibility
+ * @param operation
  */
 function processOperationDefinition(operation: any): ApiDocCompatibleResult {
     const name = operation.operationId || operation.summary || 'Operation';
@@ -112,6 +110,7 @@ function processOperationDefinition(operation: any): ApiDocCompatibleResult {
 
 /**
  * Extract response codes from operation
+ * @param operation
  */
 function extractResponseCodes(operation: any): string[] {
     if (!operation.responses) {
@@ -123,6 +122,7 @@ function extractResponseCodes(operation: any): string[] {
 
 /**
  * Extract parameter types from operation
+ * @param operation
  */
 function extractParameterInfo(operation: any): {
     hasPathParams: boolean;
@@ -167,6 +167,7 @@ function extractParameterInfo(operation: any): {
 
 /**
  * Validate operation definition
+ * @param operation
  */
 function validateOperation(operation: any): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
@@ -202,6 +203,7 @@ function validateOperation(operation: any): { valid: boolean; errors: string[] }
 /**
  * Extract version from OpenAPI operation
  * Looks for version in various places: x-version extension, tags, etc.
+ * @param operation
  */
 function extractVersionFromOperation(operation: any): string | null {
     // Check for x-version extension

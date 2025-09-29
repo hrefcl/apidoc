@@ -12,7 +12,6 @@
  * - Plugin-based parser architecture
  * - Error handling and validation
  * - Markdown processing support
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -38,7 +37,6 @@ let filterTag = null; // define the tag to filter by
  * Parser
  *
  * Manage and load languages, parsers, and related configurations.
- *
  * @param _app - Application instance
  * @class
  */
@@ -106,7 +104,6 @@ util.inherits(Parser, Object);
 
 /**
  * Add a new programming, or spoken language, to the existing collection.
- *
  * @param name - Key for the language being added.
  * @param language - Language object associated with the provided name.
  * @memberof Parser
@@ -119,7 +116,6 @@ Parser.prototype.addLanguage = function (name, language) {
  * Register a parser function under a specified name.
  *
  * Enables the extension or customization of parsing behavior.
- *
  * @param name - Unique identifier for the parser.
  * @param parser - Function that defines the parser behavior.
  * @memberof Parser
@@ -130,7 +126,6 @@ Parser.prototype.addParser = function (name, parser) {
 
 /**
  * Parse files in specified folder
- *
  * @param options The options used to parse and filter the files.
  * @param parsedFiles List of parsed files.
  * @param parsedFilenames List of parsed files, with full path.
@@ -159,9 +154,8 @@ Parser.prototype.parseFiles = function (options, parsedFiles, parsedFilenames) {
 
 /**
  * Execute file parsing
- *
  * @param filename - Name of the file to be parsed, including its path.
- * @param [encoding='utf8'] - The encoding to be used for processing the file.
+ * @param [encoding] - The encoding to be used for processing the file.
  * @returns {object|boolean|void|*}
  * @throws {Error} If the file cannot be read or processed.
  * @memberof Parser
@@ -211,7 +205,6 @@ Parser.prototype.parseFile = function (filename, encoding) {
  * - Logs the size of the parsed source.
  * - Logs the number of identified blocks.
  * - Logs the number of elements in each block.
- *
  * @param fileContent - Content to be parsed.
  * @param encoding - Content character encoding
  * @param filename - Name of the file being parsed.
@@ -268,7 +261,6 @@ Parser.prototype.parseSource = function (fileContent, encoding, filename) {
  * - Handles warnings for deprecated parser plugins and specific syntax deprecation (e.g., square bracket notation).
  * - Supports markdown rendering for specified fields within each element.
  * - Allows flexible configuration for adding parsed values to global or local paths within the block data.
- *
  * @param indexApiBlocks - Array of indices representing definition blocks to parse.
  * @param detectedElements - An object mapping block indices to detected elements.
  * @param filename - Name of the file being parsed, used for logging and error purposes.
@@ -295,21 +287,15 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
             const elementParser = self.parsers[element.name];
 
             if (!elementParser) {
-                app.log.warn(
-                    `parser plugin '${element.name}' not found in block: '${blockIndex}' in file: '${filename}'`
-                );
+                app.log.warn(`parser plugin '${element.name}' not found in block: '${blockIndex}' in file: '${filename}'`);
             } else if (!element.sourceName.endsWith('Example') && element.source.match(/[^\s:]\[[^\]]/)) {
-                app.log.warn(
-                    `The use of square brackets for object properties is deprecated. Please use dot notation instead: "${element.source}"`
-                );
+                app.log.warn(`The use of square brackets for object properties is deprecated. Please use dot notation instead: "${element.source}"`);
             } else {
                 app.log.debug('found @' + element.sourceName + ' in block: ' + blockIndex);
 
                 // Deprecation warning
                 if (elementParser.deprecated) {
-                    self.countDeprecated[element.sourceName] = self.countDeprecated[element.sourceName]
-                        ? self.countDeprecated[element.sourceName] + 1
-                        : 1;
+                    self.countDeprecated[element.sourceName] = self.countDeprecated[element.sourceName] ? self.countDeprecated[element.sourceName] + 1 : 1;
 
                     let message = '@' + element.sourceName + ' is deprecated';
                     if (elementParser.alternative) {
@@ -356,41 +342,21 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
                     }
 
                     if (!pathTo) {
-                        throw new ParserError(
-                            'pathTo is not defined in the parser file.',
-                            '',
-                            '',
-                            element.sourceName,
-                            ''
-                        );
+                        throw new ParserError('pathTo is not defined in the parser file.', '', '', element.sourceName, '');
                     }
 
                     // method how the values should be attached (insert or push)
                     attachMethod = elementParser.method || 'push';
 
                     if (attachMethod !== 'insert' && attachMethod !== 'push') {
-                        throw new ParserError(
-                            'Only push or insert are allowed parser method values.',
-                            '',
-                            '',
-                            element.sourceName,
-                            ''
-                        );
+                        throw new ParserError('Only push or insert are allowed parser method values.', '', '', element.sourceName, '');
                     }
 
                     // TODO: put this into "converters"
                     if (values) {
                         // Markdown.
-                        if (
-                            app.markdownParser &&
-                            elementParser.markdownFields &&
-                            elementParser.markdownFields.length > 0
-                        ) {
-                            for (
-                                let markdownIndex = 0;
-                                markdownIndex < elementParser.markdownFields.length;
-                                markdownIndex += 1
-                            ) {
+                        if (app.markdownParser && elementParser.markdownFields && elementParser.markdownFields.length > 0) {
+                            for (let markdownIndex = 0; markdownIndex < elementParser.markdownFields.length; markdownIndex += 1) {
                                 const field = elementParser.markdownFields[markdownIndex];
                                 let value = get(values, field);
                                 if (value) {
@@ -404,11 +370,7 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
                                     set(values, field, value);
 
                                     // TODO: Little hacky, not sure to handle this here or in template
-                                    if (
-                                        elementParser.markdownRemovePTags &&
-                                        elementParser.markdownRemovePTags.length > 0 &&
-                                        elementParser.markdownRemovePTags.indexOf(field) !== -1
-                                    ) {
+                                    if (elementParser.markdownRemovePTags && elementParser.markdownRemovePTags.length > 0 && elementParser.markdownRemovePTags.indexOf(field) !== -1) {
                                         // Remove p-Tags
                                         value = value.replace(/(<p>|<\/p>)/g, '');
                                         set(values, field, value);
@@ -426,45 +388,20 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
                         if (e.example) {
                             extra.push({ Example: e.example });
                         }
-                        throw new ParserError(
-                            e.message,
-                            self.filename,
-                            blockIndex + 1,
-                            element.sourceName,
-                            element.source,
-                            extra
-                        );
+                        throw new ParserError(e.message, self.filename, blockIndex + 1, element.sourceName, element.source, extra);
                     }
-                    throw new ParserError(
-                        'Undefined error.',
-                        self.filename,
-                        blockIndex + 1,
-                        element.sourceName,
-                        element.source
-                    );
+                    throw new ParserError('Undefined error.', self.filename, blockIndex + 1, element.sourceName, element.source);
                 }
 
                 if (!values) {
-                    throw new ParserError(
-                        'Empty parser result.',
-                        self.filename,
-                        blockIndex + 1,
-                        element.sourceName,
-                        element.source
-                    );
+                    throw new ParserError('Empty parser result.', self.filename, blockIndex + 1, element.sourceName, element.source);
                 }
 
                 if (preventGlobal) {
                     // Check if count global namespace entries > count allowed
                     // (e.g. @successTitle is global, but should co-exist with @apiErrorStructure)
                     if (Object.keys(blockData.global).length > countAllowedMultiple) {
-                        throw new ParserError(
-                            'Only one definition or usage is allowed in the same block.',
-                            self.filename,
-                            blockIndex + 1,
-                            element.sourceName,
-                            element.source
-                        );
+                        throw new ParserError('Only one definition or usage is allowed in the same block.', self.filename, blockIndex + 1, element.sourceName, element.source);
                     }
                 }
 
@@ -474,23 +411,11 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
                         countAllowedMultiple += 1;
                     } else {
                         if (Object.keys(blockData.global).length > 0) {
-                            throw new ParserError(
-                                'Only one definition is allowed in the same block.',
-                                self.filename,
-                                blockIndex + 1,
-                                element.sourceName,
-                                element.source
-                            );
+                            throw new ParserError('Only one definition is allowed in the same block.', self.filename, blockIndex + 1, element.sourceName, element.source);
                         }
 
                         if (preventGlobal) {
-                            throw new ParserError(
-                                'Only one definition or usage is allowed in the same block.',
-                                self.filename,
-                                blockIndex + 1,
-                                element.sourceName,
-                                element.source
-                            );
+                            throw new ParserError('Only one definition or usage is allowed in the same block.', self.filename, blockIndex + 1, element.sourceName, element.source);
                         }
                     }
                 }
@@ -525,7 +450,6 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
 
 /**
  * Create a nonexisting path in an object.
- *
  * @param src - The source object where the path will be created.
  * @param path - The dot-separated string defining the path in the source object.
  * @param [attachMethod] - An optional method to define the behavior for the final path, such as
@@ -557,7 +481,6 @@ Parser.prototype._createObjectPath = function (src, path, attachMethod) {
  * Return path to object
  *
  * Retrieves the value of a nested property from a source object.
- *
  * @param path - A dot-separated string representing the path to navigate within the source object.
  *    If undefined or null, the entire source object is returned.
  * @param src - The source object to search
@@ -585,7 +508,6 @@ Parser.prototype._pathToObject = function (path, src) {
  * - Retrieves blocks of documentation comments using the specified regular expression for the language.
  * - Inline comment patterns are removed from the extracted documentation blocks.
  * - Restores the original line breaks in the documentation blocks after processing.
- *
  * @returns {Array<string>} An array containing the extracted documentation blocks.
  * @memberof Parser
  */
@@ -619,7 +541,6 @@ Parser.prototype._findBlocks = function () {
  *
  * An @apiIgnore ignores the block.
  * Other, non @api elements, will be ignored.
- *
  * @param blocks - Array of block elements to be analyzed and filtered.
  *     Each block is an array of objects, where each object contains metadata, including names and content.
  * @returns {Array<number>} - An array of integers representing the indexes of blocks.
@@ -654,20 +575,18 @@ Parser.prototype._findBlockWithApiGetIndex = function (blocks) {
                 if (blocks[i][j].name.substr(0, 9) === 'apidefine') {
                     isDefine = true;
                 }
-                if (
-                    blocks[i][j].name.substr(0, filterTag.length) === filterTag &&
-                    blocks[i][j].content === valueToFilter
-                ) {
+                if (blocks[i][j].name.substr(0, filterTag.length) === filterTag && blocks[i][j].content === valueToFilter) {
                     isToFilterBy = true;
                 }
             }
 
-            if (blocks[i][j].name.substr(0, 3) === 'api' ||
+            if (
+                blocks[i][j].name.substr(0, 3) === 'api' ||
                 blocks[i][j].name.substr(0, 7) === 'openapi' ||
                 blocks[i][j].name.substr(0, 4) === 'mqtt' ||
                 // JSDoc/TSDoc tags
-                ['file', 'author', 'copyright', 'license', 'package', 'see',
-                 'param', 'returns', 'remarks', 'example', 'public', 'internal', 'alpha', 'beta'].includes(blocks[i][j].name)) {
+                ['file', 'author', 'copyright', 'license', 'package', 'see', 'param', 'returns', 'remarks', 'example', 'public', 'internal', 'alpha', 'beta'].includes(blocks[i][j].name)
+            ) {
                 found = true;
             }
         }
@@ -688,7 +607,6 @@ Parser.prototype._findBlockWithApiGetIndex = function (blocks) {
 /**
  * Extracts and processes elements defined with the `@api` tag from a block of text.
  * And trigger "hooks" for additional customization during the extraction process.
- *
  * @param block - A string block of text that contains the elements to extract.
  *                        Linebreaks are temporarily replaced with a Unicode character for parsing.
  * @param filename - The name of the file being processed. Used for context within the hooks.
@@ -718,7 +636,6 @@ Parser.prototype.findElements = function (block, filename) {
             content: matches[3] || '',
         };
 
-
         // reverse Unicode Linebreaks
         element.content = element.content.replace(/\uffff/g, '\n');
         element.source = element.source.replace(/\uffff/g, '\n');
@@ -737,7 +654,6 @@ Parser.prototype.findElements = function (block, filename) {
 
 /**
  * Emit warnings through the logger instance for inconsistent API doc elements.
- *
  * @param parsedBlocks - An array of parsed block objects containing API documentation data.
  * @param log - A logger instance used to emit warnings or errors during the sanity checks.
  * @param filename - The name of the file being processed for generating documentation.
@@ -776,22 +692,15 @@ function _sanityChecks(parsedBlocks, log, filename) {
             }
         }
         for (const urlParam of urlParams) {
-            if (
-                !paramFields.some((pf) => pf.field === urlParam) &&
-                !paramFieldsDefinedOutside.some((pf) => pf.field === urlParam)
-            ) {
-                log.warn(
-                    `URL contains a parameter ':${urlParam}' that is not documented as @apiParam in @api '${block.local.title}' in file: '${filename}'`
-                );
+            if (!paramFields.some((pf) => pf.field === urlParam) && !paramFieldsDefinedOutside.some((pf) => pf.field === urlParam)) {
+                log.warn(`URL contains a parameter ':${urlParam}' that is not documented as @apiParam in @api '${block.local.title}' in file: '${filename}'`);
             }
         }
         if (!block.global.define) {
             for (const paramField of paramFields) {
                 // Emit the warning only if the field is mandatory.
                 if (!paramField.optional && !urlParams.some((up) => up === paramField.field)) {
-                    log.warn(
-                        `@apiParam '${paramField.field}' was defined but does not appear in URL of @api '${block.local.title}' in file: '${filename}'`
-                    );
+                    log.warn(`@apiParam '${paramField.field}' was defined but does not appear in URL of @api '${block.local.title}' in file: '${filename}'`);
                 }
             }
         }
@@ -800,7 +709,6 @@ function _sanityChecks(parsedBlocks, log, filename) {
 
 /**
  * Process an object and extract all parameter fields across all field groups.
- *
  * @param block - The block object containing parameter field information. It is expected to have a structure that includes `local.parameter.fields`.
  * @returns {Array<object>} Array of parameter fields extracted from the block object. If no fields are present, an empty array is returned.
  * @private

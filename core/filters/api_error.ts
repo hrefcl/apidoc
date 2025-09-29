@@ -14,17 +14,14 @@ import { postFilter as apiParamPostFilter } from './api_param';
  * Delegates to the parameter filter to remove duplicate error response fields
  * that can occur when local @apiError definitions override inherited error
  * fields from @apiDefine blocks. Uses the same deduplication logic as parameters.
- *
  * @param parsedFiles - Array of parsed file objects containing API documentation blocks
  * @param filenames - Array of filenames (unused but required for filter interface)
- *
  * @example Error field deduplication
  * ```typescript
  * // Removes duplicate error response fields
  * postFilter(parsedFiles, filenames);
  * // Equivalent to: apiParamPostFilter(parsedFiles, filenames, 'error')
  * ```
- *
  * @since 4.0.0
  * @public
  */

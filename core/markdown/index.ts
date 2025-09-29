@@ -1,15 +1,8 @@
-export * from './generator'
-export * from './types'
-export * from './utils'
+export * from './generator';
+export * from './types';
+export * from './utils';
 
-import { generateMarkdown, generateMarkdownFileSystem, createMarkdownFromApiDocData } from './generator'
-import { MarkdownConfigurationObject, MarkdownConfigurationObjectCLI, availableTemplates } from './types'
+import { createMarkdownFromApiDocData, generateMarkdown, generateMarkdownFileSystem } from './generator';
+import { MarkdownConfigurationObject, MarkdownConfigurationObjectCLI, availableTemplates } from './types';
 
-export {
-  generateMarkdown,
-  generateMarkdownFileSystem,
-  createMarkdownFromApiDocData,
-  MarkdownConfigurationObject,
-  MarkdownConfigurationObjectCLI,
-  availableTemplates
-}
+export { MarkdownConfigurationObject, MarkdownConfigurationObjectCLI, availableTemplates, createMarkdownFromApiDocData, generateMarkdown, generateMarkdownFileSystem };

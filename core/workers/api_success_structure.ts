@@ -6,8 +6,7 @@ const _messages = {
     common: {
         element: 'apiSuccessStructure',
         usage: '@apiSuccessStructure group',
-        example:
-            '@apiDefine MyValidSuccessStructureGroup Some title\n@apiSuccessStructure MyValidSuccessStructureGroup',
+        example: '@apiDefine MyValidSuccessStructureGroup Some title\n@apiSuccessStructure MyValidSuccessStructureGroup',
     },
 };
 
@@ -16,7 +15,6 @@ const _messages = {
  *
  * Pre-processes the given parsed files, filenames, and package information
  * by delegating the operation to an API worker.
- *
  * @param parsedFiles - Array of parsed file objects to process.
  * @param filenames - Array of filenames corresponding to the parsed files.
  * @param packageInfos - Object containing package information to apply during processing.
@@ -30,22 +28,13 @@ function preProcess(parsedFiles, filenames, packageInfos) {
  * PostProcess API Success Structure
  *
  * Processes the parsed files and metadata after the initial processing is completed.
- *
  * @param parsedFiles - Array of objects containing the parsed file data.
  * @param filenames - Array of filenames associated with the parsed files.
  * @param preProcess - Pre-processing results containing defined success structures.
  * @param packageInfos - Collection of package-level details and information.
  */
 function postProcess(parsedFiles, filenames, preProcess, packageInfos) {
-    apiWorker.postProcess(
-        parsedFiles,
-        filenames,
-        preProcess,
-        packageInfos,
-        'defineSuccessStructure',
-        'successStructure',
-        _messages
-    );
+    apiWorker.postProcess(parsedFiles, filenames, preProcess, packageInfos, 'defineSuccessStructure', 'successStructure', _messages);
 }
 
 /**

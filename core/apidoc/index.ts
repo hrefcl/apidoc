@@ -3,7 +3,6 @@
  *
  * APIDoc creates documentation from API descriptions in your source code.
  * This is a RESTful web API Documentation Generator with TypeScript support.
- *
  * @package
  * @version 5.0.0
  * @author Href Spa <hola@apidoc.app>
@@ -13,7 +12,6 @@
  * @see {@link https://github.com/hrefcl/apidoc} GitHub repository
  *
  * This project is a TypeScript refactor inspired by the original apidoc project.
- *
  * @example
  * ```typescript
  * import { createDoc } from '@hrefcl/apidoc';
@@ -33,17 +31,16 @@
  */
 
 import * as pkgJson from '../../package.json';
-import { ApiDocOptions, ApiDocParseResult, AppContext, LoggerInterface, MarkdownParser } from '../types';
 import * as core from '../parser-core';
+import { ApiDocOptions, ApiDocParseResult, AppContext, LoggerInterface, MarkdownParser } from '../types';
 import * as defaults from './defaults';
 import * as optionsProcessor from './options';
+import { ApiCatPlugin } from './plugins/apicat';
 import { Reader } from './reader';
 import Writer from './writer';
-import { ApiCatPlugin } from './plugins/apicat';
 
 /**
  * Global application context containing shared instances and configuration
- *
  * @internal
  */
 const app: AppContext = {
@@ -55,7 +52,6 @@ const app: AppContext = {
 /**
  * Global error handler for uncaught exceptions
  * Ensures graceful shutdown and proper error reporting
- *
  * @internal
  */
 process.on('uncaughtException', (err: Error) => {
@@ -69,7 +65,6 @@ process.on('uncaughtException', (err: Error) => {
  *
  * This is the main entry point for generating API documentation. It processes
  * source files containing API documentation comments and generates HTML output.
- *
  * @param options - Configuration options for documentation generation
  * @param options.src - Source files or directories to process (array or string)
  * @param options.dest - Output directory for generated documentation
@@ -92,14 +87,11 @@ process.on('uncaughtException', (err: Error) => {
  * @param options.markdown - Enable markdown parsing in descriptions
  * @param options.lineEnding - Line ending style (CRLF or LF)
  * @param options.encoding - File encoding (default: utf8)
- *
  * @returns Processing result:
  *   - `ApiDocParseResult` object with `data` and `project` properties if successful
  *   - `true` if there are no files to process
  *   - `false` if an error occurred during processing
- *
  * @throws {Error} Throws error if options are invalid or processing fails
- *
  * @example Basic usage
  * ```typescript
  * import { createDoc } from '@hrefcl/apidoc';
@@ -113,7 +105,6 @@ process.on('uncaughtException', (err: Error) => {
  *   console.log('Generated docs for', result.project.name);
  * }
  * ```
- *
  * @example Advanced configuration
  * ```typescript
  * const result = createDoc({
@@ -136,7 +127,6 @@ process.on('uncaughtException', (err: Error) => {
  *   apiprivate: false
  * });
  * ```
- *
  * @example Error handling
  * ```typescript
  * try {
@@ -156,7 +146,6 @@ process.on('uncaughtException', (err: Error) => {
  *   console.error('Configuration error:', error.message);
  * }
  * ```
- *
  * @see {@link https://apidocjs.com} Complete documentation
  * @see {@link https://apidocjs.com/example} Live example
  * @since 5.0.0

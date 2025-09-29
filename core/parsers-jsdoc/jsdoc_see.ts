@@ -4,7 +4,6 @@
  * This parser processes @see tags to extract reference links, internal references,
  * and external documentation links. See references are used for creating
  * navigational links and cross-references in generated documentation.
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -29,10 +28,8 @@ interface SeeReference {
  * Processes @see tags supporting various formats including URLs, JSDoc links,
  * and internal references. Handles standard JSDoc notation patterns for
  * creating navigational and reference links.
- *
  * @param content - Raw content from the @see tag
  * @returns Object containing reference information, or null if content is empty
- *
  * @example URL reference
  * ```
  * // Input: "https://apidocjs.com"
@@ -42,7 +39,6 @@ interface SeeReference {
  * //   seeUrl: "https://apidocjs.com"
  * // }
  * ```
- *
  * @example JSDoc link with title
  * ```
  * // Input: "{@link https://apidocjs.com} Official documentation"
@@ -53,7 +49,6 @@ interface SeeReference {
  * //   seeTitle: "Official documentation"
  * // }
  * ```
- *
  * @example JSDoc link with inline title
  * ```
  * // Input: "{@link https://apidocjs.com Official docs}"
@@ -64,7 +59,6 @@ interface SeeReference {
  * //   seeTitle: "Official docs"
  * // }
  * ```
- *
  * @example Internal reference
  * ```
  * // Input: "MyClass#method"
@@ -74,7 +68,6 @@ interface SeeReference {
  * //   seeReference: "MyClass#method"
  * // }
  * ```
- *
  * @example Plain text with title
  * ```
  * // Input: "https://example.com Documentation site"
@@ -85,7 +78,6 @@ interface SeeReference {
  * //   seeTitle: "Documentation site"
  * // }
  * ```
- *
  * @since 5.0.0
  * @public
  */
@@ -98,7 +90,7 @@ export function parse(content: string): SeeReference | null {
 
     const result: SeeReference = {
         see: seeText,
-        seeType: 'reference'
+        seeType: 'reference',
     };
 
     // Pattern 1: JSDoc link format {@link url title} or {@link url}

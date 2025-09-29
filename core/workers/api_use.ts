@@ -23,23 +23,19 @@ const _messages = {
  * PreProcess API Use tags to collect defined blocks
  *
  * First phase of @apiUse processing that scans all parsed files to collect
- *
  * @apiDefine blocks and organize them by name and version. These blocks will
  * later be referenced by @apiUse tags during postprocessing.
- *
  * @param parsedFiles - Array of parsed file objects containing API documentation blocks
  * @param filenames - Array of filenames corresponding to the parsed files
  * @param packageInfos - Package information including default version for versioning
  * @param target - Target key in result object where collected definitions are stored
  * @returns Object containing all defined blocks organized by name and version
- *
  * @example Collecting defined blocks
  * ```typescript
  * // Input: Parsed files with @apiDefine blocks
  * const result = preProcess(parsedFiles, filenames, packageInfos, 'define');
  * // Output: { define: { "UserObject": { "1.0.0": { ... block data ... } } } }
  * ```
- *
  * @since 4.0.0
  * @internal
  */
@@ -79,7 +75,6 @@ function preProcess(parsedFiles: any[], filenames: string[], packageInfos: any, 
  * Second phase of @apiUse processing that finds @apiUse references in API blocks
  * and replaces them with the corresponding @apiDefine block content. Handles
  * version matching, recursive inclusion, and error reporting for missing references.
- *
  * @param parsedFiles - Array of parsed file objects to process for @apiUse tags
  * @param filenames - Array of filenames for error reporting
  * @param preProcess - Previously collected defined blocks from preprocessing phase
@@ -87,30 +82,19 @@ function preProcess(parsedFiles: any[], filenames: string[], packageInfos: any, 
  * @param source - Key in preProcess object containing the defined blocks
  * @param target - Key in block.local containing @apiUse references to process
  * @param messages - Error message templates for consistent error reporting
- *
  * @throws {WorkerError} When referenced definition doesn't exist
  * @throws {WorkerError} When recursion depth exceeds limit (10 levels)
  * @throws {WorkerError} When no matching version is found
- *
  * @example Processing @apiUse references
  * ```typescript
  * // Before: block.local.use = [{ name: "UserObject" }]
  * postProcess(parsedFiles, filenames, preProcess, packageInfos);
  * // After: UserObject definition content is merged into the block
  * ```
- *
  * @since 4.0.0
  * @internal
  */
-function postProcess(
-    parsedFiles: any[],
-    filenames: string[],
-    preProcess: any,
-    packageInfos: any,
-    source?: string,
-    target?: string,
-    messages?: any
-): void {
+function postProcess(parsedFiles: any[], filenames: string[], preProcess: any, packageInfos: any, source?: string, target?: string, messages?: any): void {
     source = source || 'define';
     target = target || 'use';
     messages = messages || _messages;
@@ -175,8 +159,7 @@ function postProcess(
 
                         if (foundIndex === -1) {
                             throw new WorkerError(
-                                'Referenced definition has no matching or a higher version. ' +
-                                    'Check version number in referenced define block.',
+                                'Referenced definition has no matching or a higher version. ' + 'Check version number in referenced define block.',
                                 filenames[parsedFileIndex],
                                 block.index,
                                 messages.common.element,
@@ -205,10 +188,8 @@ function postProcess(
  * for arrays (which are concatenated rather than replaced). This ensures that
  * when @apiUse blocks are included, their arrays are properly merged with
  * existing arrays in the target block.
- *
  * @param block - Target object to merge content into
  * @param matchedData - Source object containing content to merge
- *
  * @example Array concatenation behavior
  * ```typescript
  * const target = { params: [{ name: "id" }] };
@@ -216,7 +197,6 @@ function postProcess(
  * _recursiveMerge(target, source);
  * // Result: { params: [{ name: "id" }, { name: "name" }] }
  * ```
- *
  * @since 4.0.0
  * @internal
  * @todo Replace with more robust merging solution

@@ -22,7 +22,6 @@ let app: any = {};
 
 /**
  * Detect and loading plugins for an application instance.
- *
  * @param _app - Application instance
  * @class
  */
@@ -55,7 +54,6 @@ util.inherits(PluginLoader, Object);
 /**
  * Recursively detects and loads plugins matching the naming pattern "apidoc-plugin-*"
  * or within namespaces in a specified directory or its parent directories.
- *
  * @param dir - The directory path where the function should start looking for plugins.
  * @returns {*|void}
  * @memberof PluginLoader
@@ -92,7 +90,6 @@ PluginLoader.prototype.detectPugins = function (dir) {
 /**
  * Adds, or overwrites, a plugin in the plugins collection.
  * If the specified plugin name already exists, it logs a debug message about the overwrite operation.
- *
  * @param name - The name of the plugin to be added or overwritten.
  * @param filename - The filename or path associated with the plugin.
  * @memberof PluginLoader
@@ -113,7 +110,6 @@ PluginLoader.prototype.addPlugin = function (name, filename) {
  * is successfully loaded and contains an `init` function, the `init` function is called
  * with the application instance. If the plugin fails, a debug message is logged indicating
  * the plugin was ignored.
- *
  * @memberof PluginLoader
  */
 PluginLoader.prototype.loadPlugins = function () {

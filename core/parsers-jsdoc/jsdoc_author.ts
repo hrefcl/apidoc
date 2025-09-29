@@ -3,7 +3,6 @@
  *
  * This parser processes @author tags to extract author name and email information.
  * Author information is used for attribution in generated documentation.
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -26,16 +25,13 @@ interface AuthorInfo {
  * Processes @author tags supporting various formats including plain names,
  * email addresses, and combined name/email formats. Handles standard JSDoc
  * author notation patterns.
- *
  * @param content - Raw content from the @author tag
  * @returns Object containing author information, or null if content is empty
- *
  * @example Plain name
  * ```
  * // Input: "John Doe"
  * // Output: { author: "John Doe", authorName: "John Doe" }
  * ```
- *
  * @example Name with email
  * ```
  * // Input: "John Doe <john@example.com>"
@@ -45,13 +41,11 @@ interface AuthorInfo {
  * //   authorEmail: "john@example.com"
  * // }
  * ```
- *
  * @example Email only
  * ```
  * // Input: "john@example.com"
  * // Output: { author: "john@example.com", authorEmail: "john@example.com" }
  * ```
- *
  * @example Company format
  * ```
  * // Input: "Href Spa <hola@apidoc.app>"
@@ -61,7 +55,6 @@ interface AuthorInfo {
  * //   authorEmail: "hola@apidoc.app"
  * // }
  * ```
- *
  * @since 5.0.0
  * @public
  */

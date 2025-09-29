@@ -1,6 +1,5 @@
 /**
  * Parse to extract API private
- *
  * @returns {{private: boolean}} Return an object with the `private` property always set to true.
  */
 function parse() {

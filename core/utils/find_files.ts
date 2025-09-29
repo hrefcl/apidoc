@@ -4,7 +4,6 @@
  * Provides recursive file search capabilities with include/exclude
  * filtering for API documentation source file discovery. Supports
  * glob patterns and regex filtering for flexible file selection.
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -26,7 +25,6 @@ import { FileError } from '../errors/file_error';
  * Supports both include and exclude filters with glob pattern matching.
  * Designed for discovering API documentation source files while excluding
  * unwanted directories like node_modules, tests, and build outputs.
- *
  * @example Basic usage
  * ```typescript
  * const finder = new FindFiles();
@@ -35,7 +33,6 @@ import { FileError } from '../errors/file_error';
  * finder.setExcludeFilters(['node_modules', 'test']);
  * const files = finder.search();
  * ```
- *
  * @example Advanced filtering
  * ```typescript
  * const finder = new FindFiles();
@@ -44,7 +41,6 @@ import { FileError } from '../errors/file_error';
  * finder.setExcludeFilters(['**\/node_modules\/**', '**\/dist\/**', '**\/*.test.*']);
  * const sourceFiles = finder.search();
  * ```
- *
  * @since 4.0.0
  * @internal
  */
@@ -59,7 +55,6 @@ function FindFiles() {
  *
  * Updates the internal path property to the specified directory.
  * Throws an error if the path is invalid or null.
- *
  * @param newPath - The directory path to set for searching files.
  * @memberof FindFiles
  */
@@ -74,7 +69,6 @@ FindFiles.prototype.setPath = function (newPath) {
  *
  * Exclude filters are patterns used to ignore files or directories during
  * a file search operation.
- *
  * @param excludeFilters - An array of exclude filters.
  *     Filters can include wildcards, regex patterns, or specific file/directory names to be excluded.
  * @memberof FindFiles
@@ -91,7 +85,6 @@ FindFiles.prototype.setExcludeFilters = function (excludeFilters) {
  * The include filters are patterns used to specify which files should
  * be included in the search. These patterns are strings or
  * regular expressions that match file names or paths.
- *
  * @param includeFilters - An array of filters to include files.
  *     Each filter can be a string or a regular expression.
  * @memberof FindFiles
@@ -108,12 +101,9 @@ FindFiles.prototype.setIncludeFilters = function (includeFilters) {
  * Performs a recursive directory traversal starting from the configured path,
  * applying include and exclude filters to find matching files. Returns an
  * array of absolute file paths that match the criteria.
- *
  * @returns Array of absolute file paths matching the filter criteria
- *
  * @throws {FileError} When the search path doesn't exist or is inaccessible
  * @throws {Error} When file system operations fail
- *
  * @example Simple search
  * ```typescript
  * const finder = new FindFiles();
@@ -121,7 +111,6 @@ FindFiles.prototype.setIncludeFilters = function (includeFilters) {
  * const files = finder.search();
  * // Returns: ['/absolute/path/to/src/file1.js', '/absolute/path/to/src/file2.ts']
  * ```
- *
  * @example Filtered search
  * ```typescript
  * const finder = new FindFiles();
@@ -130,7 +119,6 @@ FindFiles.prototype.setIncludeFilters = function (includeFilters) {
  * finder.setExcludeFilters(['node_modules', '*.test.*']);
  * const sourceFiles = finder.search();
  * ```
- *
  * @since 4.0.0
  * @internal
  */

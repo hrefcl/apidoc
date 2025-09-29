@@ -12,28 +12,23 @@
  * Processes @apiUse tags by extracting the name of a predefined documentation
  * block that should be included in the current API endpoint documentation.
  * This enables DRY (Don't Repeat Yourself) principles in API documentation.
- *
  * @param content - Raw content from the @apiUse tag containing the block name
  * @returns Object containing the referenced block name, or null if content is empty
- *
  * @example Reference to predefined block
  * ```
  * // Input: "UserObject"
  * // Output: { name: "UserObject" }
  * ```
- *
  * @example Reference to error responses
  * ```
  * // Input: "CommonErrors"
  * // Output: { name: "CommonErrors" }
  * ```
- *
  * @example Empty content
  * ```
  * // Input: "   "
  * // Output: null
  * ```
- *
  * @since 4.0.0
  * @public
  */

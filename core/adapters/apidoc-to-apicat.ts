@@ -60,6 +60,8 @@ export interface ApiCATDocs {
 
 /**
  * Transform apiDoc data to apiCAT format
+ * @param apiDocData
+ * @param projectInfo
  */
 export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs {
     const endpoints: ApiCATEndpoint[] = [];
@@ -162,6 +164,7 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
 
 /**
  * Generate a unique ID for an endpoint
+ * @param item
  */
 function generateEndpointId(item: any): string {
     const group = (item.group || 'general').toLowerCase();
@@ -173,6 +176,7 @@ function generateEndpointId(item: any): string {
 
 /**
  * Detect example type from content
+ * @param content
  */
 function detectExampleType(content: string): 'json' | 'text' | 'curl' {
     if (!content) return 'text';
@@ -202,6 +206,7 @@ function detectExampleType(content: string): 'json' | 'text' | 'curl' {
 
 /**
  * Export JSON with proper formatting for apiCAT template consumption
+ * @param docs
  */
 export function exportApiCATDocs(docs: ApiCATDocs): string {
     return JSON.stringify(docs, null, 2);

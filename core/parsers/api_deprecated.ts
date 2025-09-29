@@ -4,7 +4,6 @@
  * Processes @apiDeprecated tags to mark API endpoints as deprecated and
  * optionally include deprecation messages. Supports both simple boolean
  * deprecation flags and detailed deprecation notices with explanations.
- *
  * @author Href Spa <hola@apidoc.app>
  * @copyright 2025 Href SpA
  * @license MIT
@@ -20,17 +19,14 @@ import unindent from '../utils/unindent';
  * Extracts deprecation information from @apiDeprecated tags. If content
  * is provided, it creates a detailed deprecation notice. If no content
  * is provided, it creates a simple boolean deprecation flag.
- *
  * @param content - Raw content from the @apiDeprecated tag
  * @returns Deprecation metadata object
- *
  * @example Simple deprecation
  * ```typescript
  * // @apiDeprecated
  * parse('')
  * // Returns: { deprecated: true }
  * ```
- *
  * @example Deprecation with message
  * ```typescript
  * // @apiDeprecated This endpoint will be removed in v2.0. Use /v2/users instead.
@@ -41,7 +37,6 @@ import unindent from '../utils/unindent';
  * //   }
  * // }
  * ```
- *
  * @since 4.0.0
  * @internal
  */
@@ -67,7 +62,6 @@ function parse(content) {
  * Defines the parser configuration including the parsing function,
  * data path, insertion method, and markdown processing options
  * for deprecation notices.
- *
  * @since 4.0.0
  * @internal
  */

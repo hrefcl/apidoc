@@ -37,6 +37,7 @@ class AuthProcessor {
 
     /**
      * Initialize processor with login configuration
+     * @param loginConfig
      */
     init(loginConfig: LoginConfig): void {
         this.config = loginConfig;
@@ -51,6 +52,8 @@ class AuthProcessor {
 
     /**
      * Process HTML template and apply authentication
+     * @param templateContent
+     * @param projectData
      */
     processTemplate(templateContent: string, projectData: any): string {
         let processedContent = templateContent;
@@ -68,6 +71,8 @@ class AuthProcessor {
 
     /**
      * Inject login configuration into template
+     * @param templateContent
+     * @param projectData
      */
     injectLoginConfig(templateContent: string, projectData: any): string {
         const loginConfigJson = this.sanitizeLoginConfig();
@@ -111,6 +116,8 @@ class AuthProcessor {
 
     /**
      * Hash password for client-side verification (basic protection)
+     * @param password
+     * @param salt
      */
     hashPassword(password: string, salt: string): string {
         return CryptoJS.SHA256(password + salt + 'apidoc-salt').toString();
@@ -127,6 +134,7 @@ class AuthProcessor {
 
     /**
      * Protect sensitive content in HTML
+     * @param htmlContent
      */
     protectSensitiveContent(htmlContent: string): string {
         if (!this.isAuthEnabled || !this.encryptionKey) {
@@ -178,6 +186,7 @@ class AuthProcessor {
 
     /**
      * Encrypt content using CryptoJS AES-256
+     * @param content
      */
     encryptContent(content: string): any {
         // Generate random values
@@ -208,6 +217,8 @@ class AuthProcessor {
 
     /**
      * Create protected content placeholder
+     * @param sectionId
+     * @param sectionName
      */
     createProtectedPlaceholder(sectionId, sectionName) {
         return `<div id="${sectionId}" data-protected="true" style="display: none;">
@@ -232,6 +243,7 @@ class AuthProcessor {
 
     /**
      * Create encrypted content bundle
+     * @param encryptedSections
      */
     createContentBundle(encryptedSections) {
         const bundle = {
@@ -246,6 +258,7 @@ class AuthProcessor {
 
     /**
      * Calculate checksum for integrity verification
+     * @param sections
      */
     calculateChecksum(sections) {
         const data = sections.map((s) => s.data + s.iv + s.salt).join('');
@@ -254,6 +267,8 @@ class AuthProcessor {
 
     /**
      * Inject content bundle into HTML
+     * @param htmlContent
+     * @param contentBundle
      */
     injectContentBundle(htmlContent, contentBundle) {
         const bundleScript = `
@@ -266,6 +281,7 @@ ${contentBundle}
 
     /**
      * Validate login configuration
+     * @param loginConfig
      */
     static validateConfig(loginConfig) {
         if (!loginConfig) return { valid: false, errors: [] };

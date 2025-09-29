@@ -6,22 +6,18 @@
  * - Parameter data types
  * - Parameter descriptions
  * - Parameter validation rules
- *
  * @param content - Raw content from the topicParam tag
  * @returns Parsed parameter information or null if parsing fails
- *
  * @example Basic topic parameter
  * ```
  * // Input: "{String} tenant Tenant identifier"
  * // Output: { type: "String", name: "tenant", description: "Tenant identifier" }
  * ```
- *
  * @example Parameter with constraints
  * ```
  * // Input: "{String{3..50}} deviceId Device unique identifier"
  * // Output: { type: "String", size: "3..50", name: "deviceId", description: "Device unique identifier" }
  * ```
- *
  * @since 4.1.0
  * @public
  */
@@ -66,6 +62,7 @@ const regExp = {
 
 /**
  * Flatten regex object into a single string pattern
+ * @param obj
  */
 function flattenObject(obj: any): string {
     let str = '';
@@ -83,6 +80,7 @@ const pattern = flattenObject(regExp);
 
 /**
  * Parse @topicParam content
+ * @param content
  */
 export function parse(content: string) {
     content = content.trim();

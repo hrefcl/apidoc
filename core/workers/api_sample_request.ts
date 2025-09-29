@@ -4,7 +4,6 @@
  * Processes the parsed files and metadata after the initial processing is completed.
  * Handles sample request URLs, including prepending the sampleUrl from packageInfos
  * for relative URLs and filtering out disabled sample requests.
- *
  * @param parsedFiles - Array of objects containing the parsed file data.
  * @param filenames - Array of filenames associated with the parsed files.
  * @param preProcess - Pre-processing results containing defined sample requests.
@@ -20,11 +19,7 @@ function postProcess(parsedFiles, filenames, preProcess, packageInfos) {
                 block.local[targetName].forEach(function (entry) {
                     if (entry.url !== 'off') {
                         // Check if is an internal url
-                        if (
-                            packageInfos.sampleUrl &&
-                            typeof packageInfos.sampleUrl === 'string' &&
-                            !entry.url.match(/^http/i)
-                        ) {
+                        if (packageInfos.sampleUrl && typeof packageInfos.sampleUrl === 'string' && !entry.url.match(/^http/i)) {
                             // Prepend sampleUrl
                             entry.url = packageInfos.sampleUrl + entry.url;
                         }

@@ -38,7 +38,6 @@ const _messages = {
  * PreProcess API Param Title
  *
  * Processes the parsed files and organizes the data in a structured format.
- *
  * @param parsedFiles - An array of parsed file objects containing the data blocks.
  * @param filenames - An array of filenames associated with the parsed files.
  * @param packageInfos - Information about the package, including its default version.
@@ -85,7 +84,6 @@ function preProcess(parsedFiles: ParsedFile[], filenames: string[], packageInfos
  * - versioning,
  * - matches data definitions
  * - updates field information
- *
  * @param parsedFiles - Array of objects containing the parsed file data. Each file contains blocks to modify.
  * @param filenames - Array of filenames associated with the parsed files.
  * @param preProcess - Pre-processed data source used for matching and updating fields.
@@ -94,15 +92,7 @@ function preProcess(parsedFiles: ParsedFile[], filenames: string[], packageInfos
  * @param [target] - Relative path to the tree (local.), where the data should be modified.
  * @param [messages] - Messages used for error reporting.
  */
-function postProcess(
-    parsedFiles: ParsedFile[],
-    filenames: string[],
-    preProcess: any,
-    packageInfos: PackageInfos,
-    source?: string,
-    target?: string,
-    messages?: any
-): void {
+function postProcess(parsedFiles: ParsedFile[], filenames: string[], preProcess: any, packageInfos: PackageInfos, source?: string, target?: string, messages?: any): void {
     source = source || 'defineParamTitle';
     target = target || 'parameter';
     messages = messages || _messages;
@@ -160,14 +150,9 @@ function postProcess(
                             });
 
                             if (foundIndex === -1) {
-                                const extra = [
-                                    { Groupname: name },
-                                    { Version: version },
-                                    { 'Defined versions': versionKeys },
-                                ];
+                                const extra = [{ Groupname: name }, { Version: version }, { 'Defined versions': versionKeys }];
                                 throw new WorkerError(
-                                    'Referenced definition has no matching or a higher version. ' +
-                                        'Check version number in referenced define block.',
+                                    'Referenced definition has no matching or a higher version. ' + 'Check version number in referenced define block.',
                                     filenames[parsedFileIndex],
                                     block.index.toString(),
                                     messages.common.element,

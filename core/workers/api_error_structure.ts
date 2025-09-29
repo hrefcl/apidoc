@@ -15,7 +15,6 @@ const _messages = {
  *
  * Pre-processes the given parsed files, filenames, and package information
  * by delegating the operation to an API worker.
- *
  * @param parsedFiles - Array of parsed file objects to process.
  * @param filenames - Array of filenames corresponding to the parsed files.
  * @param packageInfos - Information about the package being processed.
@@ -29,22 +28,13 @@ function preProcess(parsedFiles, filenames, packageInfos) {
  * PostProcess API Error Structure
  *
  * Processes the parsed files and metadata after the initial processing is completed.
- *
  * @param parsedFiles - Array of objects containing the parsed file data.
  * @param filenames - Array of filenames associated with the parsed files.
  * @param preProcess - Pre-processing function executed prior to this post-processing step.
  * @param packageInfos - Collection of package-level details and information.
  */
 function postProcess(parsedFiles, filenames, preProcess, packageInfos) {
-    apiWorker.postProcess(
-        parsedFiles,
-        filenames,
-        preProcess,
-        packageInfos,
-        'defineErrorStructure',
-        'errorStructure',
-        _messages
-    );
+    apiWorker.postProcess(parsedFiles, filenames, preProcess, packageInfos, 'defineErrorStructure', 'errorStructure', _messages);
 }
 
 /**

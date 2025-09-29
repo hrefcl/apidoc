@@ -15,11 +15,9 @@
  *
  * The filter preserves the first occurrence of each field and removes subsequent
  * duplicates, ensuring that local definitions take precedence over inherited ones.
- *
  * @param parsedFiles - Array of parsed file objects containing API documentation blocks
  * @param filenames - Array of filenames (unused but required for filter interface)
  * @param tagName - Type of parameter fields to deduplicate (default: 'parameter')
- *
  * @example Deduplication process
  * ```typescript
  * // Before filtering:
@@ -37,7 +35,6 @@
  * //   { field: "email", description: "Email field" }
  * // ]
  * ```
- *
  * @since 4.0.0
  * @public
  */

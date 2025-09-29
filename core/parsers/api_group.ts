@@ -11,28 +11,23 @@
  * Processes @apiGroup tags by trimming whitespace and converting spaces to underscores
  * to create valid group identifiers. Groups are used to organize related API endpoints
  * in the documentation navigation and structure.
- *
  * @param content - Raw content from the @apiGroup tag
  * @returns Object containing the normalized group name, or null if content is empty
- *
  * @example Basic group
  * ```
  * // Input: "User"
  * // Output: { group: "User" }
  * ```
- *
  * @example Group with spaces
  * ```
  * // Input: "User Management"
  * // Output: { group: "User_Management" }
  * ```
- *
  * @example Empty content
  * ```
  * // Input: "   "
  * // Output: null
  * ```
- *
  * @since 4.0.0
  * @public
  */

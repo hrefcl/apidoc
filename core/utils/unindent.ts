@@ -1,6 +1,5 @@
 /**
  * Removes the common leading whitespace from every line in the given string.
- *
  * @param str - The input string where indentation should be removed.
  * @returns {string} The unindented string with common leading spaces removed.
  */
