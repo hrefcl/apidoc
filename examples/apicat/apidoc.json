@@ -71,10 +71,6 @@
     "enabled": true,
     "outputDir": "./apicat-output",
     "generateCollections": true,
-    "enableLocalTesting": true,
-    "tauri": {
-      "enabled": true,
-      "buildDir": "./apps/apicat-desktop"
-    }
+    "enableLocalTesting": true
   }
 }

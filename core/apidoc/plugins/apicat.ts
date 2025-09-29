@@ -19,10 +19,6 @@ export interface ApiCatConfig {
     outputDir?: string;
     generateCollections?: boolean;
     enableLocalTesting?: boolean;
-    tauri?: {
-        enabled: boolean;
-        buildDir?: string;
-    };
 }
 
 /**
@@ -39,10 +35,6 @@ export class ApiCatPlugin {
             outputDir: './apicat-output',
             generateCollections: true,
             enableLocalTesting: true,
-            tauri: {
-                enabled: false,
-                buildDir: null
-            },
             ...config
         };
 
@@ -370,28 +362,23 @@ export class ApiCatPlugin {
             footerHtml
         );
 
-        // Generate placeholder TSDoc
-        const tsdocCore = {
-            module: "core",
-            symbols: [],
-            generatedAt: new Date().toISOString()
-        };
+        // Generate TSDoc documentation
+        const tsdocData = await this.generateTSDocData();
 
-        const tsdocModels = {
-            module: "models",
-            symbols: [],
-            generatedAt: new Date().toISOString()
-        };
+        for (const [moduleName, moduleData] of Object.entries(tsdocData)) {
+            // Save JSON data
+            await fs.writeFile(
+                path.join(outputPath, 'cat.tsdoc', `${moduleName}.json`),
+                JSON.stringify(moduleData, null, 2)
+            );
 
-        await fs.writeFile(
-            path.join(outputPath, 'cat.tsdoc', 'core.json'),
-            JSON.stringify(tsdocCore, null, 2)
-        );
-
-        await fs.writeFile(
-            path.join(outputPath, 'cat.tsdoc', 'models.json'),
-            JSON.stringify(tsdocModels, null, 2)
-        );
+            // Generate HTML documentation
+            const htmlDoc = this.generateTSDocHTML(moduleData as any);
+            await fs.writeFile(
+                path.join(outputPath, 'cat.docs', `tsdoc.${moduleName}.html`),
+                htmlDoc
+            );
+        }
     }
 
     /**
@@ -455,6 +442,664 @@ export class ApiCatPlugin {
         }
 
         return customMarkdown;
+    }
+
+    /**
+     * Generate TSDoc documentation from TypeScript files
+     */
+    private async generateTSDocData(): Promise<Record<string, any>> {
+        try {
+            const ts = require('typescript');
+            const tsdocData: Record<string, any> = {};
+
+            // Find all TypeScript files in core directory
+            const coreFiles = await this.findTypeScriptFiles(['./core']);
+
+            // Parse files by module groups
+            const moduleGroups = {
+                'core': coreFiles.filter(f => f.includes('/apidoc/') || f.includes('/types/')),
+                'exporters': coreFiles.filter(f => f.includes('/exporters/')),
+                'markdown': coreFiles.filter(f => f.includes('/markdown/')),
+                'parsers': coreFiles.filter(f => f.includes('/parsers/')),
+                'filters': coreFiles.filter(f => f.includes('/filters/')),
+                'plugins': coreFiles.filter(f => f.includes('/plugins/'))
+            };
+
+            for (const [moduleName, files] of Object.entries(moduleGroups)) {
+                if (files.length === 0) continue;
+
+                const symbols: any[] = [];
+
+                for (const filePath of files) {
+                    try {
+                        const fileContent = await fs.readFile(filePath, 'utf8');
+                        const sourceFile = ts.createSourceFile(
+                            filePath,
+                            fileContent,
+                            ts.ScriptTarget.ES2020,
+                            true
+                        );
+
+                        const fileSymbols = this.extractTSDocSymbols(sourceFile, filePath, ts);
+                        symbols.push(...fileSymbols);
+                    } catch (error) {
+                        console.warn(`Warning: Could not process ${filePath}: ${error.message}`);
+                    }
+                }
+
+                tsdocData[moduleName] = {
+                    module: moduleName,
+                    description: this.getModuleDescription(moduleName),
+                    symbols,
+                    fileCount: files.length,
+                    generatedAt: new Date().toISOString()
+                };
+            }
+
+            return tsdocData;
+        } catch (error) {
+            console.warn('TSDoc generation failed:', error.message);
+            // Fallback to placeholder data
+            return {
+                'core': {
+                    module: "core",
+                    description: "Core APIDoc functionality",
+                    symbols: [],
+                    generatedAt: new Date().toISOString()
+                }
+            };
+        }
+    }
+
+    /**
+     * Find all TypeScript files in given directories
+     */
+    private async findTypeScriptFiles(directories: string[]): Promise<string[]> {
+        const files: string[] = [];
+
+        for (const dir of directories) {
+            if (!await fs.pathExists(dir)) continue;
+
+            const entries = await fs.readdir(dir, { withFileTypes: true });
+
+            for (const entry of entries) {
+                const fullPath = path.join(dir, entry.name);
+
+                if (entry.isDirectory()) {
+                    // Recursively search subdirectories
+                    const subFiles = await this.findTypeScriptFiles([fullPath]);
+                    files.push(...subFiles);
+                } else if (entry.name.endsWith('.ts') && !entry.name.endsWith('.d.ts')) {
+                    files.push(fullPath);
+                }
+            }
+        }
+
+        return files;
+    }
+
+    /**
+     * Extract TSDoc symbols from a TypeScript source file
+     */
+    private extractTSDocSymbols(sourceFile: any, filePath: string, ts: any): any[] {
+        const symbols: any[] = [];
+
+        const visit = (node: any) => {
+            // Extract classes
+            if (ts.isClassDeclaration(node) && node.name) {
+                const symbol = this.extractClassSymbol(node, filePath, ts);
+                if (symbol) symbols.push(symbol);
+            }
+
+            // Extract functions
+            else if (ts.isFunctionDeclaration(node) && node.name) {
+                const symbol = this.extractFunctionSymbol(node, filePath, ts);
+                if (symbol) symbols.push(symbol);
+            }
+
+            // Extract interfaces
+            else if (ts.isInterfaceDeclaration(node) && node.name) {
+                const symbol = this.extractInterfaceSymbol(node, filePath, ts);
+                if (symbol) symbols.push(symbol);
+            }
+
+            // Extract type aliases
+            else if (ts.isTypeAliasDeclaration(node) && node.name) {
+                const symbol = this.extractTypeAliasSymbol(node, filePath, ts);
+                if (symbol) symbols.push(symbol);
+            }
+
+            ts.forEachChild(node, visit);
+        };
+
+        visit(sourceFile);
+        return symbols;
+    }
+
+    /**
+     * Extract class symbol with JSDoc comments
+     */
+    private extractClassSymbol(node: any, filePath: string, ts: any): any {
+        const jsDocComment = this.getJSDocComment(node, ts);
+        const methods = [];
+
+        // Extract methods
+        for (const member of node.members || []) {
+            if (ts.isMethodDeclaration(member) && member.name) {
+                const methodDoc = this.getJSDocComment(member, ts);
+                methods.push({
+                    name: member.name.text,
+                    type: 'method',
+                    parameters: this.extractParameters(member.parameters || [], ts),
+                    returnType: this.getTypeString(member.type, ts),
+                    isStatic: member.modifiers?.some((m: any) => m.kind === ts.SyntaxKind.StaticKeyword),
+                    isPrivate: member.modifiers?.some((m: any) => m.kind === ts.SyntaxKind.PrivateKeyword),
+                    documentation: methodDoc
+                });
+            }
+        }
+
+        return {
+            name: node.name.text,
+            type: 'class',
+            file: path.relative('./core', filePath),
+            line: this.getLineNumber(node, ts),
+            documentation: jsDocComment,
+            methods,
+            isExported: this.isExported(node, ts)
+        };
+    }
+
+    /**
+     * Extract function symbol with JSDoc comments
+     */
+    private extractFunctionSymbol(node: any, filePath: string, ts: any): any {
+        const jsDocComment = this.getJSDocComment(node, ts);
+
+        return {
+            name: node.name.text,
+            type: 'function',
+            file: path.relative('./core', filePath),
+            line: this.getLineNumber(node, ts),
+            parameters: this.extractParameters(node.parameters || [], ts),
+            returnType: this.getTypeString(node.type, ts),
+            documentation: jsDocComment,
+            isExported: this.isExported(node, ts)
+        };
+    }
+
+    /**
+     * Extract interface symbol with JSDoc comments
+     */
+    private extractInterfaceSymbol(node: any, filePath: string, ts: any): any {
+        const jsDocComment = this.getJSDocComment(node, ts);
+        const properties = [];
+
+        // Extract properties
+        for (const member of node.members || []) {
+            if (ts.isPropertySignature(member) && member.name) {
+                const propDoc = this.getJSDocComment(member, ts);
+                properties.push({
+                    name: member.name.text,
+                    type: this.getTypeString(member.type, ts),
+                    optional: !!member.questionToken,
+                    documentation: propDoc
+                });
+            }
+        }
+
+        return {
+            name: node.name.text,
+            type: 'interface',
+            file: path.relative('./core', filePath),
+            line: this.getLineNumber(node, ts),
+            properties,
+            documentation: jsDocComment,
+            isExported: this.isExported(node, ts)
+        };
+    }
+
+    /**
+     * Extract type alias symbol
+     */
+    private extractTypeAliasSymbol(node: any, filePath: string, ts: any): any {
+        const jsDocComment = this.getJSDocComment(node, ts);
+
+        return {
+            name: node.name.text,
+            type: 'type',
+            file: path.relative('./core', filePath),
+            line: this.getLineNumber(node, ts),
+            aliasType: this.getTypeString(node.type, ts),
+            documentation: jsDocComment,
+            isExported: this.isExported(node, ts)
+        };
+    }
+
+    /**
+     * Get JSDoc comment from a node
+     */
+    private getJSDocComment(node: any, ts: any): any {
+        const jsDocTags = ts.getJSDocTags(node);
+        const jsDocComments = ts.getJSDocCommentsAndTags(node);
+
+        let summary = '';
+        const tags: any[] = [];
+
+        // Extract main comment
+        for (const comment of jsDocComments) {
+            if (ts.isJSDoc(comment)) {
+                if (comment.comment) {
+                    summary = typeof comment.comment === 'string' ? comment.comment :
+                             comment.comment.map((c: any) => c.text || c).join('');
+                }
+            }
+        }
+
+        // Extract tags
+        for (const tag of jsDocTags) {
+            tags.push({
+                name: tag.tagName?.text || 'unknown',
+                text: tag.comment ? (typeof tag.comment === 'string' ? tag.comment :
+                     tag.comment.map((c: any) => c.text || c).join('')) : ''
+            });
+        }
+
+        return {
+            summary: summary.trim(),
+            tags
+        };
+    }
+
+    /**
+     * Extract parameters from function/method
+     */
+    private extractParameters(parameters: any[], ts: any): any[] {
+        return parameters.map(param => ({
+            name: param.name?.text || 'unknown',
+            type: this.getTypeString(param.type, ts),
+            optional: !!param.questionToken,
+            defaultValue: param.initializer ? 'has default' : undefined
+        }));
+    }
+
+    /**
+     * Get type string from TypeScript type node
+     */
+    private getTypeString(typeNode: any, ts: any): string {
+        if (!typeNode) return 'any';
+
+        switch (typeNode.kind) {
+            case ts.SyntaxKind.StringKeyword: return 'string';
+            case ts.SyntaxKind.NumberKeyword: return 'number';
+            case ts.SyntaxKind.BooleanKeyword: return 'boolean';
+            case ts.SyntaxKind.VoidKeyword: return 'void';
+            case ts.SyntaxKind.AnyKeyword: return 'any';
+            default:
+                if (typeNode.typeName) {
+                    return typeNode.typeName.text || 'unknown';
+                }
+                return 'unknown';
+        }
+    }
+
+    /**
+     * Get line number of a node
+     */
+    private getLineNumber(node: any, ts: any): number {
+        const sourceFile = node.getSourceFile();
+        if (sourceFile) {
+            const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart());
+            return line + 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Check if a declaration is exported
+     */
+    private isExported(node: any, ts: any): boolean {
+        return node.modifiers?.some((modifier: any) =>
+            modifier.kind === ts.SyntaxKind.ExportKeyword
+        ) || false;
+    }
+
+    /**
+     * Get module description based on module name
+     */
+    private getModuleDescription(moduleName: string): string {
+        const descriptions: Record<string, string> = {
+            'core': 'Core APIDoc functionality including writers, types, and main processing logic',
+            'exporters': 'Export utilities for converting APIDoc data to various formats (OpenAPI, Markdown, etc.)',
+            'markdown': 'Markdown processing and generation utilities',
+            'parsers': 'API comment parsers for extracting documentation from source code',
+            'filters': 'Post-processing filters for API documentation data',
+            'plugins': 'Plugin system for extending APIDoc functionality'
+        };
+
+        return descriptions[moduleName] || `${moduleName} module documentation`;
+    }
+
+    /**
+     * Generate HTML documentation from TSDoc data
+     */
+    private generateTSDocHTML(moduleData: any): string {
+        const { module: moduleName, description, symbols, fileCount, generatedAt } = moduleData;
+
+        // Group symbols by type
+        const classes = symbols.filter((s: any) => s.type === 'class');
+        const functions = symbols.filter((s: any) => s.type === 'function');
+        const interfaces = symbols.filter((s: any) => s.type === 'interface');
+        const types = symbols.filter((s: any) => s.type === 'type');
+
+        let html = `<div class="tsdoc-module">
+            <div class="tsdoc-header">
+                <h1>${moduleName.charAt(0).toUpperCase() + moduleName.slice(1)} Module</h1>
+                <p class="tsdoc-description">${description}</p>
+                <div class="tsdoc-stats">
+                    <span class="badge">📄 ${fileCount} files</span>
+                    <span class="badge">🏗️ ${classes.length} classes</span>
+                    <span class="badge">⚙️ ${functions.length} functions</span>
+                    <span class="badge">📋 ${interfaces.length} interfaces</span>
+                    <span class="badge">🏷️ ${types.length} types</span>
+                </div>
+            </div>
+
+            <div class="tsdoc-content">`;
+
+        // Generate classes section
+        if (classes.length > 0) {
+            html += `<section class="tsdoc-section">
+                <h2><i class="fa fa-cube"></i> Classes</h2>
+                <div class="tsdoc-symbols">`;
+
+            for (const cls of classes) {
+                html += this.generateClassHTML(cls);
+            }
+
+            html += `</div>
+            </section>`;
+        }
+
+        // Generate functions section
+        if (functions.length > 0) {
+            html += `<section class="tsdoc-section">
+                <h2><i class="fa fa-cog"></i> Functions</h2>
+                <div class="tsdoc-symbols">`;
+
+            for (const func of functions) {
+                html += this.generateFunctionHTML(func);
+            }
+
+            html += `</div>
+            </section>`;
+        }
+
+        // Generate interfaces section
+        if (interfaces.length > 0) {
+            html += `<section class="tsdoc-section">
+                <h2><i class="fa fa-list-alt"></i> Interfaces</h2>
+                <div class="tsdoc-symbols">`;
+
+            for (const iface of interfaces) {
+                html += this.generateInterfaceHTML(iface);
+            }
+
+            html += `</div>
+            </section>`;
+        }
+
+        // Generate types section
+        if (types.length > 0) {
+            html += `<section class="tsdoc-section">
+                <h2><i class="fa fa-tag"></i> Type Aliases</h2>
+                <div class="tsdoc-symbols">`;
+
+            for (const type of types) {
+                html += this.generateTypeHTML(type);
+            }
+
+            html += `</div>
+            </section>`;
+        }
+
+        html += `</div>
+            <div class="tsdoc-footer">
+                <p class="text-muted">Generated on ${new Date(generatedAt).toLocaleString()}</p>
+            </div>
+        </div>`;
+
+        return html;
+    }
+
+    /**
+     * Generate HTML for a class
+     */
+    private generateClassHTML(cls: any): string {
+        const { name, documentation, methods, file, line, isExported } = cls;
+
+        let html = `<div class="tsdoc-symbol tsdoc-class">
+            <div class="tsdoc-symbol-header">
+                <h3>
+                    <span class="tsdoc-symbol-type">class</span>
+                    <span class="tsdoc-symbol-name">${name}</span>
+                    ${isExported ? '<span class="badge badge-success">exported</span>' : ''}
+                </h3>
+                <div class="tsdoc-location">
+                    <i class="fa fa-file-code-o"></i> ${file}:${line}
+                </div>
+            </div>`;
+
+        if (documentation.summary) {
+            html += `<div class="tsdoc-description">
+                <p>${this.escapeHtml(documentation.summary)}</p>
+            </div>`;
+        }
+
+        if (methods && methods.length > 0) {
+            html += `<div class="tsdoc-methods">
+                <h4>Methods</h4>
+                <div class="tsdoc-method-list">`;
+
+            for (const method of methods) {
+                const visibility = method.isPrivate ? 'private' : 'public';
+                const isStatic = method.isStatic ? 'static ' : '';
+
+                html += `<div class="tsdoc-method">
+                    <div class="tsdoc-method-signature">
+                        <span class="tsdoc-visibility">${visibility}</span>
+                        ${isStatic ? '<span class="tsdoc-static">static</span>' : ''}
+                        <span class="tsdoc-method-name">${method.name}</span>
+                        <span class="tsdoc-params">(${this.formatParameters(method.parameters)})</span>
+                        <span class="tsdoc-return-type">: ${method.returnType}</span>
+                    </div>`;
+
+                if (method.documentation.summary) {
+                    html += `<div class="tsdoc-method-description">
+                        <p>${this.escapeHtml(method.documentation.summary)}</p>
+                    </div>`;
+                }
+
+                html += `</div>`;
+            }
+
+            html += `</div>
+            </div>`;
+        }
+
+        html += `</div>`;
+        return html;
+    }
+
+    /**
+     * Generate HTML for a function
+     */
+    private generateFunctionHTML(func: any): string {
+        const { name, documentation, parameters, returnType, file, line, isExported } = func;
+
+        let html = `<div class="tsdoc-symbol tsdoc-function">
+            <div class="tsdoc-symbol-header">
+                <h3>
+                    <span class="tsdoc-symbol-type">function</span>
+                    <span class="tsdoc-symbol-name">${name}</span>
+                    ${isExported ? '<span class="badge badge-success">exported</span>' : ''}
+                </h3>
+                <div class="tsdoc-location">
+                    <i class="fa fa-file-code-o"></i> ${file}:${line}
+                </div>
+            </div>
+
+            <div class="tsdoc-signature">
+                <code>${name}(${this.formatParameters(parameters)}): ${returnType}</code>
+            </div>`;
+
+        if (documentation.summary) {
+            html += `<div class="tsdoc-description">
+                <p>${this.escapeHtml(documentation.summary)}</p>
+            </div>`;
+        }
+
+        if (documentation.tags && documentation.tags.length > 0) {
+            html += `<div class="tsdoc-tags">
+                ${this.formatJSDocTags(documentation.tags)}
+            </div>`;
+        }
+
+        html += `</div>`;
+        return html;
+    }
+
+    /**
+     * Generate HTML for an interface
+     */
+    private generateInterfaceHTML(iface: any): string {
+        const { name, documentation, properties, file, line, isExported } = iface;
+
+        let html = `<div class="tsdoc-symbol tsdoc-interface">
+            <div class="tsdoc-symbol-header">
+                <h3>
+                    <span class="tsdoc-symbol-type">interface</span>
+                    <span class="tsdoc-symbol-name">${name}</span>
+                    ${isExported ? '<span class="badge badge-success">exported</span>' : ''}
+                </h3>
+                <div class="tsdoc-location">
+                    <i class="fa fa-file-code-o"></i> ${file}:${line}
+                </div>
+            </div>`;
+
+        if (documentation.summary) {
+            html += `<div class="tsdoc-description">
+                <p>${this.escapeHtml(documentation.summary)}</p>
+            </div>`;
+        }
+
+        if (properties && properties.length > 0) {
+            html += `<div class="tsdoc-properties">
+                <h4>Properties</h4>
+                <div class="tsdoc-property-list">`;
+
+            for (const prop of properties) {
+                html += `<div class="tsdoc-property">
+                    <div class="tsdoc-property-signature">
+                        <span class="tsdoc-property-name">${prop.name}${prop.optional ? '?' : ''}</span>
+                        <span class="tsdoc-property-type">: ${prop.type}</span>
+                    </div>`;
+
+                if (prop.documentation.summary) {
+                    html += `<div class="tsdoc-property-description">
+                        <p>${this.escapeHtml(prop.documentation.summary)}</p>
+                    </div>`;
+                }
+
+                html += `</div>`;
+            }
+
+            html += `</div>
+            </div>`;
+        }
+
+        html += `</div>`;
+        return html;
+    }
+
+    /**
+     * Generate HTML for a type alias
+     */
+    private generateTypeHTML(type: any): string {
+        const { name, documentation, aliasType, file, line, isExported } = type;
+
+        let html = `<div class="tsdoc-symbol tsdoc-type">
+            <div class="tsdoc-symbol-header">
+                <h3>
+                    <span class="tsdoc-symbol-type">type</span>
+                    <span class="tsdoc-symbol-name">${name}</span>
+                    ${isExported ? '<span class="badge badge-success">exported</span>' : ''}
+                </h3>
+                <div class="tsdoc-location">
+                    <i class="fa fa-file-code-o"></i> ${file}:${line}
+                </div>
+            </div>
+
+            <div class="tsdoc-signature">
+                <code>type ${name} = ${aliasType}</code>
+            </div>`;
+
+        if (documentation.summary) {
+            html += `<div class="tsdoc-description">
+                <p>${this.escapeHtml(documentation.summary)}</p>
+            </div>`;
+        }
+
+        html += `</div>`;
+        return html;
+    }
+
+    /**
+     * Format parameters for display
+     */
+    private formatParameters(parameters: any[]): string {
+        return parameters.map(param =>
+            `${param.name}${param.optional ? '?' : ''}: ${param.type}`
+        ).join(', ');
+    }
+
+    /**
+     * Format JSDoc tags as HTML
+     */
+    private formatJSDocTags(tags: any[]): string {
+        return tags.map(tag => {
+            if (tag.name === 'param' && tag.text) {
+                return `<div class="tsdoc-tag tsdoc-param">
+                    <strong>@${tag.name}</strong> ${this.escapeHtml(tag.text)}
+                </div>`;
+            } else if (tag.name === 'returns' && tag.text) {
+                return `<div class="tsdoc-tag tsdoc-returns">
+                    <strong>@${tag.name}</strong> ${this.escapeHtml(tag.text)}
+                </div>`;
+            } else if (tag.name === 'example' && tag.text) {
+                return `<div class="tsdoc-tag tsdoc-example">
+                    <strong>@${tag.name}</strong>
+                    <pre><code>${this.escapeHtml(tag.text)}</code></pre>
+                </div>`;
+            } else if (tag.text) {
+                return `<div class="tsdoc-tag">
+                    <strong>@${tag.name}</strong> ${this.escapeHtml(tag.text)}
+                </div>`;
+            }
+            return '';
+        }).join('');
+    }
+
+    /**
+     * Escape HTML entities
+     */
+    private escapeHtml(text: string): string {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;');
     }
 
     /**
@@ -752,36 +1397,6 @@ export class ApiCatPlugin {
         console.log(`🧪 Test scenarios saved: ${filePath}`);
     }
 
-    /**
-     * Generate data for Tauri desktop app
-     */
-    public async generateTauriData(apiData: any, projectInfo: ApiDocProject): Promise<void> {
-        if (!this.config.tauri?.enabled) {
-            return;
-        }
-
-        // Skip Tauri generation since we're using static templates now
-        if (!this.config.tauri.enabled) {
-            console.log('🖥️  Skipping Tauri app data generation (disabled)');
-            return;
-        }
-        const tauriDataDir = path.join(this.config.tauri.buildDir || './apps/apicat-template', 'src/assets');
-        await fs.ensureDir(tauriDataDir);
-
-        // Generate app data
-        const appData = {
-            project: projectInfo,
-            apis: apiData,
-            collections: await this.readCollection(),
-            scenarios: await this.readTestingScenarios(),
-            generatedAt: new Date().toISOString()
-        };
-
-        const dataPath = path.join(tauriDataDir, 'api-data.json');
-        await fs.writeJSON(dataPath, appData, { spaces: 2 });
-
-        console.log(`🖥️  Tauri app data generated: ${dataPath}`);
-    }
 
     /**
      * Read generated collection

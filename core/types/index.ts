@@ -104,10 +104,6 @@ export interface ApiDocOptions {
         outputDir?: string;
         generateCollections?: boolean;
         enableLocalTesting?: boolean;
-        tauri?: {
-            enabled: boolean;
-            buildDir?: string;
-        };
     };
 }
 

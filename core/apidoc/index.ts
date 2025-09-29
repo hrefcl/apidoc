@@ -233,7 +233,6 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
 
                 app.log.verbose(`🐱 apiCAT: Processing ${parsedData.length} API endpoints...`);
                 await apiCatPlugin.process(parsedData, projectData);
-                await apiCatPlugin.generateTauriData(parsedData, projectData);
 
                 app.log.verbose('🐱 apiCAT: Processing completed');
             } catch (error) {
