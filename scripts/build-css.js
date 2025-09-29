@@ -16,7 +16,7 @@ const { execSync } = require('child_process');
 console.log('🎨 Building CSS for APIDoc...');
 
 // Define paths
-const templateDir = path.join(__dirname, '..', 'template');
+const templateDir = path.join(__dirname, '..', 'apps', 'apidoc-template');
 const srcDir = path.join(templateDir, 'src');
 const assetsDir = path.join(templateDir, 'assets');
 const cssInputFile = path.join(srcDir, 'css', 'tailwind.css');

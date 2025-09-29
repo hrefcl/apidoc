@@ -1,5 +1,6 @@
 node_modules/
 npm-debug.log
+apicat-output
 # default output dir
 doc/
 # used in tests
@@ -31,8 +32,13 @@ tester-*.js
 test-*.js
 analyze-*.js
 dropdown-*.png
-docs
+
 test_*.js
 .DS_Store
 test-temp
 package-lock.json
+
+# E2E Testing directory - Playwright tests and reports
+e2e-tests/test-results/
+e2e-tests/playwright-report/
+e2e-tests/test-results-*/

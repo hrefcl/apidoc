@@ -1,0 +1,761 @@
+/**
+ * @file Output writer and asset bundler for APIDoc
+ *
+ * Handles the generation of HTML documentation files, bundling of assets,
+ * and management of output directory structure.
+ *
+ * @author Href Spa <hola@apidoc.app>
+ * @copyright 2025 Href SpA
+ * @license MIT
+ */
+
+import esbuild from 'esbuild';
+import fs from 'fs-extra';
+import path from 'path';
+import MarkdownIt from 'markdown-it';
+import { convertToOpenApi } from '../exporters/openapi-converter';
+import { createMarkdownFromApiDocData } from '../markdown';
+import { ApiCatPlugin } from './plugins/apicat';
+const AuthProcessor = require('../auth-processor');
+
+/**
+ * Documentation output writer and asset bundler
+ *
+ * The Writer class is responsible for:
+ * - Generating HTML documentation files from parsed API data
+ * - Bundling JavaScript and CSS assets using esbuild
+ * - Managing output directory structure and file copying
+ * - Handling template processing and content generation
+ * - Cache busting for static assets
+ *
+ * @example Basic usage
+ * ```typescript
+ * const writer = new Writer(apiData, appContext);
+ * await writer.write();
+ * console.log('Documentation generated successfully');
+ * ```
+ *
+ * @example Custom cache busting
+ * ```typescript
+ * const writer = new Writer(apiData, appContext, 'v=1.2.0');
+ * await writer.write();
+ * ```
+ *
+ * @since 4.0.0
+ * @public
+ */
+class Writer {
+    public api: any;
+    public log: any;
+    public opt: any;
+    public cacheBustingQueryParam: string;
+    public fs: typeof fs;
+    public path: typeof path;
+    private authProcessor: any;
+    /**
+     * Creates a new Writer instance for generating documentation output
+     *
+     * @param api - Parsed API data and project information from the core parser
+     * @param app - Application context containing shared instances and configuration
+     * @param cacheBustingQueryParam - Cache-busting query parameter for static assets.
+     *   Defaults to current timestamp to ensure fresh assets on each build.
+     *
+     * @example
+     * ```typescript
+     * const writer = new Writer(
+     *   { data: '[]', project: '{}' },
+     *   { log: logger, options: { dest: './docs' } }
+     * );
+     * ```
+     *
+     * @example With custom cache busting
+     * ```typescript
+     * const writer = new Writer(apiData, appContext, 'v=2.1.0');
+     * ```
+     */
+    constructor(api: any, app: any, cacheBustingQueryParam = `v=${Date.now()}`) {
+        this.api = api;
+        this.log = app.log;
+        this.opt = app.options;
+        this.cacheBustingQueryParam = String(cacheBustingQueryParam);
+        this.fs = fs;
+        this.path = path;
+
+        // Initialize authentication processor
+        this.authProcessor = new AuthProcessor();
+        this.initializeAuthentication();
+    }
+
+    /**
+     * Initialize authentication system if login configuration is present
+     */
+    private initializeAuthentication(): void {
+        try {
+            // Parse project data to look for login configuration
+            const projectInfo = JSON.parse(this.api.project);
+
+            if (projectInfo.login) {
+                this.log.info('🔐 Initializing authentication system...');
+
+                // Validate configuration
+                const validation = AuthProcessor.validateConfig(projectInfo.login);
+                if (!validation.valid) {
+                    this.log.error('Authentication configuration errors:');
+                    validation.errors.forEach((error) => this.log.error(`  - ${error}`));
+                    return;
+                }
+
+                // Initialize auth processor
+                this.authProcessor.init(projectInfo.login);
+
+                const stats = this.authProcessor.getStats();
+                this.log.info(`✅ Authentication configured:`, stats);
+            }
+        } catch (error) {
+            this.log.warn('Could not initialize authentication:', error.message);
+        }
+    }
+
+    /**
+     * Write output files based on configuration.
+     *
+     * If dry run mode is enabled, no files are created, and the method simply logs the operation and
+     * resolves the promise. Otherwise, it creates the necessary files either as a single file or
+     * multiple output files based on the specified options.
+     *
+     * @returns {Promise<void>} Promise that resolves when file writing is complete.
+     * @memberof Writer
+     */
+    write() {
+        if (this.opt.dryRun) {
+            this.log.info('Dry run mode enabled: no files created.');
+            return new Promise((resolve) => {
+                return resolve(undefined);
+            });
+        }
+
+        this.log.verbose('Writing files...');
+        if (this.opt.single) {
+            return this.createSingleFile();
+        }
+        return this.createOutputFiles();
+    }
+
+    /**
+     * Attempt to locate the specified asset file path and retrieve its resolved path.
+     * If the file cannot be resolved, an error is logged.
+     *
+     * @param assetPath - Relative file path of the asset to find.
+     * @returns {string|undefined} Return the resolved file path
+     * @memberof Writer
+     */
+    findAsset(assetPath) {
+        try {
+            const path = require.resolve(assetPath);
+            return path;
+        } catch {
+            this.log.error('Could not find where dependencies of apidoc live!');
+        }
+    }
+
+    /**
+     * Generate Markdown documentation files
+     *
+     * @memberof Writer
+     */
+    async writeMarkdownDocs(): Promise<void> {
+        try {
+            this.log.verbose('🔄 Generating Markdown documentation...');
+
+            // Parse API data
+            const apiData = JSON.parse(this.api.data);
+            const projectData = JSON.parse(this.api.project);
+
+            // Ensure apiData is an array (it might be wrapped in an object)
+            const apiArray = Array.isArray(apiData) ? apiData : [apiData];
+
+            // Determine output path
+            let outputPath = this.opt.markdownExport;
+            if (outputPath === true || !outputPath) {
+                outputPath = this.opt.markdownMulti
+                    ? this.opt.dest
+                    : this.path.join(this.opt.dest, 'api.md');
+            }
+
+            // Load content from files if specified
+            const loadFileContent = async (filePath?: string) => {
+                if (!filePath) return undefined;
+                try {
+                    return await this.fs.readFile(filePath, 'utf8');
+                } catch (error) {
+                    this.log.warn(`Could not read file: ${filePath}`);
+                    return undefined;
+                }
+            };
+
+            const header = await loadFileContent(this.opt.markdownHeader);
+            const footer = await loadFileContent(this.opt.markdownFooter);
+            const prepend = await loadFileContent(this.opt.markdownPrepend);
+
+            // Create markdown documentation
+            const markdownDocs = await createMarkdownFromApiDocData(apiArray, projectData, {
+                template: this.opt.markdownTemplate,
+                multi: this.opt.markdownMulti,
+                header,
+                footer,
+                prepend
+            });
+
+            // Write files
+            if (this.opt.markdownMulti) {
+                // Multiple files mode
+                this.createDir(outputPath);
+                for (const doc of markdownDocs) {
+                    const filePath = this.path.join(outputPath, `${doc.name}.md`);
+                    this.fs.writeFileSync(filePath, doc.content);
+                    this.log.verbose(`✅ Markdown file generated: ${filePath}`);
+                }
+            } else {
+                // Single file mode
+                this.createDir(this.path.dirname(outputPath));
+                this.fs.writeFileSync(outputPath, markdownDocs[0].content);
+                this.log.verbose(`✅ Markdown documentation generated: ${outputPath}`);
+            }
+
+        } catch (error) {
+            this.log.error(`❌ Failed to generate Markdown documentation: ${error.message}`);
+            throw error;
+        }
+    }
+
+    /**
+     * Generate OpenAPI 3.0 specification file (swagger.json)
+     *
+     * @memberof Writer
+     */
+    writeOpenApiSpec(): void {
+        try {
+            this.log.verbose('🔄 Generating OpenAPI 3.0 specification...');
+
+            // Parse API data
+            const apiData = JSON.parse(this.api.data);
+            const projectData = JSON.parse(this.api.project);
+
+            // Convert to OpenAPI
+            const openApiSpec = convertToOpenApi(apiData, projectData);
+
+            // Write swagger.json file
+            const swaggerPath = this.path.join(this.opt.dest, 'swagger.json');
+            this.fs.writeFileSync(swaggerPath, JSON.stringify(openApiSpec, null, 2));
+
+            this.log.verbose(`✅ OpenAPI specification generated: ${swaggerPath}`);
+
+            // Also create openapi.json for compatibility
+            const openApiPath = this.path.join(this.opt.dest, 'openapi.json');
+            this.fs.writeFileSync(openApiPath, JSON.stringify(openApiSpec, null, 2));
+
+            this.log.verbose(`✅ OpenAPI specification generated: ${openApiPath}`);
+        } catch (error) {
+            this.log.error(`❌ Failed to generate OpenAPI specification: ${error.message}`);
+            throw error;
+        }
+    }
+
+    /**
+     * Create output files in the destination directory
+     *
+     * Performs the following tasks:
+     * - Creates the destination directory where the output files will be generated.
+     * - Copies a template `index.html` file into the destination directory.
+     * - Creates an `assets` folder within the destination directory.
+     * - Optionally saves a parsed API file as `api-data.json` into the assets folder if the `writeJson` option is enabled.
+     * - Generates OpenAPI specification if requested
+     * - Executes a bundler operation for the assets folder.
+     *
+     * @returns {Promise<string>} Resolves as the bundling operation assets folder.
+     * @memberof Writer
+     */
+    async createOutputFiles() {
+        this.createDir(this.opt.dest);
+
+        // Generate OpenAPI specification if requested
+        if (this.opt.openapi || this.opt.openapiOnly) {
+            this.writeOpenApiSpec();
+        }
+
+        // Generate Markdown documentation if requested
+        if (this.opt.markdownExport || this.opt.markdownOnly) {
+            await this.writeMarkdownDocs();
+        }
+
+        // If openapi-only or markdown-only mode, skip HTML generation
+        if (this.opt.openapiOnly || this.opt.markdownOnly) {
+            this.log.verbose('🎉 Special mode: Skipping HTML generation');
+            return Promise.resolve(this.opt.dest);
+        }
+
+        // create index.html
+        this.log.verbose('Copying template index.html to: ' + this.opt.dest);
+        this.fs.writeFileSync(this.path.join(this.opt.dest, 'index.html'), this.getIndexContent());
+
+        // Check if StencilJS template exists and copy StencilJS dist files
+        const stencilTemplate = this.path.join(this.opt.template, 'index-stencil.html');
+        if (this.fs.existsSync(stencilTemplate)) {
+            const stencilDistPath = this.path.join(this.opt.template, 'dist');
+            if (this.fs.existsSync(stencilDistPath)) {
+                const destDistPath = this.path.join(this.opt.dest, 'dist');
+                this.log.verbose('Copying StencilJS components to: ' + destDistPath);
+                this.fs.copySync(stencilDistPath, destDistPath);
+            }
+        }
+
+        // create assets folder
+        const assetsPath = this.path.resolve(this.path.join(this.opt.dest, 'assets'));
+        this.createDir(assetsPath);
+
+        // copy Font Awesome CSS file
+        const fontAwesomeSource = this.path.join(this.opt.template, 'src', 'css', 'font-awesome-all.min.css');
+        const fontAwesomeDest = this.path.join(assetsPath, 'font-awesome-all.min.css');
+        if (this.fs.existsSync(fontAwesomeSource)) {
+            this.log.verbose('Copying Font Awesome CSS to: ' + fontAwesomeDest);
+            this.fs.copyFileSync(fontAwesomeSource, fontAwesomeDest);
+        } else {
+            this.log.warn('Font Awesome CSS file not found at: ' + fontAwesomeSource);
+        }
+
+        // copy Font Awesome webfonts folder
+        const webfontsSource = this.path.join(this.opt.template, 'src', 'webfonts');
+        const webfontsDest = this.path.join(this.opt.dest, 'webfonts');
+        if (this.fs.existsSync(webfontsSource)) {
+            this.log.verbose('Copying Font Awesome webfonts to: ' + webfontsDest);
+            this.fs.copySync(webfontsSource, webfontsDest);
+        } else {
+            this.log.warn('Font Awesome webfonts folder not found at: ' + webfontsSource);
+        }
+
+        // copy highlight.js themes for dynamic theme loading
+        this.copyHighlightThemes(assetsPath);
+
+        // save the parsed api file
+        if (this.opt.writeJson) {
+            const jsonFile = this.path.join(assetsPath, 'api-data.json');
+            this.log.verbose('Saving parsed API to: ' + jsonFile);
+            this.fs.writeFileSync(jsonFile, this.api.data);
+        }
+
+        // Always run bundler to generate CSS and JS assets
+        // StencilJS components are additional, not replacement for core functionality
+        return this.runBundler(this.path.resolve(assetsPath));
+    }
+
+    /**
+     * Run the bundler to create a bundled JS file using esbuild.
+     *
+     * @param outputPath - Path where the bundler will output
+     * @returns {Promise<string>} Resolves with the output path upon successful bundling,
+     *     or rejects with an error if the bundling process fails.
+     * @memberof Writer
+     */
+    runBundler(outputPath) {
+        this.log.verbose('Running bundler');
+
+        return new Promise((resolve, reject) => {
+            // Copy CSS - check for pre-built CSS (apiCAT) or compiled CSS (regular templates)
+            const prebuiltCSS = this.path.join(this.opt.template, 'apicat.css');
+            const devCSS = this.path.join(this.opt.template, 'assets', 'main.bundle.dev.css');
+            const prodCSS = this.path.join(this.opt.template, 'assets', 'main.bundle.css');
+            const outputCSS = this.path.join(outputPath, 'main.bundle.css');
+
+            let sourceCSS = null;
+
+            if (this.fs.existsSync(prebuiltCSS)) {
+                sourceCSS = prebuiltCSS;
+                this.log.debug('Using pre-built CSS (apiCAT)');
+            } else if (this.fs.existsSync(devCSS)) {
+                sourceCSS = devCSS;
+                this.log.debug('Using development CSS');
+            } else if (this.fs.existsSync(prodCSS)) {
+                sourceCSS = prodCSS;
+                this.log.debug('Using production CSS');
+            }
+
+            if (sourceCSS) {
+                this.fs.copyFileSync(sourceCSS, outputCSS);
+                const stats = this.fs.statSync(outputCSS);
+                const sizeKb = (stats.size / 1024).toFixed(1);
+                this.log.debug(`Copied CSS: ${sizeKb}kb`);
+            } else {
+                this.log.warn('⚠️  No CSS found, CSS may not be available');
+            }
+
+            // Check if this is a pre-built template (like apiCAT)
+            const prebuiltJs = this.path.join(this.opt.template, 'apicat.js');
+            const esbuildConfig = this.path.resolve(this.path.join(this.opt.template, 'src', 'esbuild.config.js'));
+
+            if (this.fs.existsSync(prebuiltJs)) {
+                // This is a pre-built template (apiCAT), copy assets directly
+                this.log.debug('Detected pre-built template, copying assets...');
+
+                const outputJs = this.path.join(outputPath, 'main.bundle.js');
+                this.fs.copyFileSync(prebuiltJs, outputJs);
+
+                this.log.debug('Pre-built assets copied successfully');
+                return resolve(outputPath);
+
+            } else if (this.fs.existsSync(esbuildConfig)) {
+                // This is a source template, run esbuild
+                const entryPoint = this.path.resolve(this.path.join(this.opt.template, 'src', 'main.ts'));
+                const outfile = this.path.join(outputPath, 'main.bundle.js');
+
+                this.log.debug(`output file: ${outfile}`);
+                this.log.debug(`API data length: ${JSON.stringify(this.api.data).length}`);
+                this.log.debug(`API project length: ${JSON.stringify(this.api.project).length}`);
+
+                // Load esbuild config
+                const esbuildConfigModule = require(esbuildConfig);
+
+                const buildOptions = {
+                    ...esbuildConfigModule,
+                    entryPoints: [entryPoint],
+                    outfile: outfile,
+                    minify: !this.opt.debug,
+                    sourcemap: this.opt.debug ? 'inline' : false,
+                    logLevel: this.opt.debug ? 'debug' : 'info',
+                };
+
+                esbuild
+                    .build(buildOptions)
+                    .then(() => {
+                        this.log.debug('Generated bundle successfully');
+
+                        // Data is now injected directly into HTML, no temp file needed
+
+                        return resolve(outputPath);
+                    })
+                    .catch((err) => {
+                        this.log.error('Bundle failure:', err);
+                        return reject(err);
+                    });
+            } else {
+                this.log.error('No suitable template found (neither pre-built nor source)');
+                return reject(new Error('Template configuration not found'));
+            }
+        });
+    }
+
+    /**
+     * Read image files from a directory, then convert them to Base64 strings and map them to tokens.
+     * - The tokens are used as keys to represent the Base64-encoded strings of the images.
+     * - Images are sourced from the "img" subdirectory of the specified template path.
+     * - Only valid files within the directory are processed. And the MIME type is determined based on the file extension.
+     *
+     * @returns {object} A mapping of token keys to Base64-encoded image strings, where each
+     *     key is in the format "IMAGE_LINK_TOKEN_<filename>".
+     * @memberof Writer
+     */
+    getBase64HeaderImages() {
+        const imageTokens = {};
+        const imgDir = this.path.join(this.opt.template, 'img');
+
+        if (this.fs.existsSync(imgDir)) {
+            this.fs.readdirSync(imgDir).forEach((file) => {
+                const filePath = this.path.join(imgDir, file);
+                if (this.fs.statSync(filePath).isFile()) {
+                    // Read the file and convert to base64
+                    const fileData = this.fs.readFileSync(filePath);
+                    const fileExt = this.path.extname(file).substring(1);
+                    const mimeType = fileExt === 'ico' ? 'image/x-icon' : `image/${fileExt}`;
+
+                    // Store the base64 data with the token key
+                    imageTokens[`IMAGE_LINK_TOKEN_${file}`] = `data:${mimeType};base64,${fileData.toString('base64')}`;
+                }
+            });
+        }
+
+        return imageTokens;
+    }
+
+    /**
+     * Process custom markdown settings from apidoc.json
+     *
+     * @param projectInfo Project configuration from apidoc.json
+     * @returns Object containing processed markdown content for each group
+     */
+    processCustomMarkdownSettings(projectInfo: any): Record<string, any> {
+        const customMarkdown: Record<string, any> = {};
+
+        if (!projectInfo.settings) {
+            return customMarkdown;
+        }
+
+        const md = new MarkdownIt({
+            html: true,
+            linkify: true,
+            typographer: true
+        });
+
+        // Process each group setting
+        Object.entries(projectInfo.settings).forEach(([groupName, settings]: [string, any]) => {
+            if (settings.filename) {
+                try {
+                    // Try to read the markdown file
+                    const markdownPath = this.path.resolve(this.opt.src[0], settings.filename);
+                    if (this.fs.existsSync(markdownPath)) {
+                        const markdownContent = this.fs.readFileSync(markdownPath, 'utf8');
+                        const htmlContent = md.render(markdownContent);
+
+                        customMarkdown[groupName] = {
+                            title: settings.title || groupName,
+                            icon: settings.icon || 'fa-folder',
+                            html: htmlContent,
+                            raw: markdownContent
+                        };
+
+                        this.log.verbose(`📝 Loaded custom markdown for group: ${groupName}`);
+                    } else {
+                        this.log.warn(`📝 Markdown file not found for group ${groupName}: ${markdownPath}`);
+                    }
+                } catch (error) {
+                    this.log.error(`📝 Error processing markdown for group ${groupName}: ${error.message}`);
+                }
+            }
+        });
+
+        return customMarkdown;
+    }
+
+    /**
+     * Generate and return the content of the `index.html` file for the API documentation.
+     *
+     * Replaces predefined tokens with dynamic values such as the project title, description,
+     * and cache-busting query parameters.
+     *
+     * @returns {string} Processed HTML content for the index page of the API documentation.
+     * @memberof Writer
+     */
+    getIndexContent() {
+        const projectInfo = JSON.parse(this.api.project);
+        const title = projectInfo.title || projectInfo.name || 'Loading...';
+        const description = projectInfo.description || projectInfo.name || 'API Documentation';
+
+        // Process custom markdown settings
+        const customMarkdown = this.processCustomMarkdownSettings(projectInfo);
+
+        // Check for StencilJS template first, fallback to regular template
+        const stencilTemplate = this.path.join(this.opt.template, 'index-stencil.html');
+        const templateFile = this.fs.existsSync(stencilTemplate)
+            ? stencilTemplate
+            : this.path.join(this.opt.template, 'index.html');
+
+        let indexHtml = this.fs.readFileSync(templateFile, 'utf8').toString();
+
+        // Always process authentication (even if disabled) to replace placeholders
+        if (this.authProcessor) {
+            if (this.authProcessor.isAuthEnabled) {
+                this.log.verbose('🔒 Processing authentication for template...');
+            }
+            indexHtml = this.authProcessor.processTemplate(indexHtml, projectInfo);
+        } else {
+            // Fallback: replace placeholder with null if no auth processor
+            indexHtml = indexHtml.replace('__LOGIN_CONFIG__', 'null');
+        }
+
+        // Replace image tokens with base64 data
+        const imageTokens = this.getBase64HeaderImages();
+        Object.keys(imageTokens).forEach((token) => {
+            indexHtml = indexHtml.replace(token, imageTokens[token]);
+        });
+
+        // Inject API data as global variables
+        const apiDataJson = JSON.stringify(this.api.data, null, 0);
+        const apiProjectJson = JSON.stringify(this.api.project, null, 0);
+        const customMarkdownJson = JSON.stringify(customMarkdown, null, 0);
+
+        // Check if this is a StencilJS template
+        const isStencilTemplate = templateFile.includes('index-stencil.html');
+
+        if (isStencilTemplate) {
+            // For StencilJS template, inject both apiDocData and original format
+            const dataScript = `<script>
+      window.apiDocData = ${apiDataJson};
+      window.API_DATA = ${apiDataJson};
+      window.API_PROJECT = ${apiProjectJson};
+      window.CUSTOM_MARKDOWN = ${customMarkdownJson};
+    </script>`;
+
+            // Insert data script before the bundle script - match actual cache-busted filename
+            const scriptReplaced = indexHtml.replace(
+                /<script src="assets\/main\.bundle\.js[^"]*"><\/script>/,
+                dataScript + '\n  $&'
+            );
+
+            if (scriptReplaced === indexHtml) {
+                // Fallback: insert before closing body tag if script tag not found
+                indexHtml = indexHtml.replace(/<\/body>/, dataScript + '\n</body>');
+            } else {
+                indexHtml = scriptReplaced;
+            }
+        } else {
+            // For regular template, use original method
+            const dataScript = `<script>
+      window.API_DATA = ${apiDataJson};
+      window.API_PROJECT = ${apiProjectJson};
+      window.CUSTOM_MARKDOWN = ${customMarkdownJson};
+    </script>`;
+
+            // Insert data script before the bundle script - match actual cache-busted filename
+            const scriptReplaced = indexHtml.replace(
+                /<script src="assets\/main\.bundle\.js[^"]*"><\/script>/,
+                dataScript + '\n    $&'
+            );
+
+            if (scriptReplaced === indexHtml) {
+                // Fallback: insert before closing body tag if script tag not found
+                indexHtml = indexHtml.replace(/<\/body>/, dataScript + '\n</body>');
+            } else {
+                indexHtml = scriptReplaced;
+            }
+        }
+
+        // Replace other tokens
+        return indexHtml
+            .replace(/__API_NAME__/g, title)
+            .replace(/__API_DESCRIPTION__/g, description)
+            .replace(/__API_VERSION__/g, projectInfo.version || '1.0.0')
+            .replace(/__API_CACHE_BUSTING_QUERY_PARAM__/g, this.cacheBustingQueryParam);
+    }
+
+    /**
+     * Create a self-contained single HTML file by bundling CSS and JS into the file
+     * - modify the main index HTML content to embed CSS, JS directly
+     * - remove external links to assets
+     * - save the final file to the destination directory
+     *
+     * @returns {Promise<void>} A promise that resolves once the single HTML file is successfully created.
+     * @memberof Writer
+     */
+    createSingleFile() {
+        // dest is a file path, so get the folder with dirname
+        this.createDir(this.path.dirname(this.opt.dest));
+
+        const tmpPath = '/tmp/apidoc-tmp';
+        this.createDir(tmpPath);
+
+        return this.runBundler(tmpPath).then((outputPath: string) => {
+            const mainBundleCss = this.fs.readFileSync(this.path.join(outputPath, 'main.bundle.css'), 'utf8');
+            const mainBundle = this.fs.readFileSync(this.path.join(outputPath, 'main.bundle.js'), 'utf8');
+
+            // modify index html for single page use
+            const indexContent = this.getIndexContent()
+                // replace image and css assets
+                .replace(/<link href="assets\/main[^>]*>/g, `<style>${mainBundleCss}</style>`)
+                // replace js assets
+                .replace(/<script src="assets[^>]*><\/script>/, '');
+
+            // concatenate all the content (html + javascript bundle with bundled CSS)
+            const finalContent = `${indexContent}
+      <script>${mainBundle}</script>`;
+
+            // create a target file
+            const finalPath = this.path.join(this.opt.dest, 'index.html');
+            // make sure the destination exists
+            this.createDir(this.opt.dest);
+            this.log.verbose(`Generating self-contained single file: ${finalPath}`);
+            this.fs.writeFileSync(finalPath, finalContent);
+        });
+    }
+
+    /**
+     * Write a JSON file with the provided data.
+     *
+     * @param dest - Destination file path where the file will be written.
+     * @param data - File data
+     * @memberof Writer
+     */
+    writeJsonFile(dest, data) {
+        this.log.verbose(`Writing json file: ${dest}`);
+        this.fs.writeFileSync(dest, data + '\n');
+    }
+
+    /**
+     * Write a JS file with the provided data.
+     *
+     * @param dest - Destination file path where the file will be written.
+     * @param data - File data
+     * @memberof Writer
+     */
+    writeJSFile(dest, data) {
+        this.log.verbose(`Writing js file: ${dest}`);
+        switch (this.opt.mode) {
+            case 'amd':
+            case 'es':
+                this.fs.writeFileSync(dest, 'export default ' + data + ';\n');
+                break;
+            case 'commonJS':
+                this.fs.writeFileSync(dest, 'module.exports = ' + data + ';\n');
+                break;
+            default:
+                this.fs.writeFileSync(dest, 'define(' + data + ');' + '\n');
+        }
+    }
+
+    /**
+     * Copy all highlight.js themes for dynamic theme loading
+     *
+     * @param assetsPath - Path to the assets directory
+     * @memberof Writer
+     */
+    copyHighlightThemes(assetsPath) {
+        try {
+            this.log.verbose('🎨 Copying highlight.js themes for dynamic loading...');
+
+            // Create highlight-themes directory in assets
+            const highlightThemesDir = this.path.join(assetsPath, 'highlight-themes');
+            this.createDir(highlightThemesDir);
+
+            // Find highlight.js styles directory
+            const highlightStylesPath = this.path.join(
+                this.opt.template,
+                '..',
+                'node_modules',
+                'highlight.js',
+                'styles'
+            );
+
+            if (this.fs.existsSync(highlightStylesPath)) {
+                // Copy all CSS theme files
+                const themeFiles = this.fs.readdirSync(highlightStylesPath).filter((file) => file.endsWith('.css'));
+                let copiedCount = 0;
+
+                themeFiles.forEach((themeFile) => {
+                    const sourcePath = this.path.join(highlightStylesPath, themeFile);
+                    const destPath = this.path.join(highlightThemesDir, themeFile);
+
+                    this.fs.copyFileSync(sourcePath, destPath);
+                    copiedCount++;
+                });
+
+                this.log.verbose(`✅ Copied ${copiedCount} highlight.js themes to assets/highlight-themes/`);
+            } else {
+                this.log.warn('⚠️  highlight.js styles directory not found, dynamic themes not available');
+            }
+        } catch (error) {
+            this.log.warn('⚠️  Failed to copy highlight.js themes:', error.message);
+        }
+    }
+
+    /**
+     * Create a directory
+     *
+     * @param dir - Path of the directory to create
+     * @memberof Writer
+     */
+    createDir(dir) {
+        if (!this.fs.existsSync(dir)) {
+            this.log.verbose('Creating dir: ' + dir);
+            this.fs.mkdirsSync(dir);
+        }
+    }
+}
+
+export default Writer;

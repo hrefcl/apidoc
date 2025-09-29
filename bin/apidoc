@@ -29,9 +29,9 @@ const ora = require('ora');
 // Try compiled version first, fallback to source
 let apidoc;
 try {
-    apidoc = require(path.join(__dirname, '..', 'dist', 'lib', 'index'));
+    apidoc = require(path.join(__dirname, '..', 'dist', 'core', 'apidoc', 'index.js'));
 } catch (e) {
-    apidoc = require(path.join(__dirname, '..', 'lib', 'index'));
+    apidoc = require(path.join(__dirname, '..', 'core', 'apidoc', 'index'));
 }
 
 /**
@@ -166,7 +166,7 @@ ${pc.bold('INPUT/OUTPUT:')}`
     )
     .option('-i, --input <input...>', 'Input/source dirname', ['./src'])
     .option('-o, --output <output>', 'Output dirname', 'doc/')
-    .option('-t, --template <template>', 'Use template for output files', path.join(__dirname, '../template/'))
+    .option('-t, --template <template>', 'Use template for output files', path.join(__dirname, '../apps/apidoc-template/'))
 
     .addHelpText(
         'beforeAll',
@@ -332,7 +332,7 @@ const options = {
     src: argv.input,
     dest: argv.output,
     template: argv.template,
-    config: argv.config,
+    config: argv.config || (argv.input.length > 0 ? path.join(argv.input[0], 'apidoc.json') : 'apidoc.json'),
     apiprivate: argv.private,
     verbose: argv.verbose,
     single: argv.single,
@@ -411,7 +411,7 @@ if (argv.watch) {
             }
             process.exit();
         })
-        .on('restart', function () {
+        .on('restart', async function () {
             const startTime = Date.now();
 
             if (options.colorize !== false) {
@@ -420,7 +420,7 @@ if (argv.watch) {
                 console.info('Changes detected, rebuilding...');
             }
 
-            const result = apidoc.createDoc(options);
+            const result = await apidoc.createDoc(options);
             const endTime = Date.now();
             const duration = ((endTime - startTime) / 1000).toFixed(2);
 
@@ -439,74 +439,84 @@ if (argv.watch) {
 }
 
 // Create documentation
-const startTime = Date.now();
-let spinner;
+async function createDocumentation() {
+    const startTime = Date.now();
+    let spinner;
 
-if (options.colorize !== false && !options.silent && options.logFormat === 'simple' && !options.verbose) {
-    spinner = ora('Parsing source files...').start();
+    if (options.colorize !== false && !options.silent && options.logFormat === 'simple' && !options.verbose) {
+        spinner = ora('Parsing source files...').start();
+    }
+
+    const result = await apidoc.createDoc(options);
+    const endTime = Date.now();
+    const duration = ((endTime - startTime) / 1000).toFixed(2);
+
+    if (result === false) {
+        if (spinner) {
+            spinner.fail(`${pc.red('❌ Documentation generation failed')}`);
+        } else if (options.colorize !== false) {
+            console.error(`${pc.red('❌ Error:')} APIDoc encountered an error during documentation generation!`);
+        } else {
+            console.error('[error] apidoc encountered an error during documentation generation!');
+        }
+        process.exit(1);
+    } else {
+        if (spinner) {
+            spinner.succeed(`${pc.green('✅ Documentation generated successfully')}`);
+
+            // Show performance metrics
+            if (options.verbose || options.debug) {
+                console.log(`\n${pc.bold(pc.blue('📊 Performance Metrics:'))}`);
+                console.log(`${pc.cyan('•')} Build time: ${pc.bold(duration + 's')}`);
+                console.log(`${pc.cyan('•')} Output: ${pc.bold(options.dest)}`);
+
+                if (result && typeof result === 'object') {
+                    if (result.data && result.data.length) {
+                        console.log(`${pc.cyan('•')} API endpoints: ${pc.bold(result.data.length)}`);
+                    }
+                    if (result.project) {
+                        console.log(`${pc.cyan('•')} Project: ${pc.bold(result.project.name || 'Unknown')} v${pc.bold(result.project.version || '1.0.0')}`);
+                    }
+                }
+            }
+
+            console.log(`\n${pc.bold(pc.green('🎉 Done!'))} Documentation ready at ${pc.cyan(options.dest)}`);
+
+            if (!options.silent) {
+                console.log(`${pc.dim('💡 Tip:')} Use ${pc.cyan('npx serve')} ${pc.cyan(options.dest)} to preview your documentation`);
+            }
+        } else if (options.colorize !== false && !options.silent) {
+            console.log(`${pc.green('✅ Documentation generated successfully')} in ${pc.bold(duration + 's')}`);
+
+            // Show performance metrics in verbose mode even without spinner
+            if (options.verbose || options.debug) {
+                console.log(`\n${pc.bold(pc.blue('📊 Performance Metrics:'))}`);
+                console.log(`${pc.cyan('•')} Build time: ${pc.bold(duration + 's')}`);
+                console.log(`${pc.cyan('•')} Output: ${pc.bold(options.dest)}`);
+
+                if (result && typeof result === 'object') {
+                    if (result.data && result.data.length) {
+                        console.log(`${pc.cyan('•')} API endpoints: ${pc.bold(result.data.length)}`);
+                    }
+                    if (result.project) {
+                        console.log(`${pc.cyan('•')} Project: ${pc.bold(result.project.name || 'Unknown')} v${pc.bold(result.project.version || '1.0.0')}`);
+                    }
+                }
+            }
+
+            console.log(`\n${pc.bold(pc.green('🎉 Done!'))} Documentation ready at ${pc.cyan(options.dest)}`);
+
+            if (!options.silent) {
+                console.log(`${pc.dim('💡 Tip:')} Use ${pc.cyan('npx serve')} ${pc.cyan(options.dest)} to preview your documentation`);
+            }
+        }
+    }
 }
 
-const result = apidoc.createDoc(options);
-const endTime = Date.now();
-const duration = ((endTime - startTime) / 1000).toFixed(2);
-
-if (result === false) {
-    if (spinner) {
-        spinner.fail(`${pc.red('❌ Documentation generation failed')}`);
-    } else if (options.colorize !== false) {
-        console.error(`${pc.red('❌ Error:')} APIDoc encountered an error during documentation generation!`);
-    } else {
-        console.error('[error] apidoc encountered an error during documentation generation!');
-    }
-    process.exit(1);
-} else {
-    if (spinner) {
-        spinner.succeed(`${pc.green('✅ Documentation generated successfully')}`);
-
-        // Show performance metrics
-        if (options.verbose || options.debug) {
-            console.log(`\n${pc.bold(pc.blue('📊 Performance Metrics:'))}`);
-            console.log(`${pc.cyan('•')} Build time: ${pc.bold(duration + 's')}`);
-            console.log(`${pc.cyan('•')} Output: ${pc.bold(options.dest)}`);
-
-            if (result && typeof result === 'object') {
-                if (result.data && result.data.length) {
-                    console.log(`${pc.cyan('•')} API endpoints: ${pc.bold(result.data.length)}`);
-                }
-                if (result.project) {
-                    console.log(`${pc.cyan('•')} Project: ${pc.bold(result.project.name || 'Unknown')} v${pc.bold(result.project.version || '1.0.0')}`);
-                }
-            }
-        }
-
-        console.log(`\n${pc.bold(pc.green('🎉 Done!'))} Documentation ready at ${pc.cyan(options.dest)}`);
-
-        if (!options.silent) {
-            console.log(`${pc.dim('💡 Tip:')} Use ${pc.cyan('npx serve')} ${pc.cyan(options.dest)} to preview your documentation`);
-        }
-    } else if (options.colorize !== false && !options.silent) {
-        console.log(`${pc.green('✅ Documentation generated successfully')} in ${pc.bold(duration + 's')}`);
-
-        // Show performance metrics in verbose mode even without spinner
-        if (options.verbose || options.debug) {
-            console.log(`\n${pc.bold(pc.blue('📊 Performance Metrics:'))}`);
-            console.log(`${pc.cyan('•')} Build time: ${pc.bold(duration + 's')}`);
-            console.log(`${pc.cyan('•')} Output: ${pc.bold(options.dest)}`);
-
-            if (result && typeof result === 'object') {
-                if (result.data && result.data.length) {
-                    console.log(`${pc.cyan('•')} API endpoints: ${pc.bold(result.data.length)}`);
-                }
-                if (result.project) {
-                    console.log(`${pc.cyan('•')} Project: ${pc.bold(result.project.name || 'Unknown')} v${pc.bold(result.project.version || '1.0.0')}`);
-                }
-            }
-        }
-
-        console.log(`\n${pc.bold(pc.green('🎉 Done!'))} Documentation ready at ${pc.cyan(options.dest)}`);
-
-        if (!options.silent) {
-            console.log(`${pc.dim('💡 Tip:')} Use ${pc.cyan('npx serve')} ${pc.cyan(options.dest)} to preview your documentation`);
-        }
-    }
+// Llamar la función principal
+if (!argv.watch) {
+    createDocumentation().catch(error => {
+        console.error('Error:', error);
+        process.exit(1);
+    });
 }

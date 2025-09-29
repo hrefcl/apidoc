@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>apiCAT - Modern API Documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="apicat.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐱</text></svg>">
+</head>
+<body>
+    <div id="apicat-app">
+        <!-- Header -->
+        <header class="apicat-header">
+            <div class="header-left">
+                <h1>🐱 apiCAT</h1>
+                <p class="description">Modern API Documentation</p>
+            </div>
+            <div class="header-controls">
+                <button id="theme-toggle" class="btn-icon" title="Toggle theme">🌙</button>
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search endpoints..." />
+                    <span class="search-icon">🔍</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="apicat-main">
+            <aside class="apicat-sidebar">
+                <div class="sidebar-header">
+                    <h3>API Groups</h3>
+                    <span id="endpoint-count" class="count">Loading...</span>
+                </div>
+                <nav id="navigation" class="navigation">
+                    <!-- Generated navigation -->
+                </nav>
+            </aside>
+
+            <section class="apicat-content">
+                <div class="content-header">
+                    <h2>API Documentation</h2>
+                </div>
+                <div id="content-area" class="content-area">
+                    <div class="welcome">
+                        <h3>Welcome to apiCAT</h3>
+                        <p>Loading API documentation...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="apicat.js"></script>
+</body>
+</html>

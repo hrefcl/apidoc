@@ -1,0 +1,55 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@apidoc/core": ["packages/apidoc-core/src"],
+      "@apidoc/core/*": ["packages/apidoc-core/src/*"],
+      "@apidoc/cli": ["packages/apidoc-cli/src"],
+      "@apidoc/cli/*": ["packages/apidoc-cli/src/*"],
+      "@apidoc/template": ["packages/apidoc-template/src"],
+      "@apidoc/template/*": ["packages/apidoc-template/src/*"],
+      "@apidoc/exporters": ["packages/apidoc-exporters/src"],
+      "@apidoc/exporters/*": ["packages/apidoc-exporters/src/*"],
+      "@apidoc/defaults": ["packages/apidoc-defaults/src"],
+      "@apidoc/defaults/*": ["packages/apidoc-defaults/src/*"],
+      "@apidoc/reader-writer": ["packages/apidoc-reader-writer/src"],
+      "@apidoc/reader-writer/*": ["packages/apidoc-reader-writer/src/*"],
+      "@apidoc/types": ["packages/apidoc-types/src"],
+      "@apidoc/types/*": ["packages/apidoc-types/src/*"],
+      "@apicat/core": ["packages/apicat-core/src"],
+      "@apicat/core/*": ["packages/apicat-core/src/*"],
+      "@apicat/adapter-apidoc": ["packages/apicat-adapter-apidoc/src"],
+      "@apicat/adapter-apidoc/*": ["packages/apicat-adapter-apidoc/src/*"],
+      "@apicat/exporters": ["packages/apicat-exporters/src"],
+      "@apicat/exporters/*": ["packages/apicat-exporters/src/*"],
+      "@apicat/plugins": ["packages/apicat-plugins/src"],
+      "@apicat/plugins/*": ["packages/apicat-plugins/src/*"],
+      "@shared/ui": ["packages/shared-ui/src"],
+      "@shared/ui/*": ["packages/shared-ui/src/*"],
+      "@shared/utils": ["packages/shared-utils/src"],
+      "@shared/utils/*": ["packages/shared-utils/src/*"]
+    }
+  },
+  "include": [
+    "packages/*/src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tmp",
+    "*.config.*"
+  ],
+  "references": []
+}

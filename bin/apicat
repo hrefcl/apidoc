@@ -1,0 +1,337 @@
+#!/usr/bin/env node
+
+'use strict';
+
+/**
+ * apiCAT CLI - Modern API Documentation Generator
+ *
+ * Orchestrates:
+ * 1. apiDoc core parsing
+ * 2. JSON manifest generation (cat.json + shards)
+ * 3. Template compilation to static HTML
+ *
+ * Output: Self-contained dist/ with modular JSON structure
+ */
+
+const os = require('os');
+const path = require('path');
+const fs = require('fs');
+const { Command } = require('commander');
+const pc = require('picocolors');
+const ora = require('ora');
+
+// Load apiDoc core
+let apidoc;
+try {
+    apidoc = require(path.join(__dirname, '..', 'dist', 'core', 'apidoc', 'index.js'));
+} catch (e) {
+    apidoc = require(path.join(__dirname, '..', 'core', 'apidoc', 'index'));
+}
+
+// Load apiCAT adapter
+let adapter;
+try {
+    adapter = require(path.join(__dirname, '..', 'dist', 'core', 'adapters', 'apidoc-to-apicat.js'));
+} catch (e) {
+    adapter = require(path.join(__dirname, '..', 'core', 'adapters', 'apidoc-to-apicat'));
+}
+
+const program = new Command();
+
+// Package info
+const pkgJson = require(path.join(__dirname, '..', 'package.json'));
+program.version(pkgJson.version);
+
+program
+    .description('apiCAT - Modern API Documentation Generator')
+    .addHelpText('before', `
+${pc.bold(pc.cyan('🐱 apiCAT v' + pkgJson.version))} - Modern API Documentation Generator
+
+${pc.bold('FEATURES:')}
+  • Modular JSON structure (cat.json + shards)
+  • On-demand loading for performance
+  • Dark/light themes with Tailwind CSS
+  • Integrated TypeScript documentation
+  • Static HTML output (no runtime dependencies)
+
+${pc.bold('BASIC USAGE:')}`)
+
+    .option('-i, --input <input...>', 'Input/source directories', ['./src'])
+    .option('-o, --output <output>', 'Output directory', 'dist/')
+    .option('-c, --config <config>', 'Configuration file', 'apidoc.json')
+    .option('-t, --template <template>', 'Template directory', path.join(__dirname, '../apps/apicat-template/'))
+    .option('--manifests-only', 'Generate only JSON manifests (skip template build)', false)
+    .option('--skip-tsdoc', 'Skip TypeScript documentation extraction', false)
+    .option('-v, --verbose', 'Verbose output', false)
+    .option('-d, --debug', 'Debug mode', false)
+    .option('--no-color', 'Disable colors', false)
+
+    .addHelpText('after', `
+${pc.bold('EXAMPLES:')}
+  ${pc.cyan('apicat -i src/ -o dist/')}              Generate complete apiCAT documentation
+  ${pc.cyan('apicat --manifests-only')}             Generate only cat.json + shards
+  ${pc.cyan('apicat --skip-tsdoc')}                 Skip TypeScript docs
+  ${pc.cyan('apicat -v -i examples/ -o tmp/')}      Verbose mode with custom paths
+
+${pc.bold('OUTPUT STRUCTURE:')}
+  dist/
+  ├─ index.html                     # Main template
+  ├─ assets/                        # CSS, JS, fonts
+  ├─ cat.json                       # Main manifest
+  ├─ cat.api/                       # API endpoints (sharded)
+  ├─ cat.docs/                      # Markdown docs (HTML)
+  ├─ cat.tsdoc/                     # TypeScript docs
+  └─ cat.search.json                # Search index
+
+${pc.bold('LEARN MORE:')}
+  ${pc.cyan('Homepage:')}     https://apidoc.app
+  ${pc.cyan('Repository:')}   https://github.com/hrefcl/apidoc
+`)
+
+.parse(process.argv);
+
+const argv = program.opts();
+
+// Main execution
+async function main() {
+    const startTime = Date.now();
+    let spinner;
+
+    if (argv.color !== false && !argv.debug) {
+        console.log(`
+${pc.cyan('🐱 apiCAT')} ${pc.dim('v' + pkgJson.version)} - ${pc.dim('Modern API Documentation Generator')}
+        `);
+        spinner = ora('Initializing apiCAT build...').start();
+    }
+
+    try {
+        // Step 1: Run apiDoc core to get intermediate data
+        if (spinner) spinner.text = 'Parsing API documentation...';
+        if (argv.verbose || argv.debug) console.log('📖 Running apiDoc core parser...');
+
+        const apidocOptions = {
+            src: argv.input,
+            dest: path.join(argv.output, 'apicat-temp'), // Temporary location
+            template: argv.template,
+            config: argv.config,
+            verbose: argv.verbose,
+            debug: argv.debug,
+            colorize: argv.color,
+            silent: !argv.verbose && !argv.debug
+        };
+
+        const result = await apidoc.createDoc(apidocOptions);
+        if (!result) {
+            throw new Error('apiDoc core parsing failed');
+        }
+
+        // Step 2: Transform to apiCAT format
+        if (spinner) spinner.text = 'Generating apiCAT manifests...';
+        if (argv.verbose || argv.debug) console.log('🔄 Transforming to apiCAT format...');
+
+        const apicatData = adapter.transformToApiCAT(result.data, result.project);
+
+        // Step 3: Generate modular JSON structure
+        if (spinner) spinner.text = 'Writing manifest files...';
+        if (argv.verbose || argv.debug) console.log('📝 Writing cat.json and shards...');
+
+        await generateManifests(apicatData, argv.output);
+
+        // Step 4: Build template (unless manifests-only)
+        if (!argv.manifestsOnly) {
+            if (spinner) spinner.text = 'Building template...';
+            if (argv.verbose || argv.debug) console.log('🏗️  Building apiCAT template...');
+
+            await buildTemplate(argv.template, argv.output);
+        }
+
+        // Step 5: TSDoc extraction (if enabled)
+        if (!argv.skipTsdoc) {
+            if (spinner) spinner.text = 'Extracting TypeScript docs...';
+            if (argv.verbose || argv.debug) console.log('📚 Extracting TypeScript documentation...');
+
+            await extractTSDoc(argv.input, argv.output);
+        }
+
+        // Cleanup temp
+        await fs.promises.rm(path.join(argv.output, 'apicat-temp'), { recursive: true, force: true });
+
+        const endTime = Date.now();
+        const duration = ((endTime - startTime) / 1000).toFixed(2);
+
+        if (spinner) {
+            spinner.succeed(`${pc.green('✅ apiCAT generation complete!')} ${pc.dim('(' + duration + 's)')}`);
+            console.log(`\n${pc.bold('📁 Output:')} ${pc.cyan(argv.output)}`);
+            console.log(`${pc.bold('🚀 Preview:')} ${pc.cyan('npx serve ' + argv.output)}\n`);
+        } else if (argv.verbose || argv.debug) {
+            console.log(`${pc.green('✅ apiCAT complete!')} Generated in ${duration}s`);
+        }
+
+    } catch (error) {
+        if (spinner) spinner.fail(`${pc.red('❌ apiCAT generation failed')}`);
+
+        console.error(`${pc.red('Error:')} ${error.message}`);
+        if (argv.debug) {
+            console.error('\nStack trace:');
+            console.error(error.stack);
+        }
+        process.exit(1);
+    }
+}
+
+/**
+ * Generate modular JSON manifests
+ */
+async function generateManifests(apicatData, outputDir) {
+    const manifestsDir = outputDir;
+    await fs.promises.mkdir(manifestsDir, { recursive: true });
+
+    // Main manifest
+    const manifest = {
+        schemaVersion: "5.0.0",
+        generatedAt: new Date().toISOString(),
+        generator: {
+            name: "apiCAT",
+            version: pkgJson.version,
+            url: "https://apidoc.app"
+        },
+        meta: "cat.meta.json",
+        navigation: "cat.navigation.json",
+        api: {
+            index: "cat.api.index.json",
+            shards: ["cat.api/endpoints.json"]
+        },
+        search: "cat.search.json",
+        assets: "cat.assets.json"
+    };
+
+    await fs.promises.writeFile(
+        path.join(manifestsDir, 'cat.json'),
+        JSON.stringify(manifest, null, 2)
+    );
+
+    // Meta
+    await fs.promises.writeFile(
+        path.join(manifestsDir, 'cat.meta.json'),
+        JSON.stringify({
+            name: apicatData.project.name,
+            version: apicatData.project.version,
+            description: apicatData.project.description,
+            generatedAt: manifest.generatedAt
+        }, null, 2)
+    );
+
+    // Navigation
+    const groups = apicatData.groups.map(groupName => ({
+        id: groupName,
+        title: groupName,
+        endpoints: apicatData.endpoints
+            .filter(ep => ep.group === groupName)
+            .map(ep => ep.id)
+    }));
+
+    await fs.promises.writeFile(
+        path.join(manifestsDir, 'cat.navigation.json'),
+        JSON.stringify({ groups, order: apicatData.groups }, null, 2)
+    );
+
+    // API Index
+    const apiIndex = {
+        endpoints: apicatData.endpoints.map(ep => ({
+            id: ep.id,
+            method: ep.method,
+            path: ep.url,
+            group: ep.group,
+            summary: ep.title,
+            shard: "cat.api/endpoints.json"
+        }))
+    };
+
+    await fs.promises.writeFile(
+        path.join(manifestsDir, 'cat.api.index.json'),
+        JSON.stringify(apiIndex, null, 2)
+    );
+
+    // API Shard
+    await fs.promises.mkdir(path.join(manifestsDir, 'cat.api'), { recursive: true });
+    await fs.promises.writeFile(
+        path.join(manifestsDir, 'cat.api', 'endpoints.json'),
+        JSON.stringify({ endpoints: apicatData.endpoints }, null, 2)
+    );
+
+    // Search index
+    const searchDocs = apicatData.endpoints.map(ep => ({
+        id: ep.id,
+        type: "endpoint",
+        title: ep.title,
+        path: ep.url,
+        group: ep.group,
+        method: ep.method,
+        tags: [ep.group.toLowerCase(), ep.method.toLowerCase()],
+        summary: ep.description
+    }));
+
+    await fs.promises.writeFile(
+        path.join(manifestsDir, 'cat.search.json'),
+        JSON.stringify({ documents: searchDocs }, null, 2)
+    );
+
+    // Assets manifest
+    await fs.promises.writeFile(
+        path.join(manifestsDir, 'cat.assets.json'),
+        JSON.stringify({
+            stylesheets: [{ path: "assets/apicat.css" }],
+            scripts: [{ path: "assets/apicat.js" }],
+            generatedAt: manifest.generatedAt
+        }, null, 2)
+    );
+}
+
+/**
+ * Build template to output directory
+ */
+async function buildTemplate(templateDir, outputDir) {
+    const { execSync } = require('child_process');
+
+    try {
+        // Build template
+        execSync('npm run build', {
+            cwd: templateDir,
+            stdio: argv.debug ? 'inherit' : 'pipe'
+        });
+
+        // Copy built template to output
+        const templateDist = path.join(templateDir, 'dist');
+        if (fs.existsSync(templateDist)) {
+            await fs.promises.cp(templateDist, outputDir, { recursive: true });
+        }
+    } catch (error) {
+        throw new Error(`Template build failed: ${error.message}`);
+    }
+}
+
+/**
+ * Extract TypeScript documentation
+ */
+async function extractTSDoc(inputDirs, outputDir) {
+    // Placeholder for TSDoc extraction
+    // This will be implemented with TypeScript compiler API
+    const tsdocDir = path.join(outputDir, 'cat.tsdoc');
+    await fs.promises.mkdir(tsdocDir, { recursive: true });
+
+    // For now, create placeholder
+    await fs.promises.writeFile(
+        path.join(tsdocDir, 'core.json'),
+        JSON.stringify({
+            module: "core",
+            symbols: [],
+            generatedAt: new Date().toISOString()
+        }, null, 2)
+    );
+}
+
+// Run main function
+main().catch(error => {
+    console.error('Unexpected error:', error);
+    process.exit(1);
+});

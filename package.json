@@ -1,14 +1,17 @@
 {
-  "name": "@hrefcl/apidoc",
-  "version": "4.0.5",
-  "description": "RESTful web API Documentation Generator",
+  "name": "@hrefcl/apidoc-ecosystem",
+  "version": "5.0.0-alpha.1",
+  "description": "APIDoc v5 + apiCAT Ecosystem - Complete API Documentation and Testing Suite",
+  "private": true,
   "keywords": [
     "api",
     "apidoc",
-    "doc",
+    "apicat",
     "documentation",
+    "testing",
     "rest",
-    "restful"
+    "restful",
+    "monorepo"
   ],
   "homepage": "https://apidoc.app",
   "bugs": {
@@ -25,6 +28,11 @@
       "name": "hrefcl"
     }
   ],
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "packageManager": "yarn@1.22.22",
   "type": "commonjs",
   "main": "./dist/lib/index.js",
   "types": "./dist/lib/index.d.ts",
@@ -38,12 +46,13 @@
     "test": "test"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "npm run build:css && tsc && npm run build:copy-core",
     "build:css": "node scripts/build-css.js",
+    "build:copy-core": "cp core/*.js dist/core/ 2>/dev/null && cp -r core/errors core/filters core/languages core/parsers core/utils core/workers dist/core/ 2>/dev/null || true",
     "build:css:dev": "node scripts/build-css.js --dev",
     "build:clean": "rm -rf dist && npm run build:css && npm run build",
     "build:debug": "npm run build:example -- --debug",
-    "build:example": "npm run build && ./bin/apidoc -v -i example/ -o ./tmp/apidoc-output",
+    "build:apidoc": "npm run build && ./bin/apidoc -v -i examples/apidoc/ -o ./tmp/apidoc-output -t apps/apidoc-template/",
     "build:watch": "tsc --watch",
     "container:build": "podman build -t apidoc/apidoc .",
     "dev": "npm run build:watch",
@@ -69,11 +78,19 @@
     "test:spell": "cspell --fail-fast './bin/apidoc' './example/**/*' './lib/**/*.*js' './template/index.html' './template/src/*' './test/**/*' --config ./cspell.config.json",
     "test:spell-support": "cspell --fail-fast ./README.md ./CONTRIBUTING.md ./CONTRIBUTORS.md ./SECURITY.md --config ./cspell.config.json",
     "typecheck": "tsc --noEmit",
-    "example": "npm run build:css && npm run build:example",
+    "example": "npm run build:apidoc",
     "format": "npm run format:handlebars && prettier --write \"**/*.{ts,js,html,json}\"",
     "format:html": "npm run format:handlebars && prettier --write \"template/**/*.html\"",
     "format:handlebars": "node scripts/format-handlebars.js",
-    "format:check": "prettier --check \"**/*.{ts,js,html,json}\""
+    "format:check": "prettier --check \"**/*.{ts,js,html,json}\"",
+    "build:packages": "yarn workspaces run build",
+    "test:packages": "yarn workspaces run test",
+    "dev:apicat": "yarn workspace @hrefcl/apicat-desktop dev",
+    "build:apicat-desktop": "yarn workspace @hrefcl/apicat-desktop build",
+    "test:e2e": "cd e2e-tests && npx playwright test",
+    "example:apicat": "npm run build:apicat",
+    "apicat": "npm run build && ./bin/apicat -v",
+    "build:apicat": "cd apps/apicat-template && npm run build && cd ../.. && npm run build && ./bin/apidoc -v -i examples/apicat/ -o ./tmp/apicat-output -t apps/apicat-template/dist/"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",

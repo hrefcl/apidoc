@@ -1,0 +1,1 @@
+{"version":3,"file":"api_header.d.ts","sourceRoot":"","sources":["../../../../lib/core/parsers/api_header.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAIH;;;;;;;;;;;;;;;;;;;;;;;;;GAyBG;AACH,wBAAgB,KAAK,CAAC,OAAO,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,GAAG,GAAG,CAE1D;AAED;;;;;;;;;;;GAWG;AACH,wBAAgB,IAAI,IAAI,MAAM,CAE7B;AAED,eAAO,MAAM,MAAM,SAAiB,CAAC;AACrC,eAAO,MAAM,cAAc,UAAkB,CAAC"}

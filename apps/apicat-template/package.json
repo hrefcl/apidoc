@@ -1,0 +1,16 @@
+{
+  "name": "apicat-template",
+  "version": "1.0.0",
+  "description": "apiCAT - Enhanced APIDoc Template",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --outDir dist && npm run copy-assets && npm run fix-structure",
+    "copy-assets": "cp -r assets/* dist/ 2>/dev/null || true",
+    "fix-structure": "mv dist/src/index.html dist/index.html 2>/dev/null && rm -rf dist/src 2>/dev/null || true",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {}
+}

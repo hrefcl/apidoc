@@ -1,0 +1,1 @@
+{"version":3,"file":"api_query.d.ts","sourceRoot":"","sources":["../../../../lib/core/parsers/api_query.ts"],"names":[],"mappings":"AAGA;;;;;;;;;;;;;;;;GAgBG;AACH,iBAAS,KAAK,CAAC,OAAO,KAAA,EAAE,MAAM,KAAA;;;;;;;;;;;EAE7B;AAED;;GAEG;AACH,OAAO,EAAE,KAAK,EAAE,CAAC;AACjB,eAAO,MAAM,IAAI,gBAAgB,CAAC;AAClC,eAAO,MAAM,MAAM,SAAmB,CAAC;AACvC,eAAO,MAAM,cAAc,UAAkB,CAAC"}

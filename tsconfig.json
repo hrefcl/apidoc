@@ -26,13 +26,11 @@
     "allowUnreachableCode": true,
     "noImplicitAny": false,
     "types": ["node", "mocha", "jquery"],
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "typeRoots": ["./node_modules/@types", "./core/types"]
   },
   "include": [
-    "lib/**/*",
+    "core/**/*",
     "bin/**/*",
-    "template/src/**/*",
-    "src/types/**/*",
     "scripts/**/*"
   ],
   "exclude": [
@@ -40,11 +38,14 @@
     "dist",
     "tmp",
     "test/**/*",
-    "example/**/*",
+    "examples/**/*",
     "bk-lib/**/*",
     "test-output/**/*",
-    "template/src/vendor/**/*",
+    "apps/**/vendor/**/*",
+    "lib/**/*",
+    "src/**/*",
     "template/**/*",
+    "template-apicat/**/*",
     "**/*.d.ts",
     "**/*.js"
   ],
