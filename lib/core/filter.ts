@@ -1,6 +1,6 @@
 /*
  * apidocts
- * https://apidoc.app
+ * https://apidocts.com
  * https://apidoc.app
  * Href Spa API Doc (TypeScript version)
  *

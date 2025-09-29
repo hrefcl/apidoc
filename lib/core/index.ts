@@ -1,6 +1,6 @@
 /*
  * apidocts
- * https://apidoc.app
+ * https://apidocts.com
  * https://apidoc.app
  * Href Spa API Doc (TypeScript version)
  *
@@ -164,7 +164,7 @@ const app = {
 const defaultGenerator = {
     name: 'apidoc',
     time: new Date().toString(),
-    url: 'https://apidoc.app',
+    url: 'https://apidocts.com',
     version: '0.0.0',
 };
 

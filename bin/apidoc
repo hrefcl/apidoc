@@ -4,7 +4,7 @@
 
 /*
  * apidocts
- * https://apidoc.app
+ * https://apidocts.com
  * https://apidoc.app
  * Href Spa API Doc (TypeScript version)
  *
@@ -256,8 +256,8 @@ ${pc.bold('EXAMPLES:')}
   ${pc.cyan('apidoc -i src/ -o docs/ --markdown-multi --markdown-export docs/')} # Multiple Markdown files
 
 ${pc.bold('LEARN MORE:')}
-  ${pc.cyan('Homepage:')}     https://apidoc.app
-  ${pc.cyan('Examples:')}     https://apidoc.app/example
+  ${pc.cyan('Homepage:')}     https://apidocts.com
+  ${pc.cyan('Examples:')}     https://apidocts.com/example
   ${pc.cyan('Repository:')}   https://github.com/hrefcl/apidoc
   ${pc.cyan('Issues:')}       https://github.com/hrefcl/apidoc/issues
 `
@@ -310,7 +310,7 @@ if (argv.init !== '') {
                 console.log(`${pc.gray('1.')} Edit ${pc.cyan('apidoc.json')} to customize your API documentation`);
                 console.log(`${pc.gray('2.')} Add API comments to your source code`);
                 console.log(`${pc.gray('3.')} Run ${pc.cyan('apidoc -i src/ -o doc/')} to generate documentation`);
-                console.log(`\n${pc.dim('📖 Learn more:')} https://apidoc.app`);
+                console.log(`\n${pc.dim('📖 Learn more:')} https://apidocts.com`);
             },
             packageInfo ? 1000 : 100
         );
