@@ -187,7 +187,7 @@
 
       <!-- Parameters -->
       <div v-if="data.parameter && data.parameter.fields && Object.keys(data.parameter.fields).length > 0" class="not-prose">
-        <h2 class="text-2xl font-semibold mb-4">{{ t('api.parameters') }}</h2>
+        <h2 class="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ t('api.parameters') }}</h2>
         <div v-for="(params, groupName) in data.parameter.fields" :key="groupName" class="mb-6">
           <h3 v-if="groupName !== 'Parameter'" class="text-lg font-medium mb-3">{{ groupName }}</h3>
           <div class="bg-card border border-border rounded-lg overflow-hidden">
@@ -220,7 +220,7 @@
 
       <!-- Success Response -->
       <div v-if="data.success && data.success.fields && Object.keys(data.success.fields).length > 0" class="not-prose">
-        <h2 class="text-2xl font-semibold mb-4">{{ t('api.success') }}</h2>
+        <h2 class="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ t('api.success') }}</h2>
         <div v-for="(responses, groupName) in data.success.fields" :key="groupName" class="mb-6">
           <h3 v-if="groupName !== 'Success 200'" class="text-lg font-medium mb-3">{{ groupName }}</h3>
           <div class="bg-card border border-border rounded-lg overflow-hidden">
@@ -250,7 +250,7 @@
 
       <!-- Examples -->
       <div v-if="data.examples && data.examples.length > 0" class="not-prose">
-        <h2 class="text-2xl font-semibold mb-4">{{ t('api.examples') }}</h2>
+        <h2 class="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ t('api.examples') }}</h2>
         <div v-for="(example, index) in data.examples" :key="index" class="mb-6">
           <h3 class="text-lg font-medium mb-3">{{ example.title }}</h3>
           <pre class="bg-card border border-border rounded-lg p-4 overflow-x-auto"><code class="text-sm">{{ example.content }}</code></pre>
@@ -259,7 +259,7 @@
 
       <!-- Error Response -->
       <div v-if="data.error && data.error.fields && Object.keys(data.error.fields).length > 0" class="not-prose">
-        <h2 class="text-2xl font-semibold mb-4">{{ t('api.error') }}</h2>
+        <h2 class="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ t('api.error') }}</h2>
         <div v-for="(errors, groupName) in data.error.fields" :key="groupName" class="mb-6">
           <h3 class="text-lg font-medium mb-3">{{ groupName }}</h3>
           <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg overflow-hidden">

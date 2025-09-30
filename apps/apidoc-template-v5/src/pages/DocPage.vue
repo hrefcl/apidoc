@@ -31,7 +31,7 @@
         </div>
 
         <!-- Title -->
-        <h1 class="mb-4">{{ doc.title || doc.name || 'Documentación' }}</h1>
+        <h1 class="mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ doc.title || doc.name || (isApiDoc ? 'APIs' : 'Documentación') }}</h1>
 
         <!-- Metadata -->
         <div v-if="doc.version || doc.description" class="flex flex-wrap gap-4 mb-8 not-prose">

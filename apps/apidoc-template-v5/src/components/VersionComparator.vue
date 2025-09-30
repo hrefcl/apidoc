@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between p-6 border-b border-border">
         <div class="flex items-center gap-3">
           <GitCompare class="w-6 h-6 text-primary-600" />
-          <h2 class="text-2xl font-bold">{{ t('api.compareVersions', 'Comparar versiones') }}</h2>
+          <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ t('api.compareVersions', 'Comparar versiones') }}</h2>
         </div>
         <button
           @click="$emit('close')"
@@ -45,10 +45,11 @@
 
       <!-- Comparison Content -->
       <div class="flex-1 overflow-y-auto p-6">
-        <div v-if="version1Data && version2Data" class="grid grid-cols-2 gap-6">
-          <!-- Version 1 -->
-          <div class="space-y-6">
-            <div class="sticky top-0 bg-background pb-2 border-b border-border">
+        <div v-if="version1Data && version2Data" class="space-y-6">
+          <!-- Headers Row (Sticky) -->
+          <div class="sticky top-0 bg-background pb-4 border-b border-border z-10 grid grid-cols-2 gap-6">
+            <!-- Version 1 Header -->
+            <div>
               <h3 class="text-lg font-semibold flex items-center gap-2">
                 <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded text-sm">
                   v{{ version1Data.version }}
@@ -56,8 +57,20 @@
                 {{ version1Data.title }}
               </h3>
             </div>
+            <!-- Version 2 Header -->
+            <div>
+              <h3 class="text-lg font-semibold flex items-center gap-2">
+                <span class="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded text-sm">
+                  v{{ version2Data.version }}
+                </span>
+                {{ version2Data.title }}
+              </h3>
+            </div>
+          </div>
 
-            <!-- Basic Info -->
+          <!-- Basic Info Row -->
+          <div class="grid grid-cols-2 gap-6 items-start">
+            <!-- Version 1 Basic Info -->
             <div class="space-y-2">
               <div class="flex items-center gap-2">
                 <span :class="getMethodClass(version1Data.method)" class="px-2 py-1 rounded text-xs font-mono font-bold">
@@ -67,50 +80,7 @@
               </div>
               <div v-if="version1Data.description" v-html="version1Data.description" class="text-sm text-muted-foreground"></div>
             </div>
-
-            <!-- Parameters -->
-            <ComparisonSection
-              :title="t('api.parameters')"
-              :items="getParameters(version1Data)"
-              :otherItems="getParameters(version2Data)"
-            />
-
-            <!-- Headers -->
-            <ComparisonSection
-              :title="t('api.headers')"
-              :items="getHeaders(version1Data)"
-              :otherItems="getHeaders(version2Data)"
-            />
-
-            <!-- Success Response -->
-            <ComparisonSection
-              v-if="version1Data.success"
-              :title="t('api.success')"
-              :items="getSuccessFields(version1Data.success)"
-              :otherItems="getSuccessFields(version2Data.success)"
-            />
-
-            <!-- Error Response -->
-            <ComparisonSection
-              v-if="version1Data.error"
-              :title="t('api.error')"
-              :items="getErrorFields(version1Data.error)"
-              :otherItems="getErrorFields(version2Data.error)"
-            />
-          </div>
-
-          <!-- Version 2 -->
-          <div class="space-y-6">
-            <div class="sticky top-0 bg-background pb-2 border-b border-border">
-              <h3 class="text-lg font-semibold flex items-center gap-2">
-                <span class="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded text-sm">
-                  v{{ version2Data.version }}
-                </span>
-                {{ version2Data.title }}
-              </h3>
-            </div>
-
-            <!-- Basic Info -->
+            <!-- Version 2 Basic Info -->
             <div class="space-y-2">
               <div class="flex items-center gap-2">
                 <span :class="getMethodClass(version2Data.method)" class="px-2 py-1 rounded text-xs font-mono font-bold">
@@ -120,32 +90,58 @@
               </div>
               <div v-if="version2Data.description" v-html="version2Data.description" class="text-sm text-muted-foreground"></div>
             </div>
+          </div>
 
-            <!-- Parameters -->
+          <!-- Parameters Row -->
+          <div class="grid grid-cols-2 gap-6 items-start">
+            <ComparisonSection
+              :title="t('api.parameters')"
+              :items="getParameters(version1Data)"
+              :otherItems="getParameters(version2Data)"
+            />
             <ComparisonSection
               :title="t('api.parameters')"
               :items="getParameters(version2Data)"
               :otherItems="getParameters(version1Data)"
             />
+          </div>
 
-            <!-- Headers -->
+          <!-- Headers Row -->
+          <div class="grid grid-cols-2 gap-6 items-start">
+            <ComparisonSection
+              :title="t('api.headers')"
+              :items="getHeaders(version1Data)"
+              :otherItems="getHeaders(version2Data)"
+            />
             <ComparisonSection
               :title="t('api.headers')"
               :items="getHeaders(version2Data)"
               :otherItems="getHeaders(version1Data)"
             />
+          </div>
 
-            <!-- Success Response -->
+          <!-- Success Response Row -->
+          <div v-if="version1Data.success || version2Data.success" class="grid grid-cols-2 gap-6 items-start">
             <ComparisonSection
-              v-if="version2Data.success"
+              :title="t('api.success')"
+              :items="getSuccessFields(version1Data.success)"
+              :otherItems="getSuccessFields(version2Data.success)"
+            />
+            <ComparisonSection
               :title="t('api.success')"
               :items="getSuccessFields(version2Data.success)"
               :otherItems="getSuccessFields(version1Data.success)"
             />
+          </div>
 
-            <!-- Error Response -->
+          <!-- Error Response Row -->
+          <div v-if="version1Data.error || version2Data.error" class="grid grid-cols-2 gap-6 items-start">
             <ComparisonSection
-              v-if="version2Data.error"
+              :title="t('api.error')"
+              :items="getErrorFields(version1Data.error)"
+              :otherItems="getErrorFields(version2Data.error)"
+            />
+            <ComparisonSection
               :title="t('api.error')"
               :items="getErrorFields(version2Data.error)"
               :otherItems="getErrorFields(version1Data.error)"

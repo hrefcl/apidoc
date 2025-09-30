@@ -11,7 +11,7 @@
     <!-- Content Sections -->
     <div v-for="(value, key) in filteredData" :key="key" class="mb-6">
       <!-- Section Title -->
-      <h2 v-if="!isMetaKey(key)" class="text-2xl font-semibold mb-4 capitalize">
+      <h2 v-if="!isMetaKey(key)" class="text-2xl font-semibold mb-4 capitalize bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
         {{ formatKey(key) }}
       </h2>
 
