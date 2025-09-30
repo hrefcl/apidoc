@@ -12,6 +12,7 @@ export interface ApiCATEndpoint {
     method: string;
     url: string;
     parameters?: ApiCATParameter[];
+    header?: ApiCATParameter[];
     success?: ApiCATResponse;
     error?: ApiCATResponse;
     examples?: ApiCATExample[];
@@ -25,6 +26,7 @@ export interface ApiCATParameter {
     required: boolean;
     description: string;
     defaultValue?: string;
+    group?: string; // Optional group info (e.g., "Error 4xx", "Success 200")
 }
 
 export interface ApiCATResponse {
@@ -96,31 +98,88 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
                 }));
             }
 
+            // Transform headers
+            if (item.header?.fields?.Header) {
+                endpoint.header = item.header.fields.Header.map((header: any) => ({
+                    field: header.field,
+                    type: header.type || 'String',
+                    required: !header.optional,
+                    description: header.description || '',
+                    defaultValue: header.defaultValue,
+                }));
+            }
+
             // Transform success response
             if (item.success) {
+                // Extract fields from any success group (usually "Success 200")
+                let successFields: any[] | undefined;
+                if (item.success.fields) {
+                    // Find the first key in fields object (e.g., "Success 200")
+                    const firstKey = Object.keys(item.success.fields)[0];
+                    if (firstKey && item.success.fields[firstKey]) {
+                        successFields = item.success.fields[firstKey].map((field: any) => ({
+                            field: field.field,
+                            type: field.type || 'String',
+                            required: !field.optional,
+                            description: field.description || '',
+                            defaultValue: field.defaultValue,
+                        }));
+                    }
+                }
+
                 endpoint.success = {
                     type: 'success',
                     statusCode: '200',
                     description: item.success.description || '',
-                    examples: item.success.examples?.map((example: any) => ({
-                        title: example.title || 'Success Example',
-                        content: example.content || '',
-                        type: 'json' as const,
-                    })),
+                    ...(item.success.examples && {
+                        examples: item.success.examples.map((example: any) => ({
+                            title: example.title || 'Success Example',
+                            content: example.content || '',
+                            type: 'json' as const,
+                        })),
+                    }),
+                    ...(successFields && { fields: successFields }),
                 };
             }
 
             // Transform error response
             if (item.error) {
+                // Extract fields from any error group (e.g., "Error 4xx", "Error 500 Internal Server Error")
+                let errorFields: any[] | undefined;
+                if (item.error.fields) {
+                    // Combine all error groups into a single array
+                    const allErrorFields: any[] = [];
+                    Object.keys(item.error.fields).forEach((groupKey) => {
+                        if (item.error.fields[groupKey]) {
+                            item.error.fields[groupKey].forEach((field: any) => {
+                                allErrorFields.push({
+                                    field: field.field,
+                                    type: field.type || 'String',
+                                    required: !field.optional,
+                                    description: field.description || '',
+                                    defaultValue: field.defaultValue,
+                                    group: groupKey, // Preserve group info (e.g., "Error 4xx")
+                                });
+                            });
+                        }
+                    });
+                    if (allErrorFields.length > 0) {
+                        errorFields = allErrorFields;
+                    }
+                }
+
                 endpoint.error = {
                     type: 'error',
                     statusCode: item.error.statusCode || '400',
                     description: item.error.description || '',
-                    examples: item.error.examples?.map((example: any) => ({
-                        title: example.title || 'Error Example',
-                        content: example.content || '',
-                        type: 'json' as const,
-                    })),
+                    ...(item.error.examples && {
+                        examples: item.error.examples.map((example: any) => ({
+                            title: example.title || 'Error Example',
+                            content: example.content || '',
+                            type: 'json' as const,
+                        })),
+                    }),
+                    ...(errorFields && { fields: errorFields }),
                 };
             }
 

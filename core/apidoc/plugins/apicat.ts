@@ -132,11 +132,11 @@ export class ApiCatPlugin {
             )
         );
 
-        // Generate navigation
-        await this.generateNavigation(apicatData, outputPath);
+        // Generate API index and shards FIRST (this groups endpoints by version)
+        const groupedEndpointsMap = await this.generateApiStructure(apicatData, outputPath);
 
-        // Generate API index and shards
-        await this.generateApiStructure(apicatData, outputPath);
+        // Generate navigation using grouped endpoints
+        await this.generateNavigation(apicatData, outputPath, projectInfo, groupedEndpointsMap);
 
         // Generate search index
         await this.generateSearchIndex(apicatData, outputPath);
@@ -192,14 +192,29 @@ export class ApiCatPlugin {
      * Generate navigation structure
      * @param apicatData
      * @param outputPath
+     * @param projectInfo
+     * @param groupedEndpointsMap - Map of already grouped endpoints by group name
      */
-    private async generateNavigation(apicatData: any, outputPath: string): Promise<void> {
-        const groups = apicatData.groups.map((groupName: string) => ({
-            id: groupName,
-            title: groupName,
-            icon: this.getGroupIcon(groupName),
-            endpoints: apicatData.endpoints.filter((ep: any) => ep.group === groupName).map((ep: any) => ep.id),
-        }));
+    private async generateNavigation(
+        apicatData: any,
+        outputPath: string,
+        projectInfo: ApiDocProject,
+        groupedEndpointsMap: Map<string, any[]>
+    ): Promise<void> {
+        const groups = apicatData.groups.map((groupName: string) => {
+            // Get grouped endpoints for this group from the map
+            const groupedEndpoints = groupedEndpointsMap.get(groupName) || [];
+
+            // Extract unique endpoint IDs (already grouped, so no duplicates)
+            const endpointIds = groupedEndpoints.map((ep: any) => ep.id);
+
+            return {
+                id: groupName,
+                title: this.getGroupTitle(groupName, projectInfo),
+                icon: this.getGroupIcon(groupName),
+                endpoints: endpointIds,
+            };
+        });
 
         const navigation = {
             groups,
@@ -215,12 +230,29 @@ export class ApiCatPlugin {
     }
 
     /**
+     * Get group title from settings or format group name
+     * @param groupName
+     * @param projectInfo
+     */
+    private getGroupTitle(groupName: string, projectInfo: ApiDocProject): string {
+        // Check if settings exist for this group
+        const projectWithSettings = projectInfo as any;
+        if (projectWithSettings?.settings?.[groupName]?.title) {
+            return projectWithSettings.settings[groupName].title;
+        }
+
+        // Fallback: format group name (replace underscores with spaces)
+        return groupName.replace(/_/g, ' ');
+    }
+
+    /**
      * Generate API index and shards
      * @param apicatData
      * @param outputPath
+     * @returns Map of grouped endpoints by group name
      */
-    private async generateApiStructure(apicatData: any, outputPath: string): Promise<void> {
-        // API Index
+    private async generateApiStructure(apicatData: any, outputPath: string): Promise<Map<string, any[]>> {
+        // API Index - still contains all endpoints individually for search/stats
         const apiIndex = {
             endpoints: apicatData.endpoints.map((ep: any) => ({
                 id: ep.id,
@@ -241,13 +273,22 @@ export class ApiCatPlugin {
 
         await fs.writeFile(path.join(outputPath, 'cat.api.index.json'), JSON.stringify(apiIndex, null, 2));
 
-        // Generate shards by group
+        // Generate shards by group with version grouping
+        const groupedEndpointsMap = new Map<string, any[]>();
         const groups = apicatData.groups;
+
         for (const group of groups) {
             const groupEndpoints = apicatData.endpoints.filter((ep: any) => ep.group === group);
+
+            // Group endpoints by ID (multiple versions of same endpoint)
+            const groupedEndpoints = this.groupEndpointsByVersion(groupEndpoints);
+
+            // Store in map for navigation generation
+            groupedEndpointsMap.set(group, groupedEndpoints);
+
             const shard = {
                 group,
-                endpoints: groupEndpoints,
+                endpoints: groupedEndpoints,
                 generatedAt: new Date().toISOString(),
             };
 
@@ -256,6 +297,8 @@ export class ApiCatPlugin {
                 JSON.stringify(shard, null, 2)
             );
         }
+
+        return groupedEndpointsMap;
     }
 
     /**
@@ -1209,6 +1252,74 @@ export class ApiCatPlugin {
             stats[ep.method] = (stats[ep.method] || 0) + 1;
         });
         return stats;
+    }
+
+    /**
+     * Group endpoints by ID and create version arrays
+     * Multiple versions of the same endpoint are grouped together
+     * @param endpoints - Array of endpoints to group
+     * @returns Array of grouped endpoints with version information
+     */
+    private groupEndpointsByVersion(endpoints: any[]): any[] {
+        // Create a map to group endpoints by ID
+        const endpointMap = new Map<string, any[]>();
+
+        endpoints.forEach((endpoint) => {
+            if (!endpointMap.has(endpoint.id)) {
+                endpointMap.set(endpoint.id, []);
+            }
+            endpointMap.get(endpoint.id)!.push(endpoint);
+        });
+
+        // Convert map to array of grouped endpoints
+        const groupedEndpoints: any[] = [];
+
+        endpointMap.forEach((versions, endpointId) => {
+            if (versions.length === 1) {
+                // Single version - keep as is (no need for versions array)
+                groupedEndpoints.push(versions[0]);
+            } else {
+                // Multiple versions - create grouped structure
+                // Sort versions to find latest
+                const sortedVersions = versions.sort((a, b) => {
+                    // Simple version comparison (handles x.y.z format)
+                    const versionA = a.version || '0.0.0';
+                    const versionB = b.version || '0.0.0';
+                    return versionB.localeCompare(versionA, undefined, { numeric: true, sensitivity: 'base' });
+                });
+
+                const latestEndpoint = sortedVersions[0];
+
+                // Create base structure from latest version
+                const groupedEndpoint = { ...latestEndpoint };
+
+                // Add versions array with FULL data for comparison
+                groupedEndpoint.versions = sortedVersions.map((ep, index) => ({
+                    version: ep.version,
+                    title: ep.title,
+                    name: ep.name,
+                    description: ep.description,
+                    filename: ep.filename,
+                    url: ep.url,
+                    method: ep.method,
+                    isLatest: index === 0,
+                    // Include full endpoint data for version comparison
+                    parameters: ep.parameters,
+                    header: ep.header,
+                    success: ep.success,
+                    error: ep.error,
+                    examples: ep.examples,
+                }));
+
+                groupedEndpoint.latestVersion = latestEndpoint.version;
+                groupedEndpoint.versionCount = versions.length;
+                groupedEndpoint.hasMultipleVersions = true;
+
+                groupedEndpoints.push(groupedEndpoint);
+            }
+        });
+
+        return groupedEndpoints;
     }
 
     /**

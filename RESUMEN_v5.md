@@ -212,3 +212,266 @@ La evolución final apunta hacia una **plataforma completa de experiencia de des
 
 **Estado Actual: APIDoc 5.0-alpha.1 - Funcional y listo para expansión**
 **Próximo Milestone: v5.0.0 - Production ready con full ApiCat integration**
+
+---
+
+# 🆕 SESIÓN DE DESARROLLO - Template v5 (2025-09-30)
+
+## 🎯 OBJETIVO DE LA SESIÓN
+Implementar todas las funcionalidades faltantes en el template v5 de APIDoc para tener una documentación API completa y funcional similar a templates modernos como Swagger UI.
+
+## ✅ TAREAS COMPLETADAS
+
+### 1. Sistema de Internacionalización (i18n) - ✅ COMPLETADO
+- **Implementado**: Sistema vue-i18n funcionando correctamente
+- **Archivos**: `src/i18n/`, locales `es.json` y `en.json`
+- **Componentes**: `LanguageSelectorSimple.vue` funcional
+- **Fix**: Problema de cambio de idioma resuelto usando `locale.value` reactivo
+
+### 2. Sistema de Rutas Corregido - ✅ COMPLETADO
+- **URLs implementadas**:
+  - `/` → Home page
+  - `/api/:doc` → Endpoints API
+  - `/docs/:doc` → Documentación
+  - `/tsdoc/:doc` → TypeScript docs
+- **Archivos**: `src/router/index.js`, `src/stores/docs.js`
+
+### 3. Carga de Documentos desde Shards - ✅ COMPLETADO
+- **Sistema implementado**:
+  - Carga de `cat.api.index.json` con metadata
+  - Lookup de endpoints por ID
+  - Carga lazy de shards (`cat.api/users.json`)
+  - Extracción de endpoint específico
+- **Fix**: Problema "Documento no encontrado" al refrescar RESUELTO
+
+### 4. Componentes de Documentación API Creados
+
+#### CodeTabs.vue - ✅ COMPLETADO
+- Tabs para ejemplos (Curl/JavaScript/Python)
+- Botón copiar con feedback visual
+- Soporte múltiples lenguajes
+
+#### ParametersTable.vue - ✅ COMPLETADO
+- Tabla para parámetros y headers
+- Badges required/optional
+- Valores por defecto
+
+#### ResponseTable.vue - ✅ COMPLETADO
+- Tablas success/error responses
+- Código estado con colores
+- Ejemplos con botón copiar
+
+#### TryItOut.vue - ✅ COMPLETADO
+- Formulario interactivo para probar endpoints
+- Inputs headers y parámetros
+- Editor JSON para body
+- Display de respuesta
+
+### 5. Sidebar Derecho - Table of Contents - ✅ COMPLETADO
+
+#### TableOfContents.vue
+- **Selector de versiones**: Para endpoints multi-versión
+- **Botón "Comparar versiones"**: Abre modal comparador
+- **TOC navegable**: Lista secciones con scroll suave
+- **Resaltado activo**: Sección visible destacada
+- **IntersectionObserver**: Detección automática
+
+#### Fix Sidebar Duplicado - ✅ COMPLETADO
+- Eliminado sidebar TOC de `DocsLayout.vue`
+- Solo existe sidebar manejado por `TableOfContents.vue`
+
+### 6. Comparador de Versiones - ✅ COMPLETADO
+
+#### VersionComparator.vue
+- **Modal lado a lado**: Comparación visual 2 versiones
+- **Diff highlighting**:
+  - 🟢 Verde: Campos añadidos
+  - 🔴 Rojo: Campos eliminados
+  - 🟡 Amarillo: Campos modificados
+- **Comparación completa**: Params, Headers, Success, Error
+- **Default inteligente**: Últimas 2 versiones
+
+#### ComparisonSection.vue
+- Componente helper para secciones
+- Detección automática de cambios
+- Color coding consistente
+
+### 7. Mejoras en ApiContent.vue - ✅ COMPLETADO
+
+#### Diseño Mejorado
+- **Header collapsible**: Click para expandir/colapsar
+- **Sección Request completa**:
+  - Título + Version selector
+  - Method + URL completa + botón Copy
+  - Permisos con badges azules
+  - Descripción
+
+#### Funcionalidades Añadidas
+- `copyUrl()` - Copia URL al clipboard
+- `getPermissions()` - Extrae permisos
+- `toggleCollapse()` - Expande/colapsa
+- IDs de sección para navegación TOC
+- Eventos `sections-ready`, `versions-ready`
+
+### 8. Fix Carga al Refrescar - ✅ COMPLETADO
+**Problema**: Al refrescar `/api/users-get-getusers` mostraba "Documento no encontrado"
+
+**Solución en DocPage.vue**:
+- Validación de props antes de cargar
+- Reset de `doc.value` antes de carga
+- Carga automática del API index si falta
+- Error handling mejorado
+- Watch sin `immediate: true`
+- Logs con prefijo `[DocPage]`
+
+### 9. Backend Fix - Versiones Completas - ✅ COMPLETADO
+**Archivo**: `core/apidoc/plugins/apicat.ts` (líneas 1296-1312)
+
+**Problema**: Array `versions` solo tenía metadata, faltaban datos para comparación
+
+**Solución**: Incluir en cada versión:
+```typescript
+parameters: ep.parameters,
+header: ep.header,
+success: ep.success,
+error: ep.error,
+examples: ep.examples
+```
+
+## 📁 ARCHIVOS CREADOS (Esta Sesión)
+
+### Componentes Nuevos
+1. `src/components/CodeTabs.vue`
+2. `src/components/ParametersTable.vue`
+3. `src/components/ResponseTable.vue`
+4. `src/components/TryItOut.vue`
+5. `src/components/TableOfContents.vue`
+6. `src/components/VersionComparator.vue`
+7. `src/components/ComparisonSection.vue`
+
+## 📝 ARCHIVOS MODIFICADOS PRINCIPALES
+
+1. `src/pages/DocPage.vue` - Layout 3 columnas, fix carga
+2. `src/components/ApiContent.vue` - Rediseño completo
+3. `src/layouts/DocsLayout.vue` - Eliminado sidebar duplicado
+4. `src/stores/docs.js` - Sistema shards y API index
+5. `src/router/index.js` - Rutas corregidas
+6. `src/i18n/locales/es.json` - Traducciones completas
+7. `src/i18n/locales/en.json` - Traducciones completas
+8. `core/apidoc/plugins/apicat.ts` - Fix versiones
+
+## 🔧 PROBLEMAS RESUELTOS (Esta Sesión)
+
+1. ✅ Language selector no cambiaba idioma
+2. ✅ Documentos no cargaban correctamente
+3. ✅ JSON structure incompleta (faltaban datos en versiones)
+4. ✅ URLs incorrectas (`/docs/cat.api/` → `/api/`)
+5. ✅ Sidebar derecho duplicado
+6. ✅ "Documento no encontrado" al refrescar página
+
+## 🎨 CARACTERÍSTICAS IMPLEMENTADAS
+
+### Sistema de Versiones
+- ✅ Múltiples versiones por endpoint
+- ✅ Selector de versión en header
+- ✅ Modal comparación lado a lado
+- ✅ Diff visual completo
+- ✅ Sincronización sidebar ↔ content
+
+### Navegación
+- ✅ Table of Contents con scroll suave
+- ✅ Resaltado sección activa
+- ✅ IntersectionObserver
+- ✅ Breadcrumbs traducidos
+
+### Interactividad
+- ✅ Secciones colapsables
+- ✅ Botones copiar (URL, código)
+- ✅ Formulario "Try it out"
+- ✅ Tabs ejemplos código
+
+### Diseño
+- ✅ Layout 3 columnas responsive
+- ✅ Sección Request destacada
+- ✅ Method badges colores
+- ✅ Permisos con badges
+- ✅ Dark mode compatible
+
+## 🚀 ESTADO ACTUAL
+
+### ✅ COMPLETAMENTE FUNCIONAL
+- Sistema i18n (ES/EN)
+- Carga documentos desde shards
+- Rutas correctas
+- Todos componentes documentación
+- TOC con navegación
+- Comparador versiones
+- Fix refresh page
+- Sidebar único
+
+### 🔄 CORRIENDO EN
+`http://localhost:5177/` - Listo para testing
+
+### 📋 PENDIENTE (Según feedback usuario)
+- Ajustar diseño según feedback
+- Funcionalidad "Try it out" (envío real requests)
+- Más ejemplos código
+- Navegación prev/next
+- Optimizaciones performance
+
+## 💡 ESTRUCTURA DE DATOS IMPLEMENTADA
+
+### cat.api.index.json
+```json
+{
+  "endpoints": [
+    {
+      "id": "users-get-getusers",
+      "shard": "cat.api/users.json",
+      "group": "Users"
+    }
+  ]
+}
+```
+
+### cat.api/users.json (shard)
+```json
+{
+  "group": "Users",
+  "endpoints": [
+    {
+      "id": "users-get-getusers",
+      "method": "GET",
+      "url": "/api/users",
+      "versions": [
+        {
+          "version": "3.0.0",
+          "parameters": [...],
+          "header": {...},
+          "success": {...},
+          "error": {...},
+          "examples": [...]
+        }
+      ]
+    }
+  ]
+}
+```
+
+## 🔄 FLUJO DE CARGA (Implementado)
+
+1. Usuario navega → `/api/users-get-getusers`
+2. Router matchea → `{ category: 'cat.api', doc: 'users-get-getusers' }`
+3. DocPage.vue → `loadDocument()`
+4. Store verifica API index → carga si no existe
+5. Busca endpoint en index → obtiene shard path
+6. Carga shard → extrae endpoint específico
+7. ApiContent renderiza → emite eventos
+8. TableOfContents recibe → versiones y secciones
+9. Usuario navega y compara versiones
+
+---
+
+**Fecha Sesión**: 2025-09-30
+**Estado**: ✅ Funcional y listo para testing del usuario
+**Próximo**: Ajustes según feedback y optimizaciones

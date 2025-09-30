@@ -6,15 +6,21 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report"
   },
   "dependencies": {
-    "vue": "^3.4.21",
-    "vue-router": "^4.3.0",
+    "lucide-vue-next": "^0.544.0",
     "pinia": "^2.1.7",
-    "lucide-vue-next": "^0.544.0"
+    "vue": "^3.4.21",
+    "vue-i18n": "^9.14.5",
+    "vue-router": "^4.3.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.1",
     "@vitejs/plugin-vue": "^5.0.4",
     "autoprefixer": "^10.4.18",
     "postcss": "^8.4.35",

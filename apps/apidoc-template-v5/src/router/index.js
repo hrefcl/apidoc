@@ -14,10 +14,22 @@ const routes = [
         component: HomePage
       },
       {
-        path: 'docs/:category/:doc',
-        name: 'doc',
+        path: 'api/:doc',
+        name: 'api',
         component: DocPage,
-        props: true
+        props: route => ({ category: 'cat.api', doc: route.params.doc })
+      },
+      {
+        path: 'docs/:doc',
+        name: 'docs',
+        component: DocPage,
+        props: route => ({ category: 'cat.docs', doc: route.params.doc })
+      },
+      {
+        path: 'tsdoc/:doc',
+        name: 'tsdoc',
+        component: DocPage,
+        props: route => ({ category: 'cat.tsdoc', doc: route.params.doc })
       }
     ]
   }

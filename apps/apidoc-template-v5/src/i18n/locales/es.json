@@ -1,0 +1,127 @@
+{
+  "app": {
+    "name": "APIDoc",
+    "version": "5.0.0"
+  },
+  "home": {
+    "title": "Documentación APIDoc v5",
+    "subtitle": "Documentación hermosa y moderna generada automáticamente desde tu código. Construida con Vue 3, Vite y MagicUI.",
+    "viewDocs": "Ver Documentación",
+    "github": "GitHub",
+    "features": {
+      "fast": {
+        "title": "Rápido y Moderno",
+        "description": "Construido con Vite y Vue 3 para una experiencia de desarrollo ultrarrápida."
+      },
+      "beautiful": {
+        "title": "Diseño Hermoso",
+        "description": "Colores MagicUI con gradientes azules y morados, modo oscuro incluido."
+      },
+      "jsonBased": {
+        "title": "Basado en JSON",
+        "description": "Carga dinámica de documentación desde archivos JSON generados por APIDoc."
+      }
+    },
+    "stats": {
+      "docs": "Documentos",
+      "apis": "APIs",
+      "guides": "Guías",
+      "typescript": "TypeScript"
+    },
+    "quickLinks": "Enlaces Rápidos",
+    "links": {
+      "authentication": {
+        "title": "Autenticación",
+        "description": "Endpoints de autenticación y seguridad"
+      },
+      "introduction": {
+        "title": "Introducción",
+        "description": "Comienza con la documentación"
+      },
+      "typescript": {
+        "title": "TypeScript",
+        "description": "Documentación de tipos y esquemas"
+      },
+      "apiReference": {
+        "title": "API Reference",
+        "description": "Referencia completa de la API"
+      }
+    }
+  },
+  "nav": {
+    "home": "Inicio",
+    "api": "API",
+    "docs": "Documentación",
+    "tests": "Tests",
+    "history": "Historial",
+    "settings": "Configuración"
+  },
+  "api": {
+    "endpoints": "Endpoints",
+    "endpoint": "Endpoint",
+    "method": "Método",
+    "url": "URL",
+    "version": "Versión",
+    "versions": "Versiones",
+    "description": "Descripción",
+    "parameters": "Parámetros",
+    "headers": "Headers",
+    "body": "Body",
+    "response": "Respuesta",
+    "responses": "Respuestas",
+    "success": "Éxito",
+    "error": "Error",
+    "examples": "Ejemplos",
+    "tryIt": "Probar",
+    "group": "Grupo",
+    "groups": "Grupos",
+    "multipleVersions": "{count} versiones",
+    "latestVersion": "Última versión",
+    "selectVersion": "Seleccionar versión",
+    "compareVersions": "Comparar versiones",
+    "latest": "Última"
+  },
+  "search": {
+    "placeholder": "Buscar endpoints, documentación...",
+    "noResults": "No se encontraron resultados",
+    "results": "{count} resultados"
+  },
+  "docs": {
+    "title": "Documentación",
+    "header": "Encabezado",
+    "footer": "Pie de página",
+    "group": "Grupo",
+    "tsdoc": "TypeScript Doc"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "required": "Requerido",
+    "optional": "Opcional",
+    "default": "Por defecto",
+    "type": "Tipo",
+    "name": "Nombre",
+    "value": "Valor",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "expand": "Expandir",
+    "collapse": "Contraer",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "darkMode": "Modo oscuro",
+    "lightMode": "Modo claro",
+    "language": "Idioma",
+    "tableOfContents": "Contenido",
+    "noContent": "Sin contenido"
+  },
+  "status": {
+    "200": "OK",
+    "201": "Creado",
+    "204": "Sin contenido",
+    "400": "Solicitud incorrecta",
+    "401": "No autorizado",
+    "403": "Prohibido",
+    "404": "No encontrado",
+    "500": "Error del servidor"
+  }
+}

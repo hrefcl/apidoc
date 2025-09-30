@@ -37,6 +37,9 @@
             <Search class="w-5 h-5 text-muted-foreground" />
           </button>
 
+          <!-- Language Selector -->
+          <LanguageSelector />
+
           <!-- Theme Toggle -->
           <button @click="toggleTheme" class="p-2 hover:bg-muted rounded-lg transition-colors">
             <Moon v-if="!isDark" class="w-5 h-5 text-muted-foreground" />
@@ -57,11 +60,14 @@
       <aside class="hidden lg:block w-64 shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto py-6 pr-6 border-r border-border">
         <div class="space-y-6">
           <div v-for="section in navigation" :key="section.title">
-            <h4 class="mb-3 text-sm font-semibold text-foreground">{{ section.title }}</h4>
+            <div class="flex items-center gap-2 mb-3">
+              <component :is="getIcon(section.icon)" class="w-4 h-4 text-primary-600 dark:text-primary-400" />
+              <h4 class="text-sm font-semibold text-foreground">{{ section.title }}</h4>
+            </div>
             <ul class="space-y-1">
               <li v-for="item in section.items" :key="item.path">
                 <router-link
-                  :to="`/docs/${item.category}/${item.slug}`"
+                  :to="item.path"
                   class="block py-2 px-3 text-sm rounded-lg transition-colors"
                   :class="isActive(item.path)
                     ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300 font-medium'
@@ -69,7 +75,7 @@
                 >
                   <div class="flex items-center gap-2">
                     <component :is="getIcon(item.icon)" class="w-4 h-4" />
-                    <span>{{ item.title }}</span>
+                    <span class="truncate">{{ item.title }}</span>
                   </div>
                 </router-link>
               </li>
@@ -82,24 +88,6 @@
       <main class="flex-1 py-6 lg:px-8">
         <router-view />
       </main>
-
-      <!-- TOC (Table of Contents) -->
-      <aside class="hidden xl:block w-64 shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto py-6 pl-6">
-        <div class="space-y-2">
-          <h4 class="text-sm font-semibold text-foreground mb-3">En esta página</h4>
-          <ul class="space-y-1">
-            <li v-for="heading in tableOfContents" :key="heading.id">
-              <a
-                :href="`#${heading.id}`"
-                class="block py-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                :class="{ 'pl-4': heading.level === 3 }"
-              >
-                {{ heading.text }}
-              </a>
-            </li>
-          </ul>
-        </div>
-      </aside>
     </div>
 
     <!-- Mobile Menu Toggle -->
@@ -113,11 +101,14 @@
       <div v-if="mobileMenuOpen" class="lg:hidden fixed inset-0 top-16 bg-card z-30 overflow-y-auto">
         <div class="p-6">
           <div v-for="section in navigation" :key="section.title" class="mb-6">
-            <h4 class="mb-3 text-sm font-semibold text-foreground">{{ section.title }}</h4>
+            <div class="flex items-center gap-2 mb-3">
+              <component :is="getIcon(section.icon)" class="w-4 h-4 text-primary-600 dark:text-primary-400" />
+              <h4 class="text-sm font-semibold text-foreground">{{ section.title }}</h4>
+            </div>
             <ul class="space-y-1">
               <li v-for="item in section.items" :key="item.path">
                 <router-link
-                  :to="`/docs/${item.category}/${item.slug}`"
+                  :to="item.path"
                   @click="closeMobileMenu"
                   class="block py-2 px-3 text-sm rounded-lg transition-colors"
                   :class="isActive(item.path)
@@ -142,14 +133,18 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDocsStore } from '@/stores/docs'
-import { Sparkles, Search, Moon, Sun, Github, Menu, X, FileText, Plug, BookOpen, Code } from 'lucide-vue-next'
+import LanguageSelector from '@/components/LanguageSelectorSimple.vue'
+import {
+  Sparkles, Search, Moon, Sun, Github, Menu, X,
+  FileText, Plug, BookOpen, Code, User, Users, Building,
+  Settings, MapPin, Tags, Folder
+} from 'lucide-vue-next'
 
 const route = useRoute()
 const docsStore = useDocsStore()
 
 const isDark = ref(false)
 const mobileMenuOpen = ref(false)
-const tableOfContents = ref([])
 
 // Cargar documentos al montar
 onMounted(async () => {
@@ -197,9 +192,20 @@ const isActive = (path) => {
 const getIcon = (iconName) => {
   const icons = {
     'plug': Plug,
+    'Plug': Plug,
     'book-open': BookOpen,
+    'BookOpen': BookOpen,
     'code': Code,
-    'file-text': FileText
+    'Code': Code,
+    'file-text': FileText,
+    'FileText': FileText,
+    'User': User,
+    'Users': Users,
+    'Building': Building,
+    'Settings': Settings,
+    'MapPin': MapPin,
+    'Tags': Tags,
+    'Folder': Folder
   }
   return icons[iconName] || FileText
 }

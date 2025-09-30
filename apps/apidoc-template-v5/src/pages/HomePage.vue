@@ -11,13 +11,12 @@
 
       <h1 class="text-5xl font-bold mb-4">
         <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-          Documentación APIDoc v5
+          {{ t('home.title') }}
         </span>
       </h1>
 
       <p class="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-        Documentación hermosa y moderna generada automáticamente desde tu código.
-        Construida con Vue 3, Vite y MagicUI.
+        {{ t('home.subtitle') }}
       </p>
 
       <div class="flex items-center justify-center gap-4">
@@ -26,7 +25,7 @@
           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 font-medium"
         >
           <BookOpen class="w-5 h-5" />
-          Ver Documentación
+          {{ t('home.viewDocs') }}
         </router-link>
 
         <a
@@ -34,7 +33,7 @@
           class="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-lg hover:bg-muted transition-colors font-medium"
         >
           <Github class="w-5 h-5" />
-          GitHub
+          {{ t('home.github') }}
         </a>
       </div>
     </div>
@@ -47,9 +46,9 @@
           <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mb-4">
             <Zap class="w-6 h-6 text-white" />
           </div>
-          <h3 class="text-lg font-semibold mb-2">Rápido y Moderno</h3>
+          <h3 class="text-lg font-semibold mb-2">{{ t('home.features.fast.title') }}</h3>
           <p class="text-sm text-muted-foreground">
-            Construido con Vite y Vue 3 para una experiencia de desarrollo ultrarrápida.
+            {{ t('home.features.fast.description') }}
           </p>
         </div>
       </div>
@@ -60,9 +59,9 @@
           <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mb-4">
             <Palette class="w-6 h-6 text-white" />
           </div>
-          <h3 class="text-lg font-semibold mb-2">Diseño Hermoso</h3>
+          <h3 class="text-lg font-semibold mb-2">{{ t('home.features.beautiful.title') }}</h3>
           <p class="text-sm text-muted-foreground">
-            Colores MagicUI con gradientes azules y morados, modo oscuro incluido.
+            {{ t('home.features.beautiful.description') }}
           </p>
         </div>
       </div>
@@ -73,9 +72,9 @@
           <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center mb-4">
             <FileJson class="w-6 h-6 text-white" />
           </div>
-          <h3 class="text-lg font-semibold mb-2">Basado en JSON</h3>
+          <h3 class="text-lg font-semibold mb-2">{{ t('home.features.jsonBased.title') }}</h3>
           <p class="text-sm text-muted-foreground">
-            Carga dinámica de documentación desde archivos JSON generados por APIDoc.
+            {{ t('home.features.jsonBased.description') }}
           </p>
         </div>
       </div>
@@ -87,34 +86,34 @@
         <div class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
           {{ stats.totalDocs }}
         </div>
-        <div class="text-sm text-muted-foreground">Documentos</div>
+        <div class="text-sm text-muted-foreground">{{ t('home.stats.docs') }}</div>
       </div>
 
       <div class="bg-card border border-border rounded-lg p-6 text-center">
         <div class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
           {{ stats.apiDocs }}
         </div>
-        <div class="text-sm text-muted-foreground">APIs</div>
+        <div class="text-sm text-muted-foreground">{{ t('home.stats.apis') }}</div>
       </div>
 
       <div class="bg-card border border-border rounded-lg p-6 text-center">
         <div class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent mb-2">
           {{ stats.guides }}
         </div>
-        <div class="text-sm text-muted-foreground">Guías</div>
+        <div class="text-sm text-muted-foreground">{{ t('home.stats.guides') }}</div>
       </div>
 
       <div class="bg-card border border-border rounded-lg p-6 text-center">
         <div class="text-3xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-2">
           {{ stats.tsDocs }}
         </div>
-        <div class="text-sm text-muted-foreground">TypeScript</div>
+        <div class="text-sm text-muted-foreground">{{ t('home.stats.typescript') }}</div>
       </div>
     </div>
 
     <!-- Quick Links -->
     <div class="bg-card border border-border rounded-xl p-8">
-      <h2 class="text-2xl font-bold mb-6">Enlaces Rápidos</h2>
+      <h2 class="text-2xl font-bold mb-6">{{ t('home.quickLinks') }}</h2>
       <div class="grid md:grid-cols-2 gap-4">
         <router-link
           v-for="link in quickLinks"
@@ -137,9 +136,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useDocsStore } from '@/stores/docs'
 import { Sparkles, BookOpen, Github, Zap, Palette, FileJson, Plug, FileText, Code } from 'lucide-vue-next'
 
+const { t } = useI18n()
 const docsStore = useDocsStore()
 
 const stats = computed(() => ({
@@ -149,31 +150,31 @@ const stats = computed(() => ({
   tsDocs: docsStore.docs.filter(d => d.directory === 'cat.tsdoc').length
 }))
 
-const quickLinks = ref([
+const quickLinks = computed(() => [
   {
-    title: 'Autenticación',
-    description: 'Endpoints de autenticación y seguridad',
+    title: t('home.links.authentication.title'),
+    description: t('home.links.authentication.description'),
     path: '/docs/cat.api/authentication',
     icon: Plug,
     gradient: 'bg-gradient-to-br from-blue-500 to-blue-600'
   },
   {
-    title: 'Introducción',
-    description: 'Comienza con la documentación',
+    title: t('home.links.introduction.title'),
+    description: t('home.links.introduction.description'),
     path: '/docs/cat.docs/introduction',
     icon: BookOpen,
     gradient: 'bg-gradient-to-br from-purple-500 to-purple-600'
   },
   {
-    title: 'TypeScript',
-    description: 'Documentación de tipos y esquemas',
+    title: t('home.links.typescript.title'),
+    description: t('home.links.typescript.description'),
     path: '/docs/cat.tsdoc/types',
     icon: Code,
     gradient: 'bg-gradient-to-br from-indigo-500 to-indigo-600'
   },
   {
-    title: 'API Reference',
-    description: 'Referencia completa de la API',
+    title: t('home.links.apiReference.title'),
+    description: t('home.links.apiReference.description'),
     path: '/docs/cat.api/reference',
     icon: FileText,
     gradient: 'bg-gradient-to-br from-violet-500 to-violet-600'
