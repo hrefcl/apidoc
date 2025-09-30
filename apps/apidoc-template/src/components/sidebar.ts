@@ -286,7 +286,7 @@ export class SidebarComponent {
               href="#${itemId}"
               title="${item.title} ${item.url ? '- ' + item.url : ''}"
               role="menuitem"
-              class="relative sidebar-nav-item ${hiddenClass} group flex items-center justify-between pl-3 pr-3 py-2.5 text-sm transition-colors duration-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 ${isSelected ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border-r-2 border-blue-500' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}"
+              class="relative sidebar-nav-item ${hiddenClass} group flex items-center justify-between pl-3 pr-3 py-2.5 text-sm transition-colors duration-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 ${isSelected ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-r-2 border-blue-500' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}"
               data-action="select-item"
               data-item-id="${itemId}"
               data-group="${group}"

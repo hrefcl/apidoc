@@ -55,6 +55,7 @@ open docs/index.html
 ### 🌐 **Modern Protocols & Formats**
 - **[🔌 OpenAPI 3.0](./md/en/09-openapi.md)** - Native support and export
 - **[📡 MQTT Protocol](./md/en/10-mqtt.md)** - Complete IoT documentation
+- **[🧪 Interactive MQTT Testing](./md/en/18-mqtt-testing.md)** - Test MQTT with real brokers
 - **[📊 TypeScript Schemas](./md/en/11-typescript-schemas.md)** - @apiSchema integration
 
 ### 🔐 **Security & Authentication**
@@ -67,7 +68,40 @@ open docs/index.html
 - **[🐳 Docker & Containers](./md/en/16-docker.md)** - Container usage and deployment
 - **[🔧 Build Tools](./md/en/17-build-tools.md)** - Integration with Grunt, Webpack, etc.
 
-## 🌟 Key Features v4.0.5
+## 🌟 Key Features v5.0.0
+
+### 🧪 **Interactive MQTT Testing** ⭐ NEW
+Test MQTT endpoints with real broker connections directly in your documentation:
+
+```json
+{
+  "mqtt": {
+    "enabled": true,
+    "broker": {
+      "host": "mqtt.example.com",
+      "port": 8883,
+      "protocol": "wss"
+    },
+    "authentication": {
+      "username": "demo-user",
+      "password": "secure-pass",
+      "clientId": "apidoc-client"
+    },
+    "ssl": {
+      "enabled": true,
+      "ca": "-----BEGIN CERTIFICATE-----..."
+    }
+  }
+}
+```
+
+**Features:**
+- ✅ Real broker connections (WebSocket/MQTT)
+- 🔐 Secure credential masking
+- 📡 Publish/Subscribe/Inline operations
+- 🎯 QoS levels 0, 1, 2
+- 🔒 Full SSL/TLS support
+- 📨 Real-time message logging
 
 ### 📝 **Custom Markdown Content**
 Add custom markdown content to any API group with rich formatting:
