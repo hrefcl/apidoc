@@ -163,7 +163,16 @@
 
           <!-- Try It Out -->
           <div id="section-try-it-out">
-            <TryItOut :endpoint="endpointGroup.endpoint" />
+            <!-- MQTT Try It Out -->
+            <MqttTryItOut
+              v-if="isMqttEndpoint(endpointGroup.endpoint)"
+              :endpoint="endpointGroup.endpoint"
+            />
+            <!-- HTTP Try It Out -->
+            <TryItOut
+              v-else
+              :endpoint="endpointGroup.endpoint"
+            />
           </div>
         </div>
         </div>
@@ -298,8 +307,16 @@ import CodeTabs from './CodeTabs.vue'
 import ParametersTable from './ParametersTable.vue'
 import ResponseTable from './ResponseTable.vue'
 import TryItOut from './TryItOut.vue'
+import MqttTryItOut from './MqttTryItOut.vue'
 
 const { t } = useI18n()
+
+// Helper to detect MQTT endpoints
+const isMqttEndpoint = (endpoint) => {
+  // Check if endpoint method is MQTT type (PUBLISH, SUBSCRIBE, INLINE)
+  const method = endpoint.method?.toUpperCase()
+  return method && ['PUBLISH', 'SUBSCRIBE', 'INLINE'].includes(method)
+}
 
 const props = defineProps({
   data: {
@@ -542,7 +559,8 @@ onMounted(() => {
 
     emit('sections-ready', sections)
 
-    // Emit versions if available
+    // ALWAYS emit versions-ready event, even if no versions or single version
+    // This ensures parent component (DocPage) knows to hide/show the version UI
     console.log('🔍 DEBUG: Checking for versions...')
     console.log('🔍 DEBUG: groupedEndpoints.value[0]:', groupedEndpoints.value[0])
 
@@ -550,22 +568,34 @@ onMounted(() => {
       console.log('🔍 DEBUG: First endpoint has versions?', groupedEndpoints.value[0].versions)
       console.log('🔍 DEBUG: Versions length:', groupedEndpoints.value[0].versions?.length)
 
-      if (groupedEndpoints.value[0].versions && groupedEndpoints.value[0].versions.length > 1) {
-        console.log('✅ DEBUG: Emitting versions-ready event with:', {
+      const hasMultipleVersions = groupedEndpoints.value[0].versions && groupedEndpoints.value[0].versions.length > 1
+
+      if (hasMultipleVersions) {
+        console.log('✅ DEBUG: Emitting versions-ready with MULTIPLE versions:', {
           versions: groupedEndpoints.value[0].versions,
           endpoints: groupedEndpoints.value[0].endpoints,
           selectedVersion: groupedEndpoints.value[0].selectedVersion
         })
         emit('versions-ready', {
-          versions: groupedEndpoints.value[0].versions, // Array de strings: ['3.0.0', '2.0.0', '1.0.0']
-          endpoints: groupedEndpoints.value[0].endpoints, // Array de objetos completos para el comparador
+          versions: groupedEndpoints.value[0].versions,
+          endpoints: groupedEndpoints.value[0].endpoints,
           selectedVersion: groupedEndpoints.value[0].selectedVersion
         })
       } else {
-        console.log('❌ DEBUG: Versions not found or length <= 1')
+        console.log('⚠️ DEBUG: Emitting versions-ready with SINGLE/NO versions (will hide TOC)')
+        emit('versions-ready', {
+          versions: [], // Empty array signals no versions
+          endpoints: [],
+          selectedVersion: null
+        })
       }
     } else {
-      console.log('❌ DEBUG: No first endpoint in groupedEndpoints')
+      console.log('⚠️ DEBUG: No endpoints, emitting empty versions-ready')
+      emit('versions-ready', {
+        versions: [],
+        endpoints: [],
+        selectedVersion: null
+      })
     }
   }
 })

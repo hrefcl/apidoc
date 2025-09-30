@@ -100,7 +100,14 @@
                 <tr
                   v-for="(param, index) in editableParams"
                   :key="index"
-                  class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  draggable="true"
+                  @dragstart="onDragStartParam(index)"
+                  @dragover="onDragOverParam($event, index)"
+                  @dragend="onDragEndParam"
+                  :class="[
+                    'border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors',
+                    draggedParamIndex === index ? 'opacity-50' : ''
+                  ]"
                 >
                   <!-- Checkbox -->
                   <td class="py-2 px-2">
@@ -111,8 +118,8 @@
                     >
                   </td>
                   <!-- Drag Handle -->
-                  <td class="py-2 px-2">
-                    <GripVertical class="w-4 h-4 text-gray-400 cursor-move" />
+                  <td class="py-2 px-2 cursor-move">
+                    <GripVertical class="w-4 h-4 text-gray-400" />
                   </td>
                   <!-- Name -->
                   <td class="py-2 px-3">
@@ -213,7 +220,14 @@
                 <tr
                   v-for="(header, index) in editableHeaders"
                   :key="index"
-                  class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  draggable="true"
+                  @dragstart="onDragStartHeader(index)"
+                  @dragover="onDragOverHeader($event, index)"
+                  @dragend="onDragEndHeader"
+                  :class="[
+                    'border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors',
+                    draggedHeaderIndex === index ? 'opacity-50' : ''
+                  ]"
                 >
                   <!-- Checkbox -->
                   <td class="py-2 px-2">
@@ -224,8 +238,8 @@
                     >
                   </td>
                   <!-- Drag Handle -->
-                  <td class="py-2 px-2">
-                    <GripVertical class="w-4 h-4 text-gray-400 cursor-move" />
+                  <td class="py-2 px-2 cursor-move">
+                    <GripVertical class="w-4 h-4 text-gray-400" />
                   </td>
                   <!-- Name -->
                   <td class="py-2 px-3">
@@ -357,6 +371,10 @@ const formData = reactive({
 const editableParams = ref([])
 const editableHeaders = ref([])
 
+// Drag and drop state
+const draggedParamIndex = ref(null)
+const draggedHeaderIndex = ref(null)
+
 // Extract headers from endpoint (handle both new array format and old nested format)
 const headers = computed(() => {
   if (Array.isArray(props.endpoint.header)) {
@@ -463,6 +481,44 @@ const removeHeader = (index) => {
     delete formData.headers[header.field]
   }
   editableHeaders.value.splice(index, 1)
+}
+
+// Drag and drop handlers for params
+const onDragStartParam = (index) => {
+  draggedParamIndex.value = index
+}
+
+const onDragOverParam = (event, index) => {
+  event.preventDefault()
+  if (draggedParamIndex.value !== null && draggedParamIndex.value !== index) {
+    const draggedItem = editableParams.value[draggedParamIndex.value]
+    editableParams.value.splice(draggedParamIndex.value, 1)
+    editableParams.value.splice(index, 0, draggedItem)
+    draggedParamIndex.value = index
+  }
+}
+
+const onDragEndParam = () => {
+  draggedParamIndex.value = null
+}
+
+// Drag and drop handlers for headers
+const onDragStartHeader = (index) => {
+  draggedHeaderIndex.value = index
+}
+
+const onDragOverHeader = (event, index) => {
+  event.preventDefault()
+  if (draggedHeaderIndex.value !== null && draggedHeaderIndex.value !== index) {
+    const draggedItem = editableHeaders.value[draggedHeaderIndex.value]
+    editableHeaders.value.splice(draggedHeaderIndex.value, 1)
+    editableHeaders.value.splice(index, 0, draggedItem)
+    draggedHeaderIndex.value = index
+  }
+}
+
+const onDragEndHeader = () => {
+  draggedHeaderIndex.value = null
 }
 
 const getInputType = (type) => {

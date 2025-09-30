@@ -72,5 +72,39 @@
   },
   "title": "Href ApiDoc 4",
   "url": "https://api.example.com",
-  "version": "4.0.0"
+  "version": "4.0.0",
+  "homepage": "https://apidoc.app",
+  "bugs": {
+    "url": "https://github.com/hrefcl/apidoc/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hrefcl/apidoc.git"
+  },
+  "mqtt": {
+    "enabled": true,
+    "broker": {
+      "host": "test.mosquitto.org",
+      "port": 8081,
+      "protocol": "wss"
+    },
+    "authentication": {
+      "username": "demo-user",
+      "password": "demo-pass-123",
+      "clientId": "apidoc-mqtt-client-demo"
+    },
+    "ssl": {
+      "enabled": true,
+      "rejectUnauthorized": false,
+      "ca": "-----BEGIN CERTIFICATE-----\nMIIDrzCCApegAwIBAgIQCDvgVpBCRrGhdWrJWZHHSjANBgkqhkiG9w0BAQUFADBh\n-----END CERTIFICATE-----",
+      "cert": "",
+      "key": ""
+    },
+    "options": {
+      "keepalive": 60,
+      "connectTimeout": 30000,
+      "reconnectPeriod": 1000,
+      "clean": true
+    }
+  }
 }

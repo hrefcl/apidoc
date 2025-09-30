@@ -155,6 +155,15 @@ const loadDocument = async () => {
   error.value = null
   doc.value = null // Reset doc
 
+  // CRITICAL: Reset TOC state when loading new document
+  tocSections.value = []
+  tocVersions.value = []
+  tocSelectedVersion.value = null
+  allVersionsData.value = []
+  showVersionComparator.value = false
+
+  console.log('[DocPage] 🔄 Reset TOC state for new document')
+
   try {
     // Asegurarse de que los documentos estén cargados
     if (!docsStore.apiIndex && props.category === 'cat.api') {

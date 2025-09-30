@@ -47,12 +47,22 @@
           </button>
 
           <!-- GitHub -->
-          <a href="#" class="p-2 hover:bg-muted rounded-lg transition-colors">
+          <a
+            v-if="githubUrl"
+            :href="githubUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="p-2 hover:bg-muted rounded-lg transition-colors"
+            :title="`Ver en GitHub`"
+          >
             <Github class="w-5 h-5 text-muted-foreground" />
           </a>
         </div>
       </div>
     </header>
+
+    <!-- Search Modal -->
+    <SearchModal :isOpen="searchOpen" @close="searchOpen = false" />
 
     <!-- Main Content -->
     <div class="container mx-auto flex-1 flex">
@@ -134,6 +144,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDocsStore } from '@/stores/docs'
 import LanguageSelector from '@/components/LanguageSelectorSimple.vue'
+import SearchModal from '@/components/SearchModal.vue'
 import {
   Sparkles, Search, Moon, Sun, Github, Menu, X,
   FileText, Plug, BookOpen, Code, User, Users, Building,
@@ -145,6 +156,7 @@ const docsStore = useDocsStore()
 
 const isDark = ref(false)
 const mobileMenuOpen = ref(false)
+const searchOpen = ref(false)
 
 // Cargar documentos al montar
 onMounted(async () => {
@@ -173,9 +185,30 @@ const toggleTheme = () => {
 }
 
 const toggleSearch = () => {
-  // TODO: Implementar búsqueda
-  console.log('Toggle search')
+  searchOpen.value = !searchOpen.value
 }
+
+// Computed para obtener URL de GitHub desde meta
+const githubUrl = computed(() => {
+  const meta = docsStore.meta
+  if (!meta) return null
+
+  // Extraer URL del repositorio de diferentes formatos
+  if (meta.repository?.url) {
+    // Limpiar formato git+ y .git
+    let url = meta.repository.url
+    url = url.replace('git+', '')
+    url = url.replace('.git', '')
+    return url
+  }
+
+  // Fallback a homepage si contiene github.com
+  if (meta.homepage?.includes('github.com')) {
+    return meta.homepage
+  }
+
+  return null
+})
 
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value

@@ -50,6 +50,40 @@ export interface ApiCATProject {
     title?: string;
     url?: string;
     sampleUrl?: string;
+    homepage?: string;
+    bugs?: {
+        url: string;
+    };
+    repository?: {
+        type: string;
+        url: string;
+    };
+    mqtt?: {
+        enabled: boolean;
+        broker: {
+            host: string;
+            port: number;
+            protocol: string;
+        };
+        authentication: {
+            username: string;
+            password: string;
+            clientId: string;
+        };
+        ssl: {
+            enabled: boolean;
+            rejectUnauthorized: boolean;
+            ca: string;
+            cert: string;
+            key: string;
+        };
+        options: {
+            keepalive: number;
+            connectTimeout: number;
+            reconnectPeriod: number;
+            clean: boolean;
+        };
+    };
 }
 
 export interface ApiCATDocs {
@@ -204,6 +238,10 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
         title: projectInfo.title || projectInfo.name,
         url: projectInfo.url || '',
         sampleUrl: projectInfo.sampleUrl || projectInfo.url || '',
+        homepage: projectInfo.homepage,
+        bugs: projectInfo.bugs,
+        repository: projectInfo.repository,
+        mqtt: projectInfo.mqtt,
     };
 
     return {
