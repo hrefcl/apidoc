@@ -176,7 +176,15 @@ defineEmits(['close'])
 
 // Sort versions descending (latest first)
 const sortedVersions = computed(() => {
+  if (!props.versions || props.versions.length === 0) return []
+
   return [...props.versions].sort((a, b) => {
+    // Validar que ambos elementos tengan la propiedad version
+    if (!a || !a.version || !b || !b.version) {
+      console.warn('VersionComparator: Invalid version object', { a, b })
+      return 0
+    }
+
     const aParts = a.version.split('.').map(Number)
     const bParts = b.version.split('.').map(Number)
     for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
@@ -203,6 +211,11 @@ const version2Data = computed(() => {
 // Helper functions
 const getParameters = (versionData) => {
   if (!versionData) return []
+  // Handle new array format
+  if (Array.isArray(versionData.parameters)) {
+    return versionData.parameters
+  }
+  // Handle old nested format
   if (versionData.parameter?.fields?.Parameter) {
     return versionData.parameter.fields.Parameter
   }
@@ -211,6 +224,11 @@ const getParameters = (versionData) => {
 
 const getHeaders = (versionData) => {
   if (!versionData) return []
+  // Handle new array format
+  if (Array.isArray(versionData.header)) {
+    return versionData.header
+  }
+  // Handle old nested format
   if (versionData.header?.fields?.Header) {
     return versionData.header.fields.Header
   }
@@ -219,14 +237,29 @@ const getHeaders = (versionData) => {
 
 const getSuccessFields = (success) => {
   if (!success || !success.fields) return []
+  // Handle new array format
+  if (Array.isArray(success.fields)) {
+    return success.fields
+  }
+  // Handle old object format
   const firstKey = Object.keys(success.fields)[0]
   return success.fields[firstKey] || []
 }
 
 const getErrorFields = (error) => {
   if (!error || !error.fields) return []
-  const firstKey = Object.keys(error.fields)[0]
-  return error.fields[firstKey] || []
+  // Handle new array format - flatten all error groups
+  if (Array.isArray(error.fields)) {
+    return error.fields
+  }
+  // Handle old object format - combine all groups
+  const allFields = []
+  Object.keys(error.fields).forEach(key => {
+    if (Array.isArray(error.fields[key])) {
+      allFields.push(...error.fields[key])
+    }
+  })
+  return allFields
 }
 
 const getMethodClass = (method) => {

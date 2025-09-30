@@ -329,16 +329,34 @@ const groupedEndpoints = computed(() => {
     const key = `${endpoint.method}-${endpoint.url}`
 
     if (!groups.has(key)) {
-      groups.set(key, {
-        key,
-        versions: [],
-        endpoints: []
-      })
-    }
+      // Si el endpoint tiene un array de versiones (nuevo formato APIcat), usarlas
+      const hasVersionsArray = endpoint.versions && Array.isArray(endpoint.versions) && endpoint.versions.length > 0
 
-    const group = groups.get(key)
-    group.versions.push(endpoint.version)
-    group.endpoints.push(endpoint)
+      console.log('🔍 Processing endpoint:', endpoint.name, 'has versions array?', hasVersionsArray, 'versions:', endpoint.versions?.length)
+
+      if (hasVersionsArray) {
+        // Usar el array de versiones del endpoint
+        groups.set(key, {
+          key,
+          versions: endpoint.versions.map(v => v.version),
+          endpoints: endpoint.versions
+        })
+      } else {
+        // Formato antiguo: un endpoint = una versión
+        groups.set(key, {
+          key,
+          versions: [endpoint.version],
+          endpoints: [endpoint]
+        })
+      }
+    } else {
+      // Si ya existe el grupo, agregar esta versión (formato antiguo)
+      const group = groups.get(key)
+      if (!group.versions.includes(endpoint.version)) {
+        group.versions.push(endpoint.version)
+        group.endpoints.push(endpoint)
+      }
+    }
   })
 
   // Convert to array and select latest version by default
@@ -355,9 +373,13 @@ const groupedEndpoints = computed(() => {
       return 0
     })
 
+    console.log('🔍 Group versions after sort:', group.versions)
+
     // Get selected version from external prop, internal state, or default to latest
     const selectedVersion = props.externalSelectedVersion || selectedVersions[group.key] || group.versions[0]
     const endpoint = group.endpoints.find(e => e.version === selectedVersion) || group.endpoints[0]
+
+    console.log('🔍 Selected version:', selectedVersion, 'endpoint:', endpoint?.name)
 
     return {
       ...group,
@@ -404,7 +426,7 @@ const getPermissions = (endpoint) => {
 
 // Close dropdown when clicking outside
 const handleClickOutside = (event) => {
-  if (versionDropdownRef.value && !versionDropdownRef.value.contains(event.target)) {
+  if (versionDropdownRef.value && versionDropdownRef.value.$el && !versionDropdownRef.value.$el.contains(event.target)) {
     activeVersionDropdown.value = null
   }
 }
@@ -521,11 +543,29 @@ onMounted(() => {
     emit('sections-ready', sections)
 
     // Emit versions if available
-    if (groupedEndpoints.value[0].versions && groupedEndpoints.value[0].versions.length > 1) {
-      emit('versions-ready', {
-        versions: groupedEndpoints.value[0].versions,
-        selectedVersion: groupedEndpoints.value[0].selectedVersion
-      })
+    console.log('🔍 DEBUG: Checking for versions...')
+    console.log('🔍 DEBUG: groupedEndpoints.value[0]:', groupedEndpoints.value[0])
+
+    if (groupedEndpoints.value[0]) {
+      console.log('🔍 DEBUG: First endpoint has versions?', groupedEndpoints.value[0].versions)
+      console.log('🔍 DEBUG: Versions length:', groupedEndpoints.value[0].versions?.length)
+
+      if (groupedEndpoints.value[0].versions && groupedEndpoints.value[0].versions.length > 1) {
+        console.log('✅ DEBUG: Emitting versions-ready event with:', {
+          versions: groupedEndpoints.value[0].versions,
+          endpoints: groupedEndpoints.value[0].endpoints,
+          selectedVersion: groupedEndpoints.value[0].selectedVersion
+        })
+        emit('versions-ready', {
+          versions: groupedEndpoints.value[0].versions, // Array de strings: ['3.0.0', '2.0.0', '1.0.0']
+          endpoints: groupedEndpoints.value[0].endpoints, // Array de objetos completos para el comparador
+          selectedVersion: groupedEndpoints.value[0].selectedVersion
+        })
+      } else {
+        console.log('❌ DEBUG: Versions not found or length <= 1')
+      }
+    } else {
+      console.log('❌ DEBUG: No first endpoint in groupedEndpoints')
     }
   }
 })

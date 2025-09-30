@@ -239,9 +239,20 @@ const handleSectionsReady = (sections) => {
 
 // Handle versions from ApiContent
 const handleVersionsReady = (data) => {
-  tocVersions.value = data.versions.map(v => v.version)
+  console.log('📥 DEBUG DocPage: Received versions-ready event:', data)
+  console.log('📥 DEBUG DocPage: Versions array:', data.versions)
+  console.log('📥 DEBUG DocPage: Endpoints array:', data.endpoints)
+  console.log('📥 DEBUG DocPage: Selected version:', data.selectedVersion)
+
+  // data.versions es un array de strings: ['3.0.0', '2.0.0', '1.0.0']
+  // data.endpoints es un array de objetos completos para el comparador
+  tocVersions.value = data.versions // Ya son strings, no necesitan mapeo
   tocSelectedVersion.value = data.selectedVersion
-  allVersionsData.value = data.versions // Store full version data for comparison
+  allVersionsData.value = data.endpoints // Objetos completos para VersionComparator
+
+  console.log('📥 DEBUG DocPage: tocVersions after assignment:', tocVersions.value)
+  console.log('📥 DEBUG DocPage: tocSelectedVersion:', tocSelectedVersion.value)
+  console.log('📥 DEBUG DocPage: allVersionsData:', allVersionsData.value)
 }
 
 // Handle version selection

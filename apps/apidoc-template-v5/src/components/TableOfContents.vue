@@ -84,7 +84,14 @@ defineEmits(['select-version', 'compare-versions'])
 
 const activeSection = ref('')
 
-const hasMultipleVersions = computed(() => props.versions.length > 1)
+const hasMultipleVersions = computed(() => {
+  console.log('🎯 DEBUG TableOfContents: Computing hasMultipleVersions')
+  console.log('🎯 DEBUG TableOfContents: props.versions:', props.versions)
+  console.log('🎯 DEBUG TableOfContents: versions.length:', props.versions.length)
+  const result = props.versions.length > 1
+  console.log('🎯 DEBUG TableOfContents: hasMultipleVersions result:', result)
+  return result
+})
 
 const scrollToSection = (id) => {
   const element = document.getElementById(id)

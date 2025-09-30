@@ -134,12 +134,18 @@ export const useDocsStore = defineStore('docs', () => {
           console.log('[loadDoc] Found endpoint in group:', endpointData ? 'YES' : 'NO')
 
           if (endpointData) {
+            // Si el endpoint tiene múltiples versiones, incluir todas las versiones
+            // Las versiones están en el campo "versions" del endpoint
+            console.log('[loadDoc] Endpoint has versions?', endpointData.versions?.length || 0)
+            console.log('[loadDoc] Endpoint hasMultipleVersions?', endpointData.hasMultipleVersions)
+
             // Devolver el endpoint individual envuelto en la estructura del grupo
             currentDoc.value = {
               ...groupData,
-              endpoints: [endpointData]
+              endpoints: [endpointData] // El endpoint ya contiene todas las versiones en su propiedad "versions"
             }
             console.log('[loadDoc] Returning endpoint data:', currentDoc.value)
+            console.log('[loadDoc] Endpoint versions array:', endpointData.versions)
             return currentDoc.value
           }
         } else {
