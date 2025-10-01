@@ -212,19 +212,37 @@ onMounted(() => {
 }
 
 .custom-markdown :deep(code) {
-  @apply px-2 py-1 bg-gray-100 dark:bg-gray-800 text-red-600 dark:text-red-400 rounded text-sm font-mono;
+  @apply px-2 py-1 text-blue-700 dark:text-blue-300 rounded text-sm font-mono;
+  background: #eff6ff;
+}
+
+.custom-markdown :deep(code):is(.dark *) {
+  background: transparent;
 }
 
 .custom-markdown :deep(pre) {
-  @apply bg-gray-900 dark:bg-black text-gray-100 p-4 rounded-lg overflow-x-auto mb-4 border border-gray-700 dark:border-gray-900;
+  @apply p-4 rounded-lg overflow-x-auto mb-4 border;
+  background: #1e1e1e;
+  border-color: #333;
+}
+
+.custom-markdown :deep(pre):is(.dark *) {
+  //background: #0d1117;
+  border-color: #30363d;
 }
 
 .custom-markdown :deep(pre code) {
-  @apply bg-transparent text-gray-100 p-0;
+  @apply bg-transparent p-0 text-sm;
+  color: #d4d4d4;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.custom-markdown :deep(pre code):is(.dark *) {
+  color: #e6edf3;
 }
 
 .custom-markdown :deep(code:not(pre code)) {
-  @apply text-red-500 dark:text-red-400;
+  @apply text-blue-600 dark:text-blue-400;
 }
 
 .custom-markdown :deep(table) {

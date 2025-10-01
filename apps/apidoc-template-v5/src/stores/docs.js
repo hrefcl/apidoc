@@ -416,8 +416,11 @@ export const useDocsStore = defineStore('docs', () => {
     return filename
       .replace('.json', '')
       .replace(/-/g, ' ')
+      .replace(/_/g, ' ') // Reemplazar guiones bajos con espacios
       .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, str => str.toUpperCase())
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalizar cada palabra
+      .join(' ')
       .trim()
   }
 

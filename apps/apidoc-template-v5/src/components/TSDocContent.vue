@@ -97,7 +97,7 @@
             <p class="text-gray-700 dark:text-gray-300">{{ symbol.documentation.summary }}</p>
           </div>
 
-          <!-- Parameters Table -->
+          <!-- Parameters Table (for functions) -->
           <div v-if="symbol.parameters && symbol.parameters.length > 0" class="mb-4">
             <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <List class="w-4 h-4" />
@@ -123,6 +123,39 @@
                     </td>
                     <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
                       {{ getParamDescription(symbol, param.name) }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Properties Table (for interfaces, types, classes) -->
+          <div v-if="symbol.properties && symbol.properties.length > 0" class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <List class="w-4 h-4" />
+              Properties
+            </h4>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900/50">
+                  <tr>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Optional</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Description</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tr v-for="property in symbol.properties" :key="property.name">
+                    <td class="px-4 py-2 font-mono text-sm text-gray-900 dark:text-white">{{ property.name }}</td>
+                    <td class="px-4 py-2 font-mono text-sm text-purple-600 dark:text-purple-400">{{ property.type }}</td>
+                    <td class="px-4 py-2 text-sm">
+                      <span v-if="property.optional" class="text-orange-600 dark:text-orange-400">optional</span>
+                      <span v-else class="text-green-600 dark:text-green-400">required</span>
+                    </td>
+                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
+                      {{ property.documentation?.summary || '' }}
                     </td>
                   </tr>
                 </tbody>
@@ -197,6 +230,18 @@ interface TSDocSymbol {
     name: string
     type: string
     optional: boolean
+  }>
+  properties?: Array<{
+    name: string
+    type: string
+    optional: boolean
+    documentation?: {
+      summary?: string
+      tags?: Array<{
+        name: string
+        text: string
+      }>
+    }
   }>
   returnType?: string
   documentation?: {

@@ -31,7 +31,7 @@
         </div>
 
         <!-- Title -->
-        <h1 class="mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ doc.title || doc.name || (isApiDoc ? 'APIs' : 'Documentación') }}</h1>
+        <h1 class="mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ pageTitle }}</h1>
 
         <!-- Metadata -->
         <div v-if="doc.version || doc.description" class="flex flex-wrap gap-4 mb-8 not-prose">
@@ -216,6 +216,19 @@ const isModelContent = computed(() => {
   return props.category === 'cat.model' || doc.value?.models
 })
 
+// Título de la página con formateo especial para modelos
+const pageTitle = computed(() => {
+  if (doc.value?.title) return doc.value.title
+  if (doc.value?.name) return doc.value.name
+
+  // Para modelos, formatear el nombre del documento
+  if (isModelContent.value && props.doc) {
+    return formatModelName(props.doc)
+  }
+
+  return getDefaultTitle()
+})
+
 // Breadcrumbs con traducción
 const breadcrumbs = computed(() => {
   const crumbs = [
@@ -224,7 +237,24 @@ const breadcrumbs = computed(() => {
 
   if (props.category) {
     const categoryLabel = getCategoryLabel(props.category)
-    crumbs.push({ label: categoryLabel, path: `/docs/${props.category}` })
+    const categoryPath = getCategoryPath(props.category)
+    crumbs.push({ label: categoryLabel, path: categoryPath })
+  }
+
+  // Para endpoints de API, agregar el grupo/sección
+  if (isApiDoc.value && doc.value?.endpoints && doc.value.endpoints.length > 0) {
+    const endpoint = doc.value.endpoints[0]
+
+    // Extraer el grupo del ID del endpoint (ej: "users-delete-deleteuser" -> "Users")
+    if (endpoint.id) {
+      const groupName = extractGroupFromEndpointId(endpoint.id)
+      if (groupName) {
+        crumbs.push({
+          label: groupName,
+          path: `/api/section/${groupName}`
+        })
+      }
+    }
   }
 
   if (doc.value) {
@@ -239,9 +269,52 @@ const getCategoryLabel = (category) => {
   const labels = {
     'cat.api': t('nav.api'),
     'cat.docs': t('nav.docs'),
-    'cat.tsdoc': 'TypeScript'
+    'cat.tsdoc': 'TypeScript Docs',
+    'cat.model': 'Models'
   }
   return labels[category] || category.replace('cat.', '')
+}
+
+const getCategoryPath = (category) => {
+  const paths = {
+    'cat.api': '/api',
+    'cat.docs': '/docs',
+    'cat.tsdoc': '/tsdoc',
+    'cat.model': '/model'
+  }
+  return paths[category] || `/docs/${category}`
+}
+
+const getDefaultTitle = () => {
+  if (isApiDoc.value) return 'APIs'
+  if (isTSDocContent.value) return 'TypeScript Docs'
+  if (isModelContent.value) return 'Models'
+  return 'Documentación'
+}
+
+const extractGroupFromEndpointId = (endpointId) => {
+  // El formato del ID es: "groupname-method-name"
+  // Ej: "users-delete-deleteuser" -> "Users"
+  // Ej: "files-management-post-uploadavatar" -> "Files_Management"
+
+  if (!endpointId) return null
+
+  // Buscar el endpoint en el apiIndex para obtener su grupo
+  if (docsStore.apiIndex?.endpoints) {
+    const endpointInfo = docsStore.apiIndex.endpoints.find(e => e.id === endpointId)
+    if (endpointInfo?.group) {
+      return endpointInfo.group
+    }
+  }
+
+  // Fallback: extraer del ID
+  const parts = endpointId.split('-')
+  if (parts.length > 0) {
+    // Capitalizar primera parte
+    return parts[0].charAt(0).toUpperCase() + parts[0].slice(1)
+  }
+
+  return null
 }
 
 const getDocLabel = () => {
@@ -249,7 +322,21 @@ const getDocLabel = () => {
     const endpoint = doc.value.endpoints[0]
     return endpoint.title || endpoint.name || props.doc
   }
+
+  // Para modelos, convertir user_management -> User Management
+  if (isModelContent.value && props.doc) {
+    return formatModelName(props.doc)
+  }
+
   return doc.value?.title || doc.value?.name || props.doc
+}
+
+// Helper para formatear nombres de modelos: user_management -> User Management
+const formatModelName = (name) => {
+  return name
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
 }
 
 // Navegación prev/next
