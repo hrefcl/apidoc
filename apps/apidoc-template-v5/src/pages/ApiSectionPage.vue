@@ -153,14 +153,8 @@ const loadSectionData = async () => {
           }
           endpoints.value = endpointDetails
           console.log('[ApiSectionPage] Loaded endpoints:', endpointDetails.length)
-        } else {
-          console.warn('[ApiSectionPage] API index not available')
         }
-      } else {
-        console.warn('[ApiSectionPage] Group not found in navigation')
       }
-    } else {
-      console.warn('[ApiSectionPage] Navigation not available')
     }
 
     // If no custom markdown, create default
@@ -222,16 +216,11 @@ onMounted(() => {
 }
 
 .custom-markdown :deep(pre) {
-  @apply mb-4 rounded-lg overflow-x-auto border-0;
-}
-
-.custom-markdown :deep(pre.hljs) {
-  @apply p-4;
-  background: #1a1b26 !important;
+  @apply bg-gray-900 dark:bg-black text-gray-100 p-4 rounded-lg overflow-x-auto mb-4 border border-gray-700 dark:border-gray-900;
 }
 
 .custom-markdown :deep(pre code) {
-  @apply bg-transparent p-0;
+  @apply bg-transparent text-gray-100 p-0;
 }
 
 .custom-markdown :deep(code:not(pre code)) {

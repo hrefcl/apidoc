@@ -548,24 +548,10 @@ export class ApiCatPlugin {
         }
 
         const MarkdownIt = require('markdown-it');
-        const hljs = require('highlight.js');
-
         const md = new MarkdownIt({
             html: true,
             linkify: true,
             typographer: true,
-            highlight: function (str: string, lang: string) {
-                if (lang && hljs.getLanguage(lang)) {
-                    try {
-                        // Return only the highlighted content, markdown-it will wrap it
-                        return hljs.highlight(str, { language: lang, ignoreIllegals: true }).value;
-                    } catch (err) {
-                        console.error('Highlight error:', err);
-                    }
-                }
-                // Return empty string to let markdown-it handle escaping
-                return '';
-            }
         });
 
         // Process header and footer (they come already processed from writer)
@@ -595,41 +581,7 @@ export class ApiCatPlugin {
                         const markdownPath = path.resolve(this.sourceDir, settings.filename);
                         if (await fs.pathExists(markdownPath)) {
                             const markdownContent = await fs.readFile(markdownPath, 'utf8');
-                            let htmlContent = md.render(markdownContent);
-
-                            // Post-process HTML to add hljs classes and highlighting
-                            htmlContent = htmlContent.replace(
-                                /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g,
-                                (match, lang, code) => {
-                                    // Decode HTML entities
-                                    const decodedCode = code
-                                        .replace(/&lt;/g, '<')
-                                        .replace(/&gt;/g, '>')
-                                        .replace(/&amp;/g, '&')
-                                        .replace(/&quot;/g, '"')
-                                        .replace(/&#39;/g, "'");
-
-                                    // Apply highlight.js
-                                    if (lang && hljs.getLanguage(lang)) {
-                                        try {
-                                            const highlighted = hljs.highlight(decodedCode, {
-                                                language: lang,
-                                                ignoreIllegals: true
-                                            }).value;
-                                            return `<pre class="hljs"><code class="hljs language-${lang}">${highlighted}</code></pre>`;
-                                        } catch (err) {
-                                            return `<pre class="hljs"><code class="hljs language-${lang}">${code}</code></pre>`;
-                                        }
-                                    }
-                                    return `<pre class="hljs"><code class="hljs">${code}</code></pre>`;
-                                }
-                            );
-
-                            // Also handle plain code blocks without language
-                            htmlContent = htmlContent.replace(
-                                /<pre><code>([\s\S]*?)<\/code><\/pre>/g,
-                                '<pre class="hljs"><code class="hljs">$1</code></pre>'
-                            );
+                            const htmlContent = md.render(markdownContent);
 
                             customMarkdown[groupName] = {
                                 title: settings.title || groupName,
