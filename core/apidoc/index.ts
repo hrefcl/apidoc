@@ -31,7 +31,7 @@
  */
 
 import * as pkgJson from '../../package.json';
-import * as core from '../parser-core';
+import * as core from '../index';
 import { ApiDocOptions, ApiDocParseResult, AppContext, LoggerInterface, MarkdownParser } from '../types';
 import { createEncryption, encryptDirectoryJSON } from '../utils/encryption';
 import * as defaults from './defaults';

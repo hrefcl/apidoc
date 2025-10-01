@@ -89,6 +89,7 @@ export interface ApiCATProject {
 export interface ApiCATDocs {
     project: ApiCATProject;
     endpoints: ApiCATEndpoint[];
+    models?: any[]; // Model documentation items
     groups: string[];
     generated: string;
     generator: string;
@@ -101,11 +102,31 @@ export interface ApiCATDocs {
  */
 export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs {
     const endpoints: ApiCATEndpoint[] = [];
+    const models: any[] = [];
     const groups = new Set<string>();
 
-    // Process each endpoint
+    // Process each endpoint or model
     if (Array.isArray(apiDocData)) {
         apiDocData.forEach((item: any) => {
+            // Check if this is a model documentation (has .model field)
+            if (item.model) {
+                // This is a model - add to models array
+                const modelDoc = {
+                    id: generateEndpointId(item),
+                    group: item.group || 'General',
+                    name: item.name || '',
+                    title: item.title || item.name || '',
+                    description: item.description || '',
+                    version: item.version || '1.0.0',
+                    filename: item.filename || '',
+                    model: item.model,
+                };
+                models.push(modelDoc);
+                groups.add(modelDoc.group);
+                return; // Skip adding to endpoints
+            }
+
+            // This is a regular API endpoint
             const endpoint: ApiCATEndpoint = {
                 id: generateEndpointId(item),
                 group: item.group || 'General',
@@ -253,6 +274,13 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
             }
             return a.name.localeCompare(b.name);
         }),
+        models: models.length > 0 ? models.sort((a, b) => {
+            // Sort models by group first, then by name
+            if (a.group !== b.group) {
+                return a.group.localeCompare(b.group);
+            }
+            return a.name.localeCompare(b.name);
+        }) : undefined,
         groups: Array.from(groups).sort(),
         generated: new Date().toISOString(),
         generator: 'apiCAT v5.0 (powered by apiDoc)',

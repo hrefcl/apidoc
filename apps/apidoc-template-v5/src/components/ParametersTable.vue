@@ -31,7 +31,7 @@
             <td class="px-4 py-3 text-center">
               <span
                 v-if="param.optional === false"
-                class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300"
               >
                 {{ t('common.required') }}
               </span>

@@ -92,7 +92,7 @@ export class ApiCatPlugin {
         const apicatData = adapter.transformToApiCAT(apiData, projectInfo);
 
         // Generate main manifest (cat.json)
-        const manifest = {
+        const manifest: any = {
             schemaVersion: '5.0.0',
             generatedAt: new Date().toISOString(),
             generator: {
@@ -104,13 +104,21 @@ export class ApiCatPlugin {
             navigation: 'cat.navigation.json',
             api: {
                 index: 'cat.api.index.json',
-                shards: this.generateShardList(apicatData.groups),
+                shards: this.generateShardList(apicatData.endpoints),
             },
             docs: this.generateDocsMap(apicatData.groups),
             tsdoc: await this.generateTSDocMap(),
             search: 'cat.search.json',
             assets: 'cat.assets.json',
         };
+
+        // Add models section if there are models
+        if (apicatData.models && apicatData.models.length > 0) {
+            manifest.models = {
+                index: 'cat.model.index.json',
+                shards: this.generateModelShardList(apicatData.models),
+            };
+        }
 
         await fs.writeFile(path.join(outputPath, 'cat.json'), JSON.stringify(manifest, null, 2));
 
@@ -139,6 +147,11 @@ export class ApiCatPlugin {
         // Generate API index and shards FIRST (this groups endpoints by version)
         const groupedEndpointsMap = await this.generateApiStructure(apicatData, outputPath);
 
+        // Generate Model structure if there are models
+        if (apicatData.models && apicatData.models.length > 0) {
+            await this.generateModelStructure(apicatData, outputPath);
+        }
+
         // Generate navigation using grouped endpoints
         await this.generateNavigation(apicatData, outputPath, projectInfo, groupedEndpointsMap);
 
@@ -153,11 +166,13 @@ export class ApiCatPlugin {
     }
 
     /**
-     * Generate shard list for manifest
-     * @param groups
+     * Generate shard list for manifest based on endpoints
+     * @param endpoints - Array of endpoints
      */
-    private generateShardList(groups: string[]): string[] {
-        return groups.map((group) => `cat.api/${group.toLowerCase()}.json`);
+    private generateShardList(endpoints: any[]): string[] {
+        const groups = new Set<string>();
+        endpoints.forEach((ep) => groups.add(ep.group));
+        return Array.from(groups).map((group) => `cat.api/${this.sanitizeGroupName(group)}.json`);
     }
 
     /**
@@ -171,7 +186,7 @@ export class ApiCatPlugin {
         };
 
         groups.forEach((group) => {
-            docsMap[`group.${group}`] = `cat.docs/group.${group}.json`;
+            docsMap[`group.${group}`] = `cat.docs/group.${this.sanitizeGroupName(group)}.json`;
         });
 
         return docsMap;
@@ -265,7 +280,7 @@ export class ApiCatPlugin {
                 group: ep.group,
                 summary: ep.title,
                 version: ep.version,
-                shard: `cat.api/${ep.group.toLowerCase()}.json`,
+                shard: `cat.api/${this.sanitizeGroupName(ep.group)}.json`,
             })),
             stats: {
                 totalEndpoints: apicatData.endpoints.length,
@@ -297,7 +312,7 @@ export class ApiCatPlugin {
             };
 
             await fs.writeFile(
-                path.join(outputPath, 'cat.api', `${group.toLowerCase()}.json`),
+                path.join(outputPath, 'cat.api', `${this.sanitizeGroupName(group)}.json`),
                 JSON.stringify(shard, null, 2)
             );
         }
@@ -318,12 +333,12 @@ export class ApiCatPlugin {
             path: ep.url,
             group: ep.group,
             method: ep.method,
-            tags: [ep.group.toLowerCase(), ep.method.toLowerCase(), ...ep.title.toLowerCase().split(' ')],
+            tags: [this.sanitizeGroupName(ep.group), ep.method.toLowerCase(), ...ep.title.toLowerCase().split(' ')],
             summary: ep.description,
             ref: {
                 type: 'endpoint',
                 id: ep.id,
-                shard: `cat.api/${ep.group.toLowerCase()}.json`,
+                shard: `cat.api/${this.sanitizeGroupName(ep.group)}.json`,
             },
         }));
 
@@ -411,7 +426,7 @@ export class ApiCatPlugin {
                 version: '5.0.0',
             };
             await fs.writeFile(
-                path.join(outputPath, 'cat.docs', `group.${group}.json`),
+                path.join(outputPath, 'cat.docs', `group.${this.sanitizeGroupName(group)}.json`),
                 JSON.stringify(groupData, null, 2)
             );
         }
@@ -1254,6 +1269,95 @@ export class ApiCatPlugin {
         const stats: Record<string, number> = {};
         endpoints.forEach((ep) => {
             stats[ep.method] = (stats[ep.method] || 0) + 1;
+        });
+        return stats;
+    }
+
+    /**
+     * Sanitize group name for use in filenames (remove spaces, special chars)
+     * @param group - Group name
+     * @returns Sanitized group name (lowercase with underscores)
+     */
+    private sanitizeGroupName(group: string): string {
+        return group.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+    }
+
+    /**
+     * Generate model shard list for manifest
+     * @param models - Array of model documentation items
+     */
+    private generateModelShardList(models: any[]): string[] {
+        const groups = new Set<string>();
+        models.forEach((model) => groups.add(model.group));
+        return Array.from(groups).map((group) => `cat.model/${this.sanitizeGroupName(group)}.json`);
+    }
+
+    /**
+     * Generate model structure (index and shards)
+     * @param apicatData - Transformed apiCAT data
+     * @param outputPath - Output directory path
+     */
+    private async generateModelStructure(apicatData: any, outputPath: string): Promise<void> {
+        const models = apicatData.models || [];
+
+        // Create cat.model directory
+        const modelDir = path.join(outputPath, 'cat.model');
+        if (!fs.existsSync(modelDir)) {
+            await fs.mkdir(modelDir, { recursive: true });
+        }
+
+        // Generate model index
+        const modelIndex = {
+            models: models.map((model: any) => ({
+                id: model.id,
+                name: model.name,
+                group: model.group,
+                summary: model.title,
+                version: model.version,
+                shard: `cat.model/${this.sanitizeGroupName(model.group)}.json`,
+            })),
+            stats: {
+                totalModels: models.length,
+                byGroup: this.getModelStatsByGroup(models),
+            },
+            lastUpdated: new Date().toISOString(),
+        };
+
+        await fs.writeFile(path.join(outputPath, 'cat.model.index.json'), JSON.stringify(modelIndex, null, 2));
+
+        // Group models by group
+        const modelsByGroup = new Map<string, any[]>();
+        models.forEach((model: any) => {
+            const group = model.group || 'General';
+            if (!modelsByGroup.has(group)) {
+                modelsByGroup.set(group, []);
+            }
+            modelsByGroup.get(group)!.push(model);
+        });
+
+        // Generate shards for each group
+        for (const [group, groupModels] of modelsByGroup.entries()) {
+            const shard = {
+                group,
+                models: groupModels,
+                generatedAt: new Date().toISOString(),
+            };
+
+            await fs.writeFile(
+                path.join(modelDir, `${this.sanitizeGroupName(group)}.json`),
+                JSON.stringify(shard, null, 2)
+            );
+        }
+    }
+
+    /**
+     * Get stats of models by group
+     * @param models - Array of model documentation items
+     */
+    private getModelStatsByGroup(models: any[]): Record<string, number> {
+        const stats: Record<string, number> = {};
+        models.forEach((model) => {
+            stats[model.group] = (stats[model.group] || 0) + 1;
         });
         return stats;
     }

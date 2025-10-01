@@ -202,7 +202,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                 CA File (Root Certificate)
-                <span v-if="isPreconfigured && config.ssl.ca" class="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-0.5 rounded">
+                <span v-if="isPreconfigured && config.ssl.ca" class="text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-0.5 rounded">
                   Configurado
                 </span>
               </label>
@@ -221,7 +221,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                 Client Certificate File
-                <span v-if="isPreconfigured && config.ssl.cert" class="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-0.5 rounded">
+                <span v-if="isPreconfigured && config.ssl.cert" class="text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-0.5 rounded">
                   Configurado
                 </span>
               </label>
@@ -240,7 +240,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                 Client Key File (Private Key)
-                <span v-if="isPreconfigured && config.ssl.key" class="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-0.5 rounded">
+                <span v-if="isPreconfigured && config.ssl.key" class="text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-0.5 rounded">
                   Configurado
                 </span>
               </label>

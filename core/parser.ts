@@ -654,6 +654,7 @@ Parser.prototype._findBlockWithApiGetIndex = function (blocks) {
                 blocks[i][j].name.substr(0, 3) === 'api' ||
                 blocks[i][j].name.substr(0, 7) === 'openapi' ||
                 blocks[i][j].name.substr(0, 4) === 'mqtt' ||
+                blocks[i][j].name.substr(0, 5) === 'model' ||
                 // JSDoc/TSDoc tags
                 [
                     'file',
@@ -709,9 +710,9 @@ Parser.prototype.findElements = function (block, filename) {
     // Replace Linebreak with Unicode
     block = block.replace(/\n/g, '\uffff');
 
-    // Elements start with @api, @openapi, or @mqtt (at beginning of comment line, not in text)
+    // Elements start with @api, @openapi, @mqtt, or @model (at beginning of comment line, not in text)
     const elementsRegExp =
-        /((?:^|\uffff)[\s*]*@(api\w*|openapi(?:-\w+)?|mqtt\w*|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|author|ratelimit|errors|tags|auth|file|copyright|license|package|see|param|returns|remarks|example|public|internal|alpha|beta)(?:\s*([\s\S]*?))?(?=\uffff[\s*]*@(?:api|openapi|mqtt|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|author|ratelimit|errors|tags|auth|file|copyright|license|package|see|param|returns|remarks|example|public|internal|alpha|beta)|\*\/|$))/gm;
+        /((?:^|\uffff)[\s*]*@(api\w*|openapi(?:-\w+)?|mqtt\w*|model\w*|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|author|ratelimit|errors|tags|auth|file|copyright|license|package|see|param|returns|remarks|example|public|internal|alpha|beta)(?:\s*([\s\S]*?))?(?=\uffff[\s*]*@(?:api|openapi|mqtt|model|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|author|ratelimit|errors|tags|auth|file|copyright|license|package|see|param|returns|remarks|example|public|internal|alpha|beta)|\*\/|$))/gm;
     let matches = elementsRegExp.exec(block);
     while (matches) {
         const element = {

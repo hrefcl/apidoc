@@ -8,6 +8,9 @@ tmp/
 .idea
 test/*/fixtures*/vendor/
 test/apidoc/fixtures*/css/
+# Ignore compiled JS files in core/ (TypeScript source only)
+core/**/*.js
+core/**/*.js.map
 # Misc and development files
 .archive
 dist

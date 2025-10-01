@@ -53,6 +53,11 @@
           />
         </div>
 
+        <!-- TSDoc Content -->
+        <div v-else-if="isTSDocContent">
+          <TSDocContent :data="doc" />
+        </div>
+
         <!-- Generic Content -->
         <div v-else>
           <GenericContent :data="doc" />
@@ -119,6 +124,7 @@ import { useDocsStore } from '@/stores/docs'
 import { ChevronRight, ChevronLeft, FileQuestion, Home } from 'lucide-vue-next'
 import ApiContent from '@/components/ApiContent.vue'
 import GenericContent from '@/components/GenericContent.vue'
+import TSDocContent from '@/components/TSDocContent.vue'
 import TableOfContents from '@/components/TableOfContents.vue'
 import VersionComparator from '@/components/VersionComparator.vue'
 
@@ -192,6 +198,11 @@ const loadDocument = async () => {
 // Detectar si es documento API
 const isApiDoc = computed(() => {
   return props.category === 'cat.api' || doc.value?.type === 'api'
+})
+
+// Detectar si es contenido TSDoc
+const isTSDocContent = computed(() => {
+  return props.category === 'cat.tsdoc' && doc.value?.symbols
 })
 
 // Breadcrumbs con traducción

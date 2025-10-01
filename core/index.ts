@@ -136,6 +136,11 @@ const app = {
         ratelimit: './parsers/mqtt_ratelimit.js',
         errors: './parsers/mqtt_errors.js',
         tags: './parsers/mqtt_tags.js',
+        // Model parsers - New system like MQTT
+        model: './parsers/model.js',
+        modelgroup: './parsers/model_group.js',
+        modelname: './parsers/model_name.js',
+        modeldescription: './parsers/model_description.js',
     },
     workers: {
         // Temporarily disabled while migrating workers to TypeScript
