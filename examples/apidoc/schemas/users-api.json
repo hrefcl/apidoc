@@ -171,7 +171,7 @@
         "summary": "Create new user",
         "description": "Create a new user account with the provided information",
         "tags": ["Users"],
-        "x-version": "4.0.0",
+        "x-version": "2.1.0",
         "requestBody": {
           "required": true,
           "content": {

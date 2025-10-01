@@ -498,14 +498,35 @@ function addHook(name, func, priority) {
  * @param name - Name of the hook to execute.
  * @returns {*} The first argument provided, or the modified value after applying the hooks.
  */
+let hookCallCount = 0;
 function applyHook(name /* , ...args */) {
     if (!app.hooks[name]) {
         return Array.prototype.slice.call(arguments, 1, 2)[0];
     }
 
     const args = Array.prototype.slice.call(arguments, 1);
+    if (name === 'parser-find-elements') {
+        hookCallCount++;
+        const element = args[1]; // Second argument is 'element'
+        const filename = args[3]; // Fourth argument is 'filename'
+        // Log for json-schema-examples.js specifically
+        if (filename && filename.includes('json-schema-examples.js') && element?.name === 'apischema') {
+            console.log(`[applyHook #${hookCallCount}] hook='${name}', element.name='${element?.name}', filename='${filename}', hooks registered: ${app.hooks[name] ? app.hooks[name].length : 0}`);
+        }
+    }
     app.hooks[name].forEach(function (hook) {
-        hook.func.apply(this, args);
+        if (args[1]?.name === 'apischema') {
+            process.stdout.write(`[applyHook v2.0.0] Calling hook for @apiSchema, priority=${hook.priority}\n`);
+        }
+        try {
+            const result = hook.func.apply(this, args);
+            if (args[1]?.name === 'apischema') {
+                process.stdout.write(`[applyHook v2.0.0] Hook returned: ${typeof result}, length=${result?.length || 'N/A'}\n`);
+            }
+        } catch (error: any) {
+            process.stdout.write(`[applyHook v2.0.0] ERROR: ${error.message}\n`);
+            throw error;
+        }
     });
     return args[0];
 }

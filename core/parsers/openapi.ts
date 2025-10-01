@@ -818,8 +818,8 @@ function externalFileProcessor(elements: Array<any>, element: any, block: any, f
  * @param app
  */
 function init(app: any) {
-    app.addHook('parser-find-elements', externalFileProcessor, 190); // Run before @apiSchema (priority 200)
-    console.log('🔌 OpenAPI External File Processor initialized');
+    app.addHook('parser-find-elements', externalFileProcessor, 197); // Run after @apiSchema (priority 195) to avoid overwriting
+    console.log('🔌 OpenAPI External File Processor initialized with priority 197');
 }
 
 /**

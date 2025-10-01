@@ -142,15 +142,28 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
             // Add group to set
             groups.add(endpoint.group);
 
-            // Transform parameters
-            if (item.parameter?.fields?.Parameter) {
-                endpoint.parameters = item.parameter.fields.Parameter.map((param: any) => ({
-                    field: param.field,
-                    type: param.type || 'String',
-                    required: !param.optional,
-                    description: param.description || '',
-                    defaultValue: param.defaultValue,
-                }));
+            // Transform parameters - check all parameter field groups (Parameter, Body, Query, etc.)
+            if (item.parameter?.fields) {
+                const allParams: any[] = [];
+                // Iterate through all parameter groups (Parameter, Body, Query, etc.)
+                Object.keys(item.parameter.fields).forEach((groupName) => {
+                    const groupParams = item.parameter.fields[groupName];
+                    if (Array.isArray(groupParams)) {
+                        groupParams.forEach((param: any) => {
+                            allParams.push({
+                                field: param.field,
+                                type: param.type || 'String',
+                                required: !param.optional,
+                                description: param.description || '',
+                                defaultValue: param.defaultValue,
+                                group: groupName, // Preserve group info
+                            });
+                        });
+                    }
+                });
+                if (allParams.length > 0) {
+                    endpoint.parameters = allParams;
+                }
             }
 
             // Transform headers

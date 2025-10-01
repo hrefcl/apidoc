@@ -1,7 +1,7 @@
 /**
  * @model User Complete user entity with authentication and access control
  * @modelname UserModel
- * @modelgroup User Model
+ * @modelgroup User Management
  * @modeldescription Complete User entity model with all attributes, relationships, and lifecycle hooks
  * automatically extracted from the Sequelize class definition.
  *
@@ -10,7 +10,7 @@
  * - Community and Company relationships
  * - Access control and sessions
  * - Lifecycle hooks for data formatting and external system sync
- * 
+ *
  * @apiVersion 5.0.0
  */
 
@@ -26,7 +26,6 @@ import {
     BeforeDestroy,
     BeforeUpdate,
     BelongsTo,
-    BelongsToMany,
     CreatedAt,
     Default,
     DeletedAt,
@@ -40,9 +39,9 @@ import {
 } from '@sequelize/core/decorators-legacy';
 
 // Import related models (for relationships)
+import Access from './Access';
 import Community from './Community';
 import Company from './Company';
-import Access from './Access';
 import Session from './Session';
 
 @Table({
@@ -129,32 +128,61 @@ export default class User extends Model<InferAttributes<User>, InferCreationAttr
     })
     sessions!: NonAttribute<Session[]>;
 
-    // Lifecycle Hooks
+    /**
+     * @description Antes de crear el usuario: se normalizan y validan datos críticos
+     * (ej. email en minúsculas, strings limpios, valores por defecto) para asegurar
+     * consistencia y prevenir errores aguas arriba.
+     */
     @BeforeCreate
     static async DataFormating(instance: User) {
         // Normalize and validate data
     }
 
+    /**
+     * @description Después de crear el usuario: se establecen relaciones iniciales
+     * como asignación a comunidad, creación de registros asociados y envío de correo
+     * de bienvenida u otras notificaciones.
+     */
     @AfterCreate
     static async AddUserToCommunity(instance: User) {
         // Create relationships
     }
 
+    /**
+     * @description Antes de actualizar el usuario: se aplican reglas de normalización
+     * (capitalización de nombres, limpieza de strings, actualización de timestamps
+     * derivados) garantizando uniformidad de datos.
+     */
     @BeforeUpdate
     static async NormalizeStrings(instance: User) {
         // Normalize strings
     }
 
+    /**
+     * @description Después de actualizar el usuario: se sincronizan los cambios con
+     * sistemas externos (ej. directorios, CRM, accesos remotos) y se disparan
+     * eventos de integración.
+     */
     @AfterUpdate
     static async UpdateUser(instance: User) {
         // Sync with external systems
     }
 
+    /**
+     * @description Antes de eliminar lógicamente o físicamente al usuario: se
+     * invalidan accesos activos (tokens, sesiones, llaves digitales) para evitar
+     * que el usuario pueda seguir interactuando con el sistema.
+     */
     @BeforeDestroy
     static async invalidate_accesses(instance: User): Promise<void> {
         // Invalidate accesses
     }
 
+    /**
+     * @description Después de eliminar el usuario: se eliminan referencias en
+     * sistemas externos (ej. ThinMoo, integraciones de terceros) y se liberan
+     * recursos relacionados.
+     */
     @AfterDestroy
     static async remove_user_from_thinmoo(instance: User): Promise<void> {
         // Remove from external systems

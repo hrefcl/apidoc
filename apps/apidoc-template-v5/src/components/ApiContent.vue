@@ -114,10 +114,21 @@
             />
           </div>
 
-          <!-- Parameters Table -->
-          <div v-if="endpointGroup.endpoint.parameter?.fields?.Parameter || endpointGroup.endpoint.parameters" id="section-parameters">
+          <!-- Parameters Table - All Groups (Body, Parameter, Query, etc.) -->
+          <div v-if="endpointGroup.endpoint.parameter?.fields || endpointGroup.endpoint.parameters" id="section-parameters">
+            <!-- If parameter.fields exists, render each group -->
+            <template v-if="endpointGroup.endpoint.parameter?.fields">
+              <div v-for="(params, groupName) in endpointGroup.endpoint.parameter.fields" :key="groupName" class="mb-6">
+                <ParametersTable
+                  :parameters="params"
+                  :title="groupName === 'Parameter' ? t('api.parameters') : groupName"
+                />
+              </div>
+            </template>
+            <!-- Fallback for old format -->
             <ParametersTable
-              :parameters="endpointGroup.endpoint.parameter?.fields?.Parameter || endpointGroup.endpoint.parameters"
+              v-else-if="endpointGroup.endpoint.parameters"
+              :parameters="endpointGroup.endpoint.parameters"
               :title="t('api.parameters')"
             />
           </div>
@@ -543,7 +554,7 @@ onMounted(() => {
     if (endpoint.header?.fields?.Header || endpoint.headers) {
       sections.push({ id: 'section-headers', title: t('api.headers') })
     }
-    if (endpoint.parameter?.fields?.Parameter || endpoint.parameters) {
+    if (endpoint.parameter?.fields || endpoint.parameters) {
       sections.push({ id: 'section-parameters', title: t('api.parameters') })
     }
     if (endpoint.examples && endpoint.examples.length > 0) {

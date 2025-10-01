@@ -78,12 +78,15 @@ function Parser(_app) {
             const filename = app.parsers[parser];
             app.log.debug('load parser: ' + parser + ', ' + filename);
             parserModule = require(filename);
-            self.addParser(parser, parserModule);
+            // Handle both CommonJS and ES module exports
+            // If module has default export, use it instead of the module itself
+            const moduleToUse = parserModule?.default || parserModule;
+            self.addParser(parser, moduleToUse);
         }
 
         // Call init function if it exists (for schema processing hooks)
-        // Handle both CommonJS and ES module exports
-        const moduleToCheck = parserModule?.default || parserModule;
+        // Use the same module reference that was added to parsers
+        const moduleToCheck = self.parsers[parser];
         if (moduleToCheck && typeof moduleToCheck.init === 'function') {
             app.log.debug('initialize parser: ' + parser);
             moduleToCheck.init(app);
@@ -427,8 +430,11 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
                             extra
                         );
                     }
+                    // Log the actual error before throwing generic error
+                    console.error('[Parser] Caught non-ParameterError exception:', e);
+                    console.error('[Parser] Error stack:', e.stack);
                     throw new ParserError(
-                        'Undefined error.',
+                        'Undefined error: ' + (e.message || String(e)),
                         self.filename,
                         blockIndex + 1,
                         element.sourceName,
@@ -712,7 +718,7 @@ Parser.prototype.findElements = function (block, filename) {
 
     // Elements start with @api, @openapi, @mqtt, or @model (at beginning of comment line, not in text)
     const elementsRegExp =
-        /((?:^|\uffff)[\s*]*@(api\w*|openapi(?:-\w+)?|mqtt\w*|model\w*|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|author|ratelimit|errors|tags|auth|file|copyright|license|package|see|param|returns|remarks|example|public|internal|alpha|beta)(?:\s*([\s\S]*?))?(?=\uffff[\s*]*@(?:api|openapi|mqtt|model|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|author|ratelimit|errors|tags|auth|file|copyright|license|package|see|param|returns|remarks|example|public|internal|alpha|beta)|\*\/|$))/gm;
+        /((?:^|\uffff)[\s*]*@(api\w*|openapi(?:-\w+)?|mqtt\w*|model\w*|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|author|ratelimit|errors|tags|auth|file|copyright|license|package|see|param|returns|remarks|example|public|internal|alpha|beta)(?:\s*([\s\S]*?))?(?=\uffff[\s*]*@(?:api\w*|openapi|mqtt\w*|model\w*|payloadSchema|examplePublish|exampleSubscribe|responseTopic|responseExample|topicParam|topic|payload|qos|retain|author|ratelimit|errors|tags|auth|file|copyright|license|package|see|param|returns|remarks|example|public|internal|alpha|beta)|\*\/|$))/gm;
     let matches = elementsRegExp.exec(block);
     while (matches) {
         const element = {
@@ -722,6 +728,11 @@ Parser.prototype.findElements = function (block, filename) {
             content: matches[3] || '',
         };
 
+        // Debug: log all elements from schema files
+        if (element.name === 'apischema') {
+            process.stdout.write(`[parser v2.0.0] Found @apiSchema in ${filename}\n`);
+        }
+
         // reverse Unicode Linebreaks
         element.content = element.content.replace(/\uffff/g, '\n');
         element.source = element.source.replace(/\uffff/g, '\n');
@@ -729,6 +740,10 @@ Parser.prototype.findElements = function (block, filename) {
         app.hook('parser-find-element-' + element.name, element, block, filename);
 
         elements.push(element);
+
+        if (element.name === 'apischema') {
+            process.stdout.write(`[parser v2.0.0] About to call hook parser-find-elements for @apiSchema\n`);
+        }
 
         app.hook('parser-find-elements', elements, element, block, filename);
 

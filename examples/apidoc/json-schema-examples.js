@@ -1,5 +1,5 @@
 /**
- * @file Example API endpoints demonstrating JSON Schema integration
+ * Example API endpoints demonstrating JSON Schema integration
  *
  * This file showcases apiSchema functionality with external JSON Schema files
  */

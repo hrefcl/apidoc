@@ -9,6 +9,7 @@ export const useDocsStore = defineStore('docs', () => {
   const meta = ref(null)
   const settings = ref({})
   const apiIndex = ref(null)
+  const modelIndex = ref(null)
   const loading = ref(false)
   const error = ref(null)
 
@@ -70,6 +71,16 @@ export const useDocsStore = defineStore('docs', () => {
       apiIndex.value = await response.json()
     } catch (e) {
       console.warn('API index file not found')
+    }
+  }
+
+  // Cargar índice de modelos
+  const loadModelIndex = async () => {
+    try {
+      const response = await fetch('/data/cat.model.index.json')
+      modelIndex.value = await response.json()
+    } catch (e) {
+      console.warn('Model index file not found')
     }
   }
 
