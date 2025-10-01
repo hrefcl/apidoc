@@ -193,7 +193,14 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
         core.setMarkdownParser(app.markdownParser);
 
         const reader = new Reader(app);
-        core.setPackageInfos(reader.read());
+        const packageInfo = reader.read();
+        core.setPackageInfos(packageInfo);
+
+        // Transfer apicat configuration from packageInfo to options if present
+        if (packageInfo.apicat && !app.options.apicat) {
+            app.log.verbose('Loading apicat configuration from apidoc.json');
+            app.options.apicat = packageInfo.apicat;
+        }
 
         // this is holding our results from parsing the source code
         const api = core.parse(app.options);
@@ -217,7 +224,12 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
         if (app.options.apicat?.enabled) {
             app.log.verbose('🐱 apiCAT: Plugin is enabled, starting processing...');
             try {
-                const apiCatPlugin = new ApiCatPlugin(app.options.apicat);
+                // Pass sourceDir to plugin for markdown file resolution
+                const apiCatConfig = {
+                    ...app.options.apicat,
+                    sourceDir: Array.isArray(app.options.src) ? app.options.src[0] : app.options.src
+                };
+                const apiCatPlugin = new ApiCatPlugin(apiCatConfig);
                 const parsedData = JSON.parse(api.data);
                 const projectData = JSON.parse(api.project);
 

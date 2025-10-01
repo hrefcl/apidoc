@@ -51,6 +51,16 @@ export interface ApiCATProject {
     url?: string;
     sampleUrl?: string;
     homepage?: string;
+    header?: {
+        title: string;
+        filename: string;
+        icon?: string;
+    };
+    footer?: {
+        title: string;
+        filename: string;
+        icon?: string;
+    };
     bugs?: {
         url: string;
     };
@@ -273,6 +283,8 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
         url: projectInfo.url || '',
         sampleUrl: projectInfo.sampleUrl || projectInfo.url || '',
         homepage: projectInfo.homepage,
+        header: projectInfo.header,
+        footer: projectInfo.footer,
         bugs: projectInfo.bugs,
         repository: projectInfo.repository,
         mqtt: projectInfo.mqtt,

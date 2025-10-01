@@ -125,4 +125,87 @@
   .prose blockquote {
     @apply border-l-4 border-primary-500 pl-4 italic my-4 text-muted-foreground;
   }
+
+  /* Highlight.js Tokyo Night Dark Theme */
+  .hljs {
+    @apply block overflow-x-auto p-4 rounded-lg;
+    background: #1a1b26;
+    color: #a9b1d6;
+  }
+
+  .hljs-comment,
+  .hljs-quote {
+    color: #565f89;
+    font-style: italic;
+  }
+
+  .hljs-keyword,
+  .hljs-selector-tag,
+  .hljs-literal,
+  .hljs-type {
+    color: #bb9af7;
+  }
+
+  .hljs-number {
+    color: #ff9e64;
+  }
+
+  .hljs-string,
+  .hljs-doctag {
+    color: #9ece6a;
+  }
+
+  .hljs-title,
+  .hljs-section,
+  .hljs-selector-id {
+    color: #7aa2f7;
+    font-weight: bold;
+  }
+
+  .hljs-subst,
+  .hljs-tag,
+  .hljs-name,
+  .hljs-attribute {
+    color: #7dcfff;
+  }
+
+  .hljs-variable,
+  .hljs-template-variable {
+    color: #bb9af7;
+  }
+
+  .hljs-regexp,
+  .hljs-link {
+    color: #b4f9f8;
+  }
+
+  .hljs-symbol,
+  .hljs-bullet {
+    color: #89ddff;
+  }
+
+  .hljs-built_in,
+  .hljs-builtin-name {
+    color: #7dcfff;
+  }
+
+  .hljs-meta {
+    color: #565f89;
+  }
+
+  .hljs-deletion {
+    background: #f7768e;
+  }
+
+  .hljs-addition {
+    background: #9ece6a;
+  }
+
+  .hljs-emphasis {
+    font-style: italic;
+  }
+
+  .hljs-strong {
+    font-weight: bold;
+  }
 }

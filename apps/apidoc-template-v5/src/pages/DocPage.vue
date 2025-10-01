@@ -58,6 +58,11 @@
           <TSDocContent :data="doc" />
         </div>
 
+        <!-- Model Content -->
+        <div v-else-if="isModelContent">
+          <ModelContent :data="doc" />
+        </div>
+
         <!-- Generic Content -->
         <div v-else>
           <GenericContent :data="doc" />
@@ -125,6 +130,7 @@ import { ChevronRight, ChevronLeft, FileQuestion, Home } from 'lucide-vue-next'
 import ApiContent from '@/components/ApiContent.vue'
 import GenericContent from '@/components/GenericContent.vue'
 import TSDocContent from '@/components/TSDocContent.vue'
+import ModelContent from '@/components/ModelContent.vue'
 import TableOfContents from '@/components/TableOfContents.vue'
 import VersionComparator from '@/components/VersionComparator.vue'
 
@@ -203,6 +209,11 @@ const isApiDoc = computed(() => {
 // Detectar si es contenido TSDoc
 const isTSDocContent = computed(() => {
   return props.category === 'cat.tsdoc' && doc.value?.symbols
+})
+
+// Detectar si es contenido Model
+const isModelContent = computed(() => {
+  return props.category === 'cat.model' || doc.value?.models
 })
 
 // Breadcrumbs con traducción

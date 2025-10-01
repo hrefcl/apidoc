@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DocsLayout from '@/layouts/DocsLayout.vue'
 import HomePage from '@/pages/HomePage.vue'
 import DocPage from '@/pages/DocPage.vue'
+import CategoryIndexPage from '@/pages/CategoryIndexPage.vue'
+import ApiSectionPage from '@/pages/ApiSectionPage.vue'
 
 const routes = [
   {
@@ -13,6 +15,38 @@ const routes = [
         name: 'home',
         component: HomePage
       },
+      // Category index pages
+      {
+        path: 'docs',
+        name: 'docs-index',
+        component: CategoryIndexPage,
+        props: { category: 'docs' }
+      },
+      {
+        path: 'api',
+        name: 'api-index',
+        component: CategoryIndexPage,
+        props: { category: 'api' }
+      },
+      {
+        path: 'tsdoc',
+        name: 'tsdoc-index',
+        component: CategoryIndexPage,
+        props: { category: 'tsdoc' }
+      },
+      {
+        path: 'model',
+        name: 'model-index',
+        component: CategoryIndexPage,
+        props: { category: 'model' }
+      },
+      // API Section page
+      {
+        path: 'api/section/:section',
+        name: 'api-section',
+        component: ApiSectionPage
+      },
+      // Document pages
       {
         path: 'api/:doc',
         name: 'api',
@@ -30,6 +64,12 @@ const routes = [
         name: 'tsdoc',
         component: DocPage,
         props: route => ({ category: 'cat.tsdoc', doc: route.params.doc })
+      },
+      {
+        path: 'model/:doc',
+        name: 'model',
+        component: DocPage,
+        props: route => ({ category: 'cat.model', doc: route.params.doc })
       }
     ]
   }

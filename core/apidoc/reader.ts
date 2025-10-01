@@ -61,12 +61,14 @@ interface GroupSettings {
     icon?: string;
     /** Custom title for the group */
     title?: string;
+    /** Custom markdown file for this group/section */
+    filename?: string;
 }
 
 /**
  * Extended configuration interface combining project settings with file-specific options
  */
-interface Config extends Partial<ApiDocProject> {
+interface Config extends Partial<Omit<ApiDocProject, 'documentation'>> {
     /** Header configuration */
     header?: HeaderFooterConfig;
     /** Footer configuration */
@@ -77,8 +79,17 @@ interface Config extends Partial<ApiDocProject> {
     input?: string[];
     /** APIDoc-specific configuration */
     apidoc?: any;
+    /** apiCAT plugin configuration */
+    apicat?: {
+        enabled: boolean;
+        outputDir?: string;
+        generateCollections?: boolean;
+        enableLocalTesting?: boolean;
+    };
     /** Custom settings for groups (icons, titles, etc.) */
     settings?: Record<string, GroupSettings>;
+    /** Documentation glob pattern (e.g., "./docs/*.md", "./md/*") */
+    documentation?: string;
 }
 
 /**
@@ -208,7 +219,12 @@ class Reader {
         }
 
         // replace header footer with file contents
-        return Object.assign(config, this.getHeaderFooter(config));
+        const headerFooter = this.getHeaderFooter(config);
+
+        // Process documentation files if pattern specified
+        const documentation = this.getDocumentation(config);
+
+        return Object.assign(config, headerFooter, { documentation });
     }
 
     /**
@@ -308,6 +324,78 @@ class Reader {
         });
 
         return result;
+    }
+
+    /**
+     * Process documentation files from glob pattern
+     *
+     * Reads all markdown files matching the pattern specified in config.documentation
+     * and returns an array of documentation entries with their content and metadata.
+     * @param config - Configuration object containing documentation glob pattern
+     * @returns Array of documentation entries with filename, title, content, and icon
+     */
+    getDocumentation(config: Config): Array<{filename: string; title: string; content: string; icon?: string}> {
+        const docs: Array<{filename: string; title: string; content: string; icon?: string}> = [];
+
+        if (!config.documentation) {
+            return docs;
+        }
+
+        this.log.info(`📚 Processing documentation pattern: ${config.documentation}`);
+
+        try {
+            const glob = require('glob');
+            // Use CLI src directory (absolute), not config.input (relative to config file)
+            const baseDir = path.resolve(this.opt.src[0]);
+
+            // Log the paths for debugging
+            this.log.verbose(`Base directory: ${baseDir}`);
+            this.log.verbose(`Documentation pattern: ${config.documentation}`);
+
+            // Use glob with cwd option for relative patterns
+            const files = glob.sync(config.documentation, { cwd: baseDir, absolute: true });
+
+            this.log.verbose(`Glob search: pattern="${config.documentation}" cwd="${baseDir}"`);
+            this.log.info(`Found ${files.length} documentation files`);
+
+            if (files.length > 0) {
+                this.log.verbose(`First file found: ${files[0]}`);
+            }
+
+            files.forEach((filePath: string) => {
+                try {
+                    const content = fs.readFileSync(filePath, 'utf8');
+                    const filename = path.basename(filePath, '.md');
+
+                    // Extract title from filename or first H1 in content
+                    let title = filename
+                        .replace(/-/g, ' ')
+                        .replace(/_/g, ' ')
+                        .replace(/\b\w/g, (l) => l.toUpperCase());
+
+                    // Try to extract title from first H1
+                    const h1Match = content.match(/^#\s+(.+)$/m);
+                    if (h1Match) {
+                        title = h1Match[1];
+                    }
+
+                    docs.push({
+                        filename: filename,
+                        title: title,
+                        content: this.app.markdownParser ? this.app.markdownParser.render(content) : content,
+                        icon: 'fa-file-text'
+                    });
+
+                    this.log.verbose(`  ✓ Processed: ${filename}`);
+                } catch (e) {
+                    this.log.warn(`  ✗ Failed to read: ${filePath}`);
+                }
+            });
+        } catch (e) {
+            this.log.error(`Error processing documentation pattern: ${e}`);
+        }
+
+        return docs;
     }
 
     /**

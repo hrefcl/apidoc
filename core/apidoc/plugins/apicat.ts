@@ -18,6 +18,7 @@ export interface ApiCatConfig {
     outputDir?: string;
     generateCollections?: boolean;
     enableLocalTesting?: boolean;
+    sourceDir?: string; // Source directory for reading markdown files
 }
 
 /**
@@ -27,6 +28,7 @@ export interface ApiCatConfig {
 export class ApiCatPlugin {
     private config: ApiCatConfig;
     private outputDir: string;
+    private sourceDir: string;
 
     constructor(config: ApiCatConfig = { enabled: false }) {
         this.config = {
@@ -34,10 +36,12 @@ export class ApiCatPlugin {
             outputDir: './apicat-output',
             generateCollections: true,
             enableLocalTesting: true,
+            sourceDir: './',
             ...config,
         };
 
         this.outputDir = this.config.outputDir || './apicat-output';
+        this.sourceDir = this.config.sourceDir || './';
     }
 
     /**
@@ -106,7 +110,7 @@ export class ApiCatPlugin {
                 index: 'cat.api.index.json',
                 shards: this.generateShardList(apicatData.endpoints),
             },
-            docs: this.generateDocsMap(apicatData.groups),
+            docs: this.generateDocsMap(apicatData.groups, projectInfo.documentation),
             tsdoc: await this.generateTSDocMap(),
             search: 'cat.search.json',
             assets: 'cat.assets.json',
@@ -137,6 +141,8 @@ export class ApiCatPlugin {
                     bugs: apicatData.project.bugs,
                     repository: apicatData.project.repository,
                     mqtt: apicatData.project.mqtt,
+                    header: apicatData.project.header,
+                    footer: apicatData.project.footer,
                     generatedAt: manifest.generatedAt,
                 },
                 null,
@@ -178,8 +184,9 @@ export class ApiCatPlugin {
     /**
      * Generate docs map for manifest
      * @param groups
+     * @param documentation - Array of general documentation files
      */
-    private generateDocsMap(groups: string[]): Record<string, string> {
+    private generateDocsMap(groups: string[], documentation?: any[]): Record<string, string> {
         const docsMap: Record<string, string> = {
             header: 'cat.docs/header.json',
             footer: 'cat.docs/footer.json',
@@ -188,6 +195,13 @@ export class ApiCatPlugin {
         groups.forEach((group) => {
             docsMap[`group.${group}`] = `cat.docs/group.${this.sanitizeGroupName(group)}.json`;
         });
+
+        // Add general documentation files
+        if (documentation && Array.isArray(documentation)) {
+            documentation.forEach((doc) => {
+                docsMap[doc.filename] = `cat.docs/${doc.filename}.json`;
+            });
+        }
 
         return docsMap;
     }
@@ -418,17 +432,51 @@ export class ApiCatPlugin {
             }
 
             // Generate JSON instead of HTML for encryption compatibility
-            const groupData = {
+            const groupData: any = {
                 group: group,
                 type: 'group-documentation',
                 html: groupHtml,
                 generatedAt: new Date().toISOString(),
                 version: '5.0.0',
             };
+
+            // Include custom markdown metadata if available
+            if (customMarkdown[group]) {
+                groupData.customMarkdown = {
+                    title: customMarkdown[group].title,
+                    icon: customMarkdown[group].icon,
+                    html: customMarkdown[group].html
+                };
+            }
+
             await fs.writeFile(
                 path.join(outputPath, 'cat.docs', `group.${this.sanitizeGroupName(group)}.json`),
                 JSON.stringify(groupData, null, 2)
             );
+        }
+
+        // Generate general documentation files (from documentation glob pattern)
+        if (projectInfo.documentation && Array.isArray(projectInfo.documentation)) {
+            console.log(`📚 Processing ${projectInfo.documentation.length} general documentation files...`);
+
+            for (const doc of projectInfo.documentation) {
+                const docData = {
+                    filename: doc.filename,
+                    title: doc.title,
+                    type: 'documentation',
+                    html: doc.content,
+                    icon: doc.icon || 'fa-file-text',
+                    generatedAt: new Date().toISOString(),
+                    version: '5.0.0',
+                };
+
+                await fs.writeFile(
+                    path.join(outputPath, 'cat.docs', `${doc.filename}.json`),
+                    JSON.stringify(docData, null, 2)
+                );
+
+                console.log(`  ✓ Generated: ${doc.filename}.json`);
+            }
         }
 
         // Generate header and footer
@@ -500,10 +548,24 @@ export class ApiCatPlugin {
         }
 
         const MarkdownIt = require('markdown-it');
+        const hljs = require('highlight.js');
+
         const md = new MarkdownIt({
             html: true,
             linkify: true,
             typographer: true,
+            highlight: function (str: string, lang: string) {
+                if (lang && hljs.getLanguage(lang)) {
+                    try {
+                        // Return only the highlighted content, markdown-it will wrap it
+                        return hljs.highlight(str, { language: lang, ignoreIllegals: true }).value;
+                    } catch (err) {
+                        console.error('Highlight error:', err);
+                    }
+                }
+                // Return empty string to let markdown-it handle escaping
+                return '';
+            }
         });
 
         // Process header and footer (they come already processed from writer)
@@ -530,10 +592,44 @@ export class ApiCatPlugin {
             for (const [groupName, settings] of Object.entries<any>(projectInfo.settings)) {
                 if (settings.filename) {
                     try {
-                        const markdownPath = path.resolve('./examples/apicat/', settings.filename);
+                        const markdownPath = path.resolve(this.sourceDir, settings.filename);
                         if (await fs.pathExists(markdownPath)) {
                             const markdownContent = await fs.readFile(markdownPath, 'utf8');
-                            const htmlContent = md.render(markdownContent);
+                            let htmlContent = md.render(markdownContent);
+
+                            // Post-process HTML to add hljs classes and highlighting
+                            htmlContent = htmlContent.replace(
+                                /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g,
+                                (match, lang, code) => {
+                                    // Decode HTML entities
+                                    const decodedCode = code
+                                        .replace(/&lt;/g, '<')
+                                        .replace(/&gt;/g, '>')
+                                        .replace(/&amp;/g, '&')
+                                        .replace(/&quot;/g, '"')
+                                        .replace(/&#39;/g, "'");
+
+                                    // Apply highlight.js
+                                    if (lang && hljs.getLanguage(lang)) {
+                                        try {
+                                            const highlighted = hljs.highlight(decodedCode, {
+                                                language: lang,
+                                                ignoreIllegals: true
+                                            }).value;
+                                            return `<pre class="hljs"><code class="hljs language-${lang}">${highlighted}</code></pre>`;
+                                        } catch (err) {
+                                            return `<pre class="hljs"><code class="hljs language-${lang}">${code}</code></pre>`;
+                                        }
+                                    }
+                                    return `<pre class="hljs"><code class="hljs">${code}</code></pre>`;
+                                }
+                            );
+
+                            // Also handle plain code blocks without language
+                            htmlContent = htmlContent.replace(
+                                /<pre><code>([\s\S]*?)<\/code><\/pre>/g,
+                                '<pre class="hljs"><code class="hljs">$1</code></pre>'
+                            );
 
                             customMarkdown[groupName] = {
                                 title: settings.title || groupName,
@@ -541,9 +637,13 @@ export class ApiCatPlugin {
                                 html: htmlContent,
                                 raw: markdownContent,
                             };
+
+                            console.log(`  ✓ Loaded custom markdown for group: ${groupName} (${settings.filename})`);
+                        } else {
+                            console.log(`  ⚠ Markdown file not found for group ${groupName}: ${markdownPath}`);
                         }
                     } catch (error) {
-                        console.log(`Error processing markdown for group ${groupName}: ${error.message}`);
+                        console.log(`  ✗ Error processing markdown for group ${groupName}: ${error.message}`);
                     }
                 }
             }

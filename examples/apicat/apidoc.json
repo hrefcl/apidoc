@@ -6,6 +6,7 @@
     "enableLocalTesting": true
   },
   "description": "Documentation for the REST api access provided at LexCorp",
+  "documentation": "./example/*.md",
   "footer": {
     "title": "Best practices",
     "filename": "footer.md",

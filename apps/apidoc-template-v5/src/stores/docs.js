@@ -19,11 +19,53 @@ export const useDocsStore = defineStore('docs', () => {
     error.value = null
 
     try {
-      // Cargar índice
-      const response = await fetch('/data/_index.json')
-      const data = await response.json()
-      docs.value = data.files || []
-      categories.value = data.categories || {}
+      // Cargar índice principal (cat.json)
+      const response = await fetch('/data/cat.json')
+      const catData = await response.json()
+
+      // Procesar estructura APIcat v5
+      const allDocs = []
+
+      // Procesar docs (header, footer, groups, tsdoc)
+      if (catData.docs) {
+        Object.entries(catData.docs).forEach(([key, path]) => {
+          allDocs.push({
+            filename: path.split('/').pop(),
+            directory: 'cat.docs',
+            path: path,
+            key: key,
+            title: formatFileName(path.split('/').pop())
+          })
+        })
+      }
+
+      // Procesar tsdoc
+      if (catData.tsdoc && Array.isArray(catData.tsdoc)) {
+        catData.tsdoc.forEach(path => {
+          if (path.startsWith('cat.tsdoc/')) {
+            allDocs.push({
+              filename: path.split('/').pop(),
+              directory: 'cat.tsdoc',
+              path: path,
+              title: formatFileName(path.split('/').pop())
+            })
+          }
+        })
+      }
+
+      // Procesar models
+      if (catData.models?.shards) {
+        catData.models.shards.forEach(path => {
+          allDocs.push({
+            filename: path.split('/').pop(),
+            directory: 'cat.model',
+            path: path,
+            title: formatFileName(path.split('/').pop())
+          })
+        })
+      }
+
+      docs.value = allDocs
 
       // Cargar navegación
       await loadNavigation()
@@ -206,19 +248,6 @@ export const useDocsStore = defineStore('docs', () => {
       return buildFallbackNav()
     }
 
-    // API Groups
-    const apiGroups = navigation.value.groups.map(group => ({
-      title: formatGroupTitle(group.id, group.title),
-      icon: mapFontAwesomeIcon(group.icon),
-      items: group.endpoints.map(endpoint => ({
-        title: formatEndpointTitle(endpoint),
-        path: `/api/${endpoint}`,
-        slug: endpoint,
-        category: 'cat.api',
-        icon: 'plug'
-      }))
-    }))
-
     // cat.docs section - EXCLUIR archivos group.* y tsdoc.*
     const docFiles = docs.value.filter(d =>
       d.directory === 'cat.docs' &&
@@ -229,31 +258,106 @@ export const useDocsStore = defineStore('docs', () => {
       nav.push({
         title: 'Documentación',
         icon: 'BookOpen',
-        items: docFiles.map(doc => ({
-          title: doc.title || formatFileName(doc.filename),
-          path: `/docs/${doc.filename.replace('.json', '')}`,
-          slug: doc.filename.replace('.json', ''),
-          category: 'cat.docs',
-          icon: 'book-open'
-        }))
+        isSection: true,
+        items: docFiles.map(doc => {
+          // Si es header o footer, usar metadata de meta.value
+          if (doc.filename === 'header.json' && meta.value?.header) {
+            return {
+              title: meta.value.header.title || doc.title,
+              path: `/docs/${doc.filename.replace('.json', '')}`,
+              slug: doc.filename.replace('.json', ''),
+              category: 'cat.docs',
+              icon: mapFontAwesomeIcon(meta.value.header.icon) || 'home'
+            }
+          }
+          if (doc.filename === 'footer.json' && meta.value?.footer) {
+            return {
+              title: meta.value.footer.title || doc.title,
+              path: `/docs/${doc.filename.replace('.json', '')}`,
+              slug: doc.filename.replace('.json', ''),
+              category: 'cat.docs',
+              icon: mapFontAwesomeIcon(meta.value.footer.icon) || 'lightbulb'
+            }
+          }
+          // Archivos normales
+          return {
+            title: doc.title || formatFileName(doc.filename),
+            path: `/docs/${doc.filename.replace('.json', '')}`,
+            slug: doc.filename.replace('.json', ''),
+            category: 'cat.docs',
+            icon: 'book-open'
+          }
+        })
       })
     }
 
-    // Agregar grupos de API
-    nav.push(...apiGroups)
+    // API Reference - Gran grupo con subgrupos internos respetando el orden
+    if (navigation.value.groups && navigation.value.groups.length > 0) {
+      const apiGroups = navigation.value.groups
+        .filter(group => group.endpoints && group.endpoints.length > 0)
+        .map(group => ({
+          groupId: group.id,
+          title: formatGroupTitle(group.id, group.title),
+          icon: mapFontAwesomeIcon(group.icon),
+          endpoints: group.endpoints
+        }))
+
+      // Respetar el orden definido en navigation.value.order
+      const orderedGroups = navigation.value.order
+        ? navigation.value.order
+            .map(groupId => apiGroups.find(g => g.groupId === groupId))
+            .filter(Boolean)
+        : apiGroups
+
+      nav.push({
+        title: 'API Reference',
+        icon: 'Plug',
+        isSection: true,
+        subgroups: orderedGroups.map(group => ({
+          title: group.title,
+          icon: group.icon,
+          sectionPath: `/api/section/${group.groupId}`,
+          items: group.endpoints.map(endpoint => ({
+            title: formatEndpointTitle(endpoint),
+            path: `/api/${endpoint}`,
+            slug: endpoint,
+            category: 'cat.api',
+            icon: 'plug'
+          }))
+        }))
+      })
+    }
 
     // cat.tsdoc section
     const tsFiles = docs.value.filter(d => d.directory === 'cat.tsdoc')
     if (tsFiles.length > 0) {
       nav.push({
-        title: 'TypeScript',
+        title: 'TypeScript Docs',
         icon: 'Code',
+        isSection: true,
         items: tsFiles.map(doc => ({
           title: doc.title || formatFileName(doc.filename),
           path: `/tsdoc/${doc.filename.replace('.json', '')}`,
           slug: doc.filename.replace('.json', ''),
           category: 'cat.tsdoc',
           icon: 'code'
+        }))
+      })
+    }
+
+    // cat.model section
+    const modelFiles = docs.value.filter(d => d.directory === 'cat.model')
+    if (modelFiles.length > 0) {
+      nav.push({
+        title: 'Models',
+        icon: 'Users',
+        isSection: true,
+        items: modelFiles.map(doc => ({
+          title: doc.title || formatFileName(doc.filename),
+          path: `/model/${doc.filename.replace('.json', '')}`,
+          slug: doc.filename.replace('.json', ''),
+          category: 'cat.model',
+          icon: 'users'
         }))
       })
     }

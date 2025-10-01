@@ -183,6 +183,17 @@ export interface ApiDocProject {
         /** Inline footer content */
         content?: string;
     };
+    /** Documentation files from glob pattern */
+    documentation?: Array<{
+        /** Base filename without extension */
+        filename: string;
+        /** Document title */
+        title: string;
+        /** Rendered HTML content */
+        content: string;
+        /** Font Awesome icon class */
+        icon?: string;
+    }>;
 }
 
 /**
