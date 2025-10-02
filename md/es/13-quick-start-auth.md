@@ -1,8 +1,17 @@
-# 🚀 APIDoc 4.0 - Guía Rápida de Autenticación
+# 🚀 APIDoc 5.0 - Guía Rápida de Autenticación
 
 ## ⚡ Configuración en 3 Pasos
 
-### 1️⃣ Configurar apidoc.json
+### 1️⃣ Generar Clave de Encriptación
+
+```bash
+# Genera una clave aleatoria de 32 bytes en Base64
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
+Copia la clave generada, la necesitarás en el siguiente paso.
+
+### 2️⃣ Configurar apidoc.json
 
 Agrega la sección `login` a tu `apidoc.json`:
 
@@ -12,29 +21,26 @@ Agrega la sección `login` a tu `apidoc.json`:
   "version": "1.0.0",
   "login": {
     "active": true,
+    "encryptionKey": "TU_CLAVE_GENERADA_AQUI",
     "admited": [
       {
-        "email": "admin@miempresa.com",
-        "password": "mi_password_seguro"
+        "email": "admin@empresa.com",
+        "password": "password123",
+        "name": "Admin User"
       }
     ]
   }
 }
 ```
 
-### 2️⃣ Generar Documentación
+**⚠️ IMPORTANTE**: Reemplaza `TU_CLAVE_GENERADA_AQUI` con la clave del paso 1.
+
+### 3️⃣ Generar y Servir
 
 ```bash
-# Instalar APIDoc 4.0
-npm install -g @hrefcl/apidoc
-
-# Generar con autenticación
+# Generar documentación con autenticación
 apidoc -i src/ -o docs/
-```
 
-### 3️⃣ Servir y Probar
-
-```bash
 # Servir documentación
 npx serve docs/ -p 8080
 
@@ -42,31 +48,52 @@ npx serve docs/ -p 8080
 open http://localhost:8080
 ```
 
-**¡Listo!** Tu documentación ahora requiere login para acceder.
+**¡Listo!** Tu documentación ahora requiere login.
 
 ---
 
-## 🔐 Opciones de Autenticación
+## 🔐 Modos de Autenticación
 
-### 🏠 Solo Local
+### 🏠 Modo Local (Sin Servidor)
+
+Usuarios fijos definidos en `apidoc.json`. Ideal para documentación interna.
+
 ```json
 {
   "login": {
     "active": true,
+    "encryptionKey": "TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ=",
     "admited": [
-      {"email": "user1@example.com", "password": "pass123"},
-      {"email": "user2@example.com", "password": "pass456"}
+      {
+        "email": "user@example.com",
+        "password": "pass123",
+        "name": "Usuario Ejemplo"
+      }
     ]
   }
 }
 ```
 
-### 🌐 Solo Remota
+**Ventajas:**
+- ✅ No requiere servidor
+- ✅ Funciona offline
+- ✅ Encriptación AES-256-GCM
+- ✅ Ofuscación automática de claves
+
+**Desventajas:**
+- ⚠️ Usuarios fijos
+- ⚠️ Requiere regenerar docs para cambios
+
+### 🌐 Modo Servidor
+
+Integración con tu API de autenticación existente.
+
 ```json
 {
   "login": {
     "active": true,
-    "urlAuth": "https://api.miempresa.com/auth/login",
+    "encryptionKeyFromServer": true,
+    "urlAuth": "https://api.empresa.com/auth/login",
     "value_form": {
       "email": "email",
       "password": "password"
@@ -77,78 +104,117 @@ open http://localhost:8080
 }
 ```
 
-### 🔗 Híbrida (Local + Remota)
+El servidor debe responder con:
+
 ```json
 {
-  "login": {
-    "active": true,
-    "admited": [
-      {"email": "admin@local.com", "password": "local123"}
-    ],
-    "urlAuth": "https://api.miempresa.com/auth/login",
-    "value_form": {
-      "email": "email",
-      "password": "password"
-    },
-    "response_success": 200,
-    "response_error": 401
+  "encryptionKey": "TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ=",
+  "user": {
+    "email": "usuario@empresa.com",
+    "name": "Usuario Ejemplo"
   }
 }
 ```
+
+**Ventajas:**
+- ✅ Usuarios dinámicos
+- ✅ Integración con sistemas existentes
+- ✅ Gestión centralizada
+
+**Desventajas:**
+- ⚠️ Requiere servidor disponible
+- ⚠️ No funciona offline
+
+**⚠️ NOTA**: El sistema funciona en modo local **O** servidor, no ambos simultáneamente.
 
 ---
 
 ## 🧪 Testing Rápido
 
-Usa las credenciales de ejemplo:
-- **Email**: `odin@href.cl`
-- **Password**: `6789123450`
+### Probar Modo Local
 
-Estas funcionan tanto para autenticación local como remota.
+1. Usa la configuración de ejemplo del paso 2
+2. Genera la documentación: `apidoc -i src/ -o docs/`
+3. Sirve: `npx serve docs/ -p 8080`
+4. Accede a `http://localhost:8080`
+5. Login con: `admin@empresa.com` / `password123`
 
----
+### Verificar Encriptación
 
-## 📚 Documentación Completa
+Abre el archivo `docs/index.html` generado y busca:
 
-Ver [AUTHENTICATION.md](./12-authentication.md) para:
-- Configuración avanzada
-- Seguridad y mejores prácticas
-- Solución de problemas
-- API de desarrollo
-- Ejemplos completos
+```bash
+# NO deberías encontrar la clave original
+grep -c "TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ=" docs/index.html
+# Resultado esperado: 0
+
+# Deberías encontrar código ofuscado
+grep -c "_obf" docs/index.html
+# Resultado esperado: 1
+```
 
 ---
 
 ## 🆘 Problemas Comunes
 
-### ❌ "Login form doesn't appear"
-**Solución**: Verificar en consola del navegador:
-```javascript
-console.log('AuthManager:', !!window.AuthManager);
-console.log('Config:', window.LOGIN_CONFIG);
-```
+### ❌ Pantalla en blanco
 
-### ❌ "Authentication failed"
-**Solución**: Usar script de validación:
-```bash
-cd docs/
-node test-credentials.js
-```
+**Causa**: Error de JavaScript al cargar.
 
-### ❌ "Templates not found"
-**Solución**: Regenerar documentación:
-```bash
-apidoc -i src/ -o docs/ --debug
-```
+**Solución**:
+1. Abre DevTools (F12)
+2. Ve a la pestaña Console
+3. Busca errores en rojo
+4. Regenera documentación: `apidoc -i src/ -o docs/`
+
+### ❌ "Invalid credentials"
+
+**Modo Local**: Verifica que email y password coincidan exactamente.
+
+**Modo Servidor**:
+1. Verifica que el servidor esté accesible
+2. Verifica CORS está configurado correctamente
+3. Revisa la respuesta en Network tab de DevTools
+
+### ❌ "Failed to reconstruct encryption key"
+
+**Causa**: Código de ofuscación corrupto.
+
+**Solución**: Regenera la documentación completa.
+
+### ❌ Sesión expira inmediatamente
+
+**Causa**: JWT mal formado.
+
+**Solución**:
+1. Limpia sessionStorage: DevTools → Application → Session Storage
+2. Cierra todas las pestañas de la documentación
+3. Vuelve a intentar login
 
 ---
 
-## 🎯 Próximos Pasos
+## 📚 Documentación Completa
 
-1. ✅ Configurar autenticación básica
-2. 🔧 Personalizar usuarios y passwords
-3. 🌐 Integrar con tu sistema de auth existente
-4. 🚀 Desplegar en producción con HTTPS
-5. 📊 Monitorear accesos y uso
+Para configuración avanzada, consulta:
 
-¡Tu API Documentation está protegida y lista! 🎉
+- **[🔐 Sistema de Autenticación](./12-authentication.md)** - Guía completa
+- **[👨‍💻 Developer Reference](./14-auth-developer.md)** - API técnica
+- **[📋 Configuration](./01-configuration.md)** - Todas las opciones
+
+---
+
+## 🎯 Checklist de Producción
+
+Antes de desplegar en producción, verifica:
+
+- [ ] Clave de encriptación generada aleatoriamente
+- [ ] Contraseñas seguras (mínimo 12 caracteres)
+- [ ] Servidor con HTTPS habilitado
+- [ ] CORS configurado correctamente (modo servidor)
+- [ ] Backup del archivo `apidoc.json` (contiene usuarios)
+- [ ] Documentación probada en navegadores target
+- [ ] Plan de rotación de credenciales
+
+---
+
+**¡Tu documentación está protegida y lista para producción! 🎉**

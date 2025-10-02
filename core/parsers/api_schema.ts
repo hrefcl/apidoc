@@ -340,11 +340,11 @@ function parseJsonSchema(schemaPath: string, relativeTo: string): Array<any> {
 function traverseJsonSchema(schema: any, prefix = ''): Record<string, string> {
     const params: Record<string, string> = {};
 
-    console.log(`[traverseJsonSchema] Called with prefix="${prefix}", schema.type="${schema.type}"`);
+    // console.log(`[traverseJsonSchema] Called with prefix="${prefix}", schema.type="${schema.type}"`);
 
     if (schema.type === 'object' && schema.properties) {
         const propertyKeys = Object.keys(schema.properties);
-        console.log(`[traverseJsonSchema] Found ${propertyKeys.length} properties: ${propertyKeys.join(', ')}`);
+        // console.log(`[traverseJsonSchema] Found ${propertyKeys.length} properties: ${propertyKeys.join(', ')}`);
 
         for (const [key, prop] of Object.entries(schema.properties)) {
             const fieldName = prefix ? `${prefix}.${key}` : key;
@@ -355,21 +355,21 @@ function traverseJsonSchema(schema: any, prefix = ''): Record<string, string> {
             const type = getJsonSchemaType(propSchema);
             const description = propSchema.description || '';
 
-            console.log(`[traverseJsonSchema]   Processing field: ${fieldName}, type=${type}, isObject=${propSchema.type === 'object'}, hasProperties=${!!propSchema.properties}`);
+            // console.log(`[traverseJsonSchema]   Processing field: ${fieldName}, type=${type}, isObject=${propSchema.type === 'object'}, hasProperties=${!!propSchema.properties}`);
 
             params[fieldName] = `{${type}} ${field} ${description}`;
 
             // Handle nested objects
             if (propSchema.type === 'object' && propSchema.properties) {
-                console.log(`[traverseJsonSchema]   >>> Recursing into nested object: ${fieldName}`);
+                // console.log(`[traverseJsonSchema]   >>> Recursing into nested object: ${fieldName}`);
                 const nested = traverseJsonSchema(propSchema, fieldName);
-                console.log(`[traverseJsonSchema]   <<< Nested returned ${Object.keys(nested).length} params:`, Object.keys(nested));
+                // console.log(`[traverseJsonSchema]   <<< Nested returned ${Object.keys(nested).length} params:`, Object.keys(nested));
                 Object.assign(params, nested);
             }
         }
     }
 
-    console.log(`[traverseJsonSchema] Returning ${Object.keys(params).length} params:`, Object.keys(params));
+    // console.log(`[traverseJsonSchema] Returning ${Object.keys(params).length} params:`, Object.keys(params));
     return params;
 }
 
@@ -572,20 +572,16 @@ function parseInternal(content: string, source: string): any {
  */
 function processor(elements: Array<any>, element: any, block: any, filename: string): Array<any> {
     // DIRECT STDOUT WRITE - bypasses any log capture
-    process.stdout.write('[PROCESSOR v2.0.0] >>>>> ENTRY POINT <<<<< element.name=' + (element?.name || 'undefined') + '\n');
 
     if (element.name !== 'apischema') {
-        process.stdout.write('[PROCESSOR v2.0.0] SKIPPING: element.name=' + element.name + '\n');
         return elements;
     }
 
-    process.stdout.write('[PROCESSOR v2.0.0] *** PROCESSING @apiSchema ***\n');
 
     // Remove the @apiSchema element from processing
     elements.pop();
 
     const parsed = parseInternal(element.content, element.source);
-    process.stdout.write(`[PROCESSOR v2.0.0] parseInternal result: ${parsed ? JSON.stringify(parsed) : 'null'}\n`);
 
     if (!parsed) {
         // Only warn for content that looks like it should be a valid @apiSchema but failed to parse
@@ -620,9 +616,7 @@ function processor(elements: Array<any>, element: any, block: any, filename: str
         }
     } else if (parsed.schemaType === 'jsonschema') {
         // Handle JSON Schema file
-        process.stdout.write(`[PROCESSOR v2.0.0] Calling parseJsonSchema for: ${parsed.schemaValue}\n`);
         newElements = parseJsonSchema(parsed.schemaValue, filename);
-        process.stdout.write(`[PROCESSOR v2.0.0] parseJsonSchema returned ${newElements.length} elements\n`);
 
         // Update element names if not apiParam
         if (parsed.element !== 'apiParam') {
@@ -643,11 +637,9 @@ function processor(elements: Array<any>, element: any, block: any, filename: str
     }
 
     // Add new elements to the list
-    process.stdout.write(`[PROCESSOR v2.0.0] Generated ${newElements.length} elements, adding to elements array (current length=${elements.length})\n`);
 
     newElements.forEach((el) => elements.push(el));
 
-    process.stdout.write(`[PROCESSOR v2.0.0] After adding: elements.length=${elements.length}, returning elements\n`);
     if (newElements.length > 0 && newElements[0]) {
         process.stdout.write(`[PROCESSOR v2.0.0] First element added: name=${newElements[0].name}, sourceName=${newElements[0].sourceName}\n`);
     }
@@ -677,11 +669,9 @@ function processor(elements: Array<any>, element: any, block: any, filename: str
  * @since 4.0.0
  */
 function init(app: any) {
-    process.stdout.write('[api_schema v2.0.0 INIT] >>>>> REGISTERING HOOK WITH PRIORITY 195 <<<<<\n');
     // Priority 195: Between openapi (190) and model parsers (200)
     // This ensures @apiSchema processes after external files but before model tags
     app.addHook('parser-find-elements', processor, 195);
-    process.stdout.write('[api_schema v2.0.0 INIT] Hook registered successfully with priority 195\n');
 }
 
 export default {

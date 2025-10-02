@@ -41,7 +41,7 @@ FROM node:20-alpine AS builder
 
 # Metadatos
 LABEL maintainer="APIDoc Team"
-LABEL version="4.0.5"
+LABEL version="5.0.0"
 LABEL description="APIDoc - Generador de documentación REST"
 
 # Configurar directorio de trabajo

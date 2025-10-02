@@ -1,6 +1,6 @@
 # 📡 Protocolo MQTT
 
-APIDoc 4.0.4 introduce soporte completo para documentar protocolos MQTT, permitiendo documentar patrones publish/subscribe junto con APIs REST tradicionales.
+APIDoc 5.0.0 introduce soporte completo para documentar protocolos MQTT, permitiendo documentar patrones publish/subscribe junto con APIs REST tradicionales.
 
 ## 🚀 Introducción a MQTT en APIDoc
 

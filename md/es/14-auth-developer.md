@@ -1,579 +1,508 @@
-# 🛠️ APIDoc 4.0 - Guía del Desarrollador - Sistema de Autenticación
+# 🛠️ APIDoc 5.0 - Guía del Desarrollador - Sistema de Autenticación
 
 ## 📐 Arquitectura Técnica
 
-### Componentes Principales
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   apidoc.json   │───▶│  AuthProcessor  │───▶│  Encrypted HTML │
-│   (Config)      │    │   (Build-time)  │    │   + Bundle      │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                                       │
-                                                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   User Login    │◀───│   AuthManager   │◀───│     Browser     │
-│   (Session)     │    │  (Runtime)      │    │  (Client-side)  │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
 ### Flujo de Datos
 
-1. **Build Time**: `AuthProcessor` procesa configuración y encripta contenido
-2. **Runtime**: `AuthManager` maneja autenticación y desencripta contenido
-3. **Session**: Persistencia en `localStorage` con tokens JWT-like
+```
+┌─────────────────────┐
+│   apidoc.json       │
+│   - login.active    │
+│   - encryptionKey   │
+│   - admited[]       │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│  Build Time         │
+│  ===============    │
+│  1. Encrypt admited │
+│  2. Obfuscate key   │
+│  3. Generate HTML   │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│  Generated HTML     │
+│  - Encrypted data   │
+│  - Obfuscated key   │
+│  - Vue 3 SPA        │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│  Runtime (Browser)  │
+│  ===============    │
+│  1. Reconstruct key │
+│  2. Login user      │
+│  3. Decrypt data    │
+│  4. Generate JWT    │
+└─────────────────────┘
+```
 
 ---
 
-## 🔧 API de Desarrollo
+## 🔧 Módulos del Sistema
 
-### AuthProcessor (Build-time)
+### 1. Encriptación (Build Time)
 
-Ubicación: `lib/core/auth-processor.ts`
+**Archivo**: `core/utils/encryption.ts`
 
 ```typescript
-class AuthProcessor {
-  init(loginConfig: LoginConfig): void
-  processTemplate(templateContent: string, projectData: any): string
-  protectSensitiveContent(htmlContent: string): string
-  static validateConfig(loginConfig: LoginConfig): ValidationResult
+export class JSONEncryption {
+  constructor(config?: EncryptionConfig, encryptionKey?: string)
+
+  // Encriptar un objeto
+  encryptObject(obj: any): EncryptedData
+
+  // Desencriptar un objeto
+  decryptObject(encryptedData: EncryptedData): any
+
+  // Encriptar archivo JSON
+  encryptFile(inputPath: string, outputPath: string): Promise<void>
+
+  // Encriptar directorio completo
+  static encryptDirectory(
+    sourceDir: string,
+    outputDir: string,
+    encryptionKey?: string
+  ): Promise<void>
 }
 
-interface LoginConfig {
-  active: boolean;
-  admited?: Array<{ email: string; password: string }>;
-  urlAuth?: string;
-  value_form?: { email: string; password: string };
-  response_success?: number;
-  response_error?: number;
+interface EncryptedData {
+  data: string;        // Datos encriptados (Base64)
+  iv: string;          // IV (Base64)
+  tag: string;         // Auth tag (Base64)
+  algorithm: string;   // "aes-256-gcm"
+  encrypted_at: string;
+  version: string;
 }
 ```
 
-**Métodos clave:**
+**Ejemplo de uso**:
 
 ```typescript
-// Inicializar con configuración
-processor.init({
-  active: true,
-  admited: [{ email: "user@test.com", password: "test123" }]
+import { JSONEncryption } from './utils/encryption';
+
+// Crear instancia
+const encryption = new JSONEncryption(
+  { algorithm: 'aes-256-gcm' },
+  'TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ='
+);
+
+// Encriptar objeto
+const encrypted = encryption.encryptObject({
+  users: [{email: 'test@example.com', password: 'test'}]
 });
 
-// Procesar template HTML
-const processedHtml = processor.processTemplate(templateContent, projectData);
+// Encriptar directorio completo
+await JSONEncryption.encryptDirectory(
+  './tmp/apicat-output',
+  './tmp/apicat-output',
+  'YOUR_ENCRYPTION_KEY'
+);
+```
 
-// Validar configuración
-const validation = AuthProcessor.validateConfig(loginConfig);
-if (!validation.valid) {
-  console.error('Config errors:', validation.errors);
+### 2. Ofuscación de Claves (Build Time)
+
+**Archivo**: `core/utils/keyObfuscation.ts`
+
+```typescript
+export function obfuscateKey(key: string, segments: number = 4): {
+  code: string;
+  reconstructVar: string;
+}
+
+export function obfuscateMultipleKeys(keys: Record<string, string>): {
+  code: string;
+  reconstructVars: Record<string, string>;
+}
+
+export function obfuscateKeyInline(key: string): string
+```
+
+**Ejemplo de uso**:
+
+```typescript
+import { obfuscateKey } from './utils/keyObfuscation';
+
+// Ofuscar clave
+const { code, reconstructVar } = obfuscateKey(
+  'TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ=',
+  4
+);
+
+console.log(code);
+// Output:
+// const $_BHrVxBFfpe=["T","Y","e"...];
+// const __pwYDhLgFKXHJWL=["6","8","S"...]; // decoy
+// ...
+// const __xOfQMrNCnxeIrVc=[...$_BHrVxBFfpe,...].join('');
+
+console.log(reconstructVar);
+// Output: __xOfQMrNCnxeIrVc
+```
+
+### 3. Plugin APIcat (Build Time)
+
+**Archivo**: `core/apidoc/plugins/apicat.ts`
+
+Procesa la configuración de login y genera metadata encriptada:
+
+```typescript
+// Si login está activo, encripta la lista de usuarios
+if (projectInfo.login && projectInfo.login.active) {
+  if (projectInfo.login.admited) {
+    // Encriptar lista de usuarios
+    const encryptedAdmited = encryption.encryptObject(
+      projectInfo.login.admited
+    );
+    loginConfig._admited = encryptedAdmited;
+  }
+
+  // Ofuscar clave de encriptación
+  if (!projectInfo.login.encryptionKeyFromServer &&
+      projectInfo.login.encryptionKey) {
+    const { obfuscateKey } = await import('../../utils/keyObfuscation');
+    const obfuscated = obfuscateKey(
+      projectInfo.login.encryptionKey,
+      4
+    );
+
+    loginConfig._obf = obfuscated.code;
+    loginConfig._kv = obfuscated.reconstructVar;
+  }
 }
 ```
 
-### AuthManager (Runtime)
+### 4. Autenticación Local (Runtime - Frontend)
 
-Ubicación: `template/src/components/auth.ts`
+**Archivo**: `apps/apidoc-template-v5/src/utils/localAuth.js`
 
-```typescript
-class AuthManager {
-  // Inicialización
-  init(loginConfig: LoginConfig): void
-
-  // Estado de autenticación
-  isLoginRequired(): boolean
-  isAuthenticated(): boolean
-
-  // Proceso de login
-  login(email: string, password: string): Promise<LoginResult>
-  logout(): void
-
-  // Gestión de sesión
-  createSession(email: string, method: 'local' | 'remote'): Promise<void>
-  loadSession(): void
-  clearSession(): void
-
-  // Información de debug
-  getSessionInfo(): AuthSession | null
+```javascript
+// Validar credenciales contra lista encriptada
+export function validateLocalCredentials(
+  email,
+  password,
+  admitedList
+): {
+  valid: boolean;
+  user: object | null;
+  error: string | null;
 }
 
-interface LoginResult {
+// Generar token JWT local
+export function generateLocalToken(
+  user,
+  options = {}
+): string
+
+// Autenticar usuario localmente
+export async function authenticateLocally(
+  email,
+  password,
+  admitedList,
+  encryptionKey
+): Promise<{
   success: boolean;
-  message: string;
-}
-
-interface AuthSession {
-  email: string;
-  authenticated: boolean;
-  expires: number;
-  method: 'local' | 'remote';
-}
+  token: string | null;
+  user: object | null;
+  encryptionKey: string | null;
+  error: string | null;
+}>
 ```
 
-**Uso en browser:**
+**Ejemplo de uso en LoginPage.vue**:
 
 ```javascript
-// AuthManager está disponible globalmente
-const authManager = window.authManager;
+import { authenticateLocally } from '../utils/localAuth';
+import { decryptObject } from '../utils/encryption';
 
-// Verificar estado
-if (authManager.isAuthenticated()) {
-  console.log('Usuario autenticado');
-}
+// 1. Reconstruir clave desde segmentos ofuscados
+const encryptionKey = eval(
+  `(function(){${config._obf}return ${config._kv};})()`
+);
 
-// Login programático
-authManager.login('user@test.com', 'password123')
-  .then(result => {
-    if (result.success) {
-      console.log('Login exitoso');
-    } else {
-      console.error('Login falló:', result.message);
-    }
-  });
+// 2. Desencriptar lista de usuarios
+const admitedList = decryptObject(
+  config._admited,
+  encryptionKey
+);
 
-// Información de sesión
-const session = authManager.getSessionInfo();
-console.log('Sesión actual:', session);
-```
+// 3. Autenticar
+const result = await authenticateLocally(
+  email,
+  password,
+  admitedList,
+  encryptionKey
+);
 
----
-
-## 🔒 Sistema de Encriptación
-
-### Encriptación de Contenido
-
-**Algoritmo**: AES-256-CBC con PBKDF2
-**Ubicación**: `AuthProcessor.encryptContent()`
-
-```typescript
-interface EncryptedContent {
-  data: string;      // Contenido encriptado (Base64)
-  iv: string;        // Vector de inicialización
-  salt: string;      // Salt para PBKDF2
-  timestamp: number; // Timestamp de encriptación
-  version: string;   // Versión del algoritmo
+if (result.success) {
+  // Login exitoso - almacenar JWT
+  sessionStorage.setItem('apicat_auth_token', result.token);
 }
 ```
 
-**Proceso**:
-1. Generar salt e IV aleatorios
-2. Derivar clave usando PBKDF2 (10,000 iteraciones)
-3. Encriptar con AES-256-CBC
-4. Codificar resultado en Base64
+### 5. JWT (Runtime - Frontend)
 
-### Hash de Contraseñas
-
-**Algoritmo**: SHA-256 con salt personalizado
-
-```typescript
-function hashPassword(password: string, salt: string): string {
-  return CryptoJS.SHA256(password + salt + 'apidoc-salt').toString();
-}
-```
-
-**Uso**:
-- Salt = email del usuario
-- Sufijo fijo: `'apidoc-salt'`
-- Resultado: Hash hexadecimal de 64 caracteres
-
----
-
-## 🎨 Integración con UI
-
-### Hooks y Eventos
+**Archivo**: `apps/apidoc-template-v5/src/utils/jwt.js`
 
 ```javascript
-// Eventos disponibles
-document.addEventListener('apidoc:auth:init', (event) => {
-  console.log('Sistema de auth inicializado');
-});
+// Generar JWT de testing (local)
+export function generateTestToken(
+  payload,
+  expiresInHours = 24
+): string
 
-document.addEventListener('apidoc:auth:login:success', (event) => {
-  console.log('Login exitoso:', event.detail);
-});
-
-document.addEventListener('apidoc:auth:login:error', (event) => {
-  console.error('Error de login:', event.detail);
-});
-
-document.addEventListener('apidoc:auth:logout', (event) => {
-  console.log('Usuario desconectado');
-});
-```
-
-### Personalización de UI
-
-**CSS Custom Properties**:
-```css
-:root {
-  /* Colores del overlay de login */
-  --apidoc-auth-overlay-bg: rgba(0, 0, 0, 0.8);
-  --apidoc-auth-form-bg: white;
-  --apidoc-auth-form-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-
-  /* Colores del formulario */
-  --apidoc-auth-input-bg: white;
-  --apidoc-auth-input-border: #d1d5db;
-  --apidoc-auth-input-focus: #3b82f6;
-
-  /* Botón de login */
-  --apidoc-auth-button-bg: #3b82f6;
-  --apidoc-auth-button-hover: #2563eb;
-  --apidoc-auth-button-text: white;
+// Validar JWT
+export function validateJWT(token): {
+  valid: boolean;
+  payload: object | null;
+  error: string | null;
 }
 
-/* Tema oscuro */
-[data-theme="dark"] {
-  --apidoc-auth-form-bg: #1f2937;
-  --apidoc-auth-input-bg: #374151;
-  --apidoc-auth-input-border: #4b5563;
+// Decodificar JWT (sin validar)
+export function decodeJWT(token): object | null
+```
+
+**Estructura del JWT**:
+
+```javascript
+{
+  // Header
+  alg: "HS256",
+  typ: "JWT",
+
+  // Payload
+  sub: "user@example.com",      // Email del usuario
+  name: "Usuario Ejemplo",       // Nombre
+  role: "user",                  // Rol
+  type: "local",                 // Tipo: "local" o "server"
+  iss: "apicat-local",          // Emisor
+  exp: 1640995200,              // Expiración (timestamp)
+  iat: 1640908800               // Emisión (timestamp)
 }
 ```
 
-**HTML del Formulario**:
-```html
-<div id="auth-overlay" class="fixed inset-0 bg-black bg-opacity-80 z-50">
-  <div class="min-h-screen flex items-center justify-center">
-    <form class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
-      <!-- Form fields -->
-    </form>
-  </div>
-</div>
-```
+### 6. Store de Documentación (Runtime - Frontend)
 
-### Integración con Temas
-
-El sistema respeta automáticamente el tema dark/light de APIDoc:
+**Archivo**: `apps/apidoc-template-v5/src/stores/docs.js`
 
 ```javascript
-// Detectar tema actual
-const currentTheme = document.documentElement.getAttribute('data-theme');
+export const useDocsStore = defineStore('docs', () => {
+  // Estado de autenticación
+  const isAuthenticated = ref(false);
+  const authToken = ref(null);
 
-// Aplicar estilos según tema
-if (currentTheme === 'dark') {
-  formElement.classList.add('dark-theme');
-}
-```
-
----
-
-## 📊 Testing y Debug
-
-### Scripts de Testing Incluidos
-
-```bash
-# Validación completa del sistema
-node validate-system.js
-
-# Test de credenciales y hashing
-node test-credentials.js
-
-# Flujo completo de testing
-node test-complete-workflow.js
-
-# Guía final de testing
-node final-test-guide.js
-```
-
-### Debug en Browser
-
-```javascript
-// Variables globales disponibles
-window.AuthManager          // Clase AuthManager
-window.authManager         // Instancia global
-window.LOGIN_CONFIG        // Configuración parseada
-window.API_DATA           // Datos de la API
-window.API_PROJECT        // Información del proyecto
-
-// Debug de autenticación
-console.log('Auth enabled:', window.authManager?.isLoginRequired());
-console.log('Authenticated:', window.authManager?.isAuthenticated());
-console.log('Session:', window.authManager?.getSessionInfo());
-
-// Debug de configuración
-console.log('Login config:', window.LOGIN_CONFIG);
-console.log('Local users:', window.LOGIN_CONFIG?.admited?.length);
-console.log('Remote URL:', window.LOGIN_CONFIG?.urlAuth);
-
-// Debug de templates
-console.log('Templates loaded:', Object.keys(window.Handlebars?.templates || {}));
-
-// Debug del DOM
-console.log('Sidenav exists:', !!document.getElementById('sidenav'));
-console.log('Templates exist:', !!document.getElementById('template-header'));
-```
-
-### Logging Personalizado
-
-```javascript
-// Habilitar debug logging
-localStorage.setItem('apidoc-debug', 'true');
-
-// Configurar nivel de log
-localStorage.setItem('apidoc-log-level', 'debug'); // debug, info, warn, error
-
-// El sistema mostrará logs detallados en consola
-```
-
----
-
-## 🔌 Extensión y Personalización
-
-### Crear AuthManager Personalizado
-
-```typescript
-import AuthManager from './components/auth';
-
-class CustomAuthManager extends AuthManager {
-  constructor() {
-    super();
-    this.customFeatures = true;
-  }
-
-  // Sobrescribir método de login
-  async login(email: string, password: string): Promise<LoginResult> {
-    // Tu lógica personalizada antes del login
-    console.log('Custom login logic for:', email);
-
-    // Llamar al método padre
-    const result = await super.login(email, password);
-
-    // Tu lógica personalizada después del login
-    if (result.success) {
-      this.trackLoginEvent(email);
-    }
-
-    return result;
-  }
-
-  private trackLoginEvent(email: string): void {
-    // Analytics, logging, etc.
-    console.log('User logged in:', email);
-  }
-}
-
-// Reemplazar instancia global
-window.authManager = new CustomAuthManager();
-```
-
-### Middleware de Autenticación
-
-```javascript
-class AuthMiddleware {
-  constructor(authManager) {
-    this.authManager = authManager;
-    this.setupMiddleware();
-  }
-
-  setupMiddleware() {
-    // Interceptar todas las requests
-    const originalFetch = window.fetch;
-    window.fetch = async (url, options = {}) => {
-
-      // Agregar token de autenticación si está disponible
-      if (this.authManager.isAuthenticated()) {
-        const session = this.authManager.getSessionInfo();
-        options.headers = {
-          ...options.headers,
-          'Authorization': `Bearer ${session.token}`
-        };
-      }
-
-      return originalFetch(url, options);
-    };
-  }
-}
-
-// Usar middleware
-const middleware = new AuthMiddleware(window.authManager);
-```
-
-### Plugin System
-
-```javascript
-class AuthPlugin {
-  constructor(name, authManager) {
-    this.name = name;
-    this.authManager = authManager;
-  }
-
-  install() {
-    // Registrar hooks
-    document.addEventListener('apidoc:auth:login:success', (e) => {
-      this.onLoginSuccess(e.detail);
-    });
-
-    console.log(`Plugin ${this.name} installed`);
-  }
-
-  onLoginSuccess(userInfo) {
-    // Tu lógica del plugin
-  }
-}
-
-// Registrar plugins
-const analyticsPlugin = new AuthPlugin('Analytics', window.authManager);
-analyticsPlugin.install();
-```
-
----
-
-## 🚀 Despliegue en Producción
-
-### Configuración de Build
-
-```bash
-# Build para producción
-npm run build:clean
-
-# Generar documentación
-apidoc -i src/ -o dist/docs/
-
-# Verificar integridad
-node dist/docs/validate-system.js
-```
-
-### Variables de Entorno
-
-```bash
-# Para configuración dinámica
-export APIDOC_AUTH_URL="https://api.produccion.com/auth"
-export APIDOC_SESSION_TIMEOUT="7200"  # 2 horas
-export APIDOC_DEBUG="false"
-
-# Generar con variables
-apidoc -i src/ -o dist/docs/ --config production-config.json
-```
-
-### Optimizaciones
-
-**Bundle Splitting**:
-```javascript
-// En esbuild.config.js
-export default {
-  entryPoints: ['template/src/main.ts'],
-  bundle: true,
-  splitting: true,
-  format: 'esm',
-  outdir: 'assets/',
-  plugins: [
-    // Separar AuthManager en chunk propio
-    {
-      name: 'auth-chunk',
-      setup(build) {
-        build.onResolve({ filter: /auth\.ts$/ }, args => ({
-          path: args.path,
-          external: false,
-          namespace: 'auth-chunk'
-        }));
+  // Reconstruir clave desde segmentos ofuscados
+  const getEncryptionKey = () => {
+    const login = window.__APICAT_DATA__.meta.login;
+    if (login.active) {
+      if (login._obf && login._kv) {
+        return eval(`(function(){${login._obf}return ${login._kv};})()`);
       }
     }
-  ]
+    return null;
+  };
+
+  // Inicializar auth desde sessionStorage
+  const initAuth = () => {
+    const token = sessionStorage.getItem('apicat_auth_token');
+    if (token) {
+      import('../utils/jwt').then(({ validateJWT }) => {
+        const validation = validateJWT(token);
+        if (validation.valid) {
+          authToken.value = token;
+          isAuthenticated.value = true;
+        }
+      });
+    }
+  };
+
+  // Logout
+  const logout = () => {
+    authToken.value = null;
+    isAuthenticated.value = false;
+    sessionStorage.removeItem('apicat_auth_token');
+    sessionStorage.removeItem('apicat_authenticated');
+  };
+
+  return {
+    isAuthenticated,
+    authToken,
+    initAuth,
+    logout
+  };
+});
+```
+
+---
+
+## 🔒 Seguridad
+
+### Algoritmo de Encriptación
+
+- **Algoritmo**: AES-256-GCM
+- **Key Length**: 32 bytes (256 bits)
+- **IV Length**: 16 bytes (128 bits)
+- **Auth Tag Length**: 16 bytes (128 bits)
+
+### Ofuscación de Claves
+
+La clave de encriptación se protege mediante:
+
+1. **División en 4 segmentos** de caracteres individuales
+2. **Generación de 10-30 variables decoy** con datos aleatorios
+3. **Nombres aleatorios** para todas las variables (`$_XYZ`, `__ABC`, etc.)
+4. **Fisher-Yates shuffle** para mezclar segmentos reales con decoys
+5. **Reconstrucción runtime** solo cuando se necesita
+
+### Almacenamiento
+
+- ✅ **JWT**: `sessionStorage` (se borra al cerrar pestaña)
+- ❌ **Clave de encriptación**: NO se almacena (se reconstruye on-demand)
+- ❌ **Contraseñas**: NO se almacenan en el cliente
+
+---
+
+## 🧪 Testing
+
+### Test de Encriptación
+
+```bash
+# Generar clave de prueba
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+
+# Probar encriptación
+node -e "
+const { JSONEncryption } = require('./dist/core/utils/encryption');
+const enc = new JSONEncryption({}, 'YOUR_KEY_HERE');
+const encrypted = enc.encryptObject({test: 'data'});
+console.log('Encrypted:', encrypted);
+const decrypted = enc.decryptObject(encrypted);
+console.log('Decrypted:', decrypted);
+"
+```
+
+### Test de Ofuscación
+
+```bash
+node -e "
+const { obfuscateKey } = require('./dist/core/utils/keyObfuscation');
+const key = 'TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ=';
+const { code, reconstructVar } = obfuscateKey(key, 4);
+console.log('Obfuscated code length:', code.length);
+console.log('Variables count:', (code.match(/const /g) || []).length);
+console.log('Reconstruct var:', reconstructVar);
+"
+```
+
+### Test de JWT
+
+```bash
+node -e "
+const { generateTestToken, validateJWT } = require('./apps/apidoc-template-v5/src/utils/jwt.js');
+const token = generateTestToken({sub: 'test@example.com'}, 24);
+console.log('Token:', token);
+const validation = validateJWT(token);
+console.log('Valid:', validation.valid);
+console.log('Payload:', validation.payload);
+"
+```
+
+---
+
+## 📊 Debugging
+
+### Variables Globales
+
+```javascript
+// Datos embebidos en HTML
+window.__APICAT_DATA__ = {
+  meta: {
+    login: {
+      active: true,
+      encryptionKeyFromServer: false,
+      _obf: "...",    // Código de ofuscación
+      _kv: "...",     // Variable de reconstrucción
+      _admited: {     // Lista encriptada
+        data: "...",
+        iv: "...",
+        tag: "...",
+        algorithm: "aes-256-gcm"
+      }
+    }
+  }
 };
 ```
 
-**Lazy Loading**:
-```javascript
-// Cargar AuthManager solo cuando sea necesario
-async function initAuth() {
-  if (window.LOGIN_CONFIG?.active) {
-    const { default: AuthManager } = await import('./components/auth');
-    window.authManager = new AuthManager();
-    window.authManager.init(window.LOGIN_CONFIG);
-  }
-}
-```
-
-### Monitoreo
+### Console Debugging
 
 ```javascript
-// Métricas de autenticación
-class AuthMetrics {
-  constructor() {
-    this.metrics = {
-      loginAttempts: 0,
-      successfulLogins: 0,
-      failedLogins: 0,
-      sessionDuration: []
-    };
-  }
+// En DevTools Console:
 
-  trackLogin(success) {
-    this.metrics.loginAttempts++;
-    if (success) {
-      this.metrics.successfulLogins++;
-    } else {
-      this.metrics.failedLogins++;
-    }
+// 1. Verificar configuración de login
+console.log(window.__APICAT_DATA__.meta.login);
 
-    // Enviar a analytics
-    this.sendMetrics();
-  }
-
-  sendMetrics() {
-    // Tu lógica de analytics
-  }
-}
-
-// Integrar con AuthManager
-const metrics = new AuthMetrics();
-window.authManager.on('login:attempt', (success) => {
-  metrics.trackLogin(success);
+// 2. Verificar sessionStorage
+console.log({
+  token: sessionStorage.getItem('apicat_auth_token'),
+  authenticated: sessionStorage.getItem('apicat_authenticated')
 });
+
+// 3. Validar token actual
+import { validateJWT } from './utils/jwt';
+const token = sessionStorage.getItem('apicat_auth_token');
+console.log(validateJWT(token));
+
+// 4. Ver tiempo hasta expiración
+const decoded = JSON.parse(atob(token.split('.')[1]));
+const expiresIn = (decoded.exp * 1000) - Date.now();
+console.log('Expires in:', Math.round(expiresIn / 1000 / 60), 'minutes');
 ```
 
 ---
 
-## 📚 Referencias
+## 🚀 Mejores Prácticas
 
-### APIs Externas Compatibles
+### 1. Generación de Claves
 
-**Auth0**:
+```bash
+# SIEMPRE genera claves aleatorias
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+
+# NUNCA uses claves predecibles
+# ❌ MAL: "mysecretkey123"
+# ✅ BIEN: "TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ="
+```
+
+### 2. Contraseñas
+
 ```json
 {
-  "urlAuth": "https://your-domain.auth0.com/oauth/token",
-  "value_form": {
-    "email": "username",
-    "password": "password"
+  "login": {
+    "admited": [
+      {
+        "email": "admin@company.com",
+        "password": "P@ssw0rd!Strong123",  // ✅ Contraseña fuerte
+        "name": "Admin User"
+      }
+    ]
   }
 }
 ```
 
-**Firebase Auth**:
-```json
-{
-  "urlAuth": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword",
-  "value_form": {
-    "email": "email",
-    "password": "password"
-  }
-}
-```
+### 3. Rotación de Claves
 
-**Custom Laravel**:
-```json
-{
-  "urlAuth": "https://api.miapp.com/api/auth/login",
-  "value_form": {
-    "email": "email",
-    "password": "password"
-  },
-  "response_success": 200,
-  "response_error": 422
-}
-```
+Para cambiar la clave de encriptación:
 
-### Herramientas Recomendadas
-
-- **Desarrollo**: VS Code + TypeScript + ESLint
-- **Testing**: Playwright para e2e, Jest para unit tests
-- **Build**: esbuild para rapidez, Webpack para features avanzadas
-- **Deploy**: Nginx/Apache, Cloudflare Pages, Netlify, Vercel
-
-### Compatibilidad
-
-- **Browsers**: Chrome 88+, Firefox 85+, Safari 14+, Edge 88+
-- **Node.js**: 20.0.0+ (requerido para build)
-- **TypeScript**: 5.0+ (para desarrollo)
-- **APIs**: Cualquier REST API con POST login
+1. Genera nueva clave
+2. Actualiza `apidoc.json`
+3. Regenera documentación
+4. Todos los usuarios deben volver a hacer login
 
 ---
 
-¡Sistema completo de autenticación dual implementado y documentado! 🎉
+**Ver También:**
+- [🔐 Sistema de Autenticación](./12-authentication.md)
+- [🚀 Quick Start Auth](./13-quick-start-auth.md)

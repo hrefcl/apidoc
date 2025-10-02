@@ -1,6 +1,6 @@
 # 🎨 Iconos y Personalización
 
-APIDoc 4.0 permite personalizar completamente la apariencia de tu documentación con iconos Font Awesome, logos personalizados y configuración de temas.
+APIDoc 5.0 permite personalizar completamente la apariencia de tu documentación con iconos Font Awesome, logos personalizados y configuración de temas.
 
 ## 🏷️ Iconos de Grupos
 
@@ -211,6 +211,6 @@ APIDoc usa el siguiente orden de prioridad para iconos:
 
 ## 📚 Recursos Adicionales
 
-- **[📄 Markdown Personalizado](./03-custom-markdown.md)** - Contenido personalizado por secciones
-- **[🎨 Temas de Sintaxis](./04-highlight-themes.md)** - Configuración avanzada de temas
-- **[📋 Configuración Completa](./01-configuration.md)** - Todas las opciones de configuración
+- **[📋 Configuración](./01-configuration.md)** - Opciones de configuración completas
+- **[📄 Markdown Personalizado](./03-custom-markdown.md)** - Contenido markdown por secciones
+- **[📄 Ejemplos de Markdown](./04-custom-markdown-examples.md)** - Ejemplos prácticos

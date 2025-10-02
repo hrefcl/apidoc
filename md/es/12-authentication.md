@@ -1,43 +1,39 @@
-# 🔐 APIDoc 4.0 - Sistema de Autenticación Dual
+# 🔐 APIDoc 5.0 - Sistema de Autenticación Dual
 
 ## 📋 Tabla de Contenidos
 
 1. [Introducción](#introducción)
 2. [Características](#características)
-3. [Instalación y Configuración](#instalación-y-configuración)
-4. [Tipos de Autenticación](#tipos-de-autenticación)
-5. [Configuración Avanzada](#configuración-avanzada)
-6. [Uso y Ejemplos](#uso-y-ejemplos)
-7. [API y Desarrollo](#api-y-desarrollo)
-8. [Seguridad](#seguridad)
-9. [Solución de Problemas](#solución-de-problemas)
-10. [Referencia Técnica](#referencia-técnica)
+3. [Modo Local (Sin Servidor)](#modo-local-sin-servidor)
+4. [Modo Servidor](#modo-servidor)
+5. [Seguridad](#seguridad)
+6. [Solución de Problemas](#solución-de-problemas)
 
 ---
 
 ## Introducción
 
-El **Sistema de Autenticación Dual** de APIDoc 4.0 permite proteger la documentación de API mediante dos métodos de autenticación que pueden funcionar de forma independiente o complementaria:
+El **Sistema de Autenticación Dual** de APIDoc 5.0 permite proteger la documentación de API mediante dos métodos que funcionan de forma independiente:
 
-- **🏠 Autenticación Local**: Usuarios predefinidos en la configuración
-- **🌐 Autenticación Remota**: Integración con API externa de autenticación
+- **🏠 Autenticación Local**: Usuarios definidos en la configuración (sin servidor necesario)
+- **🌐 Autenticación Servidor**: Integración con API externa de autenticación
 
 ### ✨ Características Principales
 
-- ✅ **Dual Authentication**: Local y remota en el mismo sistema
-- ✅ **Content Protection**: Encriptación AES-256 del contenido sensible
-- ✅ **Session Management**: Gestión de sesiones persistentes con localStorage
-- ✅ **Responsive UI**: Interfaz adaptativa con soporte dark/light mode
-- ✅ **Zero Dependencies**: Sin dependencias externas adicionales
-- ✅ **Production Ready**: Listo para uso en producción
+- ✅ **Encriptación AES-256-GCM**: Todo el contenido sensible está encriptado
+- ✅ **Ofuscación de Claves**: Las claves de encriptación se dividen y ofuscan en el código
+- ✅ **JWT con Expiración**: Tokens de sesión con 24 horas de validez
+- ✅ **Sin Dependencias**: No requiere bibliotecas externas
+- ✅ **Diseño Moderno**: Interfaz con modo claro/oscuro y animaciones
+- ✅ **Seguro**: No almacena claves en sessionStorage ni memoria
 
 ---
 
-## Instalación y Configuración
+## Modo Local (Sin Servidor)
 
-### Paso 1: Configuración Básica
+### Configuración Básica
 
-Edita el archivo `apidoc.json` en tu proyecto y agrega la sección `login`:
+Edita el archivo `apidoc.json`:
 
 ```json
 {
@@ -46,97 +42,83 @@ Edita el archivo `apidoc.json` en tu proyecto y agrega la sección `login`:
   "description": "Documentación de mi API",
   "login": {
     "active": true,
+    "encryptionKey": "TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ=",
     "admited": [
       {
-        "email": "admin@miempresa.com",
-        "password": "mi_password_seguro"
+        "email": "admin@empresa.com",
+        "password": "password123",
+        "name": "Admin User",
+        "role": "admin"
       },
       {
-        "email": "usuario@miempresa.com",
-        "password": "otro_password"
-      }
-    ],
-    "urlAuth": "https://auth.miempresa.com/api/login",
-    "value_form": {
-      "email": "email",
-      "password": "password"
-    },
-    "response_success": 200,
-    "response_error": 401
-  }
-}
-```
-
-### Paso 2: Generación
-
-Ejecuta APIDoc normalmente:
-
-```bash
-# Instalar APIDoc 4.0
-npm install -g @hrefcl/apidoc
-
-# Generar documentación con autenticación
-apidoc -i src/ -o docs/
-```
-
-### Paso 3: Despliegue
-
-El sistema funciona con cualquier servidor web estático:
-
-```bash
-# Desarrollo
-npx serve docs/ -p 8080
-
-# Producción con Nginx
-# Simplemente coloca los archivos en tu directorio web
-```
-
----
-
-## Tipos de Autenticación
-
-### 🏠 Autenticación Local
-
-Los usuarios se definen directamente en `apidoc.json`. Las contraseñas se hashean automáticamente durante la generación.
-
-**Configuración:**
-```json
-{
-  "login": {
-    "active": true,
-    "admited": [
-      {
-        "email": "usuario@ejemplo.com",
-        "password": "password123"
+        "email": "test@example.com",
+        "password": "test",
+        "name": "Test User"
       }
     ]
   }
 }
 ```
 
-**Ventajas:**
-- ✅ Simple de configurar
+### Generar Clave de Encriptación
+
+```bash
+# Genera una clave aleatoria de 32 bytes en Base64
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
+### Campos del Usuario
+
+| Campo      | Requerido | Descripción                              |
+|------------|-----------|------------------------------------------|
+| `email`    | ✅        | Email del usuario (usado para login)     |
+| `password` | ✅        | Contraseña en texto plano                |
+| `name`     | ❌        | Nombre completo del usuario              |
+| `role`     | ❌        | Rol del usuario (default: "user")        |
+
+### ¿Cómo Funciona?
+
+1. **Durante la generación**:
+   - La lista `admited` se encripta con AES-256-GCM
+   - La clave de encriptación se divide en 4 segmentos
+   - Se generan 10-30 variables decoy aleatorias
+   - Todo se ofusca y mezcla en el código HTML
+
+2. **Durante el login**:
+   - El sistema reconstruye la clave desde segmentos ofuscados
+   - Desencripta la lista de usuarios
+   - Valida email y contraseña
+   - Genera un JWT con 24 horas de expiración
+   - El JWT se almacena en sessionStorage
+   - La clave se descarta de memoria
+
+### Ventajas
+
 - ✅ No requiere servidor de autenticación
 - ✅ Funciona completamente offline
-- ✅ Ideal para equipos pequeños
+- ✅ Ideal para documentación interna
+- ✅ Seguro con encriptación AES-256-GCM
 
-**Desventajas:**
-- ⚠️ Usuarios fijos en tiempo de compilación
-- ⚠️ Cambios requieren regenerar documentación
+### Desventajas
 
-### 🌐 Autenticación Remota
+- ⚠️ Los usuarios son fijos (requiere regenerar docs para cambios)
+- ⚠️ Las contraseñas están en texto plano en `apidoc.json`
 
-Integración con tu sistema de autenticación existente mediante API REST.
+---
 
-**Configuración:**
+## Modo Servidor
+
+### Configuración
+
 ```json
 {
   "login": {
     "active": true,
-    "urlAuth": "https://api.miempresa.com/auth/login",
+    "encryptionKeyFromServer": true,
+    "urlAuth": "https://api.empresa.com/auth/login",
     "value_form": {
-      "email": "username",
-      "password": "pass"
+      "email": "email",
+      "password": "password"
     },
     "response_success": 200,
     "response_error": 401
@@ -144,571 +126,193 @@ Integración con tu sistema de autenticación existente mediante API REST.
 }
 ```
 
-**Ventajas:**
-- ✅ Integración con sistemas existentes
+### Campos de Configuración
+
+| Campo                      | Descripción                                      |
+|----------------------------|--------------------------------------------------|
+| `active`                   | Activar autenticación                            |
+| `encryptionKeyFromServer`  | Indica que la clave viene del servidor           |
+| `urlAuth`                  | URL del endpoint de autenticación                |
+| `value_form`               | Mapeo de campos del formulario                   |
+| `response_success`         | Código HTTP de éxito (default: 200)              |
+| `response_error`           | Código HTTP de error (default: 401)              |
+
+### Respuesta Esperada del Servidor
+
+El servidor debe responder con un JSON que incluya la clave de encriptación:
+
+```json
+{
+  "token": "jwt-token-opcional",
+  "encryptionKey": "TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ=",
+  "user": {
+    "email": "usuario@empresa.com",
+    "name": "Usuario Ejemplo"
+  }
+}
+```
+
+### ¿Cómo Funciona?
+
+1. Usuario ingresa credenciales
+2. Se hace POST a `urlAuth` con los campos configurados en `value_form`
+3. Si respuesta es `response_success`, se extrae `encryptionKey`
+4. Se desencripta el contenido usando esa clave
+5. Se genera JWT y se almacena en sessionStorage
+
+### Ventajas
+
 - ✅ Usuarios dinámicos
+- ✅ Integración con sistemas existentes
 - ✅ Gestión centralizada de credenciales
-- ✅ Escalable para grandes equipos
+- ✅ Puede tener lógica de autenticación compleja
 
-**API Requerida:**
+### Desventajas
 
-Tu endpoint debe recibir POST con:
-```json
-{
-  "username": "usuario@ejemplo.com",
-  "pass": "password123"
-}
-```
-
-Y responder:
-- **Éxito (200)**: Cualquier respuesta JSON
-- **Error (401/400)**: Credenciales inválidas
-
-### 🔗 Autenticación Híbrida
-
-Puedes combinar ambos métodos. El sistema intentará primero la autenticación local, y luego la remota:
-
-```json
-{
-  "login": {
-    "active": true,
-    "admited": [
-      {
-        "email": "admin@local.com",
-        "password": "admin123"
-      }
-    ],
-    "urlAuth": "https://api.miempresa.com/auth/login",
-    "value_form": {
-      "email": "email",
-      "password": "password"
-    },
-    "response_success": 200,
-    "response_error": 401
-  }
-}
-```
+- ⚠️ Requiere servidor de autenticación disponible
+- ⚠️ No funciona offline
 
 ---
 
-## Configuración Avanzada
+## Seguridad
 
-### Protección de Contenido
-
-El sistema protege automáticamente estas secciones:
-
-- **API Endpoints** (`sections`)
-- **Header Content** (`header`)
-- **Footer Content** (`footer`)
-- **Project Information** (`project`)
-
-### Personalización de Campos
-
-Para APIs con nombres de campo diferentes:
-
-```json
-{
-  "login": {
-    "value_form": {
-      "email": "user_email",      // Campo email en tu API
-      "password": "user_password" // Campo password en tu API
-    }
-  }
-}
-```
-
-### Códigos de Respuesta Personalizados
-
-```json
-{
-  "login": {
-    "response_success": 200,  // Código de éxito
-    "response_error": 403     // Código de error
-  }
-}
-```
-
-### Configuración de Seguridad
-
-```json
-{
-  "login": {
-    "active": true,
-    "sessionTimeout": 3600,     // Timeout en segundos (por defecto: 1 hora)
-    "encryptionStrength": 256,  // AES-256 (no modificar)
-    "hashIterations": 10000     // Iteraciones PBKDF2 (no modificar)
-  }
-}
-```
-
----
-
-## Uso y Ejemplos
-
-### Ejemplo 1: Empresa Pequeña (Local)
-
-```json
-{
-  "name": "API Interna - MiStartup",
-  "version": "2.1.0",
-  "login": {
-    "active": true,
-    "admited": [
-      {
-        "email": "ceo@mistartup.com",
-        "password": "super_secreto_2024"
-      },
-      {
-        "email": "dev@mistartup.com",
-        "password": "dev_password"
-      },
-      {
-        "email": "qa@mistartup.com",
-        "password": "testing123"
-      }
-    ]
-  }
-}
-```
-
-### Ejemplo 2: Empresa con SSO
-
-```json
-{
-  "name": "API Corporativa",
-  "version": "1.0.0",
-  "login": {
-    "active": true,
-    "urlAuth": "https://sso.miempresa.com/oauth/token",
-    "value_form": {
-      "email": "username",
-      "password": "password"
-    },
-    "response_success": 200,
-    "response_error": 401
-  }
-}
-```
-
-### Ejemplo 3: Configuración Híbrida
-
-```json
-{
-  "name": "API con Acceso Dual",
-  "version": "3.2.1",
-  "login": {
-    "active": true,
-    "admited": [
-      {
-        "email": "emergency@empresa.com",
-        "password": "emergency_access_2024"
-      }
-    ],
-    "urlAuth": "https://auth.empresa.com/api/login",
-    "value_form": {
-      "email": "email",
-      "password": "password"
-    },
-    "response_success": 200,
-    "response_error": 400
-  }
-}
-```
-
----
-
-## API y Desarrollo
-
-### Estructura de Archivos
-
-```
-mi-proyecto/
-├── apidoc.json              # Configuración principal
-├── src/                     # Tu código fuente con comentarios @api
-├── docs/                    # Documentación generada
-│   ├── index.html          # Página principal con autenticación
-│   ├── assets/
-│   │   ├── main.bundle.js  # Bundle con AuthManager
-│   │   └── main.bundle.css # Estilos con tema oscuro/claro
-│   └── test-workflow.html  # Página de pruebas
-```
-
-### API del AuthManager
+### Encriptación AES-256-GCM
 
 ```typescript
-// Instancia global disponible en el navegador
-window.authManager: AuthManager
-
-// Métodos principales
-authManager.isAuthenticated(): boolean
-authManager.login(email: string, password: string): Promise<{success: boolean, message: string}>
-authManager.logout(): void
-authManager.getSessionInfo(): AuthSession | null
+// Algoritmo usado
+algorithm: 'aes-256-gcm'
+keyLength: 32 bytes (256 bits)
+ivLength: 16 bytes (128 bits)
+authTagLength: 16 bytes (128 bits)
 ```
 
-### Eventos de Autenticación
+### Ofuscación de Claves
+
+La clave de encriptación se protege mediante:
+
+1. **División en Segmentos**: La clave se divide en 4 arrays de caracteres
+
+### JWT (JSON Web Tokens)
 
 ```javascript
-// Escuchar eventos de login
-document.addEventListener('apidoc:login:success', (event) => {
-  console.log('Usuario autenticado:', event.detail);
-});
-
-document.addEventListener('apidoc:login:error', (event) => {
-  console.log('Error de login:', event.detail);
-});
-
-document.addEventListener('apidoc:logout', (event) => {
-  console.log('Usuario desconectado');
-});
-```
-
-### Integración con Scripts Personalizados
-
-```html
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Esperar a que el AuthManager esté disponible
-  if (window.authManager && window.authManager.isAuthenticated()) {
-    console.log('Usuario ya autenticado');
-    // Tu código personalizado aquí
-  }
-});
-</script>
-```
-
----
-
-## Seguridad {#seguridad}
-
-### 🔒 Medidas Implementadas
-
-1. **Hash de Contraseñas**: SHA-256 con salt personalizado
-2. **Encriptación AES-256**: Para protección de contenido
-3. **PBKDF2**: 10,000 iteraciones para derivación de claves
-4. **Session Management**: Tokens con expiración
-5. **HTTPS Enforcement**: Recomendado para producción
-
-### 🛡️ Mejores Prácticas
-
-**Para Autenticación Local:**
-```json
 {
-  "admited": [
-    {
-      "email": "admin@empresa.com",
-      "password": "MinimoCambiarEstaContraseñaEnProduccion2024!"
-    }
-  ]
+  sub: "user@example.com",      // Email del usuario
+  name: "Usuario Ejemplo",       // Nombre del usuario
+  role: "user",                  // Rol del usuario
+  type: "local",                 // Tipo de autenticación
+  iss: "apicat-local",          // Emisor del token
+  exp: 1640995200,              // Timestamp de expiración (24h)
+  iat: 1640908800               // Timestamp de emisión
 }
 ```
 
-**Para Autenticación Remota:**
-- ✅ Usar HTTPS siempre
-- ✅ Implementar rate limiting en tu API
-- ✅ Validar tokens JWT si es aplicable
-- ✅ Configurar CORS correctamente
+### Almacenamiento
 
-**Configuración de Servidor Web:**
-
-**Nginx:**
-```nginx
-server {
-    listen 443 ssl;
-    server_name docs.miapi.com;
-
-    ssl_certificate /path/to/cert.pem;
-    ssl_certificate_key /path/to/key.pem;
-
-    location / {
-        root /var/www/apidoc;
-        index index.html;
-        try_files $uri $uri/ =404;
-
-        # Headers de seguridad
-        add_header X-Frame-Options DENY;
-        add_header X-Content-Type-Options nosniff;
-        add_header X-XSS-Protection "1; mode=block";
-    }
-}
-```
-
-**Apache (.htaccess):**
-```apache
-# Seguridad básica
-Header always set X-Frame-Options DENY
-Header always set X-Content-Type-Options nosniff
-Header always set X-XSS-Protection "1; mode=block"
-
-# Forzar HTTPS
-RewriteEngine On
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-```
-
-### ⚠️ Consideraciones de Seguridad
-
-**Limitaciones de la Autenticación Local:**
-- Las contraseñas hasheadas están en el HTML generado
-- Aunque están hasheadas, no es recomendable para datos altamente sensibles
-- Para máxima seguridad, usar solo autenticación remota
-
-**Recomendaciones:**
-- 🔐 Para datos públicos o semi-públicos: Autenticación local OK
-- 🏢 Para datos corporativos internos: Autenticación remota recomendada
-- 🚨 Para datos altamente confidenciales: Considerar soluciones adicionales
+- ✅ **JWT**: Se almacena en `sessionStorage` (se borra al cerrar pestaña)
+- ✅ **Clave de Encriptación**: NO se almacena, se reconstruye cuando se necesita
+- ✅ **Contraseñas**: NO se almacenan en ningún lugar del cliente
 
 ---
 
 ## Solución de Problemas
 
-### ❌ "Login form doesn't appear"
+### Error: "Failed to reconstruct encryption key"
 
-**Causa**: Timing de inicialización
+**Causa**: El código de ofuscación está corrupto o mal formado.
 
-**Solución:**
-```javascript
-// Verificar en consola del navegador
-console.log('AuthManager available:', !!window.AuthManager);
-console.log('Login config:', window.LOGIN_CONFIG);
-```
+**Solución**: Regenera la documentación con `apidoc -i src/ -o docs/`
 
-Si `AuthManager` no está disponible:
-1. Verificar que el bundle se generó correctamente
-2. Revisar errores en consola del navegador
-3. Regenerar con `npm run build:example`
+### Error: "Invalid credentials"
 
-### ❌ "Authentication failed" con credenciales correctas
+**Modo Local**: Verifica que el email y password coincidan exactamente con los de `apidoc.json`.
 
-**Causa**: Problema de hash o configuración
+**Modo Servidor**: Verifica que:
+1. El servidor esté accesible
+2. Los campos de `value_form` sean correctos
+3. La respuesta tenga el campo `encryptionKey`
 
-**Solución:**
-```bash
-# Usar el script de validación
-cd tmp/apidoc-output
-node test-credentials.js
-```
+### Pantalla Negra / Blank Page
 
-### ❌ "Templates not found"
+**Causa**: Error de JavaScript al cargar la página.
 
-**Causa**: DOM destruido prematuramente
+**Solución**:
+1. Abre la consola del navegador (F12)
+2. Busca errores en rojo
+3. Verifica que la documentación fue generada correctamente
 
-**Verificación:**
-```javascript
-// En consola del navegador
-document.getElementById('template-header') // Debe existir
-document.getElementById('sidenav') // Debe existir
-```
+### Sesión Expira Inmediatamente
 
-**Solución**: El sistema ya incluye la corrección automática
+**Causa**: El JWT está mal formado o expirado.
 
-### ❌ Autenticación remota falla
-
-**Debugging:**
-```javascript
-// Verificar configuración
-console.log('Remote config:', {
-  url: window.LOGIN_CONFIG?.urlAuth,
-  fields: window.LOGIN_CONFIG?.value_form
-});
-```
-
-**Verificar tu API:**
-```bash
-# Probar manualmente
-curl -X POST https://tu-api.com/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@test.com","password":"test123"}'
-```
-
-### 🔧 Herramientas de Debug
-
-**Scripts incluidos:**
-```bash
-# Validación completa del sistema
-node validate-system.js
-
-# Verificar credenciales
-node test-credentials.js
-
-# Guía completa de testing
-node final-test-guide.js
-```
-
-**Debug en navegador:**
-```javascript
-// Estado de autenticación
-window.authManager?.getSessionInfo()
-
-// Configuración cargada
-window.LOGIN_CONFIG
-
-// Verificar templates
-Object.keys(Handlebars.templates || {})
-```
+**Solución**:
+1. Cierra todas las pestañas de la documentación
+2. Limpia `sessionStorage` en DevTools
+3. Vuelve a hacer login
 
 ---
 
-## Referencia Técnica
+## Ejemplo Completo
 
-### Arquitectura del Sistema
+### apidoc.json
 
-```mermaid
-graph TD
-    A[apidoc.json] --> B[AuthProcessor]
-    B --> C[Encrypted HTML]
-    C --> D[Browser]
-    D --> E[AuthManager]
-    E --> F{Auth Type}
-    F -->|Local| G[Hash Validation]
-    F -->|Remote| H[API Request]
-    G --> I[Session Creation]
-    H --> I
-    I --> J[Content Decryption]
-    J --> K[UI Display]
-```
-
-### Flujo de Autenticación
-
-1. **Inicialización**:
-   - Página carga con templates
-   - AuthManager se inicializa después de 1 segundo
-   - Login overlay aparece si requerido
-
-2. **Proceso de Login**:
-   - Usuario ingresa credenciales
-   - Sistema intenta autenticación local primero
-   - Si falla, intenta autenticación remota
-   - Crea sesión si es exitoso
-
-3. **Post-Autenticación**:
-   - Overlay de login se remueve
-   - Contenido principal se hace visible
-   - Sesión se persiste en localStorage
-
-### Configuración Completa
-
-```typescript
-interface LoginConfig {
-  active: boolean;                              // Activar/desactivar autenticación
-  admited?: Array<{                            // Usuarios locales
-    email: string;
-    password: string;
-  }>;
-  urlAuth?: string;                            // URL de autenticación remota
-  value_form?: {                               // Mapeo de campos
-    email: string;
-    password: string;
-  };
-  response_success?: number;                   // Código HTTP de éxito
-  response_error?: number;                     // Código HTTP de error
-}
-
-interface AuthSession {
-  email: string;                               // Email del usuario
-  authenticated: boolean;                      // Estado de autenticación
-  expires: number;                            // Timestamp de expiración
-  method: 'local' | 'remote';                 // Método usado
+```json
+{
+  "name": "My Company API",
+  "version": "1.0.0",
+  "description": "Internal API Documentation",
+  "title": "My API Docs",
+  "url": "https://api.mycompany.com",
+  "sampleUrl": "https://api.mycompany.com",
+  "login": {
+    "active": true,
+    "encryptionKey": "YOUR_BASE64_KEY_HERE",
+    "admited": [
+      {
+        "email": "admin@mycompany.com",
+        "password": "admin123",
+        "name": "Admin User",
+        "role": "admin"
+      },
+      {
+        "email": "dev@mycompany.com",
+        "password": "dev123",
+        "name": "Developer",
+        "role": "developer"
+      },
+      {
+        "email": "viewer@mycompany.com",
+        "password": "view123",
+        "name": "Read Only User",
+        "role": "viewer"
+      }
+    ]
+  }
 }
 ```
 
-### Archivos del Sistema
-
-| Archivo | Propósito | Ubicación |
-|---------|-----------|-----------|
-| `lib/core/auth-processor.ts` | Procesador principal de autenticación | Backend/Build |
-| `template/src/components/auth.ts` | Manager de autenticación cliente | Frontend/Bundle |
-| `template/src/components/content-protection.ts` | Sistema de protección | Frontend/Bundle |
-| `template/src/main.ts` | Integración principal | Frontend/Bundle |
-| `template/index.html` | Template con configuración | Template |
-| `lib/writer.ts` | Integración con proceso de build | Backend/Build |
-
-### Comandos de Desarrollo
+### Generar Documentación
 
 ```bash
-# Desarrollo completo
-npm run dev:template          # Compilar y servir con recarga
+# Instalar APIDoc
+npm install -g @hrefcl/apidoc
 
-# Testing
-npm run build:example         # Generar documentación de ejemplo
-npm run test                  # Ejecutar tests
-npm run typecheck            # Verificación TypeScript
+# Generar documentación
+apidoc -i src/ -o docs/
 
-# Producción
-npm run build:clean          # Build limpio para producción
-npm run prepublishOnly       # Preparar para publicación
+# Ver documentación
+npx serve docs/ -p 8080
 ```
 
-### Personalización Avanzada
+### Acceder
 
-**CSS Custom Properties:**
-```css
-:root {
-  --auth-overlay-bg: rgba(0, 0, 0, 0.8);
-  --auth-form-bg: white;
-  --auth-input-border: #d1d5db;
-  --auth-button-bg: #3b82f6;
-}
-
-[data-theme="dark"] {
-  --auth-form-bg: #1f2937;
-  --auth-input-border: #374151;
-}
-```
-
-**JavaScript Hooks:**
-```javascript
-// Personalizar el proceso de login
-window.addEventListener('apidoc:auth:init', (event) => {
-  // Tu código personalizado de inicialización
-});
-
-window.addEventListener('apidoc:auth:success', (event) => {
-  // Tu código post-autenticación
-  console.log('Usuario:', event.detail.user);
-});
-```
+1. Abre `http://localhost:8080`
+2. Serás redirigido a `/login`
+3. Ingresa credenciales
+4. ¡Listo! Acceso a la documentación protegida
 
 ---
 
-## 📚 Recursos Adicionales
-
-### Enlaces Útiles
-
-- **Repository**: https://github.com/hrefcl/apidoc
-- **NPM Package**: https://www.npmjs.com/package/@hrefcl/apidoc
-- **Documentation**: https://apidocjs.com
-- **Issues**: https://github.com/hrefcl/apidoc/issues
-
-### Ejemplos Completos
-
-Disponibles en el repositorio:
-- `example/apidoc.json` - Configuración completa
-- `tmp/apidoc-output/` - Documentación generada
-- `test-*.js` - Scripts de testing
-
-### Contribuir
-
-Para contribuir al desarrollo del sistema de autenticación:
-
-1. Fork del repositorio
-2. Crear rama para tu feature: `git checkout -b feature/auth-mejora`
-3. Commit tus cambios: `git commit -m 'Add: nueva funcionalidad'`
-4. Push a la rama: `git push origin feature/auth-mejora`
-5. Crear Pull Request
-
-### Licencia
-
-MIT License - Ver archivo LICENSE para detalles completos.
-
----
-
-## 🎉 Conclusión
-
-El Sistema de Autenticación Dual de APIDoc 4.0 proporciona una solución robusta y flexible para proteger documentación de API. Con soporte para autenticación local y remota, encriptación de contenido y una interfaz moderna, es ideal tanto para equipos pequeños como para grandes organizaciones.
-
-**¡Tu documentación API ahora está protegida y lista para producción!** 🚀
-
----
-
-*Documentación actualizada para APIDoc 4.0 - Última actualización: $(date)*
+**Ver También:**
+- [🚀 Quick Start Auth](./13-quick-start-auth.md) - Setup rápido en 3 pasos
+- [👨‍💻 Developer Reference](./14-auth-developer.md) - API técnica detallada
+- [📋 Configuration](./01-configuration.md) - Configuración completa

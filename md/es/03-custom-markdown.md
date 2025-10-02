@@ -1,6 +1,6 @@
 # 📄 Custom Markdown Content per API Section
 
-**APIDoc 4.0.5** introduces powerful custom markdown content functionality that allows you to add rich, formatted content to any API group or section. This feature enables you to provide detailed explanations, usage examples, and contextual information directly within your API documentation.
+**APIDoc 5.0.5** introduces powerful custom markdown content functionality that allows you to add rich, formatted content to any API group or section. This feature enables you to provide detailed explanations, usage examples, and contextual information directly within your API documentation.
 
 ## 🎯 Overview
 

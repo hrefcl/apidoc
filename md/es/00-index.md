@@ -4,9 +4,9 @@ category: "Índice"
 order: 0
 ---
 
-# 📚 Documentación APIDoc 4.0
+# 📚 Documentación APIDoc 5.0
 
-Bienvenido a la documentación completa de APIDoc 4.0. Esta guía te permitirá aprovechar al máximo todas las funcionalidades de la herramienta.
+Bienvenido a la documentación completa de APIDoc 5.0. Esta guía te permitirá aprovechar al máximo todas las funcionalidades de la herramienta.
 
 ## 🚀 Inicio Rápido
 
@@ -19,7 +19,7 @@ Bienvenido a la documentación completa de APIDoc 4.0. Esta guía te permitirá 
 - **[📋 Configuración de apidoc.json](./01-configuration.md)** - Configuración completa del proyecto
 - **[🎨 Iconos y Personalización](./02-customization.md)** - Font Awesome, logos, temas
 - **[📄 Markdown Personalizado](./03-custom-markdown.md)** - Contenido markdown por secciones
-- **[🎨 Temas de Sintaxis](./04-highlight-themes.md)** - 160+ temas de resaltado de código
+- **[📄 Ejemplos de Markdown](./04-custom-markdown-examples.md)** - Ejemplos prácticos
 
 ## 🔧 Funcionalidades Core
 
@@ -68,15 +68,16 @@ Bienvenido a la documentación completa de APIDoc 4.0. Esta guía te permitirá 
 2. Configura [autenticación](./12-authentication.md)
 3. Revisa la [API técnica](./14-auth-developer.md)
 
-## 🎯 Características Destacadas v4.0
+## 🎯 Características Destacadas v5.0
 
-- **✅ Custom Markdown**: Contenido personalizado por secciones
-- **✅ MQTT Protocol**: Soporte completo para IoT
-- **✅ OpenAPI 3.0**: Integración nativa
-- **✅ TypeScript**: Esquemas automáticos
-- **✅ Authentication**: Sistema dual de protección
-- **✅ 160+ Themes**: Temas de resaltado de código
-- **✅ Docker**: Contenedores listos para producción
+- **✅ apiCAT (Vue 3)**: Template moderno con carga lazy de endpoints
+- **✅ Custom Markdown**: Contenido personalizado por secciones (`settings.{Grupo}.filename`)
+- **✅ MQTT Protocol**: 16+ parsers MQTT con template especializado
+- **✅ OpenAPI 3.0**: Integración nativa y export a swagger.json
+- **✅ TypeScript**: Soporte para @apiSchema con interfaces TS
+- **✅ Authentication**: Sistema dual con encriptación AES-256-GCM y ofuscación de claves
+- **✅ 160+ Themes**: Temas de resaltado de código (highlight.js)
+- **✅ Configuración MQTT**: Broker, SSL/TLS, autenticación en apidoc.json
 
 ## 🤝 Contribuir
 
@@ -84,5 +85,5 @@ Bienvenido a la documentación completa de APIDoc 4.0. Esta guía te permitirá 
 
 ---
 
-**APIDoc 4.0** - Generación de documentación API moderna y poderosa.
+**APIDoc 5.0** - Generación de documentación API moderna y poderosa.
 Hecho con ❤️ por la comunidad APIDoc.

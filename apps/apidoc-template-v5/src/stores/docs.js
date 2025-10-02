@@ -371,16 +371,16 @@ export const useDocsStore = defineStore('docs', () => {
     try {
       // Extraer category y slug del path (ej: "cat.api/users-get-getuserprofile")
       const [category, slug] = path.split('/')
-      console.log('[loadDoc] Loading:', { path, category, slug })
+      // console.log('[loadDoc] Loading:', { path, category, slug })
 
       // Si es un endpoint de API, buscar en el índice
       if (category === 'cat.api' && apiIndex.value) {
-        console.log('[loadDoc] Searching in API index for:', slug)
+        // console.log('[loadDoc] Searching in API index for:', slug)
         const endpoint = apiIndex.value.endpoints.find(e => e.id === slug)
-        console.log('[loadDoc] Found endpoint:', endpoint)
+        // console.log('[loadDoc] Found endpoint:', endpoint)
 
         if (endpoint && endpoint.shard) {
-          console.log('[loadDoc] Loading shard:', endpoint.shard)
+          // console.log('[loadDoc] Loading shard:', endpoint.shard)
           // Cargar el archivo del grupo (ej: "cat.api/users.json")
           // Convertir cat.api/users.json → api.users
           const shardKey = endpoint.shard
@@ -388,25 +388,25 @@ export const useDocsStore = defineStore('docs', () => {
             .replace('.json', '') // api/users.json → api/users
             .replace('/', '.')     // api/users → api.users
           const groupData = await loadData(`/data/${endpoint.shard}`, shardKey)
-          console.log('[loadDoc] Group data loaded, endpoints:', groupData.endpoints?.length)
+          // console.log('[loadDoc] Group data loaded, endpoints:', groupData.endpoints?.length)
 
           // Buscar el endpoint específico dentro del grupo
           const endpointData = groupData.endpoints?.find(e => e.id === slug)
-          console.log('[loadDoc] Found endpoint in group:', endpointData ? 'YES' : 'NO')
+          // console.log('[loadDoc] Found endpoint in group:', endpointData ? 'YES' : 'NO')
 
           if (endpointData) {
             // Si el endpoint tiene múltiples versiones, incluir todas las versiones
             // Las versiones están en el campo "versions" del endpoint
-            console.log('[loadDoc] Endpoint has versions?', endpointData.versions?.length || 0)
-            console.log('[loadDoc] Endpoint hasMultipleVersions?', endpointData.hasMultipleVersions)
+            // console.log('[loadDoc] Endpoint has versions?', endpointData.versions?.length || 0)
+            // console.log('[loadDoc] Endpoint hasMultipleVersions?', endpointData.hasMultipleVersions)
 
             // Devolver el endpoint individual envuelto en la estructura del grupo
             currentDoc.value = {
               ...groupData,
               endpoints: [endpointData] // El endpoint ya contiene todas las versiones en su propiedad "versions"
             }
-            console.log('[loadDoc] Returning endpoint data:', currentDoc.value)
-            console.log('[loadDoc] Endpoint versions array:', endpointData.versions)
+            // console.log('[loadDoc] Returning endpoint data:', currentDoc.value)
+            // console.log('[loadDoc] Endpoint versions array:', endpointData.versions)
             return currentDoc.value
           }
         } else {
@@ -420,7 +420,7 @@ export const useDocsStore = defineStore('docs', () => {
       }
 
       // Fallback: intentar cargar como archivo individual
-      console.log('[loadDoc] Trying fallback: /data/' + path + '.json')
+      // console.log('[loadDoc] Trying fallback: /data/' + path + '.json')
       // Convertir cat.docs/header → docs.header
       const dataKey = path.replace('cat.', '').replace('/', '.')
       const data = await loadData(`/data/${path}.json`, dataKey)

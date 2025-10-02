@@ -1,6 +1,6 @@
 # 🔌 OpenAPI 3.0
 
-APIDoc 4.0 introduce soporte nativo para OpenAPI 3.0, permitiendo escribir especificaciones OpenAPI directamente en comentarios de código y exportar documentación a formato OpenAPI estándar.
+APIDoc 5.0 introduce soporte nativo para OpenAPI 3.0, permitiendo escribir especificaciones OpenAPI directamente en comentarios de código y exportar documentación a formato OpenAPI estándar.
 
 ## 🚀 Características OpenAPI
 
@@ -203,7 +203,7 @@ function getProducts() {
 
 ## 🔗 Resolución Avanzada de $ref
 
-APIDoc 4.0 incluye **resolución completa de referencias de componentes OpenAPI**, resolviendo automáticamente referencias `$ref` en archivos externos para generar documentación completa.
+APIDoc 5.0 incluye **resolución completa de referencias de componentes OpenAPI**, resolviendo automáticamente referencias `$ref` en archivos externos para generar documentación completa.
 
 ### Ejemplo de Archivo Externo
 

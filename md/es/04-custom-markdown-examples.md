@@ -1,6 +1,6 @@
 # 📚 Custom Markdown Examples
 
-This document provides complete, real-world examples of using the custom markdown functionality in APIDoc 4.0.5.
+This document provides complete, real-world examples of using the custom markdown functionality in APIDoc 5.0.5.
 
 ## 🎯 Complete Working Example
 

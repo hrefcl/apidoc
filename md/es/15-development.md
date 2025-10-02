@@ -31,26 +31,33 @@ npm run test:lint
 apidoc/
 ├── bin/                    # Ejecutable CLI
 │   └── apidoc             # Script principal
-├── lib/                   # Código fuente TypeScript
-│   ├── core/             # Lógica principal
-│   │   ├── parsers/      # Parsers de comentarios
-│   │   ├── workers/      # Procesadores de datos
-│   │   ├── filters/      # Filtros de salida
-│   │   ├── languages/    # Soporte de lenguajes
-│   │   └── errors/       # Clases de error
-│   ├── index.ts          # Entrada principal de la librería
-│   ├── reader.ts         # Lógica de lectura de archivos
-│   └── writer.ts         # Generación de salida
-├── template/             # Templates HTML
-│   ├── src/              # Código TypeScript/CSS del template
-│   │   ├── main.ts       # JavaScript principal
-│   │   └── css/          # Estilos CSS
-│   └── index.html        # Template principal
-├── example/              # API de ejemplo para testing
-├── test/                 # Suite de pruebas
-├── md/                   # Documentación del proyecto
-├── dist/                 # Salida compilada
-└── tmp/                  # Archivos temporales de build
+├── core/                  # Código fuente TypeScript (⚠️ NO lib/)
+│   ├── apidoc/           # Lógica APIDoc
+│   ├── parsers/          # Parsers REST (50+ parsers)
+│   ├── parsers-jsdoc/    # Parsers JSDoc/TSDoc
+│   ├── workers/          # Procesadores de datos
+│   ├── filters/          # Filtros de salida
+│   ├── languages/        # Soporte de lenguajes
+│   ├── errors/           # Clases de error
+│   ├── utils/            # Utilidades (encryption, etc.)
+│   ├── types/            # TypeScript types
+│   ├── index.ts          # Entrada principal
+│   ├── parser.ts         # Parser principal
+│   └── worker.ts         # Worker principal
+├── apps/                 # Aplicaciones del monorepo
+│   └── apidoc-template-v5/ # Template Vue 3 + Vite (v5)
+│       ├── src/          # Componentes Vue 3
+│       ├── public/       # Assets públicos
+│       └── package.json  # Dependencias template
+├── examples/             # Ejemplos de uso
+│   ├── apicat/          # Ejemplo apiCAT v5 (actual)
+│   └── apidoc/          # Ejemplo v4 (legacy)
+├── scripts/             # Scripts de build
+│   └── build-css.js     # Build de CSS
+├── md/                  # Documentación del proyecto
+│   └── es/              # Documentación en español
+├── dist/                # Salida compilada TypeScript
+└── tmp/                 # Archivos temporales de build
 ```
 
 ### Archivos de Configuración
@@ -68,47 +75,57 @@ apidoc/
 
 ## 🛠️ Scripts de Desarrollo
 
-### Comandos Principales
+### Comandos Principales (ACTUALIZADOS 2025)
 ```bash
-# Compilación TypeScript
-npm run build              # Compilar TypeScript + Stencil
-npm run typecheck          # Solo verificación de tipos
-npm run dev                # Watch mode para desarrollo
+# === BUILD SCRIPTS ===
+npm run build              # Compilar CSS + TypeScript + copiar core
+npm run build:css          # Solo compilar CSS (producción)
+npm run build:css:dev      # Compilar CSS para desarrollo
+npm run build:watch        # Watch mode TypeScript
+npm run build:clean        # Limpieza completa + rebuild
 
-# Generación de documentación
-npm run build:example      # Generar ejemplo de documentación
-npm run docs               # Generar documentación TypeDoc
-npm run docs:serve         # Servir docs en http://localhost:3001
+# === EJEMPLOS Y DESARROLLO v5 (Vue 3 Template) ===
+npm run example            # Generar docs con apiCAT v5 → tmp/apidoc-output
+npm run dev:template       # Desarrollo template Vue 3 (hot reload)
+npm run start              # Servir documentación en puerto 8080
+npm run preview            # Preview en puerto 9999
 
-# Desarrollo del template
-npm run dev:template       # Build ejemplo + servidor en puerto 8080
-npm run start              # Servir documentación generada
+# === LEGACY v4 (Template Antiguo) ===
+npm run example:v4         # Generar docs con template v4 → tmp/apidoc-output-v4
+npm run start:v4           # Servir documentación v4
 
-# Quality Assurance
-npm run test               # Ejecutar suite de pruebas
+# === DEVELOPMENT ===
+npm run dev                # Alias para build:watch
+
+# === TESTING ===
+npm run test               # Ejecutar suite de pruebas Mocha
+npm run test:ci            # Tests para CI (lint + mocha)
 npm run test:lint          # ESLint + spell check
-npm run test:fix           # Auto-fix de issues de ESLint
-npm run pre-commit         # Validación completa (tipos + lint + tests)
+npm run test:fix           # Auto-fix de issues ESLint
+npm run test:spell         # Solo spell check
 
-# Workflows con contenedores
-npm run serve              # Build, containerizar y servir con auto-open
-npm run serve:stop         # Detener contenedor
+# === QUALITY ASSURANCE ===
+npm run typecheck          # Verificación de tipos TypeScript
+npm run eslint             # Solo ESLint
+npm run pre-commit         # Validación completa (typecheck + eslint + test)
+npm run format             # Formatear código con Prettier
+npm run format:check       # Verificar formato sin modificar
+
+# === DOCUMENTACIÓN ===
+npm run docs               # Generar documentación TypeDoc
+npm run docs:serve         # Servir TypeDoc en puerto 3001
+npm run docs:watch         # TypeDoc en watch mode
 ```
 
-### Scripts Avanzados
+### Scripts Adicionales
 ```bash
-# CSS y estilos
-npm run build:css          # Compilar CSS para producción
-npm run build:css:dev      # CSS para desarrollo local
+# === RELEASE ===
+npm run prepublishOnly     # Se ejecuta antes de publicar (build:clean automático)
+npm run release            # Build completo + generar changelog
 
-# Limpieza
-npm run clean              # Limpiar directorios de build
-npm run clean:all          # Limpieza completa + node_modules
-
-# Release
-npm run version:patch      # Incrementar versión patch
-npm run version:minor      # Incrementar versión minor
-npm run version:major      # Incrementar versión major
+# === WORKSPACES (Monorepo) ===
+npm run build:packages     # Build de todos los workspaces
+npm run test:packages      # Tests de todos los workspaces
 ```
 
 ## 🧪 Testing y Validación
@@ -170,7 +187,7 @@ describe('API Parser', () => {
 
 ### Agregar Nuevo Parser
 ```typescript
-// lib/core/parsers/my-new-parser.ts
+// core/parsers/my-new-parser.ts (⚠️ NO lib/core/)
 export function parseMyNewTag(content: string): any {
   // 1. Definir regex para parsing
   const regex = /^(.+?)\s+(.+)$/;
@@ -193,18 +210,22 @@ export function parseMyNewTag(content: string): any {
 
 ### Registrar Parser
 ```typescript
-// lib/core/parsers/index.ts
+// core/parsers/index.ts (archivo de registro centralizado)
 import { parseMyNewTag } from './my-new-parser.js';
 
 export const parsers = {
-  // ... parsers existentes
+  // ... 50+ parsers existentes (api, apiParam, mqtt, etc.)
   mynew: parseMyNewTag
 };
 ```
 
 ### Agregar Test para Parser
 ```javascript
-// test/core/parsers/my-new-parser.test.js
+// test/parsers/my-new-parser_test.js (⚠️ Convención: *_test.js)
+import { describe, it } from 'mocha';
+import { expect } from 'chai';
+import { parseMyNewTag } from '../../core/parsers/my-new-parser.js';
+
 describe('My New Parser', () => {
   it('should parse custom tag correctly', () => {
     const result = parseMyNewTag('string User description');
@@ -215,56 +236,78 @@ describe('My New Parser', () => {
 });
 ```
 
-## 🎨 Desarrollo del Template
+## 🎨 Desarrollo del Template (Vue 3 + Vite)
 
-### Estructura del Template
+### ⚠️ NUEVA ARQUITECTURA v5
+APIDoc v5 usa **Vue 3 + Vite** en lugar de Stencil (legacy v4)
+
+### Estructura del Template v5
 ```
-template/
+apps/apidoc-template-v5/
 ├── src/
-│   ├── main.ts           # JavaScript principal
-│   ├── css/
-│   │   ├── tailwind.css  # Estilos TailwindCSS
-│   │   └── bootstrap.css # Estilos Bootstrap
-│   └── components/       # Componentes Stencil
-├── assets/              # Assets estáticos
-├── index.html           # Template principal
-└── stencil.config.ts    # Configuración Stencil
+│   ├── components/         # Componentes Vue 3
+│   │   ├── ApiContent.vue
+│   │   ├── CodeTabs.vue
+│   │   ├── ParametersTable.vue
+│   │   └── ...
+│   ├── layouts/           # Layouts
+│   │   └── DocsLayout.vue
+│   ├── pages/             # Páginas
+│   │   ├── HomePage.vue
+│   │   └── DocPage.vue
+│   ├── router/            # Vue Router
+│   │   └── index.js
+│   ├── stores/            # Pinia stores
+│   │   └── docs.js
+│   ├── i18n/              # Internacionalización
+│   ├── composables/       # Vue composables
+│   ├── main.js            # Entry point
+│   └── App.vue            # Componente raíz
+├── public/                # Assets estáticos
+├── index.html             # HTML principal
+├── package.json           # Dependencias template
+└── vite.config.js         # Configuración Vite
 ```
 
-### Desarrollo de Componentes
-```typescript
-// template/src/components/api-endpoint.tsx
-import { Component, Prop, h } from '@stencil/core';
+### Desarrollo de Componentes Vue 3
+```vue
+<!-- apps/apidoc-template-v5/src/components/ApiEndpoint.vue -->
+<script setup>
+import { computed } from 'vue';
 
-@Component({
-  tag: 'api-endpoint',
-  styleUrl: 'api-endpoint.css',
-  shadow: true
-})
-export class ApiEndpoint {
-  @Prop() method: string;
-  @Prop() url: string;
-  @Prop() title: string;
+const props = defineProps({
+  method: String,
+  url: String,
+  title: String
+});
 
-  render() {
-    return (
-      <div class={`endpoint endpoint-${this.method}`}>
-        <span class="method">{this.method.toUpperCase()}</span>
-        <span class="url">{this.url}</span>
-        <span class="title">{this.title}</span>
-      </div>
-    );
-  }
-}
+const methodClass = computed(() => `endpoint-${props.method.toLowerCase()}`);
+</script>
+
+<template>
+  <div :class="['endpoint', methodClass]">
+    <span class="method">{{ method.toUpperCase() }}</span>
+    <span class="url">{{ url }}</span>
+    <span class="title">{{ title }}</span>
+  </div>
+</template>
+
+<style scoped>
+/* Estilos del componente */
+</style>
 ```
 
-### Compilación del Template
+### Compilación del Template v5
 ```bash
-# Desarrollo con hot reload
-npm run dev:template
+# Desarrollo con hot reload (Vite HMR)
+npm run dev:template        # Inicia Vite dev server
 
-# Build para producción
-npm run build:template
+# Build para producción (dentro de apps/apidoc-template-v5/)
+cd apps/apidoc-template-v5
+npm run build              # Build con Vite
+
+# Servir build de producción
+npm run start              # Sirve tmp/apidoc-output
 ```
 
 ## 🔄 Workflow de Desarrollo

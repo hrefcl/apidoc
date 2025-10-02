@@ -1,6 +1,6 @@
 # 📊 Esquemas TypeScript
 
-APIDoc 4.0 introduce integración nativa con TypeScript, permitiendo generar documentación automáticamente desde tipos e interfaces TypeScript usando la etiqueta `@apiSchema`.
+APIDoc 5.0 introduce integración nativa con TypeScript, permitiendo generar documentación automáticamente desde tipos e interfaces TypeScript usando la etiqueta `@apiSchema`.
 
 ## 🚀 Características Principales
 

@@ -112,12 +112,9 @@ try {
 ```javascript
 #!/usr/bin/env node
 
-import { createDoc } from '@hrefcl/apidoc';
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// ⚠️ APIDoc usa CommonJS, no ESM por defecto
+const { createDoc } = require('@hrefcl/apidoc');
+const path = require('path');
 
 const isDev = process.argv.includes('--dev');
 
@@ -128,10 +125,10 @@ async function generateDocs() {
 
   const options = {
     src: [
-      resolve(__dirname, '../src/api'),
-      resolve(__dirname, '../src/controllers')
+      path.resolve(__dirname, '../src/api'),
+      path.resolve(__dirname, '../src/controllers')
     ],
-    dest: resolve(__dirname, '../docs'),
+    dest: path.resolve(__dirname, '../docs'),
     dryRun: false,
     silent: false,
     verbose: isDev,
