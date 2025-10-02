@@ -1619,6 +1619,11 @@ window.__APICAT_DATA__ = ${JSON.stringify(allData, null, 0)};
             console.log(`✅ Data embedded: ${dataSize} KB → Total HTML: ${fileSize} KB`);
             console.log(`📊 Categories: ${Object.keys(allData).join(', ')}`);
 
+            // Remove /data directory after embedding (no longer needed)
+            console.log('🗑️  Removing /data directory (data now embedded in HTML)...');
+            await fs.remove(dataPath);
+            console.log('✅ Cleanup complete - /data directory removed');
+
         } catch (error) {
             console.error('❌ Error embedding data:', error);
         }

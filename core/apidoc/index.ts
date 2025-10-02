@@ -161,6 +161,26 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
         process.exit(1);
     }
 
+    // Auto-enable/disable apiCAT plugin based on template
+    if (app.options.template && app.options.template.includes('apidoc-template-v5')) {
+        // Using v5 template: enable apiCAT
+        if (!app.options.apicat) {
+            app.options.apicat = {
+                enabled: true,
+                outputDir: app.options.dest,
+                generateCollections: true,
+                enableLocalTesting: true
+            };
+        } else {
+            app.options.apicat.enabled = true;
+        }
+    } else if (app.options.template && app.options.template.includes('apidoc-template/')) {
+        // Using legacy v4 template: disable apiCAT even if in config
+        if (app.options.apicat) {
+            app.options.apicat.enabled = false;
+        }
+    }
+
     // get the default logger
     app.log = defaults.getLogger(app.options);
 

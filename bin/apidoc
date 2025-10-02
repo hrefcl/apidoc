@@ -163,7 +163,8 @@ ${pc.bold('INPUT/OUTPUT:')}`
     )
     .option('-i, --input <input...>', 'Input/source dirname', ['./src'])
     .option('-o, --output <output>', 'Output dirname', 'doc/')
-    .option('-t, --template <template>', 'Use template for output files', path.join(__dirname, '../apps/apidoc-template/'))
+    .option('-t, --template <template>', 'Use template for output files')
+    .option('--old', 'Use legacy template (v4) instead of new Vue 3 template (v5)', false)
 
     .addHelpText(
         'beforeAll',
@@ -323,12 +324,25 @@ if (argv.init !== '') {
 
 const defaultIncludeFilters = ['.*\\.(clj|cls|coffee|cpp|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|kt|litcoffee|lua|mjs|p|php?|pl|pm|py|rb|scala|ts|tsx|vue)$'];
 
+// Determine template path
+let templatePath;
+if (argv.template) {
+    // User specified custom template
+    templatePath = argv.template;
+} else if (argv.old) {
+    // --old flag: use legacy v4 template
+    templatePath = path.join(__dirname, '../apps/apidoc-template/');
+} else {
+    // Default: use new Vue 3 v5 template (apicat mode)
+    templatePath = path.join(__dirname, '../apps/apidoc-template-v5/');
+}
+
 const options = {
     excludeFilters: ['apidoc.config.js', 'node_modules'].concat(argv.excludeFilters.length ? argv.excludeFilters : []),
     includeFilters: argv.fileFilters.length ? argv.fileFilters : defaultIncludeFilters,
     src: argv.input,
     dest: argv.output,
-    template: argv.template,
+    template: templatePath,
     config: argv.config || (argv.input.length > 0 ? path.join(argv.input[0], 'apidoc.json') : 'apidoc.json'),
     apiprivate: argv.private,
     verbose: argv.verbose,

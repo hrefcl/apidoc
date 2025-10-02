@@ -4,7 +4,8 @@
   "type": "module",
   "description": "APIDoc v5",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/sync-dev-data.js && vite",
+    "sync:data": "node scripts/sync-dev-data.js",
     "build": "vite build",
     "build:with-data": "vite build && node scripts/embed-data.js",
     "build:ssg": "vite-ssg build",
