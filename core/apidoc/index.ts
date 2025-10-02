@@ -30,6 +30,7 @@
  * ```
  */
 
+import * as path from 'path';
 import * as pkgJson from '../../package.json';
 import * as core from '../index';
 import { ApiDocOptions, ApiDocParseResult, AppContext, LoggerInterface, MarkdownParser } from '../types';
@@ -220,6 +221,25 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
         if (packageInfo.apicat && !app.options.apicat) {
             app.log.verbose('Loading apicat configuration from apidoc.json');
             app.options.apicat = packageInfo.apicat;
+        }
+
+        // ⚠️ IMPORTANT: Respect "input" field from apidoc.json
+        // If "input" is defined in apidoc.json AND CLI didn't override it,
+        // it restricts which subdirectories to process relative to apidoc.json location
+        // This prevents parsing ALL files in the repository
+        if (packageInfo.input && Array.isArray(packageInfo.input) && packageInfo.input.length > 0) {
+            // packageInfo.input is relative to the apidoc.json file location
+            // We need to resolve it relative to where apidoc.json is located
+            const apidocJsonDir = Array.isArray(app.options.src) ? app.options.src[0] : app.options.src;
+
+            app.options.src = packageInfo.input.map((subdir: string) => {
+                // Resolve the input path relative to apidoc.json location
+                const resolvedPath = path.resolve(apidocJsonDir, subdir);
+                app.log.verbose(`Using input directory from apidoc.json: ${resolvedPath}`);
+                return resolvedPath;
+            });
+
+            app.log.info(`📁 Restricting to "input" directories from apidoc.json: ${packageInfo.input.join(', ')}`);
         }
 
         // this is holding our results from parsing the source code

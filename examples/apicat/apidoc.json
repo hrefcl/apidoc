@@ -17,7 +17,7 @@
     "filename": "header.md",
     "icon": "fa-home"
   },
-  "input": ["example"],
+  "input": ["."],
   "login": {
     "active": true,
     "encryptionKey": "TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ=",

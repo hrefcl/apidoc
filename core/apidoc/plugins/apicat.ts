@@ -674,11 +674,14 @@ export class ApiCatPlugin {
             const ts = require('typescript');
             const tsdocData: Record<string, any> = {};
 
-            // Find all TypeScript files in core directory
-            const coreFiles = await this.findTypeScriptFiles(['./core']);
+            // Find all TypeScript files in SOURCE directory (NOT hardcoded ./core)
+            // Use sourceDir from config which comes from CLI -i parameter
+            const sourceDir = this.config.sourceDir || './';
+            const coreFiles = await this.findTypeScriptFiles([sourceDir]);
 
             // Parse files by module groups
-            const moduleGroups = {
+            // Try to auto-detect module structure, or group all as "interfaces" if no structure
+            const moduleGroups: Record<string, string[]> = {
                 core: coreFiles.filter((f) => f.includes('/apidoc/') || f.includes('/types/')),
                 exporters: coreFiles.filter((f) => f.includes('/exporters/')),
                 markdown: coreFiles.filter((f) => f.includes('/markdown/')),
@@ -686,6 +689,12 @@ export class ApiCatPlugin {
                 filters: coreFiles.filter((f) => f.includes('/filters/')),
                 plugins: coreFiles.filter((f) => f.includes('/plugins/')),
             };
+
+            // If no files matched the APIDoc core structure, group all files as "interfaces"
+            const totalMatched = Object.values(moduleGroups).reduce((sum, files) => sum + files.length, 0);
+            if (totalMatched === 0 && coreFiles.length > 0) {
+                moduleGroups['interfaces'] = coreFiles;
+            }
 
             for (const [moduleName, files] of Object.entries(moduleGroups)) {
                 if (files.length === 0) continue;
