@@ -138,7 +138,8 @@ export class JSONEncryption {
         const iv = crypto.randomBytes(this.config.ivLength);
 
         const cipher = crypto.createCipheriv(this.config.algorithm, this.key, iv) as crypto.CipherGCM;
-        cipher.setAAD(Buffer.from('apicat-json'));
+        // Note: AAD removed for Web Crypto API compatibility
+        // cipher.setAAD(Buffer.from('apicat-json'));
 
         let encrypted = cipher.update(jsonString, 'utf8', 'base64');
         encrypted += cipher.final('base64');
@@ -170,7 +171,8 @@ export class JSONEncryption {
         const encrypted = encryptedFile.data;
 
         const decipher = crypto.createDecipheriv(encryptedFile.algorithm, this.key, iv) as crypto.DecipherGCM;
-        decipher.setAAD(Buffer.from('apicat-json'));
+        // Note: AAD removed for Web Crypto API compatibility
+        // decipher.setAAD(Buffer.from('apicat-json'));
         decipher.setAuthTag(tag);
 
         let decrypted = decipher.update(encrypted, 'base64', 'utf8');

@@ -112,54 +112,6 @@ Asigna iconos Font Awesome a tus grupos de API en `apidoc.json`:
 2. **Icono Font Awesome** (`icon`) - si no hay URL
 3. **Icono SVG por defecto** - fallback si no hay configuración
 
-## 🌈 Temas de Resaltado de Código
-
-### Configuración de tema
-
-```json
-{
-  "highlightTheme": "tokyo-night-dark"
-}
-```
-
-### Temas populares
-
-**Temas oscuros:**
-```json
-{"highlightTheme": "tokyo-night-dark"}   // Tema moderno oscuro (default)
-{"highlightTheme": "github-dark"}        // GitHub oscuro
-{"highlightTheme": "monokai"}           // Clásico Monokai
-{"highlightTheme": "dracula"}           // Popular Dracula
-{"highlightTheme": "androidstudio"}     // Android Studio
-```
-
-**Temas claros:**
-```json
-{"highlightTheme": "github"}            // GitHub claro
-{"highlightTheme": "vs"}                // Visual Studio
-{"highlightTheme": "atom-one-light"}    // Atom One Light
-{"highlightTheme": "xcode"}             // Xcode
-```
-
-### Cambio dinámico de tema
-
-```javascript
-// Cambiar tema en tiempo de ejecución
-window.loadHighlightTheme('dracula');
-window.loadHighlightTheme('github-dark');
-window.loadHighlightTheme('monokai');
-```
-
-### 160+ temas disponibles
-
-- **GitHub**: `github`, `github-dark`, `github-dark-dimmed`
-- **Populares**: `monokai`, `dracula`, `tomorrow-night`, `solarized-dark`
-- **Modernos**: `tokyo-night-dark`, `tokyo-night-light`, `nord`, `gruvbox-dark`
-- **Clásicos**: `vs`, `vs2015`, `androidstudio`, `xcode`
-- **Coloridos**: `rainbow`, `magula`, `sunburst`, `hybrid`
-- **Minimalistas**: `default`, `lightfair`, `far`, `foundation`
-
-## 🎨 Header y Footer con Iconos
 
 ### Configuración
 

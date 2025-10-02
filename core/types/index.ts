@@ -194,6 +194,41 @@ export interface ApiDocProject {
         /** Font Awesome icon class */
         icon?: string;
     }>;
+    /** Authentication and encryption configuration */
+    login?: {
+        /** Enable login-protected documentation */
+        active?: boolean;
+        /** Authentication endpoint URL */
+        urlAuth?: string;
+        /** Form field mapping for authentication */
+        value_form?: {
+            /** Email field name */
+            email?: string;
+            /** Password field name */
+            password?: string;
+        };
+        /** HTTP status code for successful authentication */
+        response_success?: number;
+        /** HTTP status code for failed authentication */
+        response_error?: number;
+        /** Encryption key for decrypting documentation (AES-256-GCM) */
+        encryptionKey?: string;
+        /** If true, encryption key comes from server response instead of being embedded */
+        encryptionKeyFromServer?: boolean;
+        /** List of admitted users for local authentication (without server) */
+        admited?: Array<{
+            /** User email address */
+            email: string;
+            /** User password (plain text or use passwordHash for security) */
+            password?: string;
+            /** SHA-256 hashed password (more secure than plain text) */
+            passwordHash?: string;
+            /** User display name */
+            name?: string;
+            /** User role */
+            role?: string;
+        }>;
+    };
 }
 
 /**

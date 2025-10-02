@@ -4,11 +4,20 @@ import HomePage from '@/pages/HomePage.vue'
 import DocPage from '@/pages/DocPage.vue'
 import CategoryIndexPage from '@/pages/CategoryIndexPage.vue'
 import ApiSectionPage from '@/pages/ApiSectionPage.vue'
+import LoginPage from '@/pages/LoginPage.vue'
+import { useDocsStore } from '@/stores/docs'
 
 export const routes = [
   {
+    path: '/login',
+    name: 'login',
+    component: LoginPage,
+    meta: { requiresAuth: false }
+  },
+  {
     path: '/',
     component: DocsLayout,
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
@@ -86,6 +95,43 @@ const router = createRouter({
     } else {
       return { top: 0 }
     }
+  }
+})
+
+// Navigation guard for authentication
+router.beforeEach((to, from, next) => {
+  const docsStore = useDocsStore()
+
+  // Initialize auth state from sessionStorage on first navigation
+  if (!docsStore.isAuthenticated) {
+    docsStore.initAuth()
+  }
+
+  // Check if route requires authentication
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth !== false)
+
+  // Check if login is required for this documentation
+  const loginRequired = docsStore.requiresLogin
+
+  // If login is not required at all, allow access
+  if (!loginRequired) {
+    next()
+    return
+  }
+
+  // If login is required and route needs auth
+  if (requiresAuth && !docsStore.isAuthenticated) {
+    // Redirect to login, save attempted path
+    next({
+      name: 'login',
+      query: { redirect: to.fullPath }
+    })
+  } else if (to.name === 'login' && docsStore.isAuthenticated) {
+    // If already authenticated and trying to access login, redirect to home
+    next({ name: 'home' })
+  } else {
+    // Allow navigation
+    next()
   }
 })
 

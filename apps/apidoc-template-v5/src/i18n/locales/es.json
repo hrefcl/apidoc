@@ -123,5 +123,16 @@
     "403": "Prohibido",
     "404": "No encontrado",
     "500": "Error del servidor"
+  },
+  "login": {
+    "title": "Iniciar Sesión",
+    "subtitle": "Accede a la documentación protegida",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "submit": "Iniciar sesión",
+    "loading": "Iniciando sesión...",
+    "error": "Error al iniciar sesión",
+    "invalidCredentials": "Credenciales inválidas",
+    "networkError": "Error de red. Por favor, intenta de nuevo."
   }
 }

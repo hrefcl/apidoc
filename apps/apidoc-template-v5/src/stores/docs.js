@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { decryptObject, isEncrypted } from '../utils/encryption'
 
 export const useDocsStore = defineStore('docs', () => {
   const docs = ref([])
@@ -13,43 +14,210 @@ export const useDocsStore = defineStore('docs', () => {
   const loading = ref(false)
   const error = ref(null)
 
+  // Authentication state
+  const isAuthenticated = ref(false)
+  const authToken = ref(null) // JWT token
+
+  // SECURITY: Encryption key is NEVER stored in sessionStorage or memory
+  // It's only used temporarily during decryption and then discarded
+
+  /**
+   * Get encryption key from meta if login is active
+   * SECURITY: Key is reconstructed from obfuscated segments ONLY when needed
+   * @returns {string|null}
+   */
+  const getEncryptionKey = () => {
+    // Try reconstructing obfuscated key from HTML
+    if (typeof window !== 'undefined' && window.__APICAT_DATA__?.meta?.login) {
+      const login = window.__APICAT_DATA__.meta.login
+      if (login.active) {
+        // New obfuscated format: reconstruct from segments
+        if (login._obf && login._kv) {
+          try {
+            // Execute obfuscation code to reconstruct key
+            // This evaluates the code that contains the segments and decoys
+            const reconstructedKey = eval(`(function(){${login._obf}return ${login._kv};})()`)
+            return reconstructedKey
+          } catch (error) {
+            console.error('Failed to reconstruct encryption key:', error)
+            return null
+          }
+        }
+        // Legacy format: direct key (for backward compatibility)
+        else if (login._k) {
+          return login._k
+        }
+      }
+    }
+    return null
+  }
+
+  /**
+   * Set authentication status (for non-JWT authentication)
+   * @param {boolean} value
+   */
+  const setAuthenticated = (value) => {
+    isAuthenticated.value = value
+    if (value) {
+      // Store in sessionStorage to persist across page reloads
+      sessionStorage.setItem('apicat_authenticated', 'true')
+    } else {
+      sessionStorage.removeItem('apicat_authenticated')
+      authToken.value = null
+    }
+  }
+
+  /**
+   * Set JWT authentication token
+   * @param {string} token - JWT token string
+   */
+  const setAuthToken = (token) => {
+    authToken.value = token
+    isAuthenticated.value = true
+    // Store in sessionStorage to persist across page reloads
+    sessionStorage.setItem('apicat_auth_token', token)
+    sessionStorage.setItem('apicat_authenticated', 'true')
+  }
+
+  /**
+   * DEPRECATED: This function is removed for security reasons
+   * Encryption keys should NEVER be stored in sessionStorage or memory
+   * @deprecated
+   */
+  const setEncryptionKey = (key) => {
+    // SECURITY: Do NOT store encryption keys
+    console.warn('⚠️  setEncryptionKey is deprecated for security reasons. Keys are not stored.')
+  }
+
+  /**
+   * Check if login is required
+   * @returns {boolean}
+   */
+  const requiresLogin = computed(() => {
+    if (typeof window !== 'undefined' && window.__APICAT_DATA__?.meta?.login) {
+      return window.__APICAT_DATA__.meta.login.active === true
+    }
+    return false
+  })
+
+  /**
+   * Initialize authentication state from sessionStorage
+   */
+  const initAuth = () => {
+    if (typeof window !== 'undefined') {
+      const token = sessionStorage.getItem('apicat_auth_token')
+      const authenticated = sessionStorage.getItem('apicat_authenticated') === 'true'
+
+      // If we have a JWT token, validate it
+      if (token) {
+        // Import validateJWT dynamically to avoid circular dependencies
+        import('../utils/jwt').then(({ validateJWT }) => {
+          const validation = validateJWT(token)
+
+          if (validation.valid) {
+            console.log('✅ Restored valid JWT session')
+            authToken.value = token
+            isAuthenticated.value = true
+
+            // Calculate time until expiration
+            const timeUntil = (validation.payload.exp * 1000) - Date.now()
+            const minutesUntil = Math.round(timeUntil / 1000 / 60)
+            console.log(`🕐 Session expires in ${minutesUntil} minutes`)
+
+            // Set up auto-logout when token expires
+            if (timeUntil > 0) {
+              setTimeout(() => {
+                console.warn('⏰ JWT token expired, logging out')
+                logout()
+              }, timeUntil)
+            }
+          } else {
+            console.warn('⚠️  Stored JWT token is invalid:', validation.error)
+            logout()
+          }
+        })
+      }
+      // Fallback to simple boolean authentication
+      else if (authenticated) {
+        isAuthenticated.value = true
+      }
+
+      // SECURITY: Encryption key is NOT stored - reconstructed from obfuscated segments when needed
+    }
+  }
+
+  /**
+   * Logout - clear authentication state
+   */
+  const logout = () => {
+    setAuthenticated(false)
+    authToken.value = null
+    // SECURITY: Encryption key is NOT stored in memory
+    sessionStorage.removeItem('apicat_auth_token')
+    sessionStorage.removeItem('apicat_authenticated')
+  }
+
   /**
    * Helper para cargar datos - usa datos embebidos en SSG o fetch en runtime
    * @param {string} path - Ruta del archivo JSON (ej: '/data/cat.json')
    * @param {string} key - Clave en window.__APICAT_DATA__ (ej: 'cat' o 'api.users')
    */
   const loadData = async (path, key = null) => {
+    let data = null
+
     // Si hay clave, buscar en datos embebidos
     if (key && typeof window !== 'undefined' && window.__APICAT_DATA__) {
       // Primero intentar la clave literal completa (ej: 'api.index', 'model.index')
       if (window.__APICAT_DATA__[key]) {
         console.log(`[loadData] Found data for key: ${key} (literal)`)
-        return window.__APICAT_DATA__[key]
-      }
-
-      // Si no existe como literal, intentar como clave anidada (ej: 'api.users' → api['users'])
-      const keys = key.split('.')
-      let data = window.__APICAT_DATA__
-      for (const k of keys) {
-        if (data && data[k]) {
-          data = data[k]
+        data = window.__APICAT_DATA__[key]
+      } else {
+        // Si no existe como literal, intentar como clave anidada (ej: 'api.users' → api['users'])
+        const keys = key.split('.')
+        let tempData = window.__APICAT_DATA__
+        for (const k of keys) {
+          if (tempData && tempData[k]) {
+            tempData = tempData[k]
+          } else {
+            tempData = null
+            break
+          }
+        }
+        if (tempData) {
+          console.log(`[loadData] Found data for key: ${key} (nested)`)
+          data = tempData
         } else {
-          data = null
-          break
+          console.warn(`[loadData] Key not found: ${key}`)
         }
       }
-      if (data) {
-        console.log(`[loadData] Found data for key: ${key} (nested)`)
-        return data
-      }
-
-      console.warn(`[loadData] Key not found: ${key}`)
     }
 
-    // Fallback: usar fetch
-    console.log(`[loadData] Falling back to fetch for: ${path}`)
-    const response = await fetch(path)
-    return await response.json()
+    // Fallback: usar fetch si no se encontraron datos embebidos
+    if (!data) {
+      console.log(`[loadData] Falling back to fetch for: ${path}`)
+      const response = await fetch(path)
+      data = await response.json()
+    }
+
+    // Desencriptar si es necesario
+    if (data && isEncrypted(data)) {
+      const encryptionKey = getEncryptionKey()
+      if (encryptionKey) {
+        console.log(`[loadData] 🔓 Decrypting data for key: ${key}`)
+        try {
+          data = await decryptObject(data, encryptionKey)
+          console.log(`[loadData] ✅ Decryption successful for key: ${key}`)
+        } catch (error) {
+          console.error(`[loadData] ❌ Decryption failed for key: ${key}`, error)
+          throw new Error(`Failed to decrypt ${key}: ${error.message}`)
+        }
+      } else {
+        console.error(`[loadData] ❌ Data is encrypted but no encryption key available`)
+        throw new Error('Encrypted data requires authentication')
+      }
+    }
+
+    return data
   }
 
   // Cargar índice de documentos
@@ -513,6 +681,15 @@ export const useDocsStore = defineStore('docs', () => {
     loadDocs,
     loadDoc,
     searchDocs,
-    getSidebarNav
+    getSidebarNav,
+    // Authentication
+    isAuthenticated,
+    authToken,
+    requiresLogin,
+    setAuthenticated,
+    setAuthToken,
+    setEncryptionKey,
+    initAuth,
+    logout
   }
 })

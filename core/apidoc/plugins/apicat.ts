@@ -9,6 +9,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ApiDocProject } from '../../types';
+import { JSONEncryption } from '../../utils/encryption';
 
 /**
  * apiCAT Plugin Configuration
@@ -30,6 +31,7 @@ export class ApiCatPlugin {
     private config: ApiCatConfig;
     private outputDir: string;
     private sourceDir: string;
+    private projectInfo?: ApiDocProject;
 
     constructor(config: ApiCatConfig = { enabled: false }) {
         this.config = {
@@ -54,6 +56,9 @@ export class ApiCatPlugin {
         if (!this.config.enabled) {
             return;
         }
+
+        // Store projectInfo for use in other methods
+        this.projectInfo = projectInfo;
 
         console.log('🐱 apiCAT: Processing API documentation...');
 
@@ -130,28 +135,76 @@ export class ApiCatPlugin {
 
         await fs.writeFile(path.join(dataPath, 'cat.json'), JSON.stringify(manifest, null, 2));
 
-        // Generate meta
+        // Generate meta with login config (if enabled)
+        const metaData: any = {
+            name: apicatData.project.name,
+            version: apicatData.project.version,
+            description: apicatData.project.description,
+            title: apicatData.project.title,
+            url: apicatData.project.url,
+            sampleUrl: apicatData.project.sampleUrl,
+            homepage: apicatData.project.homepage,
+            bugs: apicatData.project.bugs,
+            repository: apicatData.project.repository,
+            mqtt: apicatData.project.mqtt,
+            header: apicatData.project.header,
+            footer: apicatData.project.footer,
+            generatedAt: manifest.generatedAt,
+        };
+
+        // Add login configuration if auth is enabled
+        if (projectInfo.login?.active) {
+            const loginConfig: any = {
+                active: true,
+                urlAuth: projectInfo.login.urlAuth,
+                value_form: projectInfo.login.value_form,
+                response_success: projectInfo.login.response_success,
+                response_error: projectInfo.login.response_error,
+                encryptionKeyFromServer: projectInfo.login.encryptionKeyFromServer || false,
+            };
+
+            // Only include encryptionKey if NOT from server
+            if (!projectInfo.login.encryptionKeyFromServer && projectInfo.login.encryptionKey) {
+                // SECURITY: Obfuscate the encryption key by splitting it into segments
+                // and mixing with decoy data to make it hard to find in minified code
+                const { obfuscateKey } = await import('../../utils/keyObfuscation');
+                const obfuscated = obfuscateKey(projectInfo.login.encryptionKey, 4);
+
+                // Store obfuscation code and reconstruction variable
+                loginConfig._obf = obfuscated.code;
+                loginConfig._kv = obfuscated.reconstructVar;
+
+                console.info('🔐 Encryption key obfuscated into 4 segments with decoys');
+            }
+
+            // Include admited list if present (for local authentication)
+            // SECURITY: Encrypt admited list to prevent exposure in HTML source
+            if (projectInfo.login.admited && Array.isArray(projectInfo.login.admited)) {
+                // Import encryption module
+                const { JSONEncryption } = await import('../../utils/encryption');
+
+                // Create encryption instance with the same key used for docs
+                const encryption = new JSONEncryption(
+                    { enabled: true },
+                    projectInfo.login.encryptionKey
+                );
+
+                // Encrypt the admited list
+                const encryptedAdmited = encryption.encryptJSON(projectInfo.login.admited);
+
+                console.info('🔐 Encrypted admited list for local authentication');
+                console.info(`   Users count: ${projectInfo.login.admited.length}`);
+
+                // Store encrypted version (not plain text)
+                loginConfig._admited = encryptedAdmited;
+            }
+
+            metaData.login = loginConfig;
+        }
+
         await fs.writeFile(
             path.join(dataPath, 'cat.meta.json'),
-            JSON.stringify(
-                {
-                    name: apicatData.project.name,
-                    version: apicatData.project.version,
-                    description: apicatData.project.description,
-                    title: apicatData.project.title,
-                    url: apicatData.project.url,
-                    sampleUrl: apicatData.project.sampleUrl,
-                    homepage: apicatData.project.homepage,
-                    bugs: apicatData.project.bugs,
-                    repository: apicatData.project.repository,
-                    mqtt: apicatData.project.mqtt,
-                    header: apicatData.project.header,
-                    footer: apicatData.project.footer,
-                    generatedAt: manifest.generatedAt,
-                },
-                null,
-                2
-            )
+            JSON.stringify(metaData, null, 2)
         );
 
         // Generate API index and shards FIRST (this groups endpoints by version)
@@ -1542,6 +1595,32 @@ export class ApiCatPlugin {
     }
 
     /**
+     * Encrypt sensitive data if login is enabled
+     * @param data Data to potentially encrypt
+     * @param encryption JSONEncryption instance
+     * @returns Encrypted data structure or original data
+     */
+    private encryptIfNeeded(data: any, encryption: JSONEncryption | null): any {
+        if (!encryption) {
+            return data;
+        }
+
+        try {
+            const encrypted = encryption.encryptJSON(data);
+            return {
+                encrypted: true,
+                data: encrypted.data,
+                iv: encrypted.iv,
+                tag: encrypted.tag,
+                algorithm: encrypted.algorithm,
+            };
+        } catch (error) {
+            console.warn('⚠️  Failed to encrypt data, using unencrypted:', error);
+            return data;
+        }
+    }
+
+    /**
      * Embed JSON data into HTML file
      * @param outputPath Path where index.html and data/ exist
      */
@@ -1551,6 +1630,13 @@ export class ApiCatPlugin {
 
             const dataPath = path.join(outputPath, 'data');
             const indexHtmlPath = path.join(outputPath, 'index.html');
+
+            // Initialize encryption if login is active
+            let encryption: JSONEncryption | null = null;
+            if (this.projectInfo?.login?.active && this.projectInfo.login.encryptionKey) {
+                console.log('🔐 Login enabled - initializing encryption for sensitive data...');
+                encryption = new JSONEncryption({}, this.projectInfo.login.encryptionKey);
+            }
 
             // Load all JSON files
             const allData: any = {};
@@ -1576,6 +1662,9 @@ export class ApiCatPlugin {
             const subdirs = (await fs.readdir(dataPath, { withFileTypes: true }))
                 .filter(dirent => dirent.isDirectory());
 
+            // Categories that should be encrypted when login is active
+            const sensitiveCategories = ['api', 'docs', 'model'];
+
             for (const dir of subdirs) {
                 const subdirPath = path.join(dataPath, dir.name);
                 const subdirFiles = (await fs.readdir(subdirPath)).filter(f => f.endsWith('.json'));
@@ -1584,12 +1673,23 @@ export class ApiCatPlugin {
                 const category = dir.name.replace('cat.', '');
                 if (!allData[category]) allData[category] = {};
 
+                const shouldEncrypt = encryption && sensitiveCategories.includes(category);
+
                 for (const file of subdirFiles) {
                     const filePath = path.join(subdirPath, file);
                     const content = JSON.parse(await fs.readFile(filePath, 'utf-8'));
                     const key = file.replace('.json', '');
-                    allData[category][key] = content;
+
+                    // Encrypt sensitive data if encryption is enabled
+                    allData[category][key] = shouldEncrypt
+                        ? this.encryptIfNeeded(content, encryption)
+                        : content;
                 }
+            }
+
+            // Log encryption status
+            if (encryption) {
+                console.log(`🔐 Encrypted sensitive categories: ${sensitiveCategories.join(', ')}`);
             }
 
             // Read current HTML
