@@ -215,19 +215,15 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
             return false;
         }
 
-        const writer = new Writer(api, app);
-        await writer.write();
-
-        app.log.verbose('All done :)');
-
-        // Process with apiCAT plugin if enabled
+        // Check if apiCAT is enabled - use different output generation
         if (app.options.apicat?.enabled) {
-            app.log.verbose('🐱 apiCAT: Plugin is enabled, starting processing...');
+            app.log.verbose('🐱 apiCAT: Plugin is enabled, using Vue 3 template system...');
             try {
-                // Pass sourceDir to plugin for markdown file resolution
+                // Pass sourceDir and dest to plugin for markdown file resolution and output
                 const apiCatConfig = {
                     ...app.options.apicat,
-                    sourceDir: Array.isArray(app.options.src) ? app.options.src[0] : app.options.src
+                    sourceDir: Array.isArray(app.options.src) ? app.options.src[0] : app.options.src,
+                    dest: app.options.dest
                 };
                 const apiCatPlugin = new ApiCatPlugin(apiCatConfig);
                 const parsedData = JSON.parse(api.data);
@@ -256,8 +252,13 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
                 app.log.debug(`⚠️ apiCAT: Stack trace: ${error.stack}`);
             }
         } else {
-            app.log.verbose('🐱 apiCAT: Plugin is disabled or not configured');
+            // Use traditional template system (writer.ts)
+            app.log.verbose('Using traditional template system...');
+            const writer = new Writer(api, app);
+            await writer.write();
         }
+
+        app.log.verbose('All done :)');
 
         // Parse the JSON strings back to objects for proper typing
         const parsedData = JSON.parse(api.data);

@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import DocsLayout from '@/layouts/DocsLayout.vue'
 import HomePage from '@/pages/HomePage.vue'
 import DocPage from '@/pages/DocPage.vue'
 import CategoryIndexPage from '@/pages/CategoryIndexPage.vue'
 import ApiSectionPage from '@/pages/ApiSectionPage.vue'
 
-const routes = [
+export const routes = [
   {
     path: '/',
     component: DocsLayout,
@@ -76,7 +76,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {

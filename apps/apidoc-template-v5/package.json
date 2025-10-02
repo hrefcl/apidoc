@@ -6,6 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:with-data": "vite build && node scripts/embed-data.js",
+    "build:ssg": "vite-ssg build",
+    "inline:assets": "node scripts/inline-assets.js",
+    "embed:data": "node scripts/embed-data.js",
     "preview": "vite preview",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
@@ -25,8 +29,11 @@
     "@playwright/test": "^1.55.1",
     "@vitejs/plugin-vue": "^5.0.4",
     "autoprefixer": "^10.4.18",
+    "glob": "^11.0.3",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
-    "vite": "^5.1.6"
+    "vite": "^5.1.6",
+    "vite-plugin-singlefile": "^2.3.0",
+    "vite-ssg": "^0.23.8"
   }
 }

@@ -4,6 +4,9 @@ import en from './locales/en.json'
 
 // Detectar idioma del navegador o usar español por defecto
 const getBrowserLocale = () => {
+  // SSR guard: navigator no existe en SSR
+  if (typeof navigator === 'undefined') return 'es'
+
   const browserLocale = navigator.language || navigator.userLanguage
   const locale = browserLocale.split('-')[0] // 'es-ES' -> 'es'
 
@@ -13,6 +16,9 @@ const getBrowserLocale = () => {
 
 // Cargar idioma guardado en localStorage o usar el del navegador
 const getSavedLocale = () => {
+  // SSR guard: localStorage no existe en SSR
+  if (typeof localStorage === 'undefined') return 'es'
+
   return localStorage.getItem('apidoc-locale') || getBrowserLocale()
 }
 
@@ -35,8 +41,14 @@ const i18n = createI18n({
 export const setLocale = (locale) => {
   if (i18n.global.availableLocales.includes(locale)) {
     i18n.global.locale.value = locale
-    localStorage.setItem('apidoc-locale', locale)
-    document.documentElement.lang = locale
+
+    // SSR guards
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('apidoc-locale', locale)
+    }
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = locale
+    }
   }
 }
 

@@ -111,17 +111,17 @@ const loadSectionData = async () => {
       await docsStore.loadDocs()
     }
 
-    // 1. Load section custom markdown from cat.docs/group.{section}.json
-    const groupFile = `cat.docs/group.${section.value.toLowerCase()}`
-    try {
-      const response = await fetch(`/data/${groupFile}.json`)
-      if (response.ok) {
-        const groupData = await response.json()
-        sectionData.value = groupData
-        console.log('[ApiSectionPage] Custom markdown loaded:', groupData.customMarkdown?.title)
-      }
-    } catch (e) {
-      console.warn('[ApiSectionPage] No custom markdown for section:', section.value)
+    // 1. Load section custom markdown from embedded data: docs['group.{section}']
+    const groupKey = `group.${section.value.toLowerCase()}`
+    console.log('[ApiSectionPage] Looking for custom markdown with key:', groupKey)
+
+    if (window.__APICAT_DATA__?.docs?.[groupKey]) {
+      const groupData = window.__APICAT_DATA__.docs[groupKey]
+      sectionData.value = groupData
+      console.log('[ApiSectionPage] Custom markdown loaded from embedded data:', groupData.customMarkdown?.title)
+    } else {
+      console.warn('[ApiSectionPage] No custom markdown for section:', section.value, 'key:', groupKey)
+      console.log('[ApiSectionPage] Available docs keys:', window.__APICAT_DATA__?.docs ? Object.keys(window.__APICAT_DATA__.docs) : 'none')
     }
 
     // 2. Load endpoints for this section from navigation
@@ -130,24 +130,35 @@ const loadSectionData = async () => {
       console.log('[ApiSectionPage] Group found:', group?.id, 'endpoints:', group?.endpoints?.length)
 
       if (group && group.endpoints) {
-        // 3. Load endpoint details from API index
+        // 3. Load endpoint details from embedded data
         if (docsStore.apiIndex?.endpoints) {
           const endpointDetails = []
           for (const endpointId of group.endpoints) {
             const endpointInfo = docsStore.apiIndex.endpoints.find(e => e.id === endpointId)
-            if (endpointInfo) {
-              // Load the shard to get full endpoint data
-              try {
-                const shardResponse = await fetch(`/data/${endpointInfo.shard}`)
-                if (shardResponse.ok) {
-                  const shardData = await shardResponse.json()
+            if (endpointInfo && endpointInfo.shard) {
+              // Extract shard key: cat.api/users.json → api.users
+              const shardKey = endpointInfo.shard
+                .replace('cat.', '')  // cat.api/users.json → api/users.json
+                .replace('.json', '') // api/users.json → api/users
+                .replace('/', '.')     // api/users → api.users
+
+              console.log('[ApiSectionPage] Loading shard:', endpointInfo.shard, '→ key:', shardKey)
+
+              // Load from embedded data using nested key
+              if (window.__APICAT_DATA__?.api) {
+                const categoryKey = shardKey.split('.')[0] // 'api'
+                const fileKey = shardKey.split('.')[1]     // 'users'
+
+                const shardData = window.__APICAT_DATA__[categoryKey]?.[fileKey]
+                if (shardData) {
                   const fullEndpoint = shardData.endpoints?.find(e => e.id === endpointId)
                   if (fullEndpoint) {
                     endpointDetails.push(fullEndpoint)
+                    console.log('[ApiSectionPage] Loaded endpoint from embedded data:', endpointId)
                   }
+                } else {
+                  console.warn('[ApiSectionPage] Shard not found in embedded data:', shardKey)
                 }
-              } catch (e) {
-                console.warn('[ApiSectionPage] Error loading endpoint:', endpointId, e)
               }
             }
           }

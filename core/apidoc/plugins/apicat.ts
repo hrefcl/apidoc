@@ -19,6 +19,7 @@ export interface ApiCatConfig {
     generateCollections?: boolean;
     enableLocalTesting?: boolean;
     sourceDir?: string; // Source directory for reading markdown files
+    dest?: string; // Destination directory from APIDoc options
 }
 
 /**
@@ -57,8 +58,8 @@ export class ApiCatPlugin {
         console.log('🐱 apiCAT: Processing API documentation...');
 
         try {
-            // Use the output destination from writer (tmp/apicat-output)
-            const outputPath = path.resolve('./tmp/apicat-output');
+            // Use the output destination from config.dest or fallback to outputDir
+            const outputPath = this.config.dest ? path.resolve(this.config.dest) : path.resolve('./tmp/apicat-output');
             await fs.ensureDir(outputPath);
 
             // Generate modular JSON structure
@@ -85,11 +86,14 @@ export class ApiCatPlugin {
         projectInfo: ApiDocProject,
         outputPath: string
     ): Promise<void> {
-        // Create subdirectories
-        await fs.ensureDir(path.join(outputPath, 'cat.api'));
-        await fs.ensureDir(path.join(outputPath, 'cat.docs'));
-        await fs.ensureDir(path.join(outputPath, 'cat.tsdoc'));
-        await fs.ensureDir(path.join(outputPath, 'assets'));
+        // All JSON data goes into /data subdirectory
+        const dataPath = path.join(outputPath, 'data');
+        await fs.ensureDir(dataPath);
+
+        // Create subdirectories in /data
+        await fs.ensureDir(path.join(dataPath, 'cat.api'));
+        await fs.ensureDir(path.join(dataPath, 'cat.docs'));
+        await fs.ensureDir(path.join(dataPath, 'cat.tsdoc'));
 
         // Transform data using adapter
         const adapter = require('../../adapters/apidoc-to-apicat');
@@ -124,11 +128,11 @@ export class ApiCatPlugin {
             };
         }
 
-        await fs.writeFile(path.join(outputPath, 'cat.json'), JSON.stringify(manifest, null, 2));
+        await fs.writeFile(path.join(dataPath, 'cat.json'), JSON.stringify(manifest, null, 2));
 
         // Generate meta
         await fs.writeFile(
-            path.join(outputPath, 'cat.meta.json'),
+            path.join(dataPath, 'cat.meta.json'),
             JSON.stringify(
                 {
                     name: apicatData.project.name,
@@ -234,6 +238,7 @@ export class ApiCatPlugin {
         projectInfo: ApiDocProject,
         groupedEndpointsMap: Map<string, any[]>
     ): Promise<void> {
+        const dataPath = path.join(outputPath, 'data');
         const groups = apicatData.groups.map((groupName: string) => {
             // Get grouped endpoints for this group from the map
             const groupedEndpoints = groupedEndpointsMap.get(groupName) || [];
@@ -259,7 +264,7 @@ export class ApiCatPlugin {
             },
         };
 
-        await fs.writeFile(path.join(outputPath, 'cat.navigation.json'), JSON.stringify(navigation, null, 2));
+        await fs.writeFile(path.join(dataPath, 'cat.navigation.json'), JSON.stringify(navigation, null, 2));
     }
 
     /**
@@ -285,6 +290,7 @@ export class ApiCatPlugin {
      * @returns Map of grouped endpoints by group name
      */
     private async generateApiStructure(apicatData: any, outputPath: string): Promise<Map<string, any[]>> {
+        const dataPath = path.join(outputPath, 'data');
         // API Index - still contains all endpoints individually for search/stats
         const apiIndex = {
             endpoints: apicatData.endpoints.map((ep: any) => ({
@@ -304,7 +310,7 @@ export class ApiCatPlugin {
             lastUpdated: new Date().toISOString(),
         };
 
-        await fs.writeFile(path.join(outputPath, 'cat.api.index.json'), JSON.stringify(apiIndex, null, 2));
+        await fs.writeFile(path.join(dataPath, 'cat.api.index.json'), JSON.stringify(apiIndex, null, 2));
 
         // Generate shards by group with version grouping
         const groupedEndpointsMap = new Map<string, any[]>();
@@ -326,7 +332,7 @@ export class ApiCatPlugin {
             };
 
             await fs.writeFile(
-                path.join(outputPath, 'cat.api', `${this.sanitizeGroupName(group)}.json`),
+                path.join(dataPath, 'cat.api', `${this.sanitizeGroupName(group)}.json`),
                 JSON.stringify(shard, null, 2)
             );
         }
@@ -340,6 +346,7 @@ export class ApiCatPlugin {
      * @param outputPath
      */
     private async generateSearchIndex(apicatData: any, outputPath: string): Promise<void> {
+        const dataPath = path.join(outputPath, 'data');
         const documents = apicatData.endpoints.map((ep: any) => ({
             id: ep.id,
             type: 'endpoint',
@@ -365,7 +372,7 @@ export class ApiCatPlugin {
             generatedAt: new Date().toISOString(),
         };
 
-        await fs.writeFile(path.join(outputPath, 'cat.search.json'), JSON.stringify(searchIndex, null, 2));
+        await fs.writeFile(path.join(dataPath, 'cat.search.json'), JSON.stringify(searchIndex, null, 2));
     }
 
     /**
@@ -373,6 +380,7 @@ export class ApiCatPlugin {
      * @param outputPath
      */
     private async generateAssetsManifest(outputPath: string): Promise<void> {
+        const dataPath = path.join(outputPath, 'data');
         const assets = {
             favicon: {
                 path: 'assets/favicon.svg',
@@ -400,7 +408,7 @@ export class ApiCatPlugin {
             generatedAt: new Date().toISOString(),
         };
 
-        await fs.writeFile(path.join(outputPath, 'cat.assets.json'), JSON.stringify(assets, null, 2));
+        await fs.writeFile(path.join(dataPath, 'cat.assets.json'), JSON.stringify(assets, null, 2));
     }
 
     /**
@@ -410,6 +418,7 @@ export class ApiCatPlugin {
      * @param outputPath
      */
     private async generateDocumentationContent(apicatData: any, projectInfo: any, outputPath: string): Promise<void> {
+        const dataPath = path.join(outputPath, 'data');
         // Process custom markdown settings
         const customMarkdown = await this.processCustomMarkdownSettings(projectInfo);
 
@@ -450,7 +459,7 @@ export class ApiCatPlugin {
             }
 
             await fs.writeFile(
-                path.join(outputPath, 'cat.docs', `group.${this.sanitizeGroupName(group)}.json`),
+                path.join(dataPath, 'cat.docs', `group.${this.sanitizeGroupName(group)}.json`),
                 JSON.stringify(groupData, null, 2)
             );
         }
@@ -471,7 +480,7 @@ export class ApiCatPlugin {
                 };
 
                 await fs.writeFile(
-                    path.join(outputPath, 'cat.docs', `${doc.filename}.json`),
+                    path.join(dataPath, 'cat.docs', `${doc.filename}.json`),
                     JSON.stringify(docData, null, 2)
                 );
 
@@ -500,7 +509,7 @@ export class ApiCatPlugin {
             generatedAt: new Date().toISOString(),
             version: '5.0.0',
         };
-        await fs.writeFile(path.join(outputPath, 'cat.docs', 'header.json'), JSON.stringify(headerData, null, 2));
+        await fs.writeFile(path.join(dataPath, 'cat.docs', 'header.json'), JSON.stringify(headerData, null, 2));
 
         const footerData = {
             type: 'footer-documentation',
@@ -508,7 +517,7 @@ export class ApiCatPlugin {
             generatedAt: new Date().toISOString(),
             version: '5.0.0',
         };
-        await fs.writeFile(path.join(outputPath, 'cat.docs', 'footer.json'), JSON.stringify(footerData, null, 2));
+        await fs.writeFile(path.join(dataPath, 'cat.docs', 'footer.json'), JSON.stringify(footerData, null, 2));
 
         // Generate TSDoc documentation
         const tsdocData = await this.generateTSDocData();
@@ -516,7 +525,7 @@ export class ApiCatPlugin {
         for (const [moduleName, moduleData] of Object.entries(tsdocData)) {
             // Save JSON data
             await fs.writeFile(
-                path.join(outputPath, 'cat.tsdoc', `${moduleName}.json`),
+                path.join(dataPath, 'cat.tsdoc', `${moduleName}.json`),
                 JSON.stringify(moduleData, null, 2)
             );
 
@@ -530,7 +539,7 @@ export class ApiCatPlugin {
                 version: '5.0.0',
             };
             await fs.writeFile(
-                path.join(outputPath, 'cat.docs', `tsdoc.${moduleName}.json`),
+                path.join(dataPath, 'cat.docs', `tsdoc.${moduleName}.json`),
                 JSON.stringify(tsdocData, null, 2)
             );
         }
@@ -1352,8 +1361,11 @@ export class ApiCatPlugin {
     private async generateModelStructure(apicatData: any, outputPath: string): Promise<void> {
         const models = apicatData.models || [];
 
+        // All JSON data goes into /data subdirectory
+        const dataPath = path.join(outputPath, 'data');
+
         // Create cat.model directory
-        const modelDir = path.join(outputPath, 'cat.model');
+        const modelDir = path.join(dataPath, 'cat.model');
         if (!fs.existsSync(modelDir)) {
             await fs.mkdir(modelDir, { recursive: true });
         }
@@ -1375,7 +1387,7 @@ export class ApiCatPlugin {
             lastUpdated: new Date().toISOString(),
         };
 
-        await fs.writeFile(path.join(outputPath, 'cat.model.index.json'), JSON.stringify(modelIndex, null, 2));
+        await fs.writeFile(path.join(dataPath, 'cat.model.index.json'), JSON.stringify(modelIndex, null, 2));
 
         // Group models by group
         const modelsByGroup = new Map<string, any[]>();
@@ -1483,24 +1495,25 @@ export class ApiCatPlugin {
     }
 
     /**
-     * Copy template assets to output directory
+     * Copy template assets to output directory (Vue 3 Template)
      * @param outputPath
      */
     private async copyTemplateAssets(outputPath: string): Promise<void> {
         try {
-            // Path to the built template assets
-            const templatePath = path.resolve('./apps/apicat-template/dist');
+            // Path to the Vue 3 template build
+            const templatePath = path.resolve('./apps/apidoc-template-v5/dist');
 
             if (!(await fs.pathExists(templatePath))) {
-                console.log('⚠️  Template not built. Building apiCAT template...');
-                // Build the template first
+                console.log('⚠️  Template not built. Building apidoc-template-v5 (Vue 3 SPA)...');
+                // Build the template first (SPA only, no data embedding yet)
                 const { exec } = require('child_process');
                 const util = require('util');
                 const execAsync = util.promisify(exec);
 
                 try {
-                    await execAsync('cd apps/apicat-template && npm run build');
-                    console.log('✅ Template built successfully');
+                    // Build WITHOUT running embed-data.js (we'll do it after copying)
+                    await execAsync('cd apps/apidoc-template-v5 && npm run build');
+                    console.log('✅ Template built successfully (SPA base)');
                 } catch (error) {
                     console.error('❌ Failed to build template:', error);
                     return;
@@ -1508,21 +1521,106 @@ export class ApiCatPlugin {
             }
 
             // Copy index.html to output root
-            const indexPath = path.join(templatePath, 'index.html');
-            if (await fs.pathExists(indexPath)) {
-                await fs.copy(indexPath, path.join(outputPath, 'index.html'));
+            // The /data directory already exists with our JSONs
+            const indexHtmlSrc = path.join(templatePath, 'index.html');
+            const indexHtmlDest = path.join(outputPath, 'index.html');
+
+            if (await fs.pathExists(indexHtmlSrc)) {
+                await fs.copy(indexHtmlSrc, indexHtmlDest, { overwrite: true });
+                console.log('✅ Vue 3 template copied (index.html)');
+
+                // Now embed the data from outputPath/data into the copied index.html
+                await this.embedDataInHTML(outputPath);
+            } else {
+                console.warn('⚠️  index.html not found in template dist');
             }
 
-            // Copy assets directory
-            const assetsPath = path.join(templatePath, 'assets');
-            if (await fs.pathExists(assetsPath)) {
-                await fs.copy(assetsPath, path.join(outputPath, 'assets'));
-            }
-
-            console.log('✅ Template assets copied successfully');
         } catch (error) {
             console.error('❌ Error copying template assets:', error);
             // Continue anyway as this is not critical
+        }
+    }
+
+    /**
+     * Embed JSON data into HTML file
+     * @param outputPath Path where index.html and data/ exist
+     */
+    private async embedDataInHTML(outputPath: string): Promise<void> {
+        try {
+            console.log('💉 Embedding JSON data into HTML...');
+
+            const dataPath = path.join(outputPath, 'data');
+            const indexHtmlPath = path.join(outputPath, 'index.html');
+
+            // Load all JSON files
+            const allData: any = {};
+
+            // Read top-level JSON files
+            const jsonFiles = (await fs.readdir(dataPath)).filter(f => f.endsWith('.json'));
+
+            for (const file of jsonFiles) {
+                const filePath = path.join(dataPath, file);
+                const content = JSON.parse(await fs.readFile(filePath, 'utf-8'));
+
+                // cat.json → 'cat', cat.navigation.json → 'navigation', etc.
+                const key = file.replace('cat.', '').replace('.json', '');
+
+                if (file.startsWith('cat.') && file !== 'cat.json') {
+                    allData[key] = content;
+                } else if (file === 'cat.json') {
+                    allData.cat = content;
+                }
+            }
+
+            // Read subdirectories (cat.api/, cat.docs/, cat.tsdoc/, cat.model/)
+            const subdirs = (await fs.readdir(dataPath, { withFileTypes: true }))
+                .filter(dirent => dirent.isDirectory());
+
+            for (const dir of subdirs) {
+                const subdirPath = path.join(dataPath, dir.name);
+                const subdirFiles = (await fs.readdir(subdirPath)).filter(f => f.endsWith('.json'));
+
+                // cat.api → api
+                const category = dir.name.replace('cat.', '');
+                if (!allData[category]) allData[category] = {};
+
+                for (const file of subdirFiles) {
+                    const filePath = path.join(subdirPath, file);
+                    const content = JSON.parse(await fs.readFile(filePath, 'utf-8'));
+                    const key = file.replace('.json', '');
+                    allData[category][key] = content;
+                }
+            }
+
+            // Read current HTML
+            let html = await fs.readFile(indexHtmlPath, 'utf-8');
+
+            // Create the script tag with embedded data
+            const dataScript = `<script>
+window.__APICAT_DATA__ = ${JSON.stringify(allData, null, 0)};
+</script>
+`;
+
+            // Insert BEFORE the first <script> tag
+            const scriptMatch = html.match(/<script[^>]*>/);
+            if (scriptMatch) {
+                const scriptIndex = html.indexOf(scriptMatch[0]);
+                html = html.slice(0, scriptIndex) + dataScript + html.slice(scriptIndex);
+            } else {
+                // Fallback: insert before </head>
+                html = html.replace('</head>', `${dataScript}</head>`);
+            }
+
+            // Write the modified HTML
+            await fs.writeFile(indexHtmlPath, html, 'utf-8');
+
+            const dataSize = (JSON.stringify(allData).length / 1024).toFixed(2);
+            const fileSize = ((await fs.stat(indexHtmlPath)).size / 1024).toFixed(2);
+            console.log(`✅ Data embedded: ${dataSize} KB → Total HTML: ${fileSize} KB`);
+            console.log(`📊 Categories: ${Object.keys(allData).join(', ')}`);
+
+        } catch (error) {
+            console.error('❌ Error embedding data:', error);
         }
     }
 

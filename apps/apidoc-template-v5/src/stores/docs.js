@@ -13,6 +13,45 @@ export const useDocsStore = defineStore('docs', () => {
   const loading = ref(false)
   const error = ref(null)
 
+  /**
+   * Helper para cargar datos - usa datos embebidos en SSG o fetch en runtime
+   * @param {string} path - Ruta del archivo JSON (ej: '/data/cat.json')
+   * @param {string} key - Clave en window.__APICAT_DATA__ (ej: 'cat' o 'api.users')
+   */
+  const loadData = async (path, key = null) => {
+    // Si hay clave, buscar en datos embebidos
+    if (key && typeof window !== 'undefined' && window.__APICAT_DATA__) {
+      // Primero intentar la clave literal completa (ej: 'api.index', 'model.index')
+      if (window.__APICAT_DATA__[key]) {
+        console.log(`[loadData] Found data for key: ${key} (literal)`)
+        return window.__APICAT_DATA__[key]
+      }
+
+      // Si no existe como literal, intentar como clave anidada (ej: 'api.users' → api['users'])
+      const keys = key.split('.')
+      let data = window.__APICAT_DATA__
+      for (const k of keys) {
+        if (data && data[k]) {
+          data = data[k]
+        } else {
+          data = null
+          break
+        }
+      }
+      if (data) {
+        console.log(`[loadData] Found data for key: ${key} (nested)`)
+        return data
+      }
+
+      console.warn(`[loadData] Key not found: ${key}`)
+    }
+
+    // Fallback: usar fetch
+    console.log(`[loadData] Falling back to fetch for: ${path}`)
+    const response = await fetch(path)
+    return await response.json()
+  }
+
   // Cargar índice de documentos
   const loadDocs = async () => {
     loading.value = true
@@ -20,8 +59,7 @@ export const useDocsStore = defineStore('docs', () => {
 
     try {
       // Cargar índice principal (cat.json)
-      const response = await fetch('/data/cat.json')
-      const catData = await response.json()
+      const catData = await loadData('/data/cat.json', 'cat')
 
       // Procesar estructura APIcat v5
       const allDocs = []
@@ -89,8 +127,7 @@ export const useDocsStore = defineStore('docs', () => {
   // Cargar navegación
   const loadNavigation = async () => {
     try {
-      const response = await fetch('/data/cat.navigation.json')
-      navigation.value = await response.json()
+      navigation.value = await loadData('/data/cat.navigation.json', 'navigation')
     } catch (e) {
       console.warn('Navigation file not found')
     }
@@ -99,8 +136,7 @@ export const useDocsStore = defineStore('docs', () => {
   // Cargar metadata
   const loadMeta = async () => {
     try {
-      const response = await fetch('/data/cat.meta.json')
-      meta.value = await response.json()
+      meta.value = await loadData('/data/cat.meta.json', 'meta')
     } catch (e) {
       console.warn('Meta file not found')
     }
@@ -109,18 +145,18 @@ export const useDocsStore = defineStore('docs', () => {
   // Cargar índice de API
   const loadApiIndex = async () => {
     try {
-      const response = await fetch('/data/cat.api.index.json')
-      apiIndex.value = await response.json()
+      console.log('[loadApiIndex] Loading API index with key: api.index')
+      apiIndex.value = await loadData('/data/cat.api.index.json', 'api.index')
+      console.log('[loadApiIndex] API index loaded:', apiIndex.value ? 'SUCCESS' : 'FAILED')
     } catch (e) {
-      console.warn('API index file not found')
+      console.error('[loadApiIndex] Error loading API index:', e)
     }
   }
 
   // Cargar índice de modelos
   const loadModelIndex = async () => {
     try {
-      const response = await fetch('/data/cat.model.index.json')
-      modelIndex.value = await response.json()
+      modelIndex.value = await loadData('/data/cat.model.index.json', 'model.index')
     } catch (e) {
       console.warn('Model index file not found')
     }
@@ -178,8 +214,12 @@ export const useDocsStore = defineStore('docs', () => {
         if (endpoint && endpoint.shard) {
           console.log('[loadDoc] Loading shard:', endpoint.shard)
           // Cargar el archivo del grupo (ej: "cat.api/users.json")
-          const response = await fetch(`/data/${endpoint.shard}`)
-          const groupData = await response.json()
+          // Convertir cat.api/users.json → api.users
+          const shardKey = endpoint.shard
+            .replace('cat.', '')  // cat.api/users.json → api/users.json
+            .replace('.json', '') // api/users.json → api/users
+            .replace('/', '.')     // api/users → api.users
+          const groupData = await loadData(`/data/${endpoint.shard}`, shardKey)
           console.log('[loadDoc] Group data loaded, endpoints:', groupData.endpoints?.length)
 
           // Buscar el endpoint específico dentro del grupo
@@ -213,11 +253,9 @@ export const useDocsStore = defineStore('docs', () => {
 
       // Fallback: intentar cargar como archivo individual
       console.log('[loadDoc] Trying fallback: /data/' + path + '.json')
-      const response = await fetch(`/data/${path}.json`)
-      if (!response.ok) {
-        throw new Error(`Documento no encontrado: ${path}`)
-      }
-      const data = await response.json()
+      // Convertir cat.docs/header → docs.header
+      const dataKey = path.replace('cat.', '').replace('/', '.')
+      const data = await loadData(`/data/${path}.json`, dataKey)
       currentDoc.value = data
       return data
     } catch (e) {
