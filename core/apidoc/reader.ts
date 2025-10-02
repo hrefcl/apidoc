@@ -77,6 +77,8 @@ interface Config extends Partial<Omit<ApiDocProject, 'documentation'>> {
     logo?: LogoConfig;
     /** Input directories (legacy support) */
     input?: string[];
+    /** NEW: Categorized input sources (recommended - v5.0+) */
+    inputs?: Record<string, string[]>;
     /** APIDoc-specific configuration */
     apidoc?: any;
     /** apiCAT plugin configuration */

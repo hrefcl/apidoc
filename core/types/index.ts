@@ -1,5 +1,5 @@
 /**
- * @file APIDoc 4.0 TypeScript Definitions
+ * @file APIDoc 5.0 TypeScript Definitions
  *
  * Core types and interfaces for the APIDoc documentation generator.
  * Provides comprehensive type safety for all APIDoc components including
@@ -10,6 +10,10 @@
  * @since 5.0.0
  * @public
  */
+
+// Export configuration types
+export * from './config.js';
+export * from './app.js';
 
 /**
  * Configuration options for APIDoc generation
@@ -101,6 +105,8 @@ export interface ApiDocOptions {
         generateCollections?: boolean;
         enableLocalTesting?: boolean;
     };
+    /** Category mapping for input sources (directory -> category) */
+    categoryMap?: Map<string, string>;
 }
 
 /**

@@ -11,7 +11,7 @@
  * - Access control and sessions
  * - Lifecycle hooks for data formatting and external system sync
  *
- * @apiVersion 5.0.0
+ * @apiVersion 5.0.1
  */
 
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, NonAttribute, sql } from '@sequelize/core';

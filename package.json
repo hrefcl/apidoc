@@ -55,7 +55,7 @@
     "build:watch": "tsc --watch",
 
     "//": "=== MAIN SCRIPTS (v5 - Vue 3 Template) ===",
-    "example": "npm run build && ./bin/apidoc -v -i examples/apicat -o tmp/apidoc-output",
+    "example": "npm run build && ./bin/apidoc -v --config examples/apicat/apidoc.json -o tmp/apidoc-output",
     "dev:template": "cd apps/apidoc-template-v5 && npm run dev",
     "start": "npx serve tmp/apidoc-output -p 8080",
     "preview": "npx serve tmp/apidoc-output -p 9999",

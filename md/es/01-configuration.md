@@ -33,6 +33,12 @@ La configuración de APIDoc se realiza a través del archivo `apidoc.json` (o de
   "url": "https://api.example.com",
   "sampleUrl": "https://api.example.com",
 
+  "inputs": {
+    "docs": ["./md"],
+    "api": ["."],
+    "models": ["../models"]
+  },
+
   "apicat": {
     "enabled": true,
     "outputDir": "./apicat-output"
@@ -133,7 +139,126 @@ La configuración de APIDoc se realiza a través del archivo `apidoc.json` (o de
 
 ---
 
-### 2. Plugin apiCAT (Vue 3 Template System)
+### 2. Sistema de Fuentes de Datos (`inputs`)
+
+**✨ NUEVO EN v5.0**: Sistema flexible para especificar múltiples fuentes de datos con categorías personalizables.
+
+#### 2.1 Formato Nuevo (Recomendado): `inputs` object
+
+```json
+{
+  "inputs": {
+    "docs": ["./md"],
+    "tsdoc": ["../core"],
+    "api": ["."],
+    "models": ["../model/sq/"],
+    "controllers": ["../controllers"],
+    "services": ["../services"]
+  }
+}
+```
+
+**Beneficios**:
+- 🎯 **Organización clara**: Categorías semánticas para diferentes tipos de código
+- 📁 **Múltiples fuentes**: Combina archivos de distintos directorios
+- 🔧 **Flexible**: Define tus propias categorías personalizadas
+- 📊 **Trazabilidad**: Logs muestran de qué categoría viene cada archivo
+
+**Categorías Comunes**:
+
+| Categoría | Descripción | Ejemplo |
+|-----------|-------------|---------|
+| `docs` | Archivos markdown de documentación | `["./md", "./docs"]` |
+| `tsdoc` | Código TypeScript con TSDoc | `["../core", "../lib"]` |
+| `api` | Endpoints y rutas de API | `["."]` |
+| `models` | Modelos de datos | `["../models", "../schemas"]` |
+| `controllers` | Controladores de la aplicación | `["../controllers"]` |
+| `services` | Servicios y lógica de negocio | `["../services"]` |
+
+**Ejemplo completo** con múltiples fuentes:
+
+```json
+{
+  "name": "Mi API Completa",
+  "version": "2.0.0",
+  "inputs": {
+    "documentation": ["./md/api", "./md/guides"],
+    "rest-api": ["./routes", "./controllers"],
+    "graphql": ["./graphql/schema", "./graphql/resolvers"],
+    "models": ["./models/user", "./models/company"],
+    "typescript-interfaces": ["../shared/types"]
+  }
+}
+```
+
+**Log Output Example**:
+```
+📁 Using categorized "inputs" configuration from apidoc.json
+  ✓ documentation: ./md/api, ./md/guides
+  ✓ rest-api: ./routes, ./controllers
+  ✓ graphql: ./graphql/schema, ./graphql/resolvers
+  ✓ models: ./models/user, ./models/company
+  ✓ typescript-interfaces: ../shared/types
+```
+
+#### 2.2 Formato Legacy: `input` array
+
+**Backwards compatibility** - El formato antiguo sigue funcionando:
+
+```json
+{
+  "input": [".", "../models", "./docs"]
+}
+```
+
+**Diferencias**:
+- ❌ Sin categorización semántica
+- ❌ Logs menos informativos
+- ✅ Compatible con versiones anteriores
+
+**Recomendación**: Migra a `inputs` object para mejor organización.
+
+#### 2.3 Uso con CLI
+
+Cuando usas `inputs` en `apidoc.json`, debes especificar la ruta del archivo de configuración con `--config`:
+
+```bash
+# ✅ Correcto - especifica el archivo de configuración
+apidoc --config examples/apicat/apidoc.json -o docs/
+
+# ❌ Incorrecto - no encuentra las rutas inputs correctamente
+apidoc -i examples/apicat -o docs/
+```
+
+**¿Por qué?** Las rutas en `inputs` son **relativas al directorio donde está `apidoc.json`**, no al directorio desde donde ejecutas el comando.
+
+**Ejemplo completo**:
+```bash
+# Estructura de proyecto
+/my-project/
+  ├── examples/
+  │   └── apicat/
+  │       └── apidoc.json    # inputs: { api: ["."], models: ["../../models"] }
+  ├── models/
+  └── docs/
+
+# Ejecutar desde /my-project/
+apidoc --config examples/apicat/apidoc.json -o docs/
+```
+
+Las rutas se resolverán correctamente:
+- `"api": ["."]` → `/my-project/examples/apicat/`
+- `"models": ["../../models"]` → `/my-project/models/`
+
+**Alias disponibles**:
+```bash
+apidoc -c examples/apicat/apidoc.json -o docs/  # -c es alias de --config
+apidoc --config path/to/config.json -o output/
+```
+
+---
+
+### 3. Plugin apiCAT (Vue 3 Template System)
 
 **⚠️ IMPORTANTE**: Si usas `template: 'apidoc-template-v5'`, apiCAT se **activa automáticamente**.
 

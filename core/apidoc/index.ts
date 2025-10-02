@@ -223,23 +223,57 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
             app.options.apicat = packageInfo.apicat;
         }
 
-        // ⚠️ IMPORTANT: Respect "input" field from apidoc.json
-        // If "input" is defined in apidoc.json AND CLI didn't override it,
-        // it restricts which subdirectories to process relative to apidoc.json location
+        // ⚠️ IMPORTANT: Respect "input" or "inputs" field from apidoc.json
+        // If "inputs" is defined (new format), it allows multiple categorized sources
+        // If "input" is defined (legacy format), it restricts to specified subdirectories
         // This prevents parsing ALL files in the repository
-        if (packageInfo.input && Array.isArray(packageInfo.input) && packageInfo.input.length > 0) {
-            // packageInfo.input is relative to the apidoc.json file location
-            // We need to resolve it relative to where apidoc.json is located
-            const apidocJsonDir = Array.isArray(app.options.src) ? app.options.src[0] : app.options.src;
+
+        // Get the directory where apidoc.json is located (not the src directory)
+        const configPath = app.options.config || path.join(app.options.src[0], 'apidoc.json');
+        const apidocJsonDir = path.dirname(configPath);
+        let inputDirectories: string[] = [];
+
+        // Store category mapping: directory -> category
+        const categoryMap: Map<string, string> = new Map();
+
+        // NEW FORMAT: inputs object with categorized sources
+        // Example: { docs: ['/md'], tsdoc: ['../core'], api: ['.'], model: ['../model/sq/'] }
+        if (packageInfo.inputs && typeof packageInfo.inputs === 'object') {
+            app.log.info('📁 Using categorized "inputs" configuration from apidoc.json');
+
+            for (const [category, paths] of Object.entries(packageInfo.inputs)) {
+                if (Array.isArray(paths)) {
+                    const resolvedPaths = paths.map((subdir: string) => {
+                        const resolvedPath = path.resolve(apidocJsonDir, subdir);
+                        app.log.verbose(`  [${category}] ${resolvedPath}`);
+
+                        // Store category for this directory
+                        categoryMap.set(resolvedPath, category);
+
+                        return resolvedPath;
+                    });
+                    inputDirectories.push(...resolvedPaths);
+                    app.log.info(`  ✓ ${category}: ${paths.join(', ')}`);
+                }
+            }
+
+            if (inputDirectories.length > 0) {
+                app.options.src = inputDirectories;
+                // Store category mapping in options for parser filtering
+                app.options.categoryMap = categoryMap;
+            }
+        }
+        // LEGACY FORMAT: input array (backwards compatibility)
+        else if (packageInfo.input && Array.isArray(packageInfo.input) && packageInfo.input.length > 0) {
+            app.log.info('📁 Using legacy "input" configuration from apidoc.json');
 
             app.options.src = packageInfo.input.map((subdir: string) => {
-                // Resolve the input path relative to apidoc.json location
                 const resolvedPath = path.resolve(apidocJsonDir, subdir);
                 app.log.verbose(`Using input directory from apidoc.json: ${resolvedPath}`);
                 return resolvedPath;
             });
 
-            app.log.info(`📁 Restricting to "input" directories from apidoc.json: ${packageInfo.input.join(', ')}`);
+            app.log.info(`  ✓ Directories: ${packageInfo.input.join(', ')}`);
         }
 
         // this is holding our results from parsing the source code

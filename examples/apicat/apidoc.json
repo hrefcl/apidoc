@@ -17,7 +17,12 @@
     "filename": "header.md",
     "icon": "fa-home"
   },
-  "input": ["."],
+  "inputs": {
+    "docs": ["../md"],
+    "tsdoc": ["../core"],
+    "api": ["./examples/apicat"],
+    "models": ["../models"]
+  },
   "login": {
     "active": true,
     "encryptionKey": "TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ=",
