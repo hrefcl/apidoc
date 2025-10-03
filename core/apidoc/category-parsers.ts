@@ -62,24 +62,10 @@ export const CATEGORY_PARSERS: Record<string, CategoryParserConfig> = {
     tsdoc: {
         filePatterns: ['.ts', '.tsx', '.d.ts', '.js', '.jsx'],
         enabledParsers: [
-            // JSDoc parsers
-            'file',
-            'author',
-            'package',
-            'copyright',
-            'license',
-            'see',
-            // TSDoc parsers
-            'alpha',
-            'beta',
-            'example',
-            'internal',
-            'param',
-            'public',
-            'remarks',
-            'returns',
+            // TSDoc uses TypeScript compiler directly via generateTSDocData()
+            // No parsers needed - symbols are extracted from AST
         ],
-        description: 'TypeScript/JSDoc native documentation with @param, @returns, @example, etc.',
+        description: 'TypeScript documentation extracted via TypeScript compiler (no traditional parsers)',
     },
 
     /**

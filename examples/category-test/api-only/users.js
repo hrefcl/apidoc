@@ -85,11 +85,3 @@
  * @apiError (404) {String} message User not found
  * @apiError (403) {String} message Forbidden - cannot delete own account
  */
-
-// NOTE: This file contains ONLY @api tags
-// If @apiDefine or @apiSchema appear here, the category filter should SKIP them
-/**
- * @apiDefine UserNotFound
- * THIS SHOULD BE SKIPPED by api category filter!
- * @apiError UserNotFoundError The user was not found.
- */

@@ -17,10 +17,11 @@
   },
 
   "inputs": {
-    "docs": ["./docs-only"],
+    "all": ["../example"],
+    "docs": ["../../md"],
     "api": ["./api-only"],
     "models": ["./models-only"],
-    "tsdoc": ["./tsdoc-only"],
+    "tsdoc": ["../../core"],
     "mqtt": ["./mqtt-only"],
     "openapi": ["./openapi-only"]
   },

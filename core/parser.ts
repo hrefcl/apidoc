@@ -181,6 +181,25 @@ Parser.prototype.parseFile = function (filename, encoding) {
 
     self.filename = filename;
     self.extension = path.extname(filename).toLowerCase();
+
+    // File-type filtering: Skip files that should not be parsed
+    // Markdown files are processed separately by the markdown processor
+    const nonParsableExtensions = ['.md', '.markdown'];
+    if (nonParsableExtensions.includes(self.extension)) {
+        app.log.verbose(`Skipping parser for ${self.extension} file (processed separately): ${filename}`);
+        return null;
+    }
+
+    // Category-based filtering: Skip TypeScript files in tsdoc category
+    // TSDoc uses TypeScript compiler directly via generateTSDocData(), not traditional parsers
+    if (self.currentCategory === 'tsdoc') {
+        const tsExtensions = ['.ts', '.tsx', '.d.ts'];
+        if (tsExtensions.includes(self.extension)) {
+            app.log.verbose(`Skipping parser for ${self.extension} in tsdoc category (processed via TypeScript compiler): ${filename}`);
+            return null;
+        }
+    }
+
     // TODO: Not sure if this is correct. Without skipDecodeWarning we got string errors
     // https://github.com/apidoc/apidoc-core/pull/25
     const fileContent = fs.readFileSync(filename, { encoding: 'binary' });

@@ -141,21 +141,6 @@ const app = {
         modelgroup: './parsers/model_group.js',
         modelname: './parsers/model_name.js',
         modeldescription: './parsers/model_description.js',
-        // JSDoc/TSDoc parsers - Native documentation tags
-        file: './parsers-jsdoc/jsdoc_file.js',
-        author: './parsers-jsdoc/jsdoc_author.js',
-        package: './parsers-jsdoc/jsdoc_package.js',
-        copyright: './parsers-jsdoc/jsdoc_copyright.js',
-        license: './parsers-jsdoc/jsdoc_license.js',
-        see: './parsers-jsdoc/jsdoc_see.js',
-        alpha: './parsers-jsdoc/tsdoc_alpha.js',
-        beta: './parsers-jsdoc/tsdoc_beta.js',
-        example: './parsers-jsdoc/tsdoc_example.js',
-        internal: './parsers-jsdoc/tsdoc_internal.js',
-        param: './parsers-jsdoc/tsdoc_param.js',
-        public: './parsers-jsdoc/tsdoc_public.js',
-        remarks: './parsers-jsdoc/tsdoc_remarks.js',
-        returns: './parsers-jsdoc/tsdoc_returns.js',
     },
     workers: {
         // Temporarily disabled while migrating workers to TypeScript
