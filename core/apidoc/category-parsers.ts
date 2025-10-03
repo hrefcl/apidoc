@@ -57,21 +57,29 @@ export const CATEGORY_PARSERS: Record<string, CategoryParserConfig> = {
     /**
      * TypeScript/JSDoc documentation
      * Focuses on TypeScript interfaces, types, and JSDoc comments
+     * Uses native JSDoc/TSDoc parsers for standard documentation tags
      */
     tsdoc: {
-        filePatterns: ['.ts', '.tsx', '.d.ts'],
+        filePatterns: ['.ts', '.tsx', '.d.ts', '.js', '.jsx'],
         enabledParsers: [
-            'apischema',
-            'apidefine',
-            'apiuse',
-            'apienum',
-            'apitypedef',
-            'apiinterface',
-            'apiname',
-            'apidescription',
-            'apigroup',
+            // JSDoc parsers
+            'file',
+            'author',
+            'package',
+            'copyright',
+            'license',
+            'see',
+            // TSDoc parsers
+            'alpha',
+            'beta',
+            'example',
+            'internal',
+            'param',
+            'public',
+            'remarks',
+            'returns',
         ],
-        description: 'TypeScript interfaces and type definitions',
+        description: 'TypeScript/JSDoc native documentation with @param, @returns, @example, etc.',
     },
 
     /**

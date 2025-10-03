@@ -523,13 +523,19 @@ export const useDocsStore = defineStore('docs', () => {
           title: group.title,
           icon: group.icon,
           sectionPath: `/api/section/${group.groupId}`,
-          items: group.endpoints.map(endpoint => ({
-            title: formatEndpointTitle(endpoint),
-            path: `/api/${endpoint}`,
-            slug: endpoint,
-            category: 'cat.api',
-            icon: 'plug'
-          }))
+          items: group.endpoints.map(endpoint => {
+            // Buscar el summary del endpoint en el índice de API
+            const endpointData = apiIndex.value?.endpoints?.find(e => e.id === endpoint)
+            const endpointTitle = endpointData?.summary || formatEndpointTitle(endpoint)
+
+            return {
+              title: endpointTitle,
+              path: `/api/${endpoint}`,
+              slug: endpoint,
+              category: 'cat.api',
+              icon: 'plug'
+            }
+          })
         }))
       })
     }

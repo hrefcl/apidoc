@@ -235,6 +235,10 @@ export interface ApiDocProject {
             role?: string;
         }>;
     };
+    /** Categorized input sources (v5.0+) - relative paths from apidoc.json */
+    inputs?: Record<string, string[]>;
+    /** Resolved absolute paths for categorized inputs (v5.0+) - used internally by plugins */
+    resolvedInputs?: Record<string, string[]>;
 }
 
 /**

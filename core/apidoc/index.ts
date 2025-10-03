@@ -241,6 +241,9 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
         if (packageInfo.inputs && typeof packageInfo.inputs === 'object') {
             app.log.info('📁 Using categorized "inputs" configuration from apidoc.json');
 
+            // Create resolvedInputs to store absolute paths for each category
+            const resolvedInputs: Record<string, string[]> = {};
+
             for (const [category, paths] of Object.entries(packageInfo.inputs)) {
                 if (Array.isArray(paths)) {
                     const resolvedPaths = paths.map((subdir: string) => {
@@ -253,9 +256,13 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
                         return resolvedPath;
                     });
                     inputDirectories.push(...resolvedPaths);
+                    resolvedInputs[category] = resolvedPaths;
                     app.log.info(`  ✓ ${category}: ${paths.join(', ')}`);
                 }
             }
+
+            // Store resolved inputs in packageInfo for use in plugins
+            packageInfo.resolvedInputs = resolvedInputs;
 
             if (inputDirectories.length > 0) {
                 app.options.src = inputDirectories;

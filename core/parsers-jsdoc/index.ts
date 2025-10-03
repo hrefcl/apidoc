@@ -19,6 +19,16 @@ import * as jsdocLicense from './jsdoc_license';
 import * as jsdocPackage from './jsdoc_package';
 import * as jsdocSee from './jsdoc_see';
 
+// Import all TSDoc parsers
+import * as tsdocAlpha from './tsdoc_alpha';
+import * as tsdocBeta from './tsdoc_beta';
+import * as tsdocExample from './tsdoc_example';
+import * as tsdocInternal from './tsdoc_internal';
+import * as tsdocParam from './tsdoc_param';
+import * as tsdocPublic from './tsdoc_public';
+import * as tsdocRemarks from './tsdoc_remarks';
+import * as tsdocReturns from './tsdoc_returns';
+
 /**
  * Collection of all available JSDoc parsers
  *
@@ -38,12 +48,22 @@ import * as jsdocSee from './jsdoc_see';
  * @public
  */
 export const jsdocParsers = {
+    // JSDoc parsers
     file: jsdocFile,
     author: jsdocAuthor,
     package: jsdocPackage,
     copyright: jsdocCopyright,
     license: jsdocLicense,
     see: jsdocSee,
+    // TSDoc parsers
+    alpha: tsdocAlpha,
+    beta: tsdocBeta,
+    example: tsdocExample,
+    internal: tsdocInternal,
+    param: tsdocParam,
+    public: tsdocPublic,
+    remarks: tsdocRemarks,
+    returns: tsdocReturns,
 };
 
 /**
@@ -72,4 +92,21 @@ export function getJSDocParser(tagName: string) {
 }
 
 // Export individual parsers for direct import
-export { jsdocAuthor, jsdocCopyright, jsdocFile, jsdocLicense, jsdocPackage, jsdocSee };
+export {
+    // JSDoc exports
+    jsdocAuthor,
+    jsdocCopyright,
+    jsdocFile,
+    jsdocLicense,
+    jsdocPackage,
+    jsdocSee,
+    // TSDoc exports
+    tsdocAlpha,
+    tsdocBeta,
+    tsdocExample,
+    tsdocInternal,
+    tsdocParam,
+    tsdocPublic,
+    tsdocRemarks,
+    tsdocReturns,
+};

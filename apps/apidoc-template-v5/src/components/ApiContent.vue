@@ -26,6 +26,12 @@
 
         <!-- Collapsible Content -->
         <div v-show="!collapsedSections[endpointGroup.key]" class="opblock-content">
+          <!-- Endpoint Title Section -->
+          <div class="opblock-section border-b border-border p-6 bg-muted/20">
+            <h2 class="text-2xl font-bold mb-2">{{ endpointGroup.endpoint.title || endpointGroup.endpoint.name }}</h2>
+            <p v-if="endpointGroup.endpoint.description" class="text-muted-foreground" v-html="endpointGroup.endpoint.description"></p>
+          </div>
+
           <!-- Request Information Section -->
           <div class="opblock-section border-b border-border p-6">
             <div class="flex justify-between items-start mb-4">

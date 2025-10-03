@@ -104,6 +104,9 @@ export class ApiCatPlugin {
         const adapter = require('../../adapters/apidoc-to-apicat');
         const apicatData = adapter.transformToApiCAT(apiData, projectInfo);
 
+        // Generate TSDoc map FIRST to get the list of files
+        const tsdocFiles = await this.generateTSDocMap();
+
         // Generate main manifest (cat.json)
         const manifest: any = {
             schemaVersion: '5.0.0',
@@ -120,7 +123,7 @@ export class ApiCatPlugin {
                 shards: this.generateShardList(apicatData.endpoints),
             },
             docs: this.generateDocsMap(apicatData.groups, projectInfo.documentation),
-            tsdoc: await this.generateTSDocMap(),
+            tsdoc: tsdocFiles,
             search: 'cat.search.json',
             assets: 'cat.assets.json',
         };
@@ -584,7 +587,7 @@ export class ApiCatPlugin {
 
             // Generate JSON instead of HTML for encryption compatibility
             const htmlDoc = this.generateTSDocHTML(moduleData as any);
-            const tsdocData = {
+            const tsdocDocData = {
                 module: moduleName,
                 type: 'tsdoc-documentation',
                 html: htmlDoc,
@@ -593,7 +596,7 @@ export class ApiCatPlugin {
             };
             await fs.writeFile(
                 path.join(dataPath, 'cat.docs', `tsdoc.${moduleName}.json`),
-                JSON.stringify(tsdocData, null, 2)
+                JSON.stringify(tsdocDocData, null, 2)
             );
         }
     }
@@ -674,10 +677,26 @@ export class ApiCatPlugin {
             const ts = require('typescript');
             const tsdocData: Record<string, any> = {};
 
-            // Find all TypeScript files in SOURCE directory (NOT hardcoded ./core)
-            // Use sourceDir from config which comes from CLI -i parameter
-            const sourceDir = this.config.sourceDir || './';
-            const coreFiles = await this.findTypeScriptFiles([sourceDir]);
+            // Get tsdoc directories from projectInfo.resolvedInputs (absolute paths)
+            // Falls back to projectInfo.inputs if resolvedInputs not available
+            // @ts-ignore - resolvedInputs is defined in ApiDocProject interface
+            const tsdocDirs = this.projectInfo?.resolvedInputs?.tsdoc || this.projectInfo?.inputs?.tsdoc || [];
+
+            if (tsdocDirs.length === 0) {
+                console.log('⚠️  No tsdoc directories configured in inputs. Skipping TSDoc generation.');
+                return {};
+            }
+
+            console.log(`📚 TSDoc: Processing ${tsdocDirs.length} directories: ${tsdocDirs.join(', ')}`);
+
+            // Find all TypeScript files in configured tsdoc directories
+            const coreFiles = await this.findTypeScriptFiles(tsdocDirs);
+            console.log(`📁 TSDoc: Found ${coreFiles.length} TypeScript files:`, coreFiles);
+
+            if (coreFiles.length === 0) {
+                console.log('⚠️  No TypeScript files found in tsdoc directories.');
+                return {};
+            }
 
             // Parse files by module groups
             // Try to auto-detect module structure, or group all as "interfaces" if no structure
@@ -699,6 +718,7 @@ export class ApiCatPlugin {
             for (const [moduleName, files] of Object.entries(moduleGroups)) {
                 if (files.length === 0) continue;
 
+                console.log(`📦 TSDoc: Processing module "${moduleName}" with ${files.length} files`);
                 const symbols: any[] = [];
 
                 for (const filePath of files) {
@@ -707,6 +727,7 @@ export class ApiCatPlugin {
                         const sourceFile = ts.createSourceFile(filePath, fileContent, ts.ScriptTarget.ES2020, true);
 
                         const fileSymbols = this.extractTSDocSymbols(sourceFile, filePath, ts);
+                        console.log(`  ✓ Extracted ${fileSymbols.length} symbols from ${path.basename(filePath)}`);
                         symbols.push(...fileSymbols);
                     } catch (error) {
                         console.warn(`Warning: Could not process ${filePath}: ${error.message}`);
