@@ -29,6 +29,7 @@ import findFiles from './utils/find_files';
 
 import { ParameterError } from './errors/parameter_error';
 import { ParserError } from './errors/parser_error';
+import { isParserEnabled } from './apidoc/category-parsers';
 
 let app: any = {};
 let filterTag = null; // define the tag to filter by
@@ -136,6 +137,12 @@ Parser.prototype.addParser = function (name, parser) {
  */
 Parser.prototype.parseFiles = function (options, parsedFiles, parsedFilenames) {
     const self = this;
+
+    // Store current category for parser filtering
+    self.currentCategory = options.category || null;
+    if (self.currentCategory) {
+        app.log.verbose(`Parsing with category filter: ${self.currentCategory}`);
+    }
 
     findFiles.setPath(options.src);
     findFiles.setExcludeFilters(options.excludeFilters);
@@ -287,6 +294,15 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
 
         for (let j = 0; j < elements.length; j += 1) {
             const element = elements[j];
+
+            // Check if this parser is enabled for the current category
+            if (self.currentCategory && !isParserEnabled(self.currentCategory, element.name)) {
+                app.log.debug(
+                    `Skipping parser '${element.name}' for category '${self.currentCategory}' in block: '${blockIndex}'`
+                );
+                continue;
+            }
+
             const elementParser = self.parsers[element.name];
 
             if (!elementParser) {

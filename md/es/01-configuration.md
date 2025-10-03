@@ -201,6 +201,48 @@ La configuración de APIDoc se realiza a través del archivo `apidoc.json` (o de
   ✓ typescript-interfaces: ../shared/types
 ```
 
+#### 2.1.1 Filtrado de Parsers por Categoría
+
+**✨ NUEVO EN v5.0**: Las categorías predefinidas ejecutan **solo los parsers relevantes** para ese tipo de contenido.
+
+**Categorías Predefinidas con Filtrado**:
+
+| Categoría | Parsers Habilitados | Archivos | Uso |
+|-----------|---------------------|----------|-----|
+| `api` | `@api`, `@apiParam`, `@apiSuccess`, `@apiError`, etc. | `.js`, `.ts`, `.php`, `.py` | REST API endpoints |
+| `models` | `@model`, `@apiSchema`, `@apiDefine` | `.ts`, `.js`, `.json` | Data models & schemas |
+| `tsdoc` | `@apiSchema`, `@apiDefine`, `@apiUse` | `.ts`, `.tsx`, `.d.ts` | TypeScript documentation |
+| `mqtt` | `@mqtt`, `@topic`, `@qos`, `@payload` | `.js`, `.ts` | MQTT/IoT protocols |
+| `docs` | (ninguno) | `.md`, `.markdown` | Markdown files |
+
+**Ejemplo con Filtrado**:
+```json
+{
+  "inputs": {
+    "api": ["./routes"],      // Solo parsers REST API
+    "models": ["./models"]    // Solo parsers de modelos/schemas
+  }
+}
+```
+
+**Beneficios del Filtrado**:
+- ⚡ **Rendimiento**: Solo ejecuta parsers relevantes (no 50+ parsers en cada archivo)
+- 🎯 **Precisión**: Evita parsing incorrecto de tags en contextos equivocados
+- 📊 **Claridad**: Logs muestran qué parsers se están saltando
+
+**Ver Filtrado en Debug**:
+```bash
+apidoc --debug --config apidoc.json -o output/ 2>&1 | grep "Skipping parser"
+```
+
+Output:
+```
+debug: Skipping parser 'apidefine' for category 'api' in block: '0'
+debug: Skipping parser 'model' for category 'api' in block: '1'
+```
+
+📖 **Documentación Completa**: Ver [Sistema de Parsers por Categoría](./CATEGORY-PARSERS.md)
+
 #### 2.2 Formato Legacy: `input` array
 
 **Backwards compatibility** - El formato antiguo sigue funcionando:

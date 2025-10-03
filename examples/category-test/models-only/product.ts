@@ -1,0 +1,192 @@
+/**
+ * @model Product Complete product entity with authentication and access control
+ * @modelname ProductModel
+ * @modelgroup Product Management3
+ * @modeldescription Complete Product entity model with all attributes, relationships, and lifecycle hooks
+ * automatically extracted from the Sequelize class definition.
+ *
+ * This model represents products in the system with:
+ * - Authentication (email/password)
+ * - Community and Company relationships
+ * - Access control and sessions
+ * - Lifecycle hooks for data formatting and external system sync
+ *
+ * @apiVersion 5.0.2
+ */
+
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, NonAttribute, sql } from '@sequelize/core';
+import {
+    AfterCreate,
+    AfterDestroy,
+    AfterUpdate,
+    AllowNull,
+    Attribute,
+    AutoIncrement,
+    BeforeCreate,
+    BeforeDestroy,
+    BeforeUpdate,
+    BelongsTo,
+    CreatedAt,
+    Default,
+    DeletedAt,
+    HasMany,
+    Index,
+    PrimaryKey,
+    Table,
+    Unique,
+    UpdatedAt,
+    ValidateAttribute,
+} from '@sequelize/core/decorators-legacy';
+
+// Import related models (for relationships)
+import Access from './Access';
+import Community from './Community';
+import Company from './Company';
+import Session from './Session';
+
+@Table({
+    tableName: 'products',
+    schema: 'public',
+    timestamps: true,
+    paranoid: true,
+})
+export default class Product extends Model<InferAttributes<Product>, InferCreationAttributes<Product>> {
+    @PrimaryKey
+    @Index
+    @Unique
+    @AutoIncrement
+    @Attribute(DataTypes.INTEGER)
+    declare id: CreationOptional<number>;
+
+    @Index
+    @Unique
+    @AllowNull(false)
+    @Default(sql.uuidV4)
+    @Attribute(DataTypes.UUID)
+    declare uuid: CreationOptional<string>;
+
+    @Attribute(DataTypes.STRING)
+    declare firstname?: string;
+
+    @Attribute(DataTypes.STRING)
+    declare lastname?: string;
+
+    @Index
+    @Unique
+    @Attribute(DataTypes.STRING)
+    @ValidateAttribute({
+        async isUnique(value: string) {
+            // Validation logic
+        },
+    })
+    declare email: string;
+
+    @Attribute(DataTypes.STRING)
+    declare password: string;
+
+    @Default('active')
+    @Attribute(DataTypes.STRING)
+    declare status: string;
+
+    @Default('resident')
+    @Attribute(DataTypes.STRING)
+    declare role?: string;
+
+    @CreatedAt
+    declare createdAt: CreationOptional<Date>;
+
+    @UpdatedAt
+    declare updatedAt: CreationOptional<Date>;
+
+    @DeletedAt
+    declare deletedAt: Date | null;
+
+    @Attribute(DataTypes.INTEGER)
+    declare id_community?: number;
+
+    @Attribute(DataTypes.INTEGER)
+    declare id_company: number;
+
+    // Relationships
+    @BelongsTo(() => Community, {
+        foreignKey: 'id_community',
+    })
+    community!: NonAttribute<Community>;
+
+    @BelongsTo(() => Company, {
+        foreignKey: 'id_company',
+    })
+    company!: NonAttribute<Company>;
+
+    @HasMany(() => Access, {
+        foreignKey: 'id_product',
+    })
+    accesses!: NonAttribute<Access[]>;
+
+    @HasMany(() => Session, {
+        foreignKey: 'id_product',
+    })
+    sessions!: NonAttribute<Session[]>;
+
+    /**
+     * @description Antes de crear el usuario: se normalizan y validan datos críticos
+     * (ej. email en minúsculas, strings limpios, valores por defecto) para asegurar
+     * consistencia y prevenir errores aguas arriba.
+     */
+    @BeforeCreate
+    static async DataFormating(instance: Product) {
+        // Normalize and validate data
+    }
+
+    /**
+     * @description Después de crear el usuario: se establecen relaciones iniciales
+     * como asignación a comunidad, creación de registros asociados y envío de correo
+     * de bienvenida u otras notificaciones.
+     */
+    @AfterCreate
+    static async AddProductToCommunity(instance: Product) {
+        // Create relationships
+    }
+
+    /**
+     * @description Antes de actualizar el usuario: se aplican reglas de normalización
+     * (capitalización de nombres, limpieza de strings, actualización de timestamps
+     * derivados) garantizando uniformidad de datos.
+     */
+    @BeforeUpdate
+    static async NormalizeStrings(instance: Product) {
+        // Normalize strings
+    }
+
+    /**
+     * @description Después de actualizar el usuario: se sincronizan los cambios con
+     * sistemas externos (ej. directorios, CRM, accesos remotos) y se disparan
+     * eventos de integración.
+     */
+    @AfterUpdate
+    static async UpdateProduct(instance: Product) {
+        // Sync with external systems
+    }
+
+    /**
+     * @description Antes de eliminar lógicamente o físicamente al usuario: se
+     * invalidan accesos activos (tokens, sesiones, llaves digitales) para evitar
+     * que el usuario pueda seguir interactuando con el sistema.
+     */
+    @BeforeDestroy
+    static async invalidate_accesses(instance: Product): Promise<void> {
+        // Invalidate accesses
+    }
+
+    /**
+     * @description Después de eliminar el usuario: se eliminan referencias en
+     * sistemas externos (ej. ThinMoo, integraciones de terceros) y se liberan
+     * recursos relacionados.
+     */
+    @AfterDestroy
+    static async remove_product_from_thinmoo(instance: Product): Promise<void> {
+        // Remove from external systems
+    }
+}
+
+export type IProduct = InferAttributes<Product>;

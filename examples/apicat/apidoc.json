@@ -18,9 +18,7 @@
     "icon": "fa-home"
   },
   "inputs": {
-    "docs": ["../md"],
-    "tsdoc": ["../core"],
-    "api": ["./examples/apicat"],
+    "api": ["."],
     "models": ["../models"]
   },
   "login": {

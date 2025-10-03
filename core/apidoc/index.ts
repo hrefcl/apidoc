@@ -261,6 +261,64 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
                 app.options.src = inputDirectories;
                 // Store category mapping in options for parser filtering
                 app.options.categoryMap = categoryMap;
+
+                // Process 'docs' category directories for markdown files
+                const docsDirs = Array.from(categoryMap.entries())
+                    .filter(([_, category]) => category === 'docs')
+                    .map(([dir, _]) => dir);
+
+                if (docsDirs.length > 0) {
+                    app.log.info(`📚 Processing markdown files from 'docs' category...`);
+                    const fs = require('fs-extra');
+                    const glob = require('glob');
+                    const MarkdownIt = require('markdown-it');
+                    const md = new MarkdownIt({html: true, linkify: true, typographer: true});
+
+                    // Initialize documentation array if not exists
+                    if (!packageInfo.documentation || !Array.isArray(packageInfo.documentation)) {
+                        packageInfo.documentation = [] as any;
+                    }
+
+                    docsDirs.forEach((docsDir) => {
+                        try {
+                            const files = glob.sync('**/*.{md,markdown}', { cwd: docsDir, absolute: true });
+                            app.log.verbose(`  Found ${files.length} markdown files in ${path.basename(docsDir)}`);
+
+                            files.forEach((filePath: string) => {
+                                try {
+                                    const content = fs.readFileSync(filePath, 'utf8');
+                                    const filename = path.basename(filePath, path.extname(filePath));
+
+                                    // Extract title from filename or first H1
+                                    let title = filename
+                                        .replace(/-/g, ' ')
+                                        .replace(/_/g, ' ')
+                                        .replace(/\b\w/g, (l: string) => l.toUpperCase());
+
+                                    const h1Match = content.match(/^#\s+(.+)$/m);
+                                    if (h1Match) {
+                                        title = h1Match[1];
+                                    }
+
+                                    (packageInfo.documentation as any).push({
+                                        filename: filename,
+                                        title: title,
+                                        content: md.render(content),
+                                        icon: 'fa-file-text'
+                                    });
+
+                                    app.log.verbose(`    ✓ Processed: ${filename}`);
+                                } catch (e: any) {
+                                    app.log.warn(`    ✗ Failed to read: ${filePath} - ${e.message}`);
+                                }
+                            });
+                        } catch (e: any) {
+                            app.log.warn(`  Error processing docs directory ${docsDir}: ${e.message}`);
+                        }
+                    });
+
+                    app.log.info(`  ✓ Processed ${packageInfo.documentation.length} documentation files`);
+                }
             }
         }
         // LEGACY FORMAT: input array (backwards compatibility)

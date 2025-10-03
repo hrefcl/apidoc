@@ -212,8 +212,27 @@ function parse(options) {
             options.src.forEach(function (folder) {
                 // Keep same options for each folder, but ensure the 'src' of options
                 // is the folder currently being processed.
-                const folderOptions = options;
+                const folderOptions = { ...options };
                 folderOptions.src = path.join(folder, './');
+
+                // Determine category for this folder from categoryMap
+                const category = options.categoryMap?.get(folder) || null;
+                if (category) {
+                    app.log.verbose(`Parsing folder with category filter: ${category}`);
+                    folderOptions.category = category;
+
+                    // For 'docs' category, add markdown files to includeFilters
+                    if (category === 'docs') {
+                        const markdownFilters = ['.*\\.(md|markdown)$'];
+                        if (folderOptions.includeFilters) {
+                            folderOptions.includeFilters = [...folderOptions.includeFilters, ...markdownFilters];
+                        } else {
+                            folderOptions.includeFilters = markdownFilters;
+                        }
+                        app.log.verbose(`Added markdown file filters for 'docs' category`);
+                    }
+                }
+
                 app.parser.parseFiles(folderOptions, parsedFiles, parsedFilenames);
             });
         } else {
