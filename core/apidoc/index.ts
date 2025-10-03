@@ -281,6 +281,23 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
                     const MarkdownIt = require('markdown-it');
                     const md = new MarkdownIt({html: true, linkify: true, typographer: true});
 
+                    /**
+                     * Transform markdown links to internal documentation references
+                     * Converts: [text](./path/file.md) -> [text](#/docs/file)
+                     * Converts: [text](../README.md) -> [text](#/docs/README)
+                     */
+                    function transformMarkdownLinks(content: string): string {
+                        // Replace markdown links to .md files with internal doc links
+                        return content.replace(/\[([^\]]+)\]\(([^)]+\.md)\)/g, (match, text, url) => {
+                            // Extract filename without extension
+                            const filename = path.basename(url, '.md');
+                            // Remove any leading ./ or ../
+                            const cleanFilename = filename.replace(/^(\.\.\/|\.\/)+/, '');
+                            // Create internal link to docs section
+                            return `[${text}](#/docs/${cleanFilename})`;
+                        });
+                    }
+
                     // Initialize documentation array if not exists
                     if (!packageInfo.documentation || !Array.isArray(packageInfo.documentation)) {
                         packageInfo.documentation = [] as any;
@@ -293,8 +310,11 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
 
                             files.forEach((filePath: string) => {
                                 try {
-                                    const content = fs.readFileSync(filePath, 'utf8');
+                                    let content = fs.readFileSync(filePath, 'utf8');
                                     const filename = path.basename(filePath, path.extname(filePath));
+
+                                    // Transform markdown links before rendering
+                                    content = transformMarkdownLinks(content);
 
                                     // Extract title from filename or first H1
                                     let title = filename
