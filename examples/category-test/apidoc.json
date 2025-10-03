@@ -17,7 +17,7 @@
   },
 
   "inputs": {
-    "all": ["../example"],
+    "all": ["../apidoc"],
     "docs": ["../../md"],
     "api": ["./api-only"],
     "models": ["./models-only"],
