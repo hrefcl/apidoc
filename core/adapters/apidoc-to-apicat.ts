@@ -300,9 +300,7 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
         orderedGroups = projectInfo.order.filter((g: string) => groupsArray.includes(g));
 
         // Then add any remaining groups that weren't in the custom order (sorted alphabetically)
-        const remainingGroups = groupsArray
-            .filter(g => !projectInfo.order.includes(g))
-            .sort();
+        const remainingGroups = groupsArray.filter((g) => !projectInfo.order.includes(g)).sort();
 
         orderedGroups = [...orderedGroups, ...remainingGroups];
     } else {
@@ -319,13 +317,16 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
             }
             return a.name.localeCompare(b.name);
         }),
-        models: models.length > 0 ? models.sort((a, b) => {
-            // Sort models by group first, then by name
-            if (a.group !== b.group) {
-                return a.group.localeCompare(b.group);
-            }
-            return a.name.localeCompare(b.name);
-        }) : undefined,
+        models:
+            models.length > 0
+                ? models.sort((a, b) => {
+                      // Sort models by group first, then by name
+                      if (a.group !== b.group) {
+                          return a.group.localeCompare(b.group);
+                      }
+                      return a.name.localeCompare(b.name);
+                  })
+                : undefined,
         groups: orderedGroups,
         generated: new Date().toISOString(),
         generator: 'apiCAT v5.0 (powered by apiDoc)',

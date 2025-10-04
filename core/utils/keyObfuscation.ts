@@ -49,7 +49,10 @@ function splitIntoChars(str: string): string[] {
  * @param segments - Number of segments to split into (default: 4)
  * @returns Obfuscated key structure with reconstruction code
  */
-export function obfuscateKey(key: string, segments: number = 4): {
+export function obfuscateKey(
+    key: string,
+    segments: number = 4
+): {
     code: string;
     reconstructVar: string;
 } {
@@ -84,7 +87,7 @@ export function obfuscateKey(key: string, segments: number = 4): {
 
     // Add decoy arrays mixed with real segments
     const allVars = [...varNames, ...decoyVarNames];
-    const allData = [...keySegments.map(seg => seg), ...decoys.map(d => splitIntoChars(d))];
+    const allData = [...keySegments.map((seg) => seg), ...decoys.map((d) => splitIntoChars(d))];
 
     // Shuffle them together
     const combined = allVars.map((name, idx) => ({ name, data: allData[idx] }));
@@ -107,12 +110,12 @@ export function obfuscateKey(key: string, segments: number = 4): {
 
     // Generate reconstruction code
     code += `const ${reconstructVar}=[`;
-    code += varNames.map(v => `...${v}`).join(',');
+    code += varNames.map((v) => `...${v}`).join(',');
     code += `].join('');`;
 
     return {
         code,
-        reconstructVar
+        reconstructVar,
     };
 }
 
@@ -134,7 +137,7 @@ export function obfuscateMultipleKeys(keys: Record<string, string>): {
 
     return {
         code,
-        reconstructVars
+        reconstructVars,
     };
 }
 

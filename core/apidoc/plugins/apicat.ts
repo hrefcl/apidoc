@@ -205,10 +205,7 @@ export class ApiCatPlugin {
                 const { JSONEncryption } = await import('../../utils/encryption');
 
                 // Create encryption instance with the same key used for docs
-                const encryption = new JSONEncryption(
-                    { enabled: true },
-                    projectInfo.login.encryptionKey
-                );
+                const encryption = new JSONEncryption({ enabled: true }, projectInfo.login.encryptionKey);
 
                 // Encrypt the admited list
                 const encryptedAdmited = encryption.encryptJSON(projectInfo.login.admited);
@@ -223,10 +220,7 @@ export class ApiCatPlugin {
             metaData.login = loginConfig;
         }
 
-        await fs.writeFile(
-            path.join(dataPath, 'cat.meta.json'),
-            JSON.stringify(metaData, null, 2)
-        );
+        await fs.writeFile(path.join(dataPath, 'cat.meta.json'), JSON.stringify(metaData, null, 2));
 
         // Generate API index and shards FIRST (this groups endpoints by version)
         const groupedEndpointsMap = await this.generateApiStructure(apicatData, outputPath);
@@ -528,7 +522,7 @@ export class ApiCatPlugin {
                 groupData.customMarkdown = {
                     title: customMarkdown[group].title,
                     icon: customMarkdown[group].icon,
-                    html: customMarkdown[group].html
+                    html: customMarkdown[group].html,
                 };
             }
 
@@ -697,7 +691,7 @@ export class ApiCatPlugin {
 
             // Get tsdoc directories from projectInfo.resolvedInputs (absolute paths)
             // Falls back to projectInfo.inputs if resolvedInputs not available
-            // @ts-ignore - resolvedInputs is defined in ApiDocProject interface
+            // @ts-expect-error - resolvedInputs is defined in ApiDocProject interface
             const tsdocDirs = this.projectInfo?.resolvedInputs?.tsdoc || this.projectInfo?.inputs?.tsdoc || [];
 
             if (tsdocDirs.length === 0) {
@@ -1643,7 +1637,6 @@ export class ApiCatPlugin {
             } else {
                 console.warn('⚠️  index.html not found in template dist');
             }
-
         } catch (error) {
             console.error('❌ Error copying template assets:', error);
             // Continue anyway as this is not critical
@@ -1698,7 +1691,7 @@ export class ApiCatPlugin {
             const allData: any = {};
 
             // Read top-level JSON files
-            const jsonFiles = (await fs.readdir(dataPath)).filter(f => f.endsWith('.json'));
+            const jsonFiles = (await fs.readdir(dataPath)).filter((f) => f.endsWith('.json'));
 
             for (const file of jsonFiles) {
                 const filePath = path.join(dataPath, file);
@@ -1715,15 +1708,16 @@ export class ApiCatPlugin {
             }
 
             // Read subdirectories (cat.api/, cat.docs/, cat.tsdoc/, cat.model/)
-            const subdirs = (await fs.readdir(dataPath, { withFileTypes: true }))
-                .filter(dirent => dirent.isDirectory());
+            const subdirs = (await fs.readdir(dataPath, { withFileTypes: true })).filter((dirent) =>
+                dirent.isDirectory()
+            );
 
             // Categories that should be encrypted when login is active
             const sensitiveCategories = ['api', 'docs', 'model'];
 
             for (const dir of subdirs) {
                 const subdirPath = path.join(dataPath, dir.name);
-                const subdirFiles = (await fs.readdir(subdirPath)).filter(f => f.endsWith('.json'));
+                const subdirFiles = (await fs.readdir(subdirPath)).filter((f) => f.endsWith('.json'));
 
                 // cat.api → api
                 const category = dir.name.replace('cat.', '');
@@ -1737,9 +1731,7 @@ export class ApiCatPlugin {
                     const key = file.replace('.json', '');
 
                     // Encrypt sensitive data if encryption is enabled
-                    allData[category][key] = shouldEncrypt
-                        ? this.encryptIfNeeded(content, encryption)
-                        : content;
+                    allData[category][key] = shouldEncrypt ? this.encryptIfNeeded(content, encryption) : content;
                 }
             }
 
@@ -1779,7 +1771,6 @@ window.__APICAT_DATA__ = ${JSON.stringify(allData, null, 0)};
             this.log('🗑️  Removing /data directory (data now embedded in HTML)...');
             await fs.remove(dataPath);
             this.log('✅ Cleanup complete - /data directory removed');
-
         } catch (error) {
             console.error('❌ Error embedding data:', error);
         }

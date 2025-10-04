@@ -12,8 +12,8 @@
  */
 
 // Export configuration types
-export * from './config.js';
 export * from './app.js';
+export * from './config.js';
 
 /**
  * Configuration options for APIDoc generation

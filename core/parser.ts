@@ -27,9 +27,9 @@ import util from 'util';
 
 import findFiles from './utils/find_files';
 
+import { isParserEnabled } from './apidoc/category-parsers';
 import { ParameterError } from './errors/parameter_error';
 import { ParserError } from './errors/parser_error';
-import { isParserEnabled } from './apidoc/category-parsers';
 
 let app: any = {};
 let filterTag = null; // define the tag to filter by
@@ -195,7 +195,9 @@ Parser.prototype.parseFile = function (filename, encoding) {
     if (self.currentCategory === 'tsdoc') {
         const tsExtensions = ['.ts', '.tsx', '.d.ts'];
         if (tsExtensions.includes(self.extension)) {
-            app.log.verbose(`Skipping parser for ${self.extension} in tsdoc category (processed via TypeScript compiler): ${filename}`);
+            app.log.verbose(
+                `Skipping parser for ${self.extension} in tsdoc category (processed via TypeScript compiler): ${filename}`
+            );
             return null;
         }
     }

@@ -581,7 +581,6 @@ function processor(elements: Array<any>, element: any, block: any, filename: str
         return elements;
     }
 
-
     // Remove the @apiSchema element from processing
     elements.pop();
 

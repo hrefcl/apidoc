@@ -203,6 +203,6 @@ function getModel(): string {
     return currentModel;
 }
 
-export { parse, path, getModel };
+export { getModel, parse, path };
 export const method = 'push';
 export const markdownFields = ['description'];

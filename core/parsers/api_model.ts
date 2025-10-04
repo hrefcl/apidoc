@@ -11,7 +11,7 @@
  * ```
  */
 
-import { findModel, modelToApiDocElements } from '../utils/sequelize-parser';
+import { findModel } from '../utils/sequelize-parser';
 
 /**
  * Parse @apiModel tag to extract model configuration
@@ -32,7 +32,10 @@ import { findModel, modelToApiDocElements } from '../utils/sequelize-parser';
  * // Output: { modelName: "User", description: "Complete user entity with authentication" }
  * ```
  */
-function parse(content: string, source?: string): {
+function parse(
+    content: string,
+    source?: string
+): {
     modelName: string;
     description?: string;
 } | null {

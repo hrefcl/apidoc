@@ -336,8 +336,8 @@ class Reader {
      * @param config - Configuration object containing documentation glob pattern
      * @returns Array of documentation entries with filename, title, content, and icon
      */
-    getDocumentation(config: Config): Array<{filename: string; title: string; content: string; icon?: string}> {
-        const docs: Array<{filename: string; title: string; content: string; icon?: string}> = [];
+    getDocumentation(config: Config): Array<{ filename: string; title: string; content: string; icon?: string }> {
+        const docs: Array<{ filename: string; title: string; content: string; icon?: string }> = [];
 
         if (!config.documentation) {
             return docs;
@@ -385,7 +385,7 @@ class Reader {
                         filename: filename,
                         title: title,
                         content: this.app.markdownParser ? this.app.markdownParser.render(content) : content,
-                        icon: 'fa-file-text'
+                        icon: 'fa-file-text',
                     });
 
                     this.log.verbose(`  ✓ Processed: ${filename}`);

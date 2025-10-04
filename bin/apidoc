@@ -42,7 +42,7 @@ async function interactiveInit() {
         initialValue: '.',
         validate(value) {
             if (!value) return 'Please enter a path';
-        }
+        },
     });
 
     if (clack.isCancel(projectPath)) {
@@ -56,7 +56,7 @@ async function interactiveInit() {
     if (fs.existsSync(configPath)) {
         const overwrite = await clack.confirm({
             message: `${pc.yellow('apidoc.json')} already exists. Overwrite?`,
-            initialValue: false
+            initialValue: false,
         });
 
         if (clack.isCancel(overwrite) || !overwrite) {
@@ -81,7 +81,7 @@ async function interactiveInit() {
                 description: pkg.description || 'API Documentation',
                 author: pkg.author || '',
                 homepage: pkg.homepage || '',
-                repository: pkg.repository?.url || pkg.repository || ''
+                repository: pkg.repository?.url || pkg.repository || '',
             };
             spinner.stop(pc.green('✓') + ' Found package.json');
         } catch (_e) {
@@ -95,31 +95,31 @@ async function interactiveInit() {
     const projectName = await clack.text({
         message: 'Project name?',
         initialValue: packageInfo?.name || 'My API',
-        placeholder: 'My API'
+        placeholder: 'My API',
     });
 
     const projectVersion = await clack.text({
         message: 'Version?',
         initialValue: packageInfo?.version || '1.0.0',
-        placeholder: '1.0.0'
+        placeholder: '1.0.0',
     });
 
     const projectDescription = await clack.text({
         message: 'Description?',
         initialValue: packageInfo?.description || 'API Documentation',
-        placeholder: 'API Documentation'
+        placeholder: 'API Documentation',
     });
 
     const apiUrl = await clack.text({
         message: 'API Base URL?',
         initialValue: packageInfo?.homepage || 'https://api.example.com',
-        placeholder: 'https://api.example.com'
+        placeholder: 'https://api.example.com',
     });
 
     // Input configuration - categorized approach
     const useCategories = await clack.confirm({
         message: 'Use categorized inputs? (Recommended for v5)',
-        initialValue: true
+        initialValue: true,
     });
 
     let inputConfig;
@@ -133,9 +133,9 @@ async function interactiveInit() {
                 { value: 'models', label: 'Data Models', hint: 'Schemas and models' },
                 { value: 'mqtt', label: 'MQTT', hint: 'IoT protocols' },
                 { value: 'openapi', label: 'OpenAPI', hint: 'OpenAPI specs' },
-                { value: 'docs', label: 'Documentation', hint: 'Markdown files' }
+                { value: 'docs', label: 'Documentation', hint: 'Markdown files' },
             ],
-            initialValues: ['api']
+            initialValues: ['api'],
         });
 
         if (clack.isCancel(categories)) {
@@ -149,7 +149,7 @@ async function interactiveInit() {
             const dir = await clack.text({
                 message: `Path for ${pc.cyan(category)} category?`,
                 initialValue: `./${category}`,
-                placeholder: `./${category}`
+                placeholder: `./${category}`,
             });
 
             if (clack.isCancel(dir)) {
@@ -164,7 +164,7 @@ async function interactiveInit() {
         const inputDir = await clack.text({
             message: 'Source directory?',
             initialValue: './src',
-            placeholder: './src'
+            placeholder: './src',
         });
 
         if (clack.isCancel(inputDir)) {
@@ -182,9 +182,9 @@ async function interactiveInit() {
             { value: 'html', label: 'HTML Documentation', hint: 'Interactive web docs' },
             { value: 'openapi', label: 'OpenAPI Spec', hint: 'Swagger/OpenAPI 3.0' },
             { value: 'markdown', label: 'Markdown', hint: 'Portable markdown docs' },
-            { value: 'json', label: 'JSON', hint: 'Raw API data' }
+            { value: 'json', label: 'JSON', hint: 'Raw API data' },
         ],
-        initialValues: ['html']
+        initialValues: ['html'],
     });
 
     if (clack.isCancel(outputFormats)) {
@@ -195,7 +195,7 @@ async function interactiveInit() {
     // Authentication
     const needsAuth = await clack.confirm({
         message: 'Require authentication to view docs?',
-        initialValue: false
+        initialValue: false,
     });
 
     let authConfig = { active: false };
@@ -203,7 +203,7 @@ async function interactiveInit() {
     if (needsAuth) {
         const authUrl = await clack.text({
             message: 'Authentication endpoint URL?',
-            placeholder: 'https://auth.example.com/login'
+            placeholder: 'https://auth.example.com/login',
         });
 
         authConfig = {
@@ -211,10 +211,10 @@ async function interactiveInit() {
             urlAuth: authUrl,
             value_form: {
                 email: 'email',
-                password: 'password'
+                password: 'password',
             },
             response_success: 200,
-            response_error: 401
+            response_error: 401,
         };
     }
 
@@ -229,9 +229,9 @@ async function interactiveInit() {
         template: {
             showRequiredLabels: true,
             withCompare: false,
-            withGenerator: true
+            withGenerator: true,
         },
-        login: authConfig
+        login: authConfig,
     };
 
     // Add format-specific options
@@ -262,7 +262,7 @@ async function interactiveInit() {
     // Summary
     const s = clack.spinner();
     s.start('Preparing summary...');
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     s.stop();
 
     clack.note(
@@ -272,7 +272,7 @@ async function interactiveInit() {
             `${pc.cyan('API URL:')} ${config.url}`,
             `${pc.cyan('Categories:')} ${useCategories ? Object.keys(config.inputs).join(', ') : 'Legacy mode'}`,
             `${pc.cyan('Formats:')} ${outputFormats.join(', ')}`,
-            `${pc.cyan('Auth Required:')} ${needsAuth ? 'Yes' : 'No'}`
+            `${pc.cyan('Auth Required:')} ${needsAuth ? 'Yes' : 'No'}`,
         ].join('\n'),
         pc.bold('Configuration Summary')
     );
@@ -281,7 +281,7 @@ async function interactiveInit() {
         [
             `${pc.dim('1.')} Add API documentation comments to your code`,
             `${pc.dim('2.')} Run ${pc.cyan('apidoc generate')} to create docs`,
-            `${pc.dim('3.')} View docs with ${pc.cyan('npx serve doc')}`
+            `${pc.dim('3.')} View docs with ${pc.cyan('npx serve doc')}`,
         ].join('\n'),
         pc.bold('Next Steps')
     );
@@ -304,8 +304,8 @@ async function interactiveExport() {
             { value: 'markdown', label: 'Markdown', hint: 'Portable .md files' },
             { value: 'openapi', label: 'OpenAPI 3.0', hint: 'Swagger specification' },
             { value: 'json', label: 'JSON', hint: 'Raw API data' },
-            { value: 'postman', label: 'Postman', hint: 'Postman collection (coming soon)', disabled: true }
-        ]
+            { value: 'postman', label: 'Postman', hint: 'Postman collection (coming soon)', disabled: true },
+        ],
     });
 
     if (clack.isCancel(format)) {
@@ -320,9 +320,9 @@ async function interactiveExport() {
             { value: 'api', label: 'REST API only' },
             { value: 'tsdoc', label: 'TypeScript only' },
             { value: 'models', label: 'Models only' },
-            { value: 'mqtt', label: 'MQTT only' }
+            { value: 'mqtt', label: 'MQTT only' },
         ],
-        initialValue: 'all'
+        initialValue: 'all',
     });
 
     if (clack.isCancel(category)) {
@@ -333,7 +333,7 @@ async function interactiveExport() {
     const outputPath = await clack.text({
         message: 'Output path?',
         initialValue: format === 'markdown' ? './docs' : `./${format}.json`,
-        placeholder: './output'
+        placeholder: './output',
     });
 
     if (clack.isCancel(outputPath)) {
@@ -341,20 +341,13 @@ async function interactiveExport() {
         process.exit(0);
     }
 
-    clack.note(
-        [
-            `${pc.cyan('Format:')} ${format}`,
-            `${pc.cyan('Category:')} ${category}`,
-            `${pc.cyan('Output:')} ${outputPath}`
-        ].join('\n'),
-        'Export Configuration'
-    );
+    clack.note([`${pc.cyan('Format:')} ${format}`, `${pc.cyan('Category:')} ${category}`, `${pc.cyan('Output:')} ${outputPath}`].join('\n'), 'Export Configuration');
 
     const spinner = clack.spinner();
     spinner.start(`Exporting to ${format}...`);
 
     // TODO: Implement actual export logic here
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     spinner.stop(pc.green('✓') + ` Exported to ${outputPath}`);
 
@@ -376,29 +369,29 @@ async function interactiveHelp() {
             {
                 value: 'init',
                 label: 'Initialize new project',
-                hint: 'Create apidoc.json with guided setup'
+                hint: 'Create apidoc.json with guided setup',
             },
             {
                 value: 'generate',
                 label: 'Generate documentation',
-                hint: 'Create HTML docs from your code'
+                hint: 'Create HTML docs from your code',
             },
             {
                 value: 'export',
                 label: 'Export to format',
-                hint: 'Markdown, OpenAPI, JSON, etc.'
+                hint: 'Markdown, OpenAPI, JSON, etc.',
             },
             {
                 value: 'transform',
                 label: 'Transform code comments',
-                hint: 'Convert APIDoc → Markdown/OpenAPI/JSON'
+                hint: 'Convert APIDoc → Markdown/OpenAPI/JSON',
             },
             {
                 value: 'learn',
                 label: 'Learn about APIDoc',
-                hint: 'Documentation and examples'
-            }
-        ]
+                hint: 'Documentation and examples',
+            },
+        ],
     });
 
     if (clack.isCancel(action)) {
@@ -422,7 +415,7 @@ async function interactiveHelp() {
                     `${pc.cyan('Code → Markdown:')} apidoc export markdown`,
                     `${pc.cyan('Code → OpenAPI:')} apidoc export openapi`,
                     `${pc.cyan('Code → JSON:')} apidoc export json`,
-                    `${pc.cyan('TypeScript → Docs:')} apidoc --category tsdoc export markdown`
+                    `${pc.cyan('TypeScript → Docs:')} apidoc --category tsdoc export markdown`,
                 ].join('\n'),
                 'Transform Commands'
             );
@@ -434,7 +427,7 @@ async function interactiveHelp() {
                     `${pc.cyan('Homepage:')} https://apidoc.app`,
                     `${pc.cyan('Documentation:')} https://apidoc.app/docs`,
                     `${pc.cyan('Examples:')} https://apidoc.app/examples`,
-                    `${pc.cyan('GitHub:')} https://github.com/hrefcl/apidoc`
+                    `${pc.cyan('GitHub:')} https://github.com/hrefcl/apidoc`,
                 ].join('\n'),
                 'Resources'
             );
@@ -449,10 +442,7 @@ async function interactiveHelp() {
 
 const program = new Command();
 
-program
-    .name('apidoc')
-    .version(pkgJson.version)
-    .description('APIDoc v5 - Modern API Documentation Generator');
+program.name('apidoc').version(pkgJson.version).description('APIDoc v5 - Modern API Documentation Generator');
 
 // Init command
 program
@@ -504,7 +494,7 @@ program
 
                 nodemon({
                     watch: apidocOptions.src,
-                    ext: 'js,ts,jsx,tsx,vue,py,php,rb,go,java'
+                    ext: 'js,ts,jsx,tsx,vue,py,php,rb,go,java',
                 });
 
                 nodemon
@@ -626,12 +616,12 @@ program
 
                     await generateMarkdownFileSystem({
                         apiDocProjectData: result.project,
-                        apiDocApiData: result.data,  // Corrected: apiDocApiData not apiDocData
-                        input: options.input?.[0] || process.cwd(),  // Required field
+                        apiDocApiData: result.data, // Corrected: apiDocApiData not apiDocData
+                        input: options.input?.[0] || process.cwd(), // Required field
                         output: outputPath,
                         template: 'default',
                         multi: false,
-                        createPath: true
+                        createPath: true,
                     });
 
                     spinner.stop(pc.green(`✅ Exported to ${outputPath}`));
@@ -671,7 +661,7 @@ program
 
 // If no command specified, show interactive help
 if (!process.argv.slice(2).length) {
-    interactiveHelp().catch(err => {
+    interactiveHelp().catch((err) => {
         console.error('Error:', err);
         process.exit(1);
     });

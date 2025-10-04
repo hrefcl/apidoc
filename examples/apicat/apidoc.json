@@ -22,7 +22,7 @@
     "models": ["../models"]
   },
   "login": {
-    "active": true,
+    "active": false,
     "encryptionKey": "TYeK+cjd9Q3XFYmhZozrXO0v6fqnoCYdYtFxBuFJ5YQ=",
     "admited": [
       {

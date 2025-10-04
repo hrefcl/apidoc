@@ -156,13 +156,7 @@ export const CATEGORY_PARSERS: Record<string, CategoryParserConfig> = {
      */
     openapi: {
         filePatterns: ['.js', '.ts', '.yaml', '.yml', '.json'],
-        enabledParsers: [
-            'openapi',
-            'openapiPath',
-            'openapiOperation',
-            'openapiSchema',
-            'openapiComponent',
-        ],
+        enabledParsers: ['openapi', 'openapiPath', 'openapiOperation', 'openapiSchema', 'openapiComponent'],
         description: 'OpenAPI 3.0 specifications',
     },
 
@@ -172,14 +166,7 @@ export const CATEGORY_PARSERS: Record<string, CategoryParserConfig> = {
      */
     graphql: {
         filePatterns: ['.js', '.ts', '.graphql', '.gql'],
-        enabledParsers: [
-            'apischema',
-            'apidefine',
-            'apiparam',
-            'apisuccess',
-            'apierror',
-            'apiexample',
-        ],
+        enabledParsers: ['apischema', 'apidefine', 'apiparam', 'apisuccess', 'apierror', 'apiexample'],
         description: 'GraphQL schemas and resolvers',
     },
 };

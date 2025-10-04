@@ -8,8 +8,8 @@
  */
 
 import fs from 'fs';
-import path from 'path';
 import { glob } from 'glob';
+import path from 'path';
 
 /**
  * Represents a parsed Sequelize model attribute
@@ -324,18 +324,30 @@ function extractHooks(content: string): ParsedHook[] {
     // Match hook decorators and methods
     // Pattern: @HookDecorator\n static async methodName
     const hookTypes = [
-        'BeforeValidate', 'AfterValidate', 'ValidationFailed',
-        'BeforeCreate', 'AfterCreate',
-        'BeforeUpdate', 'AfterUpdate',
-        'BeforeDestroy', 'AfterDestroy',
-        'BeforeSave', 'AfterSave',
-        'BeforeUpsert', 'AfterUpsert',
-        'BeforeBulkCreate', 'AfterBulkCreate',
-        'BeforeBulkUpdate', 'AfterBulkUpdate',
-        'BeforeBulkDestroy', 'AfterBulkDestroy',
-        'BeforeFind', 'AfterFind',
+        'BeforeValidate',
+        'AfterValidate',
+        'ValidationFailed',
+        'BeforeCreate',
+        'AfterCreate',
+        'BeforeUpdate',
+        'AfterUpdate',
+        'BeforeDestroy',
+        'AfterDestroy',
+        'BeforeSave',
+        'AfterSave',
+        'BeforeUpsert',
+        'AfterUpsert',
+        'BeforeBulkCreate',
+        'AfterBulkCreate',
+        'BeforeBulkUpdate',
+        'AfterBulkUpdate',
+        'BeforeBulkDestroy',
+        'AfterBulkDestroy',
+        'BeforeFind',
+        'AfterFind',
         'BeforeCount',
-        'BeforeSync', 'AfterSync',
+        'BeforeSync',
+        'AfterSync',
     ];
 
     for (const hookType of hookTypes) {
@@ -386,8 +398,8 @@ function extractHookDescription(content: string, hookIndex: number): string | un
         // Clean up the description (remove leading asterisks and extra whitespace)
         return descMatch[1]
             .split('\n')
-            .map(line => line.replace(/^\s*\*\s?/, '').trim())
-            .filter(line => line.length > 0)
+            .map((line) => line.replace(/^\s*\*\s?/, '').trim())
+            .filter((line) => line.length > 0)
             .join(' ')
             .trim();
     }
@@ -395,8 +407,8 @@ function extractHookDescription(content: string, hookIndex: number): string | un
     // Fallback: extract any text from JSDoc that's not a tag
     const lines = jsdocContent
         .split('\n')
-        .map(line => line.replace(/^\s*\*\s?/, '').trim())
-        .filter(line => line.length > 0 && !line.startsWith('@'));
+        .map((line) => line.replace(/^\s*\*\s?/, '').trim())
+        .filter((line) => line.length > 0 && !line.startsWith('@'));
 
     if (lines.length > 0) {
         return lines.join(' ').trim();

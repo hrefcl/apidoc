@@ -170,7 +170,7 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
                 enabled: true,
                 outputDir: app.options.dest,
                 generateCollections: true,
-                enableLocalTesting: true
+                enableLocalTesting: true,
             };
         } else {
             app.options.apicat.enabled = true;
@@ -231,7 +231,7 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
         // Get the directory where apidoc.json is located (not the src directory)
         const configPath = app.options.config || path.join(app.options.src[0], 'apidoc.json');
         const apidocJsonDir = path.dirname(configPath);
-        let inputDirectories: string[] = [];
+        const inputDirectories: string[] = [];
 
         // Store category mapping: directory -> category
         const categoryMap: Map<string, string> = new Map();
@@ -279,7 +279,7 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
                     const fs = require('fs-extra');
                     const glob = require('glob');
                     const MarkdownIt = require('markdown-it');
-                    const md = new MarkdownIt({html: true, linkify: true, typographer: true});
+                    const md = new MarkdownIt({ html: true, linkify: true, typographer: true });
 
                     /**
                      * Transform markdown links to internal documentation references
@@ -331,7 +331,7 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
                                         filename: filename,
                                         title: title,
                                         content: md.render(content),
-                                        icon: 'fa-file-text'
+                                        icon: 'fa-file-text',
                                     });
 
                                     app.log.verbose(`    ✓ Processed: ${filename}`);
@@ -383,7 +383,7 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
                     ...app.options.apicat,
                     sourceDir: Array.isArray(app.options.src) ? app.options.src[0] : app.options.src,
                     dest: app.options.dest,
-                    verbose: app.options.verbose
+                    verbose: app.options.verbose,
                 };
                 const apiCatPlugin = new ApiCatPlugin(apiCatConfig);
                 const parsedData = JSON.parse(api.data);
