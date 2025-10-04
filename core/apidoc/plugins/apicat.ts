@@ -691,7 +691,6 @@ export class ApiCatPlugin {
 
             // Get tsdoc directories from projectInfo.resolvedInputs (absolute paths)
             // Falls back to projectInfo.inputs if resolvedInputs not available
-            // @ts-expect-error - resolvedInputs is defined in ApiDocProject interface
             const tsdocDirs = this.projectInfo?.resolvedInputs?.tsdoc || this.projectInfo?.inputs?.tsdoc || [];
 
             if (tsdocDirs.length === 0) {
