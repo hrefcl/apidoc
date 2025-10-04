@@ -1603,7 +1603,7 @@ export class ApiCatPlugin {
         try {
             // Path to the Vue 3 template build
             // Try packaged template first (for NPM/Git installations), then dev path
-            const packagedTemplatePath = path.resolve(__dirname, '../../../template');
+            const packagedTemplatePath = path.resolve(__dirname, '../../../../template');
             const devTemplatePath = path.resolve('./apps/apidoc-template-v5/dist');
 
             let templatePath = packagedTemplatePath;
