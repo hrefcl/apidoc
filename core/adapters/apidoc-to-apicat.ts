@@ -290,6 +290,26 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
         mqtt: projectInfo.mqtt,
     };
 
+    // Respect custom order from apidoc.json if exists, otherwise sort alphabetically
+    const groupsArray = Array.from(groups);
+    let orderedGroups: string[];
+
+    if (projectInfo.order && Array.isArray(projectInfo.order)) {
+        // Use custom order from apidoc.json
+        // First, add groups that are in the custom order
+        orderedGroups = projectInfo.order.filter((g: string) => groupsArray.includes(g));
+
+        // Then add any remaining groups that weren't in the custom order (sorted alphabetically)
+        const remainingGroups = groupsArray
+            .filter(g => !projectInfo.order.includes(g))
+            .sort();
+
+        orderedGroups = [...orderedGroups, ...remainingGroups];
+    } else {
+        // No custom order, sort alphabetically
+        orderedGroups = groupsArray.sort();
+    }
+
     return {
         project,
         endpoints: endpoints.sort((a, b) => {
@@ -306,7 +326,7 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
             }
             return a.name.localeCompare(b.name);
         }) : undefined,
-        groups: Array.from(groups).sort(),
+        groups: orderedGroups,
         generated: new Date().toISOString(),
         generator: 'apiCAT v5.0 (powered by apiDoc)',
     };

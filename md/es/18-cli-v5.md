@@ -120,6 +120,7 @@ apidoc generate [opciones]
 | `-w, --watch` | Modo watch (regeneración automática) | `false` |
 | `-v, --verbose` | Salida detallada con estadísticas | `false` |
 | `-d, --debug` | Modo debug | `false` |
+| `--filter-version <version>` | Filtrar solo una versión específica (e.g., 2.0.0) | - |
 
 **Ejemplos:**
 
@@ -141,6 +142,12 @@ apidoc generate -v
 
 # Combinado
 apidoc generate -i src/ -o docs/ --watch -v
+
+# Generar solo versión 2.0.0
+apidoc generate --filter-version 2.0.0 -o docs/v2
+
+# Generar versión específica con verbose
+apidoc generate --filter-version 1.5.0 -o docs/v1.5 -v
 ```
 
 ### 4. `apidoc export` - Exportar Documentación
@@ -174,8 +181,22 @@ apidoc export markdown -o API.md
 
 **Opciones:**
 ```bash
--c, --config <file>   # Configuración (default: apidoc.json)
--o, --output <file>   # Archivo de salida
+-c, --config <file>             # Configuración (default: apidoc.json)
+-o, --output <file>             # Archivo de salida
+--filter-version <version>      # Exportar solo una versión específica
+```
+
+**Ejemplos con filtrado de versión:**
+
+```bash
+# Exportar solo versión 2.0.0 a OpenAPI
+apidoc export openapi --filter-version 2.0.0 -o swagger-v2.yaml
+
+# Exportar versión 1.5.0 a JSON
+apidoc export json --filter-version 1.5.0 -o api-v1.5.json
+
+# Exportar versión específica a Markdown
+apidoc export markdown --filter-version 2.0.0 -o API-v2.md
 ```
 
 ---
@@ -343,6 +364,7 @@ npm run docs:export
 |------------------|----------------|
 | `apidoc -i src/ -o doc/` | `apidoc generate -i src/ -o doc/` |
 | `apidoc -i src/ -o doc/ -v` | `apidoc generate -i src/ -o doc/ -v` |
+| `apidoc --filter-version 2.0.0` | `apidoc generate --filter-version 2.0.0` |
 | No disponible | `apidoc` (menú interactivo) |
 | No disponible | `apidoc init` |
 | No disponible | `apidoc export <formato>` |

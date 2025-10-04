@@ -478,6 +478,7 @@ program
     .option('-w, --watch', 'Watch mode', false)
     .option('-v, --verbose', 'Verbose output', false)
     .option('-d, --debug', 'Debug mode', false)
+    .option('--filter-version <version>', 'Filter documentation by specific API version (e.g., 2.0.0)')
     .action(async (options) => {
         try {
             const templatePath = path.join(__dirname, '../apps/apidoc-template-v5/');
@@ -492,6 +493,7 @@ program
                 colorize: true,
                 excludeFilters: ['node_modules', 'apidoc.config.js'],
                 includeFilters: ['.*\\.(clj|cls|coffee|cpp|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|kt|litcoffee|lua|mjs|p|php?|pl|pm|py|rb|scala|ts|tsx|vue)$'],
+                filterBy: options.filterVersion ? `version=${options.filterVersion}` : undefined,
             };
 
             if (options.watch) {
@@ -588,6 +590,7 @@ program
     .option('-o, --output <path>', 'Output path')
     .option('--category <name>', 'Export specific category only')
     .option('-v, --verbose', 'Verbose output', false)
+    .option('--filter-version <version>', 'Filter documentation by specific API version (e.g., 2.0.0)')
     .option('--no-interactive', 'Skip interactive prompts')
     .action(async (format, options) => {
         if (options.interactive === false) {
@@ -605,6 +608,7 @@ program
                     colorize: true,
                     excludeFilters: ['node_modules'],
                     includeFilters: ['.*\\.(js|ts|jsx|tsx|vue|py|php|rb|go|java)$'],
+                    filterBy: options.filterVersion ? `version=${options.filterVersion}` : undefined,
                 };
 
                 const result = await apidoc.createDoc(apidocOptions);
