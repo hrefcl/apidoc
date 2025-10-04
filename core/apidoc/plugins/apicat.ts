@@ -1602,7 +1602,14 @@ export class ApiCatPlugin {
     private async copyTemplateAssets(outputPath: string): Promise<void> {
         try {
             // Path to the Vue 3 template build
-            const templatePath = path.resolve('./apps/apidoc-template-v5/dist');
+            // Try packaged template first (for NPM/Git installations), then dev path
+            const packagedTemplatePath = path.resolve(__dirname, '../../../template');
+            const devTemplatePath = path.resolve('./apps/apidoc-template-v5/dist');
+
+            let templatePath = packagedTemplatePath;
+            if (!(await fs.pathExists(packagedTemplatePath))) {
+                templatePath = devTemplatePath;
+            }
 
             if (!(await fs.pathExists(templatePath))) {
                 this.log('⚠️  Template not built. Building apidoc-template-v5 (Vue 3 SPA)...');
@@ -1615,6 +1622,7 @@ export class ApiCatPlugin {
                     // Build WITHOUT running embed-data.js (we'll do it after copying)
                     await execAsync('cd apps/apidoc-template-v5 && npm run build');
                     this.log('✅ Template built successfully (SPA base)');
+                    templatePath = devTemplatePath;
                 } catch (error) {
                     console.error('❌ Failed to build template:', error);
                     return;
