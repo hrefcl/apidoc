@@ -438,12 +438,12 @@ module.exports = function(grunt) {
 
 ## 📝 npm Scripts Integration
 
-### package.json Básico
+### package.json Básico (CLI v5)
 ```json
 {
   "scripts": {
-    "docs": "apidoc -i src/ -o docs/",
-    "docs:watch": "nodemon --watch src --ext js,ts --exec \"npm run docs\"",
+    "docs": "apidoc generate -i src/ -o docs/",
+    "docs:watch": "apidoc generate -i src/ -o docs/ --watch",
     "docs:serve": "npm run docs && npx http-server docs -p 8080 -o",
     "docs:build": "npm run docs && npm run docs:optimize",
     "docs:optimize": "npx imagemin docs/assets/**/* --out-dir=docs/assets/optimized",
@@ -452,24 +452,29 @@ module.exports = function(grunt) {
 }
 ```
 
-### Scripts Avanzados
+### Scripts Avanzados (CLI v5)
 ```json
 {
   "scripts": {
     "docs:clean": "rimraf docs",
-    "docs:generate": "apidoc -i src/ -o docs/ --config apidoc.json",
-    "docs:validate": "apidoc -i src/ --dry-run --config apidoc.json",
+    "docs:generate": "apidoc generate -i src/ -o docs/ --config apidoc.json",
+    "docs:validate": "apidoc generate -i src/ --dry-run --config apidoc.json",
     "docs:multi": "npm-run-all --parallel docs:v1 docs:v2",
-    "docs:v1": "apidoc -i src/v1/ -o docs/v1/ --filter-version 1.0.0",
-    "docs:v2": "apidoc -i src/v2/ -o docs/v2/ --filter-version 2.0.0",
+    "docs:v1": "apidoc generate -i src/v1/ -o docs/v1/ --filter-version 1.0.0",
+    "docs:v2": "apidoc generate -i src/v2/ -o docs/v2/ --filter-version 2.0.0",
 
-    "docs:watch": "concurrently \"chokidar 'src/**/*.js' -c 'npm run docs:generate'\" \"npx http-server docs -p 8080\"",
+    "docs:watch": "apidoc generate -i src/ -o docs/ --watch",
+    "docs:serve": "concurrently \"npm run docs:watch\" \"npx http-server docs -p 8080\"",
 
     "docs:test": "npm run docs:validate && npm run test:docs",
     "test:docs": "jest --testPathPattern=docs",
 
     "docs:package": "npm run docs:generate && tar -czf api-docs.tar.gz docs/",
     "docs:upload": "npm run docs:package && aws s3 cp api-docs.tar.gz s3://my-docs-bucket/",
+
+    "docs:export:json": "apidoc export json -o api.json",
+    "docs:export:openapi": "apidoc export openapi -o swagger.yaml",
+    "docs:export:markdown": "apidoc export markdown -o API.md",
 
     "predocs:deploy": "npm run docs:test",
     "docs:deploy": "npm run docs:generate && npx surge docs/ my-api-docs.surge.sh",
@@ -584,7 +589,7 @@ jobs:
 
     - name: Generate docs for v${{ matrix.version }}
       run: |
-        apidoc -i src/ -o docs/v${{ matrix.version }}/ --filter-version ${{ matrix.version }}
+        apidoc generate -i src/ -o docs/v${{ matrix.version }}/ --filter-version ${{ matrix.version }}
 
     - name: Upload version-specific docs
       uses: actions/upload-artifact@v4
@@ -663,7 +668,7 @@ jobs:
     steps:
     - name: Generate ${{ matrix.api }} docs
       run: |
-        apidoc -i src/${{ matrix.api }}/ -o docs/${{ matrix.api }}/
+        apidoc generate -i src/${{ matrix.api }}/ -o docs/${{ matrix.api }}/
 ```
 
 Las herramientas de build permiten integrar APIDoc seamlessly en cualquier workflow de desarrollo, desde simples npm scripts hasta complejos pipelines de CI/CD.

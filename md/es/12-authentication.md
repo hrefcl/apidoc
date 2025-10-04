@@ -220,7 +220,7 @@ La clave de encriptación se protege mediante:
 
 **Causa**: El código de ofuscación está corrupto o mal formado.
 
-**Solución**: Regenera la documentación con `apidoc -i src/ -o docs/`
+**Solución**: Regenera la documentación con `apidoc generate -i src/ -o docs/`
 
 ### Error: "Invalid credentials"
 
@@ -296,8 +296,8 @@ La clave de encriptación se protege mediante:
 # Instalar APIDoc
 npm install -g @hrefcl/apidoc
 
-# Generar documentación
-apidoc -i src/ -o docs/
+# Generar documentación (CLI v5)
+apidoc generate -i src/ -o docs/
 
 # Ver documentación
 npx serve docs/ -p 8080

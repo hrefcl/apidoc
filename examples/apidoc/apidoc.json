@@ -16,7 +16,7 @@
     "filename": "header.md",
     "icon": "fa-home"
   },
-  "input": ["example"],
+  "input": ["."],
   "login": {
     "active": false,
     "urlAuth": "https://bifrost.cleverty.app/sign-in",

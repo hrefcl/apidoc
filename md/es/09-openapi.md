@@ -317,18 +317,27 @@ function updateProduct() {
 
 ## 📤 Exportación a OpenAPI
 
-### Generar HTML + OpenAPI
+### Generar HTML + OpenAPI con CLI v5
 
 ```bash
 # Crea tanto documentación HTML COMO swagger.json
-apidoc -i src/ -o docs/ --openapi
+apidoc generate -i src/ -o docs/ --openapi
+
+# También puedes usar el comando export (nuevo en v5)
+apidoc export openapi -o docs/swagger.yaml
 ```
 
 ### Generar Solo OpenAPI
 
 ```bash
-# Crea solo swagger.json y openapi.json (sin HTML)
-apidoc -i src/ -o api-spec/ --openapi-only
+# Usando el comando export (recomendado en v5)
+apidoc export openapi -o api-spec/swagger.json
+
+# Alternativa: generar solo OpenAPI sin HTML
+apidoc generate -i src/ -o api-spec/ --openapi-only
+
+# Exportar en formato YAML
+apidoc export openapi -o api-spec/swagger.yaml
 ```
 
 ### 📊 Archivos Generados

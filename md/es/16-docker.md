@@ -208,14 +208,14 @@ services:
     working_dir: /workspace
     command: >
       sh -c "
-        # Generar documentación inicial
-        apidoc -i src -o docs
+        # Generar documentación inicial (CLI v5)
+        apidoc generate -i src -o docs
 
         # Vigilar cambios usando inotify
         apk add --no-cache inotify-tools
         while inotifywait -r -e modify,create,delete src; do
           echo 'Cambios detectados, regenerando documentación...'
-          apidoc -i src -o docs
+          apidoc generate -i src -o docs
           echo 'Documentación actualizada'
         done
       "

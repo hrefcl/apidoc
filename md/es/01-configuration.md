@@ -260,15 +260,15 @@ debug: Skipping parser 'model' for category 'api' in block: '1'
 
 **Recomendación**: Migra a `inputs` object para mejor organización.
 
-#### 2.3 Uso con CLI
+#### 2.3 Uso con CLI v5
 
-Cuando usas `inputs` en `apidoc.json`, debes especificar la ruta del archivo de configuración con `--config`:
+Cuando usas `inputs` en `apidoc.json`, debes especificar la ruta del archivo de configuración con `-c` o `--config`:
 
 ```bash
 # ✅ Correcto - especifica el archivo de configuración
-apidoc --config examples/apicat/apidoc.json -o docs/
+apidoc generate --config examples/apicat/apidoc.json -o docs/
 
-# ❌ Incorrecto - no encuentra las rutas inputs correctamente
+# ❌ Incorrecto - sintaxis antigua (ya no soportada en v5)
 apidoc -i examples/apicat -o docs/
 ```
 
@@ -292,10 +292,19 @@ Las rutas se resolverán correctamente:
 - `"api": ["."]` → `/my-project/examples/apicat/`
 - `"models": ["../../models"]` → `/my-project/models/`
 
-**Alias disponibles**:
+**Sintaxis CLI v5**:
 ```bash
-apidoc -c examples/apicat/apidoc.json -o docs/  # -c es alias de --config
-apidoc --config path/to/config.json -o output/
+# Usar subcomando 'generate'
+apidoc generate -c examples/apicat/apidoc.json -o docs/  # -c es alias de --config
+
+# Formato completo
+apidoc generate --config path/to/config.json -o output/
+
+# Modo interactivo (nuevo en v5)
+apidoc                    # Muestra menú interactivo
+
+# Modo watch para desarrollo
+apidoc generate -c apidoc.json -o docs/ --watch
 ```
 
 ---

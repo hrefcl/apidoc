@@ -319,22 +319,22 @@ src/
 
 ## 🔍 Filtrado por Versión
 
-### CLI para Generar Versión Específica
+### CLI v5 para Generar Versión Específica
 ```bash
 # Generar solo v2.0.0
-apidoc -i src/ -o doc/ --filter-version 2.0.0
+apidoc generate -i src/ -o doc/ --filter-version 2.0.0
 
 # Generar múltiples versiones
-apidoc -i src/ -o doc/ --filter-version "1.5.0,2.0.0"
+apidoc generate -i src/ -o doc/ --filter-version "1.5.0,2.0.0"
 ```
 
 ### Configuración en package.json
 ```json
 {
   "scripts": {
-    "docs:v1": "apidoc -i src/ -o doc/v1 --filter-version 1.0.0",
-    "docs:v2": "apidoc -i src/ -o doc/v2 --filter-version 2.0.0",
-    "docs:all": "apidoc -i src/ -o doc/"
+    "docs:v1": "apidoc generate -i src/ -o doc/v1 --filter-version 1.0.0",
+    "docs:v2": "apidoc generate -i src/ -o doc/v2 --filter-version 2.0.0",
+    "docs:all": "apidoc generate -i src/ -o doc/"
   }
 }
 ```

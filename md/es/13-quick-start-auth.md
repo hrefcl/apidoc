@@ -38,8 +38,8 @@ Agrega la sección `login` a tu `apidoc.json`:
 ### 3️⃣ Generar y Servir
 
 ```bash
-# Generar documentación con autenticación
-apidoc -i src/ -o docs/
+# Generar documentación con autenticación (CLI v5)
+apidoc generate -i src/ -o docs/
 
 # Servir documentación
 npx serve docs/ -p 8080
@@ -134,7 +134,7 @@ El servidor debe responder con:
 ### Probar Modo Local
 
 1. Usa la configuración de ejemplo del paso 2
-2. Genera la documentación: `apidoc -i src/ -o docs/`
+2. Genera la documentación: `apidoc generate -i src/ -o docs/`
 3. Sirve: `npx serve docs/ -p 8080`
 4. Accede a `http://localhost:8080`
 5. Login con: `admin@empresa.com` / `password123`
@@ -165,7 +165,7 @@ grep -c "_obf" docs/index.html
 1. Abre DevTools (F12)
 2. Ve a la pestaña Console
 3. Busca errores en rojo
-4. Regenera documentación: `apidoc -i src/ -o docs/`
+4. Regenera documentación: `apidoc generate -i src/ -o docs/`
 
 ### ❌ "Invalid credentials"
 

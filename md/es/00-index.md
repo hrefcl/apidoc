@@ -45,6 +45,7 @@ Bienvenido a la documentación completa de APIDoc 5.0. Esta guía te permitirá 
 - **[🔨 Desarrollo Local](./15-development.md)** - Setup del entorno de desarrollo
 - **[🐳 Docker y Containers](./16-docker.md)** - Uso con contenedores
 - **[🔧 Herramientas y Plugins](./17-build-tools.md)** - Integración con Grunt, Webpack, etc.
+- **[💻 CLI v5 Moderna](./18-cli-v5.md)** - Guía completa de la nueva CLI con subcomandos
 
 ## 💡 Casos de Uso Comunes
 
@@ -70,6 +71,14 @@ Bienvenido a la documentación completa de APIDoc 5.0. Esta guía te permitirá 
 
 ## 🎯 Características Destacadas v5.0
 
+### 🆕 CLI Moderna con Subcomandos
+- **✅ Menú Interactivo**: Comando `apidoc` muestra opciones interactivas
+- **✅ Subcomandos Modernos**: `generate`, `export`, `init` para flujos específicos
+- **✅ Modo Watch**: Flag `--watch` para desarrollo con hot reload
+- **✅ Modo Silencioso**: Salida limpia por defecto, usa `-v` para verbose
+- **✅ Exportación Múltiple**: Exporta a JSON, OpenAPI, Markdown con `apidoc export`
+
+### 🎨 Features Principales
 - **✅ apiCAT (Vue 3)**: Template moderno con carga lazy de endpoints
 - **✅ Custom Markdown**: Contenido personalizado por secciones (`settings.{Grupo}.filename`)
 - **✅ MQTT Protocol**: 16+ parsers MQTT con template especializado
