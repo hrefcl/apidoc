@@ -5,6 +5,106 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0] - 2025-10-04
+
+### 🎉 STABLE RELEASE - APIDoc v5.0 with Vue 3 + apiCAT
+
+**Major version release with complete rewrite of template system and new apiCAT architecture.**
+
+### ✨ New Features
+
+#### 🏗️ Complete Architecture Overhaul
+- **Vue 3 Single-File Template**: Modern single-page application built with Vue 3 and Vite
+- **apiCAT Plugin System**: New modular plugin architecture for documentation generation
+- **Single-File Distribution**: Entire documentation in one portable `index.html` file (900KB+)
+- **No External Dependencies**: All assets embedded - works offline without CDN/internet
+
+#### 🌍 International Support
+- **UTF-8 Unicode Support**: Full support for Spanish and Latin-based languages (ñ, á, é, í, ó, ú, ü, etc.)
+- **Parameter Names**: Unicode characters now work correctly in `@apiParam` field names
+- **Descriptions**: All text content supports full UTF-8 encoding
+- **Test Coverage**: Added UTF-8 test cases in `examples/utf8-test/`
+
+#### 📱 Modern UI/UX
+- **Responsive Design**: Mobile-first design with TailwindCSS
+- **Dark Mode**: Automatic dark/light theme support
+- **Interactive Components**: Real-time search, filtering, and navigation
+- **Single-File Portability**: Share documentation as a single HTML file
+
+#### 🔒 Security Features
+- **JSON Encryption**: Optional AES-256-GCM encryption for sensitive API data
+- **Authentication System**: Login-protected documentation with configurable auth endpoints
+- **Secure Key Management**: Automatic key generation with `.apicat-key` file
+
+#### 🔌 MQTT Protocol Support
+- **16 MQTT Parsers**: Complete MQTT documentation support
+- **Interactive MQTT Client**: Test MQTT endpoints directly in documentation
+- **QoS Levels**: Support for QoS 0, 1, and 2
+- **SSL/TLS**: Full SSL/TLS certificate support
+
+### 🐛 Bug Fixes
+- Fixed UTF-8 encoding corruption in parameter names (Latin Extended \u00C0-\u017F)
+- Fixed file reading to preserve UTF-8 bytes (changed from 'binary' to Buffer)
+- Corrected template path resolution for packaged vs development environments
+- Fixed --filter-version CLI option
+- Fixed menu ordering to respect apidoc.json configuration
+
+### 🔧 Technical Improvements
+- **Build System**: Unified build process with `prepare` and `build:template` scripts
+- **Git Installation**: Automatic compilation when installing from GitHub
+- **TypeScript**: Full TypeScript support with type definitions
+- **Testing**: E2E tests with Playwright
+- **Documentation**: Modular documentation system in `docs/` directory
+
+### 📦 Installation
+```bash
+# NPM
+npm install @hrefcl/apidoc@5.0.0
+
+# Yarn
+yarn add @hrefcl/apidoc@5.0.0
+
+# GitHub (with automatic build)
+npm install git+ssh://git@github.com/hrefcl/apidoc.git#5.0.0
+```
+
+### ⚠️ Breaking Changes
+- Template system completely rewritten (Vue 3 instead of static HTML)
+- Output structure changed (single `index.html` instead of multiple files)
+- Some legacy template customizations may need migration
+- Minimum Node.js version: 20.0.0
+
+### 📝 Migration Guide
+See [docs/migration-v4-to-v5.md](docs/migration-v4-to-v5.md) for detailed migration instructions.
+
+---
+
+## [5.0.0-alpha.5] - 2025-10-04
+
+### 🐛 Bug Fixes
+- **UTF-8 Unicode Support**: Added Unicode Latin Extended support (\u00C0-\u017F) for Spanish characters
+- Fixed parameter name truncation (descripción → descripci)
+- Fixed file encoding (changed from 'binary' to Buffer)
+
+---
+
+## [5.0.0-alpha.4] - 2025-10-03
+
+### 🐛 Bug Fixes
+- Fixed template packaging and Git installation workflow
+- Corrected template path resolution in apiCAT plugin
+- Added `prepare` script for automatic compilation on Git install
+
+---
+
+## [5.0.0-alpha.3] - 2025-10-02
+
+### ✨ Features
+- Implemented --filter-version CLI option
+- Fixed menu ordering to respect apidoc.json configuration
+
+---
+
 ## [5.0.0-alpha.2] - 2025-09-30
 
 ### 🚀 NEW FEATURE - Interactive MQTT Testing with Real Broker Connections
