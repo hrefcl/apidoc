@@ -64,7 +64,7 @@
     "test:ci": "export CI=true; npm run test:lint && npm test;",
     "test:e2e": "cd e2e-tests && npx playwright test",
     "test:lint": "npm run test:spell-support && npm run test:spell && eslint;",
-    "test:spell": "cspell --fail-fast './bin/apidoc' './example/**/*' './lib/**/*.*js' './template/index.html' './template/src/*' './test/**/*' --config ./cspell.config.json",
+    "test:spell": "cspell --fail-fast './bin/apidoc' './example/**/*' './lib/**/*.*js' './template/src/*' './test/**/*' --config ./cspell.config.json",
     "test:spell-support": "cspell --fail-fast ./README.md ./CONTRIBUTING.md ./CONTRIBUTORS.md ./SECURITY.md --config ./cspell.config.json",
     "test:fix": "eslint --fix",
     "test:packages": "yarn workspaces run test",
