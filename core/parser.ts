@@ -200,9 +200,10 @@ Parser.prototype.parseFile = function (filename, encoding) {
         }
     }
 
-    // TODO: Not sure if this is correct. Without skipDecodeWarning we got string errors
-    // https://github.com/apidoc/apidoc-core/pull/25
-    const fileContent = fs.readFileSync(filename, { encoding: 'binary' });
+    // Read as Buffer (no encoding) to preserve raw bytes for iconv-lite
+    // This prevents corruption of multi-byte UTF-8 characters
+    // Previous 'binary' encoding was treating UTF-8 bytes as Latin-1
+    const fileContent = fs.readFileSync(filename);
     return self.parseSource(fileContent, encoding, filename);
 };
 

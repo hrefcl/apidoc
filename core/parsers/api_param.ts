@@ -75,8 +75,8 @@ const regExp = {
     },
     wName: {
         b: '(\\[?\\s*', // 5 optional optional-marker
-        name: '([#@a-zA-Z0-9\\$\\:\\.\\/\\\\_-]+', // 6
-        withArray: '(?:\\[[a-zA-Z0-9\\.\\/\\\\_-]*\\])?)', // https://github.com/apidoc/apidoc-core/pull/4
+        name: '([#@a-zA-Z0-9\\u00C0-\\u017F\\$\\:\\.\\/\\\\_-]+', // 6 - Fixed: Added Unicode Latin Extended support (\u00C0-\u017F includes á, é, í, ó, ú, ñ, etc.)
+        withArray: '(?:\\[[a-zA-Z0-9\\u00C0-\\u017F\\.\\/\\\\_-]*\\])?)', // Fixed: Added Unicode support
         oDefaultValue: {
             // optional defaultValue
             b: '(?:\\s*=\\s*(?:', // starting with '=', optional surrounding spaces
@@ -129,7 +129,7 @@ function _getParentNode(field) {
     }
 }
 
-const parseRegExp = new RegExp(_objectValuesToString(regExp));
+const parseRegExp = new RegExp(_objectValuesToString(regExp)); // Unicode ranges used directly in regex
 
 const allowedValuesWithDoubleQuoteRegExp = /"[^"]*[^"]"/g;
 const allowedValuesWithQuoteRegExp = /'[^']*[^']'/g;
