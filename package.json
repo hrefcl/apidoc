@@ -1,6 +1,6 @@
 {
   "name": "@hrefcl/apidoc-ecosystem",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.3",
   "description": "APIDoc v5 + apiCAT Ecosystem - Complete API Documentation and Testing Suite",
   "private": true,
   "keywords": [
@@ -79,8 +79,9 @@
     "docs:serve": "npm run docs && npx serve docs/api -p 3001",
     "docs:watch": "typedoc --watch",
     "build:packages": "yarn workspaces run build",
-    "prepare": "npm run build:clean",
-    "prepublishOnly": "npm run build:clean",
+    "build:template": "cd apps/apidoc-template-v5 && npm run build && cd ../.. && cp -r apps/apidoc-template-v5/dist template",
+    "prepare": "npm run build:clean && npm run build:template",
+    "prepublishOnly": "npm run build:clean && npm run build:template",
     "release": "npm run build:clean && changelog --non-cc --link-url https://github.com/hrefcl/apidoc.git",
     "container:build": "podman build -t apidoc/apidoc .",
     "serve": "export PROTOCOL=http; export HOST=127.0.0.1; export PORT=8080; npm run serve:stop; npm run example && podman run --rm --name apidoc -p $PORT:80 -v ./tmp/apidoc-output:/usr/share/nginx/html:ro -d nginx; npm run serve:open",
