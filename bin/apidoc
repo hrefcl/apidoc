@@ -525,6 +525,21 @@ program
                         }
                     });
             } else {
+                // Show banner
+                const banner = pc.cyan(`
+     █████╗ ██████╗ ██╗██████╗  ██████╗  ██████╗
+    ██╔══██╗██╔══██╗██║██╔══██╗██╔═══██╗██╔════╝
+    ███████║██████╔╝██║██║  ██║██║   ██║██║
+    ██╔══██║██╔═══╝ ██║██║  ██║██║   ██║██║
+    ██║  ██║██║     ██║██████╔╝╚██████╔╝╚██████╗
+    ╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝  ╚═════╝  ╚═════╝
+`);
+                const version = pc.bold(pc.white(`v${pkgJson.version}`));
+                const url = pc.dim('https://apidoc.app');
+
+                console.log(banner);
+                console.log(`            ${version} • ${url}\n`);
+
                 const spinner = clack.spinner();
                 spinner.start('Generating documentation...');
 
