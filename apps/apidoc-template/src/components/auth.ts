@@ -1,5 +1,5 @@
 /**
- * @file Authentication System for APIDoc 4.0
+ * @file Authentication System for APIDoc 5.0
  *
  * Provides secure login functionality with:
  * - Local authentication (preconfigured users)

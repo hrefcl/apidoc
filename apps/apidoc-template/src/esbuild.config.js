@@ -1,6 +1,6 @@
 /**
  * esbuild bundler config file with TypeScript and Tailwind CSS support
- * Enhanced for APIDoc 4.0 with better development experience
+ * Enhanced for APIDoc 5.0 with better development experience
  * - Entry point set at runtime
  * - File output set at runtime
  * - Define is set at runtime
@@ -37,7 +37,7 @@ module.exports = {
         '@types': '../src/types',
     },
     banner: {
-        js: '/* APIDoc 4.0 Template - Generated with TypeScript support */',
+        js: '/* APIDoc 5.0 Template - Generated with TypeScript support */',
     },
     define: {
         'process.env.NODE_ENV': '"production"',

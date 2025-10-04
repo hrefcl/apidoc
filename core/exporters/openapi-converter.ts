@@ -1,5 +1,5 @@
 /**
- * OpenAPI 3.0 Converter for APIDoc 4.0
+ * OpenAPI 3.0 Converter for APIDoc 5.0
  *
  * Converts APIDoc parsed data to OpenAPI 3.0 specification
  * @since 5.0.0

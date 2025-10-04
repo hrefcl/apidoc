@@ -142,7 +142,7 @@ program
     .addHelpText(
         'before',
         `
-${pc.bold(pc.blue('APIDoc 4.0'))} - RESTful web API Documentation Generator
+${pc.bold(pc.blue('APIDoc 5.0'))} - RESTful web API Documentation Generator
 
 ${pc.bold('BASIC USAGE:')}
   ${pc.cyan('apidoc -i src/ -o doc/')}                 Generate docs from src/ to doc/
@@ -395,7 +395,7 @@ if (options.verbose && options.logFormat === 'simple') {
 
     if (options.colorize !== false) {
         console.info(pc.cyan(asciiArt));
-        console.info(`${pc.bold(pc.blue('APIDoc 4.0'))} - ${pc.dim('RESTful web API Documentation Generator')}`);
+        console.info(`${pc.bold(pc.blue('APIDoc 5.0'))} - ${pc.dim('RESTful web API Documentation Generator')}`);
         console.info(`${pc.green('🚀 Building documentation...')}\n`);
     } else {
         console.info(asciiArt);

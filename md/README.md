@@ -1,6 +1,6 @@
-# APIDoc 4.0 Documentation
+# APIDoc 5.0 Documentation
 
-This directory contains the complete documentation for APIDoc 4.0 in multiple languages.
+This directory contains the complete documentation for APIDoc 5.0 in multiple languages.
 
 ## 🌍 Available Languages
 

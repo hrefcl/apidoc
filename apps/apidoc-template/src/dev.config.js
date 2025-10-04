@@ -1,5 +1,5 @@
 /**
- * Development configuration for APIDoc 4.0 Template Development
+ * Development configuration for APIDoc 5.0 Template Development
  * Enhanced workflow with TypeScript support
  */
 

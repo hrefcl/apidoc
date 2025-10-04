@@ -1,5 +1,5 @@
 /**
- * @file Content Protection System for APIDoc 4.0
+ * @file Content Protection System for APIDoc 5.0
  *
  * Handles encryption and decryption of API documentation content
  * to protect it from unauthorized access in static HTML files.

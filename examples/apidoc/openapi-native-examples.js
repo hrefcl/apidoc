@@ -1,5 +1,5 @@
 /**
- * Examples of using native OpenAPI syntax in APIDoc 4.0
+ * Examples of using native OpenAPI syntax in APIDoc 5.0
  *
  * These examples show how to write OpenAPI 3.0 specifications
  * directly in code comments using the new @openapi parsers.

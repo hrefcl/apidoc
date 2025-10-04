@@ -1,5 +1,5 @@
 /**
- * @file Configuration Options Processing for APIDoc 4.0
+ * @file Configuration Options Processing for APIDoc 5.0
  *
  * Handles configuration option processing, validation, and normalization.
  * Merges user-provided options with defaults, validates paths, and processes

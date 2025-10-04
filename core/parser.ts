@@ -1,5 +1,5 @@
 /**
- * @file Core Parser Engine for APIDoc 4.0
+ * @file Core Parser Engine for APIDoc 5.0
  *
  * The main parsing engine that processes source code files to extract API documentation.
  * Handles file discovery, language detection, comment extraction, and API tag parsing.

@@ -1,5 +1,5 @@
 /**
- * CSS Build Script for APIDoc 4.0
+ * CSS Build Script for APIDoc 5.0
  * Real TailwindCSS compilation with PostCSS processing:
  * - Processes @tailwind directives
  * - Generates CSS properties (@property)
@@ -121,7 +121,7 @@ async function buildCSS() {
                 });
 
                 // Build complete CSS with Bootstrap and highlight.js
-                let completeCss = '/* APIDoc 4.0 CSS Bundle - Complete Build */\n\n';
+                let completeCss = '/* APIDoc 5.0 CSS Bundle - Complete Build */\n\n';
 
                 // 1. Bootstrap 5 CSS first
                 const bootstrapCssPath = path.join(__dirname, '..', 'node_modules', 'bootstrap', 'dist', 'css', 'bootstrap.css');
@@ -162,7 +162,7 @@ async function buildCSS() {
         if (!success) {
             console.log('🔧 All compilation methods failed, creating fallback...');
 
-            let cssContent = '/* APIDoc 4.0 CSS Bundle - Fallback Concatenation */\n\n';
+            let cssContent = '/* APIDoc 5.0 CSS Bundle - Fallback Concatenation */\n\n';
 
             // 1. Bootstrap 5 CSS
             const bootstrapCssPath = path.join(__dirname, '..', 'node_modules', 'bootstrap', 'dist', 'css', 'bootstrap.css');

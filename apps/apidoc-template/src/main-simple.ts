@@ -1,4 +1,4 @@
-/** APIDoc 4.0 Template - Simplified TypeScript version for testing */
+/** APIDoc 5.0 Template - Simplified TypeScript version for testing */
 
 // CSS imports for bundling - TailwindCSS and essential styles only
 import 'highlight.js/styles/github-dark.css';
@@ -23,7 +23,7 @@ declare global {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 APIDoc 4.0 TypeScript Template Loaded!');
+    console.log('🚀 APIDoc 5.0 TypeScript Template Loaded!');
 
     // bundler injected data
     const api: ApiDocEntry[] = API_DATA;

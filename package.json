@@ -53,7 +53,7 @@
     "build:copy-core": "cp core/*.js dist/core/ 2>/dev/null && cp -r core/errors core/filters core/languages core/parsers core/utils core/workers dist/core/ 2>/dev/null || true",
     "build:clean": "rm -rf dist && npm run build:css && npm run build",
     "build:watch": "tsc --watch",
-    "example": "npm run build && ./bin/apidoc generate --config examples/apidoc/apidoc.json -o tmp/apidoc-output",
+    "example": "npm run build && ./bin/apidoc generate --config examples/category-example/apidoc.json -o tmp/apidoc-output",
     "dev:template": "cd apps/apidoc-template-v5 && npm run dev",
     "start": "npx serve tmp/apidoc-output -p 8080",
     "preview": "npx serve tmp/apidoc-output -p 9999",

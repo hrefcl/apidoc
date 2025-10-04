@@ -1,5 +1,5 @@
 /**
- * @file Authentication Processor for APIDoc 4.0
+ * @file Authentication Processor for APIDoc 5.0
  *
  * Handles authentication configuration processing and content protection
  * during the documentation generation process.
