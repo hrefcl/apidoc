@@ -382,7 +382,8 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
                 const apiCatConfig = {
                     ...app.options.apicat,
                     sourceDir: Array.isArray(app.options.src) ? app.options.src[0] : app.options.src,
-                    dest: app.options.dest
+                    dest: app.options.dest,
+                    verbose: app.options.verbose
                 };
                 const apiCatPlugin = new ApiCatPlugin(apiCatConfig);
                 const parsedData = JSON.parse(api.data);

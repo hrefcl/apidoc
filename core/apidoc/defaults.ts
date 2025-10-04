@@ -43,10 +43,13 @@ function getLogger(options: ApiDocOptions): LoggerInterface {
     }
 
     // console logger
+    // Level hierarchy: error < warn < info < verbose < debug
+    // Without verbose: only show warnings and errors
+    // With verbose: show info, verbose and debug messages
     return winston.createLogger({
         transports: [
             new winston.transports.Console({
-                level: options.debug ? 'debug' : options.verbose ? 'verbose' : 'info',
+                level: options.debug ? 'debug' : options.verbose ? 'verbose' : 'warn',
                 silent: options.silent || false,
             }),
         ],

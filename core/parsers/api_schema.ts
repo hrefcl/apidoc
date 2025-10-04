@@ -245,21 +245,25 @@ function parseTypeScriptType(typeDefinition: string): { type: string; constraint
 function parseJsonSchema(schemaPath: string, relativeTo: string): Array<any> {
     const elements: Array<any> = [];
 
-    console.log(`[parseJsonSchema] *** Called with schemaPath="${schemaPath}", relativeTo="${relativeTo}"`);
+    // Commented out for silent mode
+    // console.log(`[parseJsonSchema] *** Called with schemaPath="${schemaPath}", relativeTo="${relativeTo}"`);
 
     try {
         const fullPath = path.resolve(path.dirname(relativeTo), schemaPath);
-        console.log(`[parseJsonSchema] Resolved full path: ${fullPath}`);
+        // Commented out for silent mode
+        // console.log(`[parseJsonSchema] Resolved full path: ${fullPath}`);
 
         const schemaContent = fs.readFileSync(fullPath, 'utf8');
         const schema = JSON.parse(schemaContent);
 
-        console.log(`[parseJsonSchema] Schema loaded successfully, type="${schema.type}", properties count=${Object.keys(schema.properties || {}).length}`);
+        // Commented out for silent mode
+        // console.log(`[parseJsonSchema] Schema loaded successfully, type="${schema.type}", properties count=${Object.keys(schema.properties || {}).length}`);
 
         // Use simplified traversal for now
         const params = traverseJsonSchema(schema);
 
-        console.log(`[parseJsonSchema] traverseJsonSchema returned ${Object.keys(params).length} params:`, Object.keys(params));
+        // Commented out for silent mode
+        // console.log(`[parseJsonSchema] traverseJsonSchema returned ${Object.keys(params).length} params:`, Object.keys(params));
 
         for (const [field, definition] of Object.entries(params)) {
             elements.push({
@@ -640,9 +644,10 @@ function processor(elements: Array<any>, element: any, block: any, filename: str
 
     newElements.forEach((el) => elements.push(el));
 
-    if (newElements.length > 0 && newElements[0]) {
-        process.stdout.write(`[PROCESSOR v2.0.0] First element added: name=${newElements[0].name}, sourceName=${newElements[0].sourceName}\n`);
-    }
+    // Commented out for silent mode
+    // if (newElements.length > 0 && newElements[0]) {
+    //     process.stdout.write(`[PROCESSOR v2.0.0] First element added: name=${newElements[0].name}, sourceName=${newElements[0].sourceName}\n`);
+    // }
 
     return elements;
 }

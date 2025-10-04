@@ -46,28 +46,20 @@
     "test": "test"
   },
   "scripts": {
-    "//": "=== BUILD SCRIPTS ===",
+    "//": "=== CONTAINER (LEGACY) ===",
     "build": "npm run build:css && tsc && npm run build:copy-core",
     "build:css": "node scripts/build-css.js",
     "build:css:dev": "node scripts/build-css.js --dev",
     "build:copy-core": "cp core/*.js dist/core/ 2>/dev/null && cp -r core/errors core/filters core/languages core/parsers core/utils core/workers dist/core/ 2>/dev/null || true",
     "build:clean": "rm -rf dist && npm run build:css && npm run build",
     "build:watch": "tsc --watch",
-
-    "//": "=== MAIN SCRIPTS (v5 - Vue 3 Template) ===",
-    "example": "npm run build && ./bin/apidoc -v --config examples/category-test/apidoc.json -o tmp/apidoc-output",
+    "example": "npm run build && ./bin/apidoc generate --config examples/category-test/apidoc.json -o tmp/apidoc-output",
     "dev:template": "cd apps/apidoc-template-v5 && npm run dev",
     "start": "npx serve tmp/apidoc-output -p 8080",
     "preview": "npx serve tmp/apidoc-output -p 9999",
-
-    "//": "=== LEGACY SCRIPTS (v4 - Old Template) ===",
     "example:v4": "npm run build && ./bin/apidoc -v -i examples/apidoc -o tmp/apidoc-output-v4 --old",
     "start:v4": "npx serve tmp/apidoc-output-v4 -p 8080",
-
-    "//": "=== DEVELOPMENT ===",
     "dev": "npm run build:watch",
-
-    "//": "=== TESTING ===",
     "test": "mocha --colors --no-package --no-config 'test/**/*_test.*js'",
     "test:ci": "export CI=true; npm run test:lint && npm test;",
     "test:e2e": "cd e2e-tests && npx playwright test",
@@ -76,8 +68,6 @@
     "test:spell-support": "cspell --fail-fast ./README.md ./CONTRIBUTING.md ./CONTRIBUTORS.md ./SECURITY.md --config ./cspell.config.json",
     "test:fix": "eslint --fix",
     "test:packages": "yarn workspaces run test",
-
-    "//": "=== QUALITY ===",
     "typecheck": "tsc --noEmit",
     "eslint": "eslint .",
     "format": "npm run format:handlebars && prettier --write \"**/*.{ts,js,html,json}\"",
@@ -85,26 +75,20 @@
     "format:handlebars": "node scripts/format-handlebars.js",
     "format:check": "prettier --check \"**/*.{ts,js,html,json}\"",
     "pre-commit": "npm run typecheck && npm run eslint && npm run test",
-
-    "//": "=== DOCUMENTATION ===",
     "docs": "typedoc",
     "docs:serve": "npm run docs && npx serve docs/api -p 3001",
     "docs:watch": "typedoc --watch",
-
-    "//": "=== WORKSPACES ===",
     "build:packages": "yarn workspaces run build",
-
-    "//": "=== RELEASE ===",
     "prepublishOnly": "npm run build:clean",
     "release": "npm run build:clean && changelog --non-cc --link-url https://github.com/hrefcl/apidoc.git",
-
-    "//": "=== CONTAINER (LEGACY) ===",
     "container:build": "podman build -t apidoc/apidoc .",
     "serve": "export PROTOCOL=http; export HOST=127.0.0.1; export PORT=8080; npm run serve:stop; npm run example && podman run --rm --name apidoc -p $PORT:80 -v ./tmp/apidoc-output:/usr/share/nginx/html:ro -d nginx; npm run serve:open",
     "serve:open": "xdg-open $PROTOCOL://$HOST:$PORT/ || open $PROTOCOL://$HOST:$PORT/",
     "serve:stop": "podman stop apidoc"
   },
   "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "@inquirer/prompts": "^7.8.6",
     "@popperjs/core": "^2.11.8",
     "@tailwindcss/postcss": "^4.1.13",
     "@tailwindcss/typography": "^0.5.19",

@@ -21,6 +21,7 @@ export interface ApiCatConfig {
     enableLocalTesting?: boolean;
     sourceDir?: string; // Source directory for reading markdown files
     dest?: string; // Destination directory from APIDoc options
+    verbose?: boolean; // Verbose output mode
 }
 
 /**
@@ -40,11 +41,28 @@ export class ApiCatPlugin {
             generateCollections: true,
             enableLocalTesting: true,
             sourceDir: './',
+            verbose: false,
             ...config,
         };
 
         this.outputDir = this.config.outputDir || './apicat-output';
         this.sourceDir = this.config.sourceDir || './';
+    }
+
+    /**
+     * Log message only if verbose mode is enabled
+     */
+    private log(...args: any[]): void {
+        if (this.config.verbose) {
+            console.log(...args);
+        }
+    }
+
+    /**
+     * Always log important info
+     */
+    private info(...args: any[]): void {
+        console.log(...args);
     }
 
     /**
@@ -60,7 +78,7 @@ export class ApiCatPlugin {
         // Store projectInfo for use in other methods
         this.projectInfo = projectInfo;
 
-        console.log('🐱 apiCAT: Processing API documentation...');
+        this.log('🐱 apiCAT: Processing API documentation...');
 
         try {
             // Use the output destination from config.dest or fallback to outputDir
@@ -73,7 +91,7 @@ export class ApiCatPlugin {
             // Copy template assets to output
             await this.copyTemplateAssets(outputPath);
 
-            console.log(`✅ apiCAT: Modular structure generated in ${outputPath}`);
+            this.log(`✅ apiCAT: Modular structure generated in ${outputPath}`);
         } catch (error) {
             console.error('❌ apiCAT: Error processing documentation:', error);
             throw error;
@@ -522,7 +540,7 @@ export class ApiCatPlugin {
 
         // Generate general documentation files (from documentation glob pattern)
         if (projectInfo.documentation && Array.isArray(projectInfo.documentation)) {
-            console.log(`📚 Processing ${projectInfo.documentation.length} general documentation files...`);
+            this.log(`📚 Processing ${projectInfo.documentation.length} general documentation files...`);
 
             for (const doc of projectInfo.documentation) {
                 const docData = {
@@ -540,7 +558,7 @@ export class ApiCatPlugin {
                     JSON.stringify(docData, null, 2)
                 );
 
-                console.log(`  ✓ Generated: ${doc.filename}.json`);
+                this.log(`  ✓ Generated: ${doc.filename}.json`);
             }
         }
 
@@ -655,12 +673,12 @@ export class ApiCatPlugin {
                                 raw: markdownContent,
                             };
 
-                            console.log(`  ✓ Loaded custom markdown for group: ${groupName} (${settings.filename})`);
+                            this.log(`  ✓ Loaded custom markdown for group: ${groupName} (${settings.filename})`);
                         } else {
-                            console.log(`  ⚠ Markdown file not found for group ${groupName}: ${markdownPath}`);
+                            this.log(`  ⚠ Markdown file not found for group ${groupName}: ${markdownPath}`);
                         }
                     } catch (error) {
-                        console.log(`  ✗ Error processing markdown for group ${groupName}: ${error.message}`);
+                        this.log(`  ✗ Error processing markdown for group ${groupName}: ${error.message}`);
                     }
                 }
             }
@@ -683,18 +701,18 @@ export class ApiCatPlugin {
             const tsdocDirs = this.projectInfo?.resolvedInputs?.tsdoc || this.projectInfo?.inputs?.tsdoc || [];
 
             if (tsdocDirs.length === 0) {
-                console.log('⚠️  No tsdoc directories configured in inputs. Skipping TSDoc generation.');
+                this.log('⚠️  No tsdoc directories configured in inputs. Skipping TSDoc generation.');
                 return {};
             }
 
-            console.log(`📚 TSDoc: Processing ${tsdocDirs.length} directories: ${tsdocDirs.join(', ')}`);
+            this.log(`📚 TSDoc: Processing ${tsdocDirs.length} directories: ${tsdocDirs.join(', ')}`);
 
             // Find all TypeScript files in configured tsdoc directories
             const coreFiles = await this.findTypeScriptFiles(tsdocDirs);
-            console.log(`📁 TSDoc: Found ${coreFiles.length} TypeScript files:`, coreFiles);
+            this.log(`📁 TSDoc: Found ${coreFiles.length} TypeScript files:`, coreFiles);
 
             if (coreFiles.length === 0) {
-                console.log('⚠️  No TypeScript files found in tsdoc directories.');
+                this.log('⚠️  No TypeScript files found in tsdoc directories.');
                 return {};
             }
 
@@ -718,7 +736,7 @@ export class ApiCatPlugin {
             for (const [moduleName, files] of Object.entries(moduleGroups)) {
                 if (files.length === 0) continue;
 
-                console.log(`📦 TSDoc: Processing module "${moduleName}" with ${files.length} files`);
+                this.log(`📦 TSDoc: Processing module "${moduleName}" with ${files.length} files`);
                 const symbols: any[] = [];
 
                 for (const filePath of files) {
@@ -727,7 +745,7 @@ export class ApiCatPlugin {
                         const sourceFile = ts.createSourceFile(filePath, fileContent, ts.ScriptTarget.ES2020, true);
 
                         const fileSymbols = this.extractTSDocSymbols(sourceFile, filePath, ts);
-                        console.log(`  ✓ Extracted ${fileSymbols.length} symbols from ${path.basename(filePath)}`);
+                        this.log(`  ✓ Extracted ${fileSymbols.length} symbols from ${path.basename(filePath)}`);
                         symbols.push(...fileSymbols);
                     } catch (error) {
                         console.warn(`Warning: Could not process ${filePath}: ${error.message}`);
@@ -1587,7 +1605,7 @@ export class ApiCatPlugin {
             const templatePath = path.resolve('./apps/apidoc-template-v5/dist');
 
             if (!(await fs.pathExists(templatePath))) {
-                console.log('⚠️  Template not built. Building apidoc-template-v5 (Vue 3 SPA)...');
+                this.log('⚠️  Template not built. Building apidoc-template-v5 (Vue 3 SPA)...');
                 // Build the template first (SPA only, no data embedding yet)
                 const { exec } = require('child_process');
                 const util = require('util');
@@ -1596,7 +1614,7 @@ export class ApiCatPlugin {
                 try {
                     // Build WITHOUT running embed-data.js (we'll do it after copying)
                     await execAsync('cd apps/apidoc-template-v5 && npm run build');
-                    console.log('✅ Template built successfully (SPA base)');
+                    this.log('✅ Template built successfully (SPA base)');
                 } catch (error) {
                     console.error('❌ Failed to build template:', error);
                     return;
@@ -1610,7 +1628,7 @@ export class ApiCatPlugin {
 
             if (await fs.pathExists(indexHtmlSrc)) {
                 await fs.copy(indexHtmlSrc, indexHtmlDest, { overwrite: true });
-                console.log('✅ Vue 3 template copied (index.html)');
+                this.log('✅ Vue 3 template copied (index.html)');
 
                 // Now embed the data from outputPath/data into the copied index.html
                 await this.embedDataInHTML(outputPath);
@@ -1656,7 +1674,7 @@ export class ApiCatPlugin {
      */
     private async embedDataInHTML(outputPath: string): Promise<void> {
         try {
-            console.log('💉 Embedding JSON data into HTML...');
+            this.log('💉 Embedding JSON data into HTML...');
 
             const dataPath = path.join(outputPath, 'data');
             const indexHtmlPath = path.join(outputPath, 'index.html');
@@ -1664,7 +1682,7 @@ export class ApiCatPlugin {
             // Initialize encryption if login is active
             let encryption: JSONEncryption | null = null;
             if (this.projectInfo?.login?.active && this.projectInfo.login.encryptionKey) {
-                console.log('🔐 Login enabled - initializing encryption for sensitive data...');
+                this.log('🔐 Login enabled - initializing encryption for sensitive data...');
                 encryption = new JSONEncryption({}, this.projectInfo.login.encryptionKey);
             }
 
@@ -1719,7 +1737,7 @@ export class ApiCatPlugin {
 
             // Log encryption status
             if (encryption) {
-                console.log(`🔐 Encrypted sensitive categories: ${sensitiveCategories.join(', ')}`);
+                this.log(`🔐 Encrypted sensitive categories: ${sensitiveCategories.join(', ')}`);
             }
 
             // Read current HTML
@@ -1746,13 +1764,13 @@ window.__APICAT_DATA__ = ${JSON.stringify(allData, null, 0)};
 
             const dataSize = (JSON.stringify(allData).length / 1024).toFixed(2);
             const fileSize = ((await fs.stat(indexHtmlPath)).size / 1024).toFixed(2);
-            console.log(`✅ Data embedded: ${dataSize} KB → Total HTML: ${fileSize} KB`);
-            console.log(`📊 Categories: ${Object.keys(allData).join(', ')}`);
+            this.log(`✅ Data embedded: ${dataSize} KB → Total HTML: ${fileSize} KB`);
+            this.log(`📊 Categories: ${Object.keys(allData).join(', ')}`);
 
             // Remove /data directory after embedding (no longer needed)
-            console.log('🗑️  Removing /data directory (data now embedded in HTML)...');
+            this.log('🗑️  Removing /data directory (data now embedded in HTML)...');
             await fs.remove(dataPath);
-            console.log('✅ Cleanup complete - /data directory removed');
+            this.log('✅ Cleanup complete - /data directory removed');
 
         } catch (error) {
             console.error('❌ Error embedding data:', error);
@@ -1980,7 +1998,7 @@ window.__APICAT_DATA__ = ${JSON.stringify(allData, null, 0)};
     private async writeCollection(collection: any): Promise<void> {
         const filePath = path.join(this.outputDir, 'collection.json');
         await fs.writeJSON(filePath, collection, { spaces: 2 });
-        console.log(`📄 Collection saved: ${filePath}`);
+        this.log(`📄 Collection saved: ${filePath}`);
     }
 
     /**
@@ -1990,7 +2008,7 @@ window.__APICAT_DATA__ = ${JSON.stringify(allData, null, 0)};
     private async writeTestingScenarios(scenarios: any): Promise<void> {
         const filePath = path.join(this.outputDir, 'test-scenarios.json');
         await fs.writeJSON(filePath, scenarios, { spaces: 2 });
-        console.log(`🧪 Test scenarios saved: ${filePath}`);
+        this.log(`🧪 Test scenarios saved: ${filePath}`);
     }
 
     /**

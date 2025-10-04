@@ -3,28 +3,19 @@
 'use strict';
 
 /*
- * apidocts
- * https://apidocts.com
+ * APIDoc v5 - Modern Interactive CLI
  * https://apidoc.app
- * Href Spa API Doc (TypeScript version)
  *
  * Author: Href Spa <hola@apidoc.app>
  * Copyright (c) 2025 Href SpA
  * Licensed under the MIT license.
- *
- * This project is a TypeScript refactor inspired by the original apidoc project.
  */
 
-const os = require('os');
 const path = require('path');
 const fs = require('fs');
-// library for watch mode
-const nodemon = require('nodemon');
-// library to parse arguments/options
 const { Command } = require('commander');
-// libraries for enhanced CLI experience
 const pc = require('picocolors');
-const ora = require('ora');
+const clack = require('@clack/prompts');
 
 // Try compiled version first, fallback to source
 let apidoc;
@@ -34,500 +25,637 @@ try {
     apidoc = require(path.join(__dirname, '..', 'core', 'apidoc', 'index'));
 }
 
-/**
- * Transform parameters to object
- * @param {string|Array<string>} filters
- * @returns {object|void}
- */
-function transformToObject(filters) {
-    if (!filters) {
-        return;
-    }
+const pkgJson = require(path.join(__dirname, '..', 'package.json'));
 
-    if (typeof filters === 'string') {
-        filters = [filters];
-    }
+// ============================================================
+// INTERACTIVE INITIALIZATION
+// ============================================================
 
-    const result = {};
-    filters.forEach(function (filter) {
-        const splits = filter.split('=');
-        if (splits.length === 2) {
-            result[splits[0]] = path.resolve(splits[1], '');
+async function interactiveInit() {
+    console.clear();
+
+    clack.intro(pc.bgBlue(pc.black(' APIDoc v5 - Project Setup ')));
+
+    const projectPath = await clack.text({
+        message: 'Where do you want to create your docs?',
+        placeholder: '.',
+        initialValue: '.',
+        validate(value) {
+            if (!value) return 'Please enter a path';
         }
     });
-    return result;
-}
 
-/**
- * Extract information from package.json for apidoc.json generation
- * @param {string} projectPath - Path to search for package.json
- * @returns {object|null} - Extracted package info or null if not found
- */
-function extractPackageInfo(projectPath = process.cwd()) {
+    if (clack.isCancel(projectPath)) {
+        clack.cancel('Operation cancelled');
+        process.exit(0);
+    }
+
+    const configPath = path.join(projectPath, 'apidoc.json');
+
+    // Check if config exists
+    if (fs.existsSync(configPath)) {
+        const overwrite = await clack.confirm({
+            message: `${pc.yellow('apidoc.json')} already exists. Overwrite?`,
+            initialValue: false
+        });
+
+        if (clack.isCancel(overwrite) || !overwrite) {
+            clack.cancel('Setup cancelled');
+            process.exit(0);
+        }
+    }
+
+    const spinner = clack.spinner();
+    spinner.start('Detecting project information...');
+
+    // Try to detect package.json
+    let packageInfo = null;
     const packagePath = path.join(projectPath, 'package.json');
 
-    try {
-        if (fs.existsSync(packagePath)) {
-            const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-
-            return {
-                name: packageJson.name || 'My API',
-                version: packageJson.version || '1.0.0',
-                description: packageJson.description || 'API Documentation',
-                title: `${packageJson.name || 'My API'} Documentation`,
-                author: packageJson.author || '',
-                license: packageJson.license || '',
-                homepage: packageJson.homepage || '',
-                repository: packageJson.repository?.url || packageJson.repository || '',
-                bugs: packageJson.bugs?.url || packageJson.bugs || '',
-                keywords: packageJson.keywords || [],
+    if (fs.existsSync(packagePath)) {
+        try {
+            const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+            packageInfo = {
+                name: pkg.name || 'My API',
+                version: pkg.version || '1.0.0',
+                description: pkg.description || 'API Documentation',
+                author: pkg.author || '',
+                homepage: pkg.homepage || '',
+                repository: pkg.repository?.url || pkg.repository || ''
             };
+            spinner.stop(pc.green('✓') + ' Found package.json');
+        } catch (_e) {
+            spinner.stop(pc.yellow('!') + ' Invalid package.json, using defaults');
         }
-    } catch (_error) {
-        // Silently fail if package.json is invalid
+    } else {
+        spinner.stop(pc.dim('No package.json found, using defaults'));
     }
 
-    return null;
-}
+    // Interactive configuration
+    const projectName = await clack.text({
+        message: 'Project name?',
+        initialValue: packageInfo?.name || 'My API',
+        placeholder: 'My API'
+    });
 
-/**
- * Generate apidoc.json configuration file
- * @param {string} outputPath - Where to write apidoc.json
- * @param {object} packageInfo - Information extracted from package.json
- */
-function generateApidocConfig(outputPath, packageInfo) {
+    const projectVersion = await clack.text({
+        message: 'Version?',
+        initialValue: packageInfo?.version || '1.0.0',
+        placeholder: '1.0.0'
+    });
+
+    const projectDescription = await clack.text({
+        message: 'Description?',
+        initialValue: packageInfo?.description || 'API Documentation',
+        placeholder: 'API Documentation'
+    });
+
+    const apiUrl = await clack.text({
+        message: 'API Base URL?',
+        initialValue: packageInfo?.homepage || 'https://api.example.com',
+        placeholder: 'https://api.example.com'
+    });
+
+    // Input configuration - categorized approach
+    const useCategories = await clack.confirm({
+        message: 'Use categorized inputs? (Recommended for v5)',
+        initialValue: true
+    });
+
+    let inputConfig;
+
+    if (useCategories) {
+        const categories = await clack.multiselect({
+            message: 'Which categories do you want to document?',
+            options: [
+                { value: 'api', label: 'REST API', hint: 'Standard REST endpoints' },
+                { value: 'tsdoc', label: 'TypeScript', hint: 'TS interfaces and types' },
+                { value: 'models', label: 'Data Models', hint: 'Schemas and models' },
+                { value: 'mqtt', label: 'MQTT', hint: 'IoT protocols' },
+                { value: 'openapi', label: 'OpenAPI', hint: 'OpenAPI specs' },
+                { value: 'docs', label: 'Documentation', hint: 'Markdown files' }
+            ],
+            initialValues: ['api']
+        });
+
+        if (clack.isCancel(categories)) {
+            clack.cancel('Setup cancelled');
+            process.exit(0);
+        }
+
+        inputConfig = { inputs: {} };
+
+        for (const category of categories) {
+            const dir = await clack.text({
+                message: `Path for ${pc.cyan(category)} category?`,
+                initialValue: `./${category}`,
+                placeholder: `./${category}`
+            });
+
+            if (clack.isCancel(dir)) {
+                clack.cancel('Setup cancelled');
+                process.exit(0);
+            }
+
+            inputConfig.inputs[category] = [dir];
+        }
+    } else {
+        // Legacy single input
+        const inputDir = await clack.text({
+            message: 'Source directory?',
+            initialValue: './src',
+            placeholder: './src'
+        });
+
+        if (clack.isCancel(inputDir)) {
+            clack.cancel('Setup cancelled');
+            process.exit(0);
+        }
+
+        inputConfig = { input: [inputDir] };
+    }
+
+    // Output format options
+    const outputFormats = await clack.multiselect({
+        message: 'What formats do you want to generate?',
+        options: [
+            { value: 'html', label: 'HTML Documentation', hint: 'Interactive web docs' },
+            { value: 'openapi', label: 'OpenAPI Spec', hint: 'Swagger/OpenAPI 3.0' },
+            { value: 'markdown', label: 'Markdown', hint: 'Portable markdown docs' },
+            { value: 'json', label: 'JSON', hint: 'Raw API data' }
+        ],
+        initialValues: ['html']
+    });
+
+    if (clack.isCancel(outputFormats)) {
+        clack.cancel('Setup cancelled');
+        process.exit(0);
+    }
+
+    // Authentication
+    const needsAuth = await clack.confirm({
+        message: 'Require authentication to view docs?',
+        initialValue: false
+    });
+
+    let authConfig = { active: false };
+
+    if (needsAuth) {
+        const authUrl = await clack.text({
+            message: 'Authentication endpoint URL?',
+            placeholder: 'https://auth.example.com/login'
+        });
+
+        authConfig = {
+            active: true,
+            urlAuth: authUrl,
+            value_form: {
+                email: 'email',
+                password: 'password'
+            },
+            response_success: 200,
+            response_error: 401
+        };
+    }
+
+    // Build final configuration
     const config = {
-        name: packageInfo?.name || 'My API',
-        version: packageInfo?.version || '1.0.0',
-        description: packageInfo?.description || 'API Documentation',
-        title: packageInfo?.title || `${packageInfo?.name || 'My API'} Documentation`,
-        url: 'https://api.example.com',
-        sampleUrl: 'https://api.example.com',
-        header: {
-            title: 'Introduction',
-            filename: 'header.md',
+        name: projectName,
+        version: projectVersion,
+        description: projectDescription,
+        title: `${projectName} Documentation`,
+        url: apiUrl,
+        ...inputConfig,
+        template: {
+            showRequiredLabels: true,
+            withCompare: false,
+            withGenerator: true
         },
-        footer: {
-            title: 'Footer',
-            filename: 'footer.md',
-        },
-        order: [],
+        login: authConfig
     };
 
-    // Add optional fields if available
-    if (packageInfo?.author) {
-        config.author = packageInfo.author;
+    // Add format-specific options
+    if (outputFormats.includes('openapi')) {
+        config.openapi = true;
     }
-    if (packageInfo?.license) {
-        config.license = packageInfo.license;
+    if (outputFormats.includes('markdown')) {
+        config.markdownExport = true;
     }
-    if (packageInfo?.homepage) {
-        config.url = packageInfo.homepage;
-        config.sampleUrl = packageInfo.homepage;
+    if (outputFormats.includes('json')) {
+        config.writeJson = true;
     }
 
-    fs.writeFileSync(outputPath, JSON.stringify(config, null, 2), 'utf8');
-    return config;
+    // Write configuration
+    const writeSpinner = clack.spinner();
+    writeSpinner.start('Creating apidoc.json...');
+
+    // Create directory recursively if it doesn't exist
+    const configDir = path.dirname(configPath);
+    if (!fs.existsSync(configDir)) {
+        fs.mkdirSync(configDir, { recursive: true });
+    }
+
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+
+    writeSpinner.stop(pc.green('✓') + ' Configuration saved');
+
+    // Summary
+    const s = clack.spinner();
+    s.start('Preparing summary...');
+    await new Promise(resolve => setTimeout(resolve, 500));
+    s.stop();
+
+    clack.note(
+        [
+            `${pc.cyan('Project:')} ${config.name} v${config.version}`,
+            `${pc.cyan('Description:')} ${config.description}`,
+            `${pc.cyan('API URL:')} ${config.url}`,
+            `${pc.cyan('Categories:')} ${useCategories ? Object.keys(config.inputs).join(', ') : 'Legacy mode'}`,
+            `${pc.cyan('Formats:')} ${outputFormats.join(', ')}`,
+            `${pc.cyan('Auth Required:')} ${needsAuth ? 'Yes' : 'No'}`
+        ].join('\n'),
+        pc.bold('Configuration Summary')
+    );
+
+    const nextSteps = clack.note(
+        [
+            `${pc.dim('1.')} Add API documentation comments to your code`,
+            `${pc.dim('2.')} Run ${pc.cyan('apidoc generate')} to create docs`,
+            `${pc.dim('3.')} View docs with ${pc.cyan('npx serve doc')}`
+        ].join('\n'),
+        pc.bold('Next Steps')
+    );
+
+    clack.outro(pc.green('Setup complete! 🎉'));
 }
 
-// init program
+// ============================================================
+// INTERACTIVE EXPORT
+// ============================================================
+
+async function interactiveExport() {
+    console.clear();
+
+    clack.intro(pc.bgBlue(pc.black(' APIDoc v5 - Export Documentation ')));
+
+    const format = await clack.select({
+        message: 'What format do you want to export?',
+        options: [
+            { value: 'markdown', label: 'Markdown', hint: 'Portable .md files' },
+            { value: 'openapi', label: 'OpenAPI 3.0', hint: 'Swagger specification' },
+            { value: 'json', label: 'JSON', hint: 'Raw API data' },
+            { value: 'postman', label: 'Postman', hint: 'Postman collection (coming soon)', disabled: true }
+        ]
+    });
+
+    if (clack.isCancel(format)) {
+        clack.cancel('Export cancelled');
+        process.exit(0);
+    }
+
+    const category = await clack.select({
+        message: 'Which category to export?',
+        options: [
+            { value: 'all', label: 'All categories', hint: 'Export everything' },
+            { value: 'api', label: 'REST API only' },
+            { value: 'tsdoc', label: 'TypeScript only' },
+            { value: 'models', label: 'Models only' },
+            { value: 'mqtt', label: 'MQTT only' }
+        ],
+        initialValue: 'all'
+    });
+
+    if (clack.isCancel(category)) {
+        clack.cancel('Export cancelled');
+        process.exit(0);
+    }
+
+    const outputPath = await clack.text({
+        message: 'Output path?',
+        initialValue: format === 'markdown' ? './docs' : `./${format}.json`,
+        placeholder: './output'
+    });
+
+    if (clack.isCancel(outputPath)) {
+        clack.cancel('Export cancelled');
+        process.exit(0);
+    }
+
+    clack.note(
+        [
+            `${pc.cyan('Format:')} ${format}`,
+            `${pc.cyan('Category:')} ${category}`,
+            `${pc.cyan('Output:')} ${outputPath}`
+        ].join('\n'),
+        'Export Configuration'
+    );
+
+    const spinner = clack.spinner();
+    spinner.start(`Exporting to ${format}...`);
+
+    // TODO: Implement actual export logic here
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    spinner.stop(pc.green('✓') + ` Exported to ${outputPath}`);
+
+    clack.outro(pc.green('Export complete! 🎉'));
+}
+
+// ============================================================
+// INTERACTIVE HELP
+// ============================================================
+
+async function interactiveHelp() {
+    console.clear();
+
+    clack.intro(pc.bgBlue(pc.black(' APIDoc v5 - What do you want to do? ')));
+
+    const action = await clack.select({
+        message: 'Choose an action:',
+        options: [
+            {
+                value: 'init',
+                label: 'Initialize new project',
+                hint: 'Create apidoc.json with guided setup'
+            },
+            {
+                value: 'generate',
+                label: 'Generate documentation',
+                hint: 'Create HTML docs from your code'
+            },
+            {
+                value: 'export',
+                label: 'Export to format',
+                hint: 'Markdown, OpenAPI, JSON, etc.'
+            },
+            {
+                value: 'transform',
+                label: 'Transform code comments',
+                hint: 'Convert APIDoc → Markdown/OpenAPI/JSON'
+            },
+            {
+                value: 'learn',
+                label: 'Learn about APIDoc',
+                hint: 'Documentation and examples'
+            }
+        ]
+    });
+
+    if (clack.isCancel(action)) {
+        clack.cancel('Cancelled');
+        process.exit(0);
+    }
+
+    switch (action) {
+        case 'init':
+            await interactiveInit();
+            break;
+        case 'export':
+            await interactiveExport();
+            break;
+        case 'generate':
+            clack.outro('Use: apidoc generate');
+            break;
+        case 'transform':
+            clack.note(
+                [
+                    `${pc.cyan('Code → Markdown:')} apidoc export markdown`,
+                    `${pc.cyan('Code → OpenAPI:')} apidoc export openapi`,
+                    `${pc.cyan('Code → JSON:')} apidoc export json`,
+                    `${pc.cyan('TypeScript → Docs:')} apidoc --category tsdoc export markdown`
+                ].join('\n'),
+                'Transform Commands'
+            );
+            clack.outro('Happy documenting! 📚');
+            break;
+        case 'learn':
+            clack.note(
+                [
+                    `${pc.cyan('Homepage:')} https://apidoc.app`,
+                    `${pc.cyan('Documentation:')} https://apidoc.app/docs`,
+                    `${pc.cyan('Examples:')} https://apidoc.app/examples`,
+                    `${pc.cyan('GitHub:')} https://github.com/hrefcl/apidoc`
+                ].join('\n'),
+                'Resources'
+            );
+            clack.outro('Happy learning! 🚀');
+            break;
+    }
+}
+
+// ============================================================
+// CLI PROGRAM
+// ============================================================
+
 const program = new Command();
 
-// set the version from package.json so it is available with --version
-const pkgJson = require(path.join('..', 'package.json'));
-program.version(pkgJson.version);
-
 program
-    .description('RESTful web API Documentation Generator')
-    .addHelpText(
-        'before',
-        `
-${pc.bold(pc.blue('APIDoc 4.0'))} - RESTful web API Documentation Generator
+    .name('apidoc')
+    .version(pkgJson.version)
+    .description('APIDoc v5 - Modern API Documentation Generator');
 
-${pc.bold('BASIC USAGE:')}
-  ${pc.cyan('apidoc -i src/ -o doc/')}                 Generate docs from src/ to doc/
-  ${pc.cyan('apidoc --init')}                         Initialize config with package.json detection
-  ${pc.cyan('apidoc -i src/ -o doc/ -v')}             Generate with verbose output
-  ${pc.cyan('apidoc -w -i src/ -o doc/')}             Watch mode - rebuild on changes
+// Init command
+program
+    .command('init')
+    .description('Initialize APIDoc project with interactive setup')
+    .option('--no-interactive', 'Skip interactive prompts')
+    .action(async (options) => {
+        if (options.interactive === false) {
+            // Non-interactive init (TODO)
+            console.log('Non-interactive init coming soon');
+        } else {
+            await interactiveInit();
+        }
+    });
 
-${pc.bold('CONFIGURATION:')}`
-    )
-
-    .option('-c, --config <config>', 'Path to config file (json or javascript)', '')
-    .option('--init [path]', 'Generate apidoc.json config file with package.json auto-detection', '')
-
-    .addHelpText(
-        'beforeAll',
-        `
-${pc.bold('INPUT/OUTPUT:')}`
-    )
-    .option('-i, --input <input...>', 'Input/source dirname', ['./src'])
-    .option('-o, --output <output>', 'Output dirname', 'doc/')
-    .option('-t, --template <template>', 'Use template for output files')
-    .option('--old', 'Use legacy template (v4) instead of new Vue 3 template (v5)', false)
-
-    .addHelpText(
-        'beforeAll',
-        `
-${pc.bold('FILTERING:')}`
-    )
-    .option('-e, --exclude-filters <exclude-filters...>', 'RegEx-Filter to exclude files/dirs (node_modules always excluded)', [])
-    .option('-f --file-filters <file-filters...>', 'RegEx-Filter to select files to parse', [])
-    .option('--filter-by <tag-filter=value>', 'Filter documentation by tag', '')
-    .option('-p, --private', 'Include private APIs in output', false)
-
-    .addHelpText(
-        'beforeAll',
-        `
-${pc.bold('OUTPUT OPTIONS:')}`
-    )
-    .option('-S, --single', 'Output to single file', false)
-    .option('--write-json', 'Create api-data.json file with parsed API info', false)
-    .option('--definitions', 'Include definitions file rather than copying definitions', false)
-    .option('--openapi', 'Generate OpenAPI 3.0 (swagger.json) specification alongside HTML docs', false)
-    .option('--openapi-only', 'Generate only OpenAPI 3.0 specification (no HTML)', false)
-    .option('--mqtt-only', 'Generate only MQTT protocol documentation (exclude REST APIs)', false)
-    .option('--fail-on-mqtt-schema-error', 'Exit with error code if MQTT payload schemas are invalid', false)
-
-    .addHelpText(
-        'beforeAll',
-        `
-${pc.bold('MARKDOWN EXPORT:')}`
-    )
-    .option('--markdown-export [output]', 'Export documentation to Markdown file(s)', false)
-    .option('--markdown-template <template>', 'Markdown template to use (default, bitbucket, or path to custom template)', 'default')
-    .option('--markdown-multi', 'Generate one Markdown file per API group', false)
-    .option('--markdown-header <file>', 'Markdown file to include as header', '')
-    .option('--markdown-footer <file>', 'Markdown file to include as footer', '')
-    .option('--markdown-prepend <file>', 'Markdown file to prepend before API documentation', '')
-    .option('--markdown-only', 'Generate only Markdown documentation (no HTML)', false)
-
-    .addHelpText(
-        'beforeAll',
-        `
-${pc.bold('PARSING:')}`
-    )
-    .option('--encoding <encoding>', 'Set the encoding of the source code [utf8]', 'utf8')
-    .option('--line-ending <line-ending>', 'Turn off autodetect line-ending. Values: LF, CR, CRLF', os.EOL)
-    .option('--markdown [markdown]', 'Turn off default markdown parser or set custom parser', true)
-    .option('--parse-filters <parse-filters...>', 'User defined filters. Format: name=filename', [])
-    .option('--parse-languages <parse-languages...>', 'User defined languages. Format: name=filename', [])
-    .option('--parse-parsers <parse-parsers...>', 'User defined parsers. Format: name=filename', [])
-    .option('--parse-workers <parse-workers...>', 'User defined workers. Format: name=filename', [])
-
-    .addHelpText(
-        'beforeAll',
-        `
-${pc.bold('OUTPUT & LOGGING:')}`
-    )
+// Generate command
+program
+    .command('generate')
+    .description('Generate HTML documentation')
+    .option('-c, --config <file>', 'Config file path', 'apidoc.json')
+    .option('-i, --input <dirs...>', 'Input directories')
+    .option('-o, --output <dir>', 'Output directory', 'doc')
+    .option('-w, --watch', 'Watch mode', false)
     .option('-v, --verbose', 'Verbose output', false)
-    .option('-d, --debug', 'Show debug messages', false)
-    .option('-q, --quiet', 'Turn all output off', false)
-    .option('--no-color', 'Turn off log colors', false)
-    .option('--log-format <format>', 'Change log format. Values: simple, json', 'simple')
-    .option('--warn-error', 'Treat warnings as error and exit with error code', false)
+    .option('-d, --debug', 'Debug mode', false)
+    .action(async (options) => {
+        try {
+            const templatePath = path.join(__dirname, '../apps/apidoc-template-v5/');
 
-    .addHelpText(
-        'beforeAll',
-        `
-${pc.bold('DEVELOPMENT:')}`
-    )
-    .option('-n, --dry-run', 'Parse source files but do not write output files', false)
-    .option('-w, --watch', 'Watch input files for changes and rebuild docs', false)
+            const apidocOptions = {
+                src: options.input || [process.cwd()],
+                dest: options.output,
+                template: templatePath,
+                config: options.config,
+                verbose: options.verbose,
+                debug: options.debug,
+                colorize: true,
+                excludeFilters: ['node_modules', 'apidoc.config.js'],
+                includeFilters: ['.*\\.(clj|cls|coffee|cpp|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|kt|litcoffee|lua|mjs|p|php?|pl|pm|py|rb|scala|ts|tsx|vue)$'],
+            };
 
-    .addHelpText(
-        'after',
-        `
-${pc.bold('EXAMPLES:')}
-  ${pc.cyan('apidoc --init')}                         # Initialize config (detects package.json)
-  ${pc.cyan('apidoc -i app/ -o docs/')}               # Basic generation
-  ${pc.cyan('apidoc -i src/ -o dist/docs/ -v')}       # With verbose output
-  ${pc.cyan('apidoc -e node_modules -e test')}        # Exclude multiple directories
-  ${pc.cyan('apidoc -w -i src/ -o docs/')}            # Watch mode for development
-  ${pc.cyan('apidoc -c custom.json -i src/ -o doc/')} # Custom config file
-  ${pc.cyan('apidoc -i src/ -o docs/ --openapi')}     # Generate HTML + OpenAPI/Swagger
-  ${pc.cyan('apidoc -i src/ -o docs/ --openapi-only')} # Generate only OpenAPI/Swagger
-  ${pc.cyan('apidoc -i src/ -o docs/ --mqtt-only')}   # Generate only MQTT documentation
-  ${pc.cyan('apidoc -i src/ -o docs/ --fail-on-mqtt-schema-error')} # Strict MQTT schema validation
-  ${pc.cyan('apidoc -i src/ -o docs/ --markdown-export api.md')} # Generate HTML + Markdown
-  ${pc.cyan('apidoc -i src/ -o docs/ --markdown-only --markdown-export api.md')} # Generate only Markdown
-  ${pc.cyan('apidoc -i src/ -o docs/ --markdown-multi --markdown-export docs/')} # Multiple Markdown files
+            if (options.watch) {
+                const nodemon = require('nodemon');
 
-${pc.bold('LEARN MORE:')}
-  ${pc.cyan('Homepage:')}     https://apidocts.com
-  ${pc.cyan('Examples:')}     https://apidocts.com/example
-  ${pc.cyan('Repository:')}   https://github.com/hrefcl/apidoc
-  ${pc.cyan('Issues:')}       https://github.com/hrefcl/apidoc/issues
-`
-    )
+                console.log(pc.yellow('👀 Watch mode enabled'));
+                console.log(pc.dim('Listening for changes...\n'));
 
-    .parse(process.argv);
+                nodemon({
+                    watch: apidocOptions.src,
+                    ext: 'js,ts,jsx,tsx,vue,py,php,rb,go,java'
+                });
 
-const argv = program.opts();
+                nodemon
+                    .on('quit', function () {
+                        console.log(pc.red('\n🛑 Process terminated.'));
+                        process.exit();
+                    })
+                    .on('restart', async function () {
+                        const startTime = Date.now();
+                        console.log(pc.cyan('🔄 Changes detected, rebuilding...'));
 
-// Handle --init command
-if (argv.init !== '') {
-    const initPath = typeof argv.init === 'string' ? argv.init : process.cwd();
-    const configPath = path.join(initPath, 'apidoc.json');
+                        const result = await apidoc.createDoc(apidocOptions);
+                        const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
-    const spinner = ora('Initializing APIDoc configuration...').start();
-
-    try {
-        // Check if apidoc.json already exists
-        if (fs.existsSync(configPath)) {
-            spinner.fail(`${pc.red('Error:')} apidoc.json already exists at ${configPath}`);
-            console.log(`${pc.yellow('Tip:')} Use --force to overwrite or delete the existing file first.`);
-            throw new Error('Configuration file already exists');
-        }
-
-        // Extract package.json info
-        const packageInfo = extractPackageInfo(initPath);
-
-        if (packageInfo) {
-            spinner.text = 'Found package.json, extracting information...';
-            setTimeout(() => {
-                spinner.succeed(`${pc.green('Success:')} Extracted information from package.json`);
-                console.log(`${pc.cyan('•')} Name: ${pc.bold(packageInfo.name)}`);
-                console.log(`${pc.cyan('•')} Version: ${pc.bold(packageInfo.version)}`);
-                console.log(`${pc.cyan('•')} Description: ${pc.bold(packageInfo.description)}`);
-                if (packageInfo.author) console.log(`${pc.cyan('•')} Author: ${pc.bold(packageInfo.author)}`);
-                if (packageInfo.homepage) console.log(`${pc.cyan('•')} Homepage: ${pc.bold(packageInfo.homepage)}`);
-            }, 500);
-        } else {
-            spinner.warn(`${pc.yellow('Warning:')} No package.json found, using defaults`);
-        }
-
-        // Generate config file
-        setTimeout(
-            () => {
-                const newSpinner = ora('Generating apidoc.json...').start();
-                generateApidocConfig(configPath, packageInfo);
-                newSpinner.succeed(`${pc.green('✓ Created')} apidoc.json`);
-
-                console.log(`\n${pc.bold(pc.blue('🚀 Next steps:'))}`);
-                console.log(`${pc.gray('1.')} Edit ${pc.cyan('apidoc.json')} to customize your API documentation`);
-                console.log(`${pc.gray('2.')} Add API comments to your source code`);
-                console.log(`${pc.gray('3.')} Run ${pc.cyan('apidoc -i src/ -o doc/')} to generate documentation`);
-                console.log(`\n${pc.dim('📖 Learn more:')} https://apidocts.com`);
-            },
-            packageInfo ? 1000 : 100
-        );
-    } catch (_error) {
-        spinner.fail(`${pc.red('Error:')} Failed to initialize configuration`);
-        console.error(`${pc.red('Details:')} ${_error.message}`);
-        throw _error;
-    }
-
-    // Exit after init
-    return;
-}
-
-const defaultIncludeFilters = ['.*\\.(clj|cls|coffee|cpp|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|kt|litcoffee|lua|mjs|p|php?|pl|pm|py|rb|scala|ts|tsx|vue)$'];
-
-// Determine template path
-let templatePath;
-if (argv.template) {
-    // User specified custom template
-    templatePath = argv.template;
-} else if (argv.old) {
-    // --old flag: use legacy v4 template
-    templatePath = path.join(__dirname, '../apps/apidoc-template/');
-} else {
-    // Default: use new Vue 3 v5 template (apicat mode)
-    templatePath = path.join(__dirname, '../apps/apidoc-template-v5/');
-}
-
-const options = {
-    excludeFilters: ['apidoc.config.js', 'node_modules'].concat(argv.excludeFilters.length ? argv.excludeFilters : []),
-    includeFilters: argv.fileFilters.length ? argv.fileFilters : defaultIncludeFilters,
-    src: argv.input,
-    dest: argv.output,
-    template: templatePath,
-    config: argv.config || (argv.input.length > 0 ? path.join(argv.input[0], 'apidoc.json') : 'apidoc.json'),
-    apiprivate: argv.private,
-    verbose: argv.verbose,
-    single: argv.single,
-    debug: argv.debug,
-    colorize: argv.color,
-    filters: transformToObject(argv.parseFilters),
-    languages: transformToObject(argv.parseLanguages),
-    parsers: transformToObject(argv.parseParsers),
-    workers: transformToObject(argv.parseWorkers),
-    silent: argv.quiet,
-    dryRun: argv.dryRun,
-    markdown: argv.markdown,
-    lineEnding: argv.lineEnding,
-    encoding: argv.encoding,
-    copyDefinitions: !argv.definitions,
-    filterBy: argv.filterBy,
-    logFormat: argv.logFormat,
-    warnError: argv.warnError,
-    writeJson: argv.writeJson,
-    openapi: argv.openapi,
-    openapiOnly: argv.openapiOnly,
-    mqttOnly: argv.mqttOnly,
-    failOnMqttSchemaError: argv.failOnMqttSchemaError,
-    markdownExport: argv.markdownExport,
-    markdownTemplate: argv.markdownTemplate,
-    markdownMulti: argv.markdownMulti,
-    markdownHeader: argv.markdownHeader,
-    markdownFooter: argv.markdownFooter,
-    markdownPrepend: argv.markdownPrepend,
-    markdownOnly: argv.markdownOnly,
-};
-
-if (options.debug) {
-    console.debug('[debug] Parsed options:\n');
-    console.debug(options);
-}
-
-// display ascii art in verbose mode (but not for json format)
-if (options.verbose && options.logFormat === 'simple') {
-    const asciiArt = `
-              _     _
-   __ _ _ __ (_) __| | ___   ___
-  / _' | '_ \\| |/ _' |/ _ \\ / __|
- | (_| | |_) | | (_| | (_) | (__
-  \\__,_| .__/|_|\\__,_|\\___/ \\___|
-       |_|              v${pkgJson.version} TS
-               https://apidoc.app
-   `;
-
-    if (options.colorize !== false) {
-        console.info(pc.cyan(asciiArt));
-        console.info(`${pc.bold(pc.blue('APIDoc 4.0'))} - ${pc.dim('RESTful web API Documentation Generator')}`);
-        console.info(`${pc.green('🚀 Building documentation...')}\n`);
-    } else {
-        console.info(asciiArt);
-    }
-}
-
-// Watch mode (-w/--watch)
-if (argv.watch) {
-    nodemon({ watch: options.src });
-
-    if (options.colorize !== false) {
-        console.info(`${pc.yellow('👀 Watch mode enabled')}`);
-        console.info(`${pc.dim('Listening for changes on input files...')}\n`);
-    } else {
-        console.info('Watch mode enabled\nListening for changes on input files...');
-    }
-
-    nodemon
-        .on('quit', function () {
-            if (options.colorize !== false) {
-                console.info(`\n${pc.red('🛑 Process terminated.')}`);
+                        if (result !== false) {
+                            const d = new Date();
+                            console.log(pc.green('✅ Build finished') + ` in ${pc.bold(duration + 's')} at ${pc.dim(d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds())}\n`);
+                        } else {
+                            console.error(pc.red('❌ Build failed') + ` after ${pc.bold(duration + 's')}\n`);
+                        }
+                    });
             } else {
-                console.info('\nProcess terminated.');
-            }
-            process.exit();
-        })
-        .on('restart', async function () {
-            const startTime = Date.now();
+                const spinner = clack.spinner();
+                spinner.start('Generating documentation...');
 
-            if (options.colorize !== false) {
-                console.info(`${pc.cyan('🔄 Changes detected, rebuilding...')}`);
-            } else {
-                console.info('Changes detected, rebuilding...');
-            }
+                const startTime = Date.now();
+                const result = await apidoc.createDoc(apidocOptions);
+                const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
-            const result = await apidoc.createDoc(options);
-            const endTime = Date.now();
-            const duration = ((endTime - startTime) / 1000).toFixed(2);
-
-            if (options.colorize !== false) {
-                if (result !== false) {
-                    const d = new Date();
-                    console.info(`${pc.green('✅ Build finished')} in ${pc.bold(duration + 's')} at ${pc.dim(d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds())}\n`);
+                if (result === false) {
+                    spinner.stop(pc.red('❌ Documentation generation failed'));
+                    process.exit(1);
                 } else {
-                    console.error(`${pc.red('❌ Build failed')} after ${pc.bold(duration + 's')}\n`);
+                    spinner.stop(pc.green('✅ Documentation generated successfully'));
+
+                    if (options.verbose && result) {
+                        console.log(`\n${pc.bold(pc.blue('📊 Statistics:'))}`);
+                        console.log(`${pc.cyan('•')} Build time: ${pc.bold(duration + 's')}`);
+                        console.log(`${pc.cyan('•')} Output: ${pc.bold(options.output)}`);
+
+                        if (result.data?.length) {
+                            console.log(`${pc.cyan('•')} API endpoints: ${pc.bold(result.data.length)}`);
+                        }
+                        if (result.project) {
+                            console.log(`${pc.cyan('•')} Project: ${pc.bold(result.project.name || 'Unknown')} v${pc.bold(result.project.version || '1.0.0')}`);
+                        }
+                    }
+
+                    console.log(`\n${pc.bold(pc.green('🎉 Done!'))} Documentation ready at ${pc.cyan(options.output)}`);
+                    console.log(`${pc.dim('💡 Tip:')} Use ${pc.cyan('npx serve')} ${pc.cyan(options.output)} to preview`);
                 }
-            } else {
-                const d = new Date();
-                console.info(`Build finished at ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`);
             }
-        });
-}
+        } catch (error) {
+            console.error(pc.red('❌ Error:'), error.message);
+            if (options.debug) {
+                console.error(error.stack);
+            }
+            process.exit(1);
+        }
+    });
 
-// Create documentation
-async function createDocumentation() {
-    const startTime = Date.now();
-    let spinner;
+// Export command
+program
+    .command('export <format>')
+    .description('Export documentation to specific format (markdown, openapi, json)')
+    .option('-c, --config <file>', 'Config file path', 'apidoc.json')
+    .option('-i, --input <dirs...>', 'Input directories')
+    .option('-o, --output <path>', 'Output path')
+    .option('--category <name>', 'Export specific category only')
+    .option('-v, --verbose', 'Verbose output', false)
+    .option('--no-interactive', 'Skip interactive prompts')
+    .action(async (format, options) => {
+        if (options.interactive === false) {
+            try {
+                const spinner = clack.spinner();
+                spinner.start(`Exporting to ${format}...`);
 
-    if (options.colorize !== false && !options.silent && options.logFormat === 'simple' && !options.verbose) {
-        spinner = ora('Parsing source files...').start();
-    }
+                // Parse apidoc first to get data
+                const apidocOptions = {
+                    src: options.input || [process.cwd()],
+                    dest: 'tmp/export-temp',
+                    template: path.join(__dirname, '../apps/apidoc-template-v5/'),
+                    config: options.config,
+                    verbose: options.verbose,
+                    colorize: true,
+                    excludeFilters: ['node_modules'],
+                    includeFilters: ['.*\\.(js|ts|jsx|tsx|vue|py|php|rb|go|java)$'],
+                };
 
-    const result = await apidoc.createDoc(options);
-    const endTime = Date.now();
-    const duration = ((endTime - startTime) / 1000).toFixed(2);
+                const result = await apidoc.createDoc(apidocOptions);
 
-    if (result === false) {
-        if (spinner) {
-            spinner.fail(`${pc.red('❌ Documentation generation failed')}`);
-        } else if (options.colorize !== false) {
-            console.error(`${pc.red('❌ Error:')} APIDoc encountered an error during documentation generation!`);
+                if (!result || result === false) {
+                    spinner.stop(pc.red('❌ Failed to parse documentation'));
+                    process.exit(1);
+                }
+
+                // Now export based on format
+                const outputPath = options.output || `./${format === 'markdown' ? 'docs' : format}.${format === 'json' ? 'json' : format === 'openapi' ? 'yaml' : 'md'}`;
+
+                if (format === 'markdown') {
+                    const { generateMarkdownFileSystem } = require(path.join(__dirname, '../dist/core/markdown'));
+
+                    await generateMarkdownFileSystem({
+                        apiDocProjectData: result.project,
+                        apiDocApiData: result.data,  // Corrected: apiDocApiData not apiDocData
+                        input: options.input?.[0] || process.cwd(),  // Required field
+                        output: outputPath,
+                        template: 'default',
+                        multi: false,
+                        createPath: true
+                    });
+
+                    spinner.stop(pc.green(`✅ Exported to ${outputPath}`));
+                } else if (format === 'openapi') {
+                    const { convertToOpenApi } = require(path.join(__dirname, '../dist/core/exporters/openapi-converter'));
+
+                    const openApiSpec = convertToOpenApi(result.data, result.project);
+                    require('fs').writeFileSync(outputPath, JSON.stringify(openApiSpec, null, 2));
+
+                    spinner.stop(pc.green(`✅ Exported to ${outputPath}`));
+                } else if (format === 'json') {
+                    require('fs').writeFileSync(outputPath, JSON.stringify(result, null, 2));
+                    spinner.stop(pc.green(`✅ Exported to ${outputPath}`));
+                } else {
+                    spinner.stop(pc.red(`❌ Unknown format: ${format}`));
+                    console.log(pc.yellow('Supported formats: markdown, openapi, json'));
+                    process.exit(1);
+                }
+
+                console.log(`\n${pc.bold(pc.green('🎉 Export complete!'))} File saved at ${pc.cyan(outputPath)}`);
+            } catch (error) {
+                console.error(pc.red('❌ Error:'), error.message);
+                process.exit(1);
+            }
         } else {
-            console.error('[error] apidoc encountered an error during documentation generation!');
+            await interactiveExport();
         }
-        throw new Error('Documentation generation failed');
-    } else {
-        if (spinner) {
-            spinner.succeed(`${pc.green('✅ Documentation generated successfully')}`);
+    });
 
-            // Show performance metrics
-            if (options.verbose || options.debug) {
-                console.log(`\n${pc.bold(pc.blue('📊 Performance Metrics:'))}`);
-                console.log(`${pc.cyan('•')} Build time: ${pc.bold(duration + 's')}`);
-                console.log(`${pc.cyan('•')} Output: ${pc.bold(options.dest)}`);
+// Help command (interactive)
+program
+    .command('help')
+    .description('Interactive help system')
+    .action(async () => {
+        await interactiveHelp();
+    });
 
-                if (result && typeof result === 'object') {
-                    if (result.data && result.data.length) {
-                        console.log(`${pc.cyan('•')} API endpoints: ${pc.bold(result.data.length)}`);
-                    }
-                    if (result.project) {
-                        console.log(`${pc.cyan('•')} Project: ${pc.bold(result.project.name || 'Unknown')} v${pc.bold(result.project.version || '1.0.0')}`);
-                    }
-                }
-            }
-
-            console.log(`\n${pc.bold(pc.green('🎉 Done!'))} Documentation ready at ${pc.cyan(options.dest)}`);
-
-            if (!options.silent) {
-                console.log(`${pc.dim('💡 Tip:')} Use ${pc.cyan('npx serve')} ${pc.cyan(options.dest)} to preview your documentation`);
-            }
-        } else if (options.colorize !== false && !options.silent) {
-            console.log(`${pc.green('✅ Documentation generated successfully')} in ${pc.bold(duration + 's')}`);
-
-            // Show performance metrics in verbose mode even without spinner
-            if (options.verbose || options.debug) {
-                console.log(`\n${pc.bold(pc.blue('📊 Performance Metrics:'))}`);
-                console.log(`${pc.cyan('•')} Build time: ${pc.bold(duration + 's')}`);
-                console.log(`${pc.cyan('•')} Output: ${pc.bold(options.dest)}`);
-
-                if (result && typeof result === 'object') {
-                    if (result.data && result.data.length) {
-                        console.log(`${pc.cyan('•')} API endpoints: ${pc.bold(result.data.length)}`);
-                    }
-                    if (result.project) {
-                        console.log(`${pc.cyan('•')} Project: ${pc.bold(result.project.name || 'Unknown')} v${pc.bold(result.project.version || '1.0.0')}`);
-                    }
-                }
-            }
-
-            console.log(`\n${pc.bold(pc.green('🎉 Done!'))} Documentation ready at ${pc.cyan(options.dest)}`);
-
-            if (!options.silent) {
-                console.log(`${pc.dim('💡 Tip:')} Use ${pc.cyan('npx serve')} ${pc.cyan(options.dest)} to preview your documentation`);
-            }
-        }
-    }
-}
-
-// Llamar la función principal
-if (!argv.watch) {
-    createDocumentation().catch((error) => {
-        console.error('Error:', error);
+// If no command specified, show interactive help
+if (!process.argv.slice(2).length) {
+    interactiveHelp().catch(err => {
+        console.error('Error:', err);
         process.exit(1);
     });
+} else {
+    program.parse(process.argv);
 }

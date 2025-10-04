@@ -764,9 +764,10 @@ Parser.prototype.findElements = function (block, filename) {
         };
 
         // Debug: log all elements from schema files
-        if (element.name === 'apischema') {
-            process.stdout.write(`[parser v2.0.0] Found @apiSchema in ${filename}\n`);
-        }
+        // Commented out for silent mode
+        // if (element.name === 'apischema') {
+        //     process.stdout.write(`[parser v2.0.0] Found @apiSchema in ${filename}\n`);
+        // }
 
         // reverse Unicode Linebreaks
         element.content = element.content.replace(/\uffff/g, '\n');
@@ -776,9 +777,10 @@ Parser.prototype.findElements = function (block, filename) {
 
         elements.push(element);
 
-        if (element.name === 'apischema') {
-            process.stdout.write(`[parser v2.0.0] About to call hook parser-find-elements for @apiSchema\n`);
-        }
+        // Commented out for silent mode
+        // if (element.name === 'apischema') {
+        //     process.stdout.write(`[parser v2.0.0] About to call hook parser-find-elements for @apiSchema\n`);
+        // }
 
         app.hook('parser-find-elements', elements, element, block, filename);
 
