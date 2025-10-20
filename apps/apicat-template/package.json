@@ -11,10 +11,10 @@
   },
   "dependencies": {
     "highlight.js": "^11.9.0",
-    "lucide-vue-next": "^0.544.0",
+    "lucide-vue-next": "^0.546.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.6.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
