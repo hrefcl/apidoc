@@ -1,0 +1,6 @@
+{
+  "name": "Test Query Parameters",
+  "version": "1.0.0",
+  "description": "Test @apiQuery rendering",
+  "title": "Test Query API"
+}

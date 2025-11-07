@@ -153,8 +153,10 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
             groups.add(endpoint.group);
 
             // Transform parameters - check all parameter field groups (Parameter, Body, Query, etc.)
+            const allParams: any[] = [];
+
+            // Process parameters from item.parameter.fields (e.g., @apiParam)
             if (item.parameter?.fields) {
-                const allParams: any[] = [];
                 // Iterate through all parameter groups (Parameter, Body, Query, etc.)
                 Object.keys(item.parameter.fields).forEach((groupName) => {
                     const groupParams = item.parameter.fields[groupName];
@@ -171,9 +173,26 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
                         });
                     }
                 });
-                if (allParams.length > 0) {
-                    endpoint.parameters = allParams;
-                }
+            }
+
+            // Process query parameters from item.query (e.g., @apiQuery)
+            // Note: @apiQuery stores data directly in item.query as an array, not in item.parameter.fields
+            const itemQuery = (item as any).query;
+            if (Array.isArray(itemQuery) && itemQuery.length > 0) {
+                itemQuery.forEach((param: any) => {
+                    allParams.push({
+                        field: param.field,
+                        type: param.type || 'String',
+                        required: !param.optional,
+                        description: param.description || '',
+                        defaultValue: param.defaultValue,
+                        group: param.group || 'Query', // Use param.group or default to 'Query'
+                    });
+                });
+            }
+
+            if (allParams.length > 0) {
+                endpoint.parameters = allParams;
             }
 
             // Transform headers
