@@ -5,6 +5,128 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.3] - 2025-11-07
+
+### 🐛 Bug Fixes
+
+#### Eliminated False Body Parameter Warnings
+- **Fixed**: Removed false warning "@apiParam was defined but does not appear in URL" for `@apiParam (Body)` parameters
+- **Root Cause**: URL validation was checking body parameters, but body parameters go in request body (POST/PUT), not URL path
+- **Solution**: Extended validation exclusion logic in `core/parser.ts` to skip body parameters (group="Body")
+- **Impact**: No more false warnings when using `@apiParam (Body)` or `@apiSchema (Body) {interface=...} apiParam`
+- **Files Modified**: `core/parser.ts` (lines 852-871)
+
+### ✨ New Features
+
+#### Complete @apiSchema Support for All Elements
+- **Enhanced**: Full verification and documentation of `@apiSchema` support for ALL APIDoc elements:
+  - ✅ `@apiHeader` - Generate headers from TypeScript interfaces
+  - ✅ `@apiQuery` - Generate query parameters from interfaces
+  - ✅ `@apiParam` - Generate path/body parameters from interfaces (with groups like `Body`)
+  - ✅ `@apiSuccess` - Generate success response fields from interfaces (with groups like `Success 200`)
+  - ✅ `@apiError` - Generate error response fields from interfaces (with groups like `Error 4xx`)
+
+- **Complete Example**:
+  ```typescript
+  // interfaces.ts
+  export interface AuthHeaders {
+    accessToken: string;
+    'X-API-Version'?: string;
+  }
+
+  export interface CommunityBody {
+    extCommunityUuid: string;
+    name: string;
+    address?: string;
+  }
+
+  export interface SuccessResponse {
+    code: number;
+    msg: string;
+    data: any;
+    time: string;
+  }
+
+  export interface ErrorResponse {
+    code: number;
+    msg: string;
+    time: string;
+  }
+
+  // In JSDoc:
+  /**
+   * @api {post} /community/create Create Community
+   * @apiSchema {interface=AuthHeaders} apiHeader
+   * @apiSchema (Body) {interface=CommunityBody} apiParam
+   * @apiSchema (Success 200) {interface=SuccessResponse} apiSuccess
+   * @apiSchema (Error 4xx) {interface=ErrorResponse} apiError
+   */
+  ```
+
+### 📝 Testing
+- Added comprehensive test suite in `examples/test-query/complete-example.js`
+- Verified all element types: Header, Query, Param (Body), Success, Error
+- Created complete TypeScript interfaces in `complete-interfaces.ts`
+- Zero warnings on clean builds with all element types
+
+## [5.0.2] - 2025-11-07
+
+### 🐛 Bug Fixes
+
+#### Eliminated False @apiQuery Warnings
+- **Fixed**: Removed false warning "@apiParam was defined but does not appear in URL" for `@apiQuery` parameters
+- **Root Cause**: URL validation was checking all parameters including query strings, but query parameters don't appear in URL path (they go after `?`)
+- **Solution**: Modified `core/parser.ts` to exclude `@apiQuery` parameters from URL path validation
+- **Impact**: No more confusing warnings when using `@apiQuery` for query string parameters
+- **Files Modified**: `core/parser.ts` (lines 846-862)
+
+### ✨ New Features
+
+#### @apiSchema Support for @apiQuery
+- **Added**: Full support for generating `@apiQuery` parameters from TypeScript interfaces using `@apiSchema`
+- **Syntax**: `@apiSchema {interface=InterfaceName} apiQuery`
+- **Benefits**:
+  - DRY principle - define query params once in TypeScript
+  - Type safety from TypeScript compiler
+  - Automatic documentation generation
+  - Consistent with existing `@apiSchema` for `@apiParam` and `@apiSuccess`
+- **Example**:
+  ```typescript
+  // interfaces.ts
+  export interface PaginationQuery {
+    pageNum?: number;
+    pageSize?: number;
+  }
+
+  // In JSDoc:
+  /**
+   * @api {get} /users/list List Users
+   * @apiSchema {interface=PaginationQuery} apiQuery
+   */
+  ```
+
+### 📝 Testing
+- Added comprehensive test cases in `examples/test-query/`
+- Verified `@apiSchema` + `@apiQuery` integration
+- Verified with real-world TypeScript interfaces
+- Zero warnings on clean builds
+
+## [5.0.1] - 2025-11-07
+
+### 🐛 Bug Fixes
+
+#### @apiQuery Parameters Not Rendering
+- **Fixed**: `@apiQuery` parameters were not being rendered in the documentation template
+- **Root Cause**: The `apidoc-to-apicat` adapter only processed parameters from `item.parameter.fields` but `@apiQuery` data is stored directly in `item.query` as an array
+- **Solution**: Added processing for `item.query` array in the adapter to include all query parameters alongside regular parameters
+- **Impact**: All `@apiQuery` parameters now render correctly in the documentation with proper typing, required/optional flags, and descriptions
+- **Files Modified**: `core/adapters/apidoc-to-apicat.ts`
+
+### 📝 Testing
+- Added test case in `examples/test-query/` to verify `@apiQuery` rendering
+- Verified with real-world API documentation (Thinmoo Cloud API)
+- All query parameters now display correctly with group label `[Query]`
+
 ## [5.0.0] - 2025-10-04
 
 ### 🎉 STABLE RELEASE - APIDoc v5.0 with Vue 3 + apiCAT

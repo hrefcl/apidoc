@@ -843,9 +843,27 @@ function _sanityChecks(parsedBlocks, log, filename) {
             }
         }
         if (!block.global.define) {
+            // Get query parameters to exclude them from URL validation
+            const queryFields = [];
+            if (block.local.query && Array.isArray(block.local.query)) {
+                queryFields.push(...block.local.query.map(q => q.field));
+            }
+
+            // Get body parameters to exclude them from URL validation
+            const bodyFields = [];
+            if (block.local.parameter && block.local.parameter.fields && block.local.parameter.fields.Body) {
+                bodyFields.push(...block.local.parameter.fields.Body.map(p => p.field));
+            }
+
             for (const paramField of paramFields) {
-                // Emit the warning only if the field is mandatory.
-                if (!paramField.optional && !urlParams.some((up) => up === paramField.field)) {
+                // Skip validation for query parameters (they go in query string, not URL path)
+                const isQueryParam = queryFields.includes(paramField.field);
+
+                // Skip validation for body parameters (they go in request body, not URL path)
+                const isBodyParam = bodyFields.includes(paramField.field);
+
+                // Emit the warning only if the field is mandatory and NOT a query/body parameter
+                if (!paramField.optional && !isQueryParam && !isBodyParam && !urlParams.some((up) => up === paramField.field)) {
                     log.warn(
                         `@apiParam '${paramField.field}' was defined but does not appear in URL of @api '${block.local.title}' in file: '${filename}'`
                     );
