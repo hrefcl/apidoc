@@ -170,6 +170,7 @@ export class ApiCatPlugin {
             mqtt: apicatData.project.mqtt,
             header: apicatData.project.header,
             footer: apicatData.project.footer,
+            i18n: projectInfo.i18n, // Add i18n configuration
             generatedAt: manifest.generatedAt,
         };
 
@@ -387,8 +388,28 @@ export class ApiCatPlugin {
         for (const group of groups) {
             const groupEndpoints = apicatData.endpoints.filter((ep: any) => ep.group === group);
 
-            // Group endpoints by ID (multiple versions of same endpoint)
-            const groupedEndpoints = this.groupEndpointsByVersion(groupEndpoints);
+            // IMPORTANT: Group by language FIRST, then by version
+            // This ensures that endpoints with @apiLang are preserved before version grouping
+            let groupedEndpoints = groupEndpoints;
+
+            const defaultLang = this.projectInfo?.i18n?.defaultLang;
+
+            // Step 1: Group by language if i18n is enabled (BEFORE version grouping)
+            if (this.projectInfo?.i18n?.enabled) {
+                groupedEndpoints = this.groupEndpointsByLanguage(groupedEndpoints, defaultLang);
+                if (this.config.verbose) {
+                    console.log(`📝 After language grouping: ${groupedEndpoints.length} endpoints`);
+                    groupedEndpoints.forEach(ep => {
+                        console.log(`  - ${ep.id} v${ep.version} ${ep.hasMultipleLanguages ? '(multi-lang)' : ''}`);
+                    });
+                }
+            }
+
+            // Step 2: Group endpoints by ID (multiple versions of same endpoint)
+            groupedEndpoints = this.groupEndpointsByVersion(groupedEndpoints);
+            if (this.config.verbose) {
+                console.log(`📝 After version grouping: ${groupedEndpoints.length} endpoints`);
+            }
 
             // Store in map for navigation generation
             groupedEndpointsMap.set(group, groupedEndpoints);
@@ -1537,6 +1558,16 @@ export class ApiCatPlugin {
             endpointMap.get(endpoint.id)!.push(endpoint);
         });
 
+        // DEBUG: Log grouping info
+        if (this.config.verbose) {
+            endpointMap.forEach((versions, endpointId) => {
+                if (versions.length > 1) {
+                    console.log(`📋 Grouping ${endpointId}: ${versions.length} versions found`);
+                    versions.forEach(v => console.log(`  - v${v.version} (${v.title})`));
+                }
+            });
+        }
+
         // Convert map to array of grouped endpoints
         const groupedEndpoints: any[] = [];
 
@@ -1575,6 +1606,12 @@ export class ApiCatPlugin {
                     success: ep.success,
                     error: ep.error,
                     examples: ep.examples,
+                    // Preserve multi-language information if present
+                    languages: ep.languages,
+                    hasMultipleLanguages: ep.hasMultipleLanguages,
+                    languageCount: ep.languageCount,
+                    availableLanguages: ep.availableLanguages,
+                    defaultLanguage: ep.defaultLanguage,
                 }));
 
                 groupedEndpoint.latestVersion = latestEndpoint.version;
@@ -1583,6 +1620,154 @@ export class ApiCatPlugin {
 
                 groupedEndpoints.push(groupedEndpoint);
             }
+        });
+
+        return groupedEndpoints;
+    }
+
+    /**
+     * Group endpoints by language (multi-language support)
+     * Multiple translations of the same endpoint are grouped together
+     *
+     * This function processes endpoints AFTER version grouping to support
+     * multi-language documentation. Similar to version handling, endpoints
+     * with @lang annotations are grouped by ID.
+     *
+     * Behavior:
+     * - If only ONE language exists (or no @lang), keep as-is (no languages object)
+     * - If MULTIPLE languages exist, create languages object with each translation
+     * - Endpoints without @lang are stored as 'default' fallback
+     *
+     * @param endpoints - Array of endpoints (already grouped by version)
+     * @returns Array of endpoints with language grouping
+     *
+     * @example Single language (no @lang)
+     * ```
+     * // Input: [{ id: "get-users", description: "获取用户" }]
+     * // Output: [{ id: "get-users", description: "获取用户" }]
+     * ```
+     *
+     * @example Multiple languages
+     * ```
+     * // Input: [
+     * //   { id: "get-users", lang: "zh", description: "获取用户" },
+     * //   { id: "get-users", lang: "en", description: "Get user" }
+     * // ]
+     * // Output: [{
+     * //   id: "get-users",
+     * //   languages: {
+     * //     zh: { description: "获取用户", ... },
+     * //     en: { description: "Get user", ... }
+     * //   },
+     * //   hasMultipleLanguages: true,
+     * //   languageCount: 2,
+     * //   availableLanguages: ["zh", "en"]
+     * // }]
+     * ```
+     */
+    private groupEndpointsByLanguage(endpoints: any[], defaultLang?: string): any[] {
+        // Create a map to group endpoints by ID
+        const endpointMap = new Map<string, any[]>();
+
+        endpoints.forEach((endpoint) => {
+            // Use endpoint.id + version as the grouping key
+            // This prevents different versions from being grouped as language variants
+            const groupKey = `${endpoint.id}@${endpoint.version || '0.0.0'}`;
+
+            if (!endpointMap.has(groupKey)) {
+                endpointMap.set(groupKey, []);
+            }
+            endpointMap.get(groupKey)!.push(endpoint);
+        });
+
+        // Convert map to array of grouped endpoints
+        const groupedEndpoints: any[] = [];
+
+        endpointMap.forEach((languageVariants, endpointId) => {
+            // CASE 1: Only ONE variant (no multi-language)
+            if (languageVariants.length === 1) {
+                const endpoint = languageVariants[0];
+
+                // If it has a @lang, wrap it in languages object anyway
+                if (endpoint.lang) {
+                    const grouped = { ...endpoint };
+                    const lang = endpoint.lang;
+
+                    // Remove lang from root level
+                    delete grouped.lang;
+
+                    // Create languages object
+                    grouped.languages = {
+                        [lang]: { ...endpoint }
+                    };
+                    grouped.hasMultipleLanguages = false;
+                    grouped.languageCount = 1;
+                    grouped.availableLanguages = [lang];
+                    grouped.defaultLanguage = lang;
+
+                    groupedEndpoints.push(grouped);
+                } else {
+                    // No @lang defined - keep as-is (language-neutral)
+                    groupedEndpoints.push(endpoint);
+                }
+                return;
+            }
+
+            // CASE 2: Multiple language variants
+            const hasAnyLang = languageVariants.some(ep => ep.lang);
+
+            if (!hasAnyLang) {
+                // All variants without @lang - should not happen normally,
+                // but keep first one to avoid duplicates
+                console.warn(`Multiple endpoints with same ID but no @lang: ${endpointId}`);
+                groupedEndpoints.push(languageVariants[0]);
+                return;
+            }
+
+            // Group by language and determine default
+            const languagesMap: Record<string, any> = {};
+            let defaultEndpoint: any = null;
+            const availableLanguages: string[] = [];
+
+            languageVariants.forEach((ep) => {
+                if (ep.lang) {
+                    languagesMap[ep.lang] = { ...ep };
+                    availableLanguages.push(ep.lang);
+                } else {
+                    // Endpoint without @lang becomes the universal fallback
+                    defaultEndpoint = { ...ep };
+                }
+            });
+
+            // Determine which language to use as primary
+            // Priority: 1. defaultLang from config, 2. first available, 3. default endpoint
+            let primaryLang = defaultLang && languagesMap[defaultLang]
+                ? defaultLang
+                : availableLanguages[0];
+
+            const primaryEndpoint = languagesMap[primaryLang] || defaultEndpoint || languageVariants[0];
+
+            // Create grouped structure from primary endpoint
+            const groupedEndpoint = { ...primaryEndpoint };
+
+            // Remove lang from root level if it exists
+            delete groupedEndpoint.lang;
+
+            // Add languages object with all translations
+            groupedEndpoint.languages = languagesMap;
+
+            // Add default fallback if exists (endpoint without @lang)
+            if (defaultEndpoint) {
+                groupedEndpoint.default = defaultEndpoint;
+            }
+
+            // Add metadata
+            groupedEndpoint.hasMultipleLanguages = availableLanguages.length > 1;
+            groupedEndpoint.languageCount = availableLanguages.length;
+            groupedEndpoint.availableLanguages = availableLanguages.sort();
+            groupedEndpoint.defaultLanguage = primaryLang;
+
+            groupedEndpoints.push(groupedEndpoint);
         });
 
         return groupedEndpoints;

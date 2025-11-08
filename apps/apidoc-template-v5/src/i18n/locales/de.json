@@ -150,7 +150,11 @@
     "loading": "Anmeldung läuft...",
     "error": "Anmeldefehler",
     "invalidCredentials": "Ungültige Anmeldedaten",
-    "networkError": "Netzwerkfehler. Bitte versuchen Sie es erneut."
+    "networkError": "Netzwerkfehler. Bitte versuchen Sie es erneut.",
+    "security": {
+      "encryption": "Gesichert mit AES-256-GCM-Verschlüsselung",
+      "endToEnd": "Ende-zu-Ende-Schutz"
+    }
   },
   "messages": {
     "noEndpointsAvailable": "In diesem Abschnitt sind keine Endpunkte verfügbar.",

@@ -239,6 +239,19 @@ export interface ApiDocProject {
     inputs?: Record<string, string[]>;
     /** Resolved absolute paths for categorized inputs (v5.0+) - used internally by plugins */
     resolvedInputs?: Record<string, string[]>;
+    /** Internationalization (i18n) configuration for multi-language documentation (v5.0+) */
+    i18n?: {
+        /** Enable multi-language support - groups endpoints by @lang annotation */
+        enabled?: boolean;
+        /** Default language code (ISO 639-1) when multiple languages exist */
+        defaultLang?: string;
+        /** Available language codes (auto-detected if not specified) */
+        availableLangs?: string[];
+        /** Show language selector in template (only if multiple languages detected) */
+        showLanguageSelector?: boolean;
+        /** Fallback to defaultLang when requested language not available */
+        fallbackToDefault?: boolean;
+    };
 }
 
 /**

@@ -19,22 +19,34 @@
   "input": ["."],
   "login": {
     "active": false,
-    "urlAuth": "https://bifrost.cleverty.app/sign-in",
-    "value_form": {
-      "email": "email",
-      "password": "password"
-    },
-    "response_success": 200,
-    "response_error": 401
+    "admited": [
+      {
+        "email": "admin@example.com",
+        "password": "admin123",
+        "name": "Administrator"
+      },
+      {
+        "email": "user@example.com",
+        "password": "user123",
+        "name": "Test User"
+      }
+    ]
   },
   "logo": {
     "icon": "fa-solid fa-rocket",
     "alt": "API Logo"
   },
   "name": "LexCorp Api documentation",
-  "order": ["Users", "Company", "System", "City", "Category"],
+  "order": ["Users", "Company", "Orders", "Products", "System", "City", "Category"],
   "output": "/tmp/apidoc-output",
   "sampleUrl": "https://apidoc.free.beeceptor.com",
+  "i18n": {
+    "enabled": true,
+    "defaultLang": "en",
+    "availableLangs": ["es", "en", "zh", "ja"],
+    "showLanguageSelector": true,
+    "fallbackToDefault": true
+  },
   "settings": {
     "Users": {
       "icon": "fa-user",

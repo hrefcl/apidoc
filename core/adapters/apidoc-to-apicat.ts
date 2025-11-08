@@ -18,6 +18,7 @@ export interface ApiCATEndpoint {
     error?: ApiCATResponse;
     examples?: ApiCATExample[];
     version?: string;
+    lang?: string; // ISO 639-1 language code from @apiLang tag (e.g., "es", "en", "zh")
     filename?: string;
 }
 
@@ -147,6 +148,7 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
                 method: (item.type || 'GET').toUpperCase(),
                 url: item.url || '',
                 version: item.version || '1.0.0',
+                lang: item.lang, // ISO 639-1 language code from @apiLang
                 filename: item.filename || '',
             };
 

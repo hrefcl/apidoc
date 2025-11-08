@@ -7,6 +7,38 @@
       <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
     </div>
 
+    <!-- Language Selector - Fixed position top right INLINE -->
+    <div class="fixed top-6 right-6 z-[9999]">
+      <div class="relative">
+        <button
+          @click="isLangOpen = !isLangOpen"
+          class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm font-medium shadow-lg border border-gray-200 dark:border-gray-700"
+        >
+          <span class="text-2xl">🌐</span>
+          <span class="text-gray-900 dark:text-gray-100">{{ currentLang.toUpperCase() }}</span>
+          <svg class="w-4 h-4 text-gray-500" :class="{ 'rotate-180': isLangOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <div
+          v-if="isLangOpen"
+          class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl overflow-hidden z-50"
+        >
+          <button
+            v-for="lang in ['es', 'en', 'zh', 'pt', 'fr', 'de', 'ja']"
+            :key="lang"
+            @click="changeLang(lang)"
+            class="w-full px-4 py-3 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-between"
+            :class="currentLang === lang ? 'bg-indigo-50 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-semibold' : 'text-gray-700 dark:text-gray-300'"
+          >
+            <span>{{ langNames[lang] }}</span>
+            <span v-if="currentLang === lang" class="text-indigo-600 dark:text-indigo-400">✓</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Login card -->
     <div class="max-w-md w-full space-y-8 relative z-10">
       <!-- Logo and header -->
@@ -111,12 +143,12 @@
 
           <!-- Footer info -->
           <div class="text-center text-xs text-gray-500 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <p>Secured with AES-256-GCM encryption</p>
+            <p>{{ $t('login.security.encryption') }}</p>
             <p class="mt-1 flex items-center justify-center gap-1">
               <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
               </svg>
-              End-to-end protected
+              {{ $t('login.security.endToEnd') }}
             </p>
           </div>
         </form>
@@ -170,6 +202,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useDocsStore } from '@/stores/docs'
 import { validateJWT, extractEncryptionKey } from '@/utils/jwt'
 import { authenticateLocally } from '@/utils/localAuth'
@@ -177,6 +210,27 @@ import { decryptAdmitedList } from '@/utils/decrypt'
 
 const router = useRouter()
 const docsStore = useDocsStore()
+const { t: $t, locale } = useI18n()
+
+// Language selector state
+const isLangOpen = ref(false)
+const currentLang = computed(() => locale.value)
+const langNames = {
+  es: 'Español',
+  en: 'English',
+  zh: '中文',
+  pt: 'Português',
+  fr: 'Français',
+  de: 'Deutsch',
+  ja: '日本語'
+}
+
+const changeLang = (lang) => {
+  locale.value = lang
+  localStorage.setItem('apidoc-locale', lang)
+  document.documentElement.lang = lang
+  isLangOpen.value = false
+}
 
 const credentials = ref({
   email: '',

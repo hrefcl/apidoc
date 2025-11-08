@@ -150,7 +150,11 @@
     "loading": "Signing in...",
     "error": "Login error",
     "invalidCredentials": "Invalid credentials",
-    "networkError": "Network error. Please try again."
+    "networkError": "Network error. Please try again.",
+    "security": {
+      "encryption": "Secured with AES-256-GCM encryption",
+      "endToEnd": "End-to-end protected"
+    }
   },
   "messages": {
     "noEndpointsAvailable": "No endpoints available in this section.",
@@ -192,5 +196,11 @@
     "quickAccess": "Quick Access",
     "guidesAndTutorials": "Guides and tutorials",
     "completeApiDocumentation": "Complete API documentation"
+  },
+  "apiLanguage": {
+    "selectLanguage": "Select API content language",
+    "contentLanguage": "API Documentation Language",
+    "currentLanguage": "Current language",
+    "switchTo": "Switch to {language}"
   }
 }

@@ -150,7 +150,11 @@
     "loading": "Connexion en cours...",
     "error": "Erreur de connexion",
     "invalidCredentials": "Identifiants invalides",
-    "networkError": "Erreur réseau. Veuillez réessayer."
+    "networkError": "Erreur réseau. Veuillez réessayer.",
+    "security": {
+      "encryption": "Sécurisé par chiffrement AES-256-GCM",
+      "endToEnd": "Protection de bout en bout"
+    }
   },
   "messages": {
     "noEndpointsAvailable": "Aucun point de terminaison disponible dans cette section.",

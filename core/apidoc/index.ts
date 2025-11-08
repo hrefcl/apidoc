@@ -215,6 +215,10 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
 
         const reader = new Reader(app);
         const packageInfo = reader.read();
+
+        // DEBUG: Log i18n config
+        app.log.verbose(`📖 Reader packageInfo.i18n: ${JSON.stringify(packageInfo.i18n)}`);
+
         core.setPackageInfos(packageInfo);
 
         // Transfer apicat configuration from packageInfo to options if present

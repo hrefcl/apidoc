@@ -214,11 +214,19 @@ class Reader {
 
         // if the config file is provided, we use this and do no try to read other files
         if (this.opt.config) {
-            this.log.debug('Config file provided, reading this.');
-            config = require(path.resolve(this.opt.config));
+            this.log.verbose(`🔍 Config file provided: ${this.opt.config}`);
+            const resolvedPath = path.resolve(this.opt.config);
+            this.log.verbose(`🔍 Resolved path: ${resolvedPath}`);
+            config = require(resolvedPath);
+            this.log.verbose(`🔍 Loaded config keys: ${Object.keys(config).join(', ')}`);
+            this.log.verbose(`🔍 config.i18n from require: ${JSON.stringify(config.i18n)}`);
         } else {
+            this.log.verbose('🔍 No config file provided, searching...');
             config = this.search();
         }
+
+        // DEBUG: Log i18n from config
+        this.log.verbose(`🔍 Reader: config.i18n = ${JSON.stringify(config.i18n)}`);
 
         // replace header footer with file contents
         const headerFooter = this.getHeaderFooter(config);
@@ -226,7 +234,12 @@ class Reader {
         // Process documentation files if pattern specified
         const documentation = this.getDocumentation(config);
 
-        return Object.assign(config, headerFooter, { documentation });
+        const result = Object.assign(config, headerFooter, { documentation });
+
+        // DEBUG: Log i18n from result
+        this.log.verbose(`🔍 Reader: result.i18n = ${JSON.stringify(result.i18n)}`);
+
+        return result;
     }
 
     /**
@@ -247,13 +260,23 @@ class Reader {
             this.log.debug(`Now looking for ${configFile}`);
 
             // first look in cwd dir
-            Object.assign(config, this.findConfigFileInDir(configFile, process.cwd()));
+            const cwdConfig = this.findConfigFileInDir(configFile, process.cwd());
+            if (cwdConfig && Object.keys(cwdConfig).length > 0) {
+                this.log.verbose(`🔍 Found ${configFile} in cwd, i18n: ${JSON.stringify(cwdConfig.i18n)}`);
+            }
+            Object.assign(config, cwdConfig);
 
             // scan each source dir to find a valid config file
             this.opt.src.forEach((dir: string) => {
-                Object.assign(config, this.findConfigFileInDir(configFile, dir));
+                const srcConfig = this.findConfigFileInDir(configFile, dir);
+                if (srcConfig && Object.keys(srcConfig).length > 0) {
+                    this.log.verbose(`🔍 Found ${configFile} in ${dir}, i18n: ${JSON.stringify(srcConfig.i18n)}`);
+                }
+                Object.assign(config, srcConfig);
             });
         });
+
+        this.log.verbose(`🔍 Final config.i18n after search: ${JSON.stringify(config.i18n)}`);
 
         if (isEqual(config, defaultConfig)) {
             this.log.warn('No config files found.');

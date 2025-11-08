@@ -18,6 +18,11 @@ export const useDocsStore = defineStore('docs', () => {
   const isAuthenticated = ref(false)
   const authToken = ref(null) // JWT token
 
+  // i18n state (Multi-language support)
+  const currentLanguage = ref(null) // Current selected language (ISO 639-1 code: 'es', 'en', 'zh', etc.)
+  const availableLanguages = ref([]) // List of available languages across all endpoints
+  const i18nConfig = ref(null) // i18n configuration from apidoc.json
+
   // SECURITY: Encryption key is NEVER stored in sessionStorage or memory
   // It's only used temporarily during decryption and then discarded
 
@@ -284,6 +289,9 @@ export const useDocsStore = defineStore('docs', () => {
 
       // Organizar documentos por categoría
       organizeDocs()
+
+      // Inicializar sistema i18n
+      initI18n()
     } catch (e) {
       error.value = 'Error al cargar documentos: ' + e.message
       console.error('Error loading docs:', e)
@@ -674,6 +682,147 @@ export const useDocsStore = defineStore('docs', () => {
     return 'file-text'
   }
 
+  // ==================== i18n Functions ====================
+
+  /**
+   * Initialize i18n system from meta configuration
+   * Detects available languages and sets default language
+   */
+  const initI18n = () => {
+    if (typeof window === 'undefined') return
+
+    // Get i18n config from meta
+    const i18n = window.__APICAT_DATA__?.meta?.i18n
+    if (i18n && i18n.enabled) {
+      i18nConfig.value = i18n
+
+      // Detect available languages from all endpoints
+      const langsSet = new Set()
+      const apiData = window.__APICAT_DATA__?.api || {}
+
+      Object.values(apiData).forEach(group => {
+        if (group.endpoints) {
+          group.endpoints.forEach(endpoint => {
+            if (endpoint.languages) {
+              Object.keys(endpoint.languages).forEach(lang => langsSet.add(lang))
+            }
+          })
+        }
+      })
+
+      availableLanguages.value = Array.from(langsSet).sort()
+
+      // Set default language from config or first available or browser language
+      const browserLang = navigator.language.split('-')[0] // 'en-US' -> 'en'
+      const defaultLang = i18n.defaultLang
+        || (availableLanguages.value.includes(browserLang) ? browserLang : null)
+        || availableLanguages.value[0]
+        || 'en'
+
+      // Check if language was saved in localStorage
+      const savedLang = localStorage.getItem('apicat_language')
+      if (savedLang && availableLanguages.value.includes(savedLang)) {
+        currentLanguage.value = savedLang
+      } else {
+        currentLanguage.value = defaultLang
+      }
+
+      console.log('📚 i18n initialized:', {
+        available: availableLanguages.value,
+        current: currentLanguage.value,
+        config: i18nConfig.value
+      })
+    }
+  }
+
+  /**
+   * Change current language
+   * @param {string} lang - ISO 639-1 language code (e.g., 'es', 'en', 'zh')
+   */
+  const setLanguage = (lang) => {
+    if (!availableLanguages.value.includes(lang)) {
+      console.warn(`Language "${lang}" not available. Available: ${availableLanguages.value.join(', ')}`)
+      return
+    }
+
+    currentLanguage.value = lang
+    localStorage.setItem('apicat_language', lang)
+    console.log(`🌍 Language changed to: ${lang}`)
+  }
+
+  /**
+   * Get localized content for an endpoint
+   * Falls back to default language or first available if requested language not found
+   * @param {object} endpoint - Endpoint object with languages property
+   * @returns {object} - Localized endpoint content
+   */
+  const getLocalizedEndpoint = (endpoint) => {
+    if (!endpoint) return null
+
+    // If no languages object, return endpoint as-is (language-neutral)
+    if (!endpoint.languages) {
+      return endpoint
+    }
+
+    const requestedLang = currentLanguage.value
+    const defaultLang = i18nConfig.value?.defaultLang
+    const fallbackToDefault = i18nConfig.value?.fallbackToDefault !== false
+
+    // Try requested language first
+    if (endpoint.languages[requestedLang]) {
+      return {
+        ...endpoint,
+        ...endpoint.languages[requestedLang],
+        _currentLang: requestedLang,
+        _availableLangs: Object.keys(endpoint.languages)
+      }
+    }
+
+    // Fallback to default language
+    if (fallbackToDefault && defaultLang && endpoint.languages[defaultLang]) {
+      console.warn(`Content not available in "${requestedLang}", using default "${defaultLang}"`)
+      return {
+        ...endpoint,
+        ...endpoint.languages[defaultLang],
+        _currentLang: defaultLang,
+        _availableLangs: Object.keys(endpoint.languages),
+        _isFallback: true
+      }
+    }
+
+    // Fallback to first available language
+    const firstAvailable = Object.keys(endpoint.languages)[0]
+    if (firstAvailable) {
+      console.warn(`Content not available in "${requestedLang}", using "${firstAvailable}"`)
+      return {
+        ...endpoint,
+        ...endpoint.languages[firstAvailable],
+        _currentLang: firstAvailable,
+        _availableLangs: Object.keys(endpoint.languages),
+        _isFallback: true
+      }
+    }
+
+    // No languages available, return original endpoint
+    return endpoint
+  }
+
+  /**
+   * Check if i18n is enabled
+   * @returns {boolean}
+   */
+  const i18nEnabled = computed(() => {
+    return i18nConfig.value?.enabled === true && availableLanguages.value.length > 0
+  })
+
+  /**
+   * Check if language selector should be shown
+   * @returns {boolean}
+   */
+  const showLanguageSelector = computed(() => {
+    return i18nEnabled.value && availableLanguages.value.length > 1
+  })
+
   return {
     docs,
     categories,
@@ -696,6 +845,15 @@ export const useDocsStore = defineStore('docs', () => {
     setAuthToken,
     setEncryptionKey,
     initAuth,
-    logout
+    logout,
+    // i18n
+    currentLanguage,
+    availableLanguages,
+    i18nConfig,
+    i18nEnabled,
+    showLanguageSelector,
+    initI18n,
+    setLanguage,
+    getLocalizedEndpoint
   }
 })

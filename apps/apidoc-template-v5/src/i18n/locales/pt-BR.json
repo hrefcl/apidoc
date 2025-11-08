@@ -150,7 +150,11 @@
     "loading": "Entrando...",
     "error": "Erro ao entrar",
     "invalidCredentials": "Credenciais inválidas",
-    "networkError": "Erro de rede. Por favor, tente novamente."
+    "networkError": "Erro de rede. Por favor, tente novamente.",
+    "security": {
+      "encryption": "Protegido com criptografia AES-256-GCM",
+      "endToEnd": "Proteção ponta a ponta"
+    }
   },
   "messages": {
     "noEndpointsAvailable": "Não há endpoints disponíveis nesta seção.",

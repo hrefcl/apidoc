@@ -112,6 +112,7 @@ const app = {
         apisuccessexample: './parsers/api_success_example.js',
         apiuse: './parsers/api_use.js',
         apiversion: './parsers/api_version.js',
+        apilang: './parsers/api_lang.js',
         apisamplerequest: './parsers/api_sample_request.js',
         apideprecated: './parsers/api_deprecated.js',
         apiprivate: './parsers/api_private.js',

@@ -150,7 +150,11 @@
     "loading": "登录中...",
     "error": "登录错误",
     "invalidCredentials": "无效的凭据",
-    "networkError": "网络错误，请重试。"
+    "networkError": "网络错误，请重试。",
+    "security": {
+      "encryption": "使用 AES-256-GCM 加密保护",
+      "endToEnd": "端到端加密保护"
+    }
   },
   "messages": {
     "noEndpointsAvailable": "此部分没有可用的端点。",

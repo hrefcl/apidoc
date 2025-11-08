@@ -150,7 +150,11 @@
     "loading": "ログイン中...",
     "error": "ログインエラー",
     "invalidCredentials": "無効な認証情報",
-    "networkError": "ネットワークエラー。もう一度お試しください。"
+    "networkError": "ネットワークエラー。もう一度お試しください。",
+    "security": {
+      "encryption": "AES-256-GCM暗号化で保護",
+      "endToEnd": "エンドツーエンド保護"
+    }
   },
   "messages": {
     "noEndpointsAvailable": "このセクションには利用可能なエンドポイントがありません。",

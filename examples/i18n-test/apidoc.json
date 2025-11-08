@@ -1,0 +1,16 @@
+{
+  "name": "i18n Test API",
+  "version": "1.0.0",
+  "description": "Simple test for multi-language documentation",
+  "title": "i18n Test",
+  "url": "https://api.example.com",
+  "sampleUrl": "https://api.example.com",
+  "template": "./apps/apidoc-template-v5",
+  "i18n": {
+    "enabled": true,
+    "defaultLang": "en",
+    "availableLangs": ["es", "en", "zh"],
+    "showLanguageSelector": true,
+    "fallbackToDefault": true
+  }
+}

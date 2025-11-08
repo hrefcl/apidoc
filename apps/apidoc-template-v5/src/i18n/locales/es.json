@@ -150,7 +150,11 @@
     "loading": "Iniciando sesión...",
     "error": "Error al iniciar sesión",
     "invalidCredentials": "Credenciales inválidas",
-    "networkError": "Error de red. Por favor, intenta de nuevo."
+    "networkError": "Error de red. Por favor, intenta de nuevo.",
+    "security": {
+      "encryption": "Protegido con encriptación AES-256-GCM",
+      "endToEnd": "Protección de extremo a extremo"
+    }
   },
   "messages": {
     "noEndpointsAvailable": "No hay endpoints disponibles en esta sección.",
@@ -192,5 +196,11 @@
     "quickAccess": "Acceso Rápido",
     "guidesAndTutorials": "Guías y tutoriales",
     "completeApiDocumentation": "Documentación completa de la API"
+  },
+  "apiLanguage": {
+    "selectLanguage": "Seleccionar idioma del contenido API",
+    "contentLanguage": "Idioma de la Documentación API",
+    "currentLanguage": "Idioma actual",
+    "switchTo": "Cambiar a {language}"
   }
 }

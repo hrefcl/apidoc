@@ -323,8 +323,9 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, computed, reactive, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useDocsStore } from '@/stores/docs'
 import { ChevronDown, Check, Copy } from 'lucide-vue-next'
 import CodeTabs from './CodeTabs.vue'
 import ParametersTable from './ParametersTable.vue'
@@ -333,6 +334,7 @@ import TryItOut from './TryItOut.vue'
 import MqttTryItOut from './MqttTryItOut.vue'
 
 const { t } = useI18n()
+const docsStore = useDocsStore()
 
 // Helper to detect MQTT endpoints
 const isMqttEndpoint = (endpoint) => {
@@ -359,13 +361,23 @@ const versionDropdownRef = ref(null)
 const selectedVersions = reactive({})
 const collapsedSections = reactive({})
 
+// Aplicar localización a los endpoints según idioma seleccionado
+const localizedEndpoints = computed(() => {
+  if (!props.data.endpoints || props.data.endpoints.length === 0) return []
+
+  // Aplicar getLocalizedEndpoint a cada endpoint
+  return props.data.endpoints.map(endpoint => {
+    return docsStore.getLocalizedEndpoint(endpoint)
+  })
+})
+
 // Group endpoints by method+path to handle multiple versions
 const groupedEndpoints = computed(() => {
-  if (!props.data.endpoints || props.data.endpoints.length === 0) return []
+  if (localizedEndpoints.value.length === 0) return []
 
   const groups = new Map()
 
-  props.data.endpoints.forEach(endpoint => {
+  localizedEndpoints.value.forEach(endpoint => {
     const key = `${endpoint.method}-${endpoint.url}`
 
     if (!groups.has(key)) {
