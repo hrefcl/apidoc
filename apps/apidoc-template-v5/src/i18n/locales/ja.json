@@ -1,0 +1,196 @@
+{
+  "app": {
+    "name": "APIDoc",
+    "version": "5.0.0"
+  },
+  "home": {
+    "title": "APIDoc v5 ドキュメント",
+    "subtitle": "コードから自動生成される美しくモダンなドキュメント。Vue 3、Vite、MagicUIで構築されています。",
+    "viewDocs": "ドキュメントを表示",
+    "github": "GitHub",
+    "features": {
+      "fast": {
+        "title": "高速でモダン",
+        "description": "ViteとVue 3で構築され、超高速な開発体験を提供します。"
+      },
+      "beautiful": {
+        "title": "美しいデザイン",
+        "description": "MagicUIカラーで青と紫のグラデーション、ダークモード付き。"
+      },
+      "jsonBased": {
+        "title": "JSONベース",
+        "description": "APIDocによって生成されたJSONファイルから動的にドキュメントを読み込みます。"
+      }
+    },
+    "stats": {
+      "docs": "ドキュメント",
+      "apis": "API",
+      "guides": "ガイド",
+      "typescript": "TypeScript"
+    },
+    "quickLinks": "クイックリンク",
+    "links": {
+      "authentication": {
+        "title": "認証",
+        "description": "認証とセキュリティのエンドポイント"
+      },
+      "introduction": {
+        "title": "はじめに",
+        "description": "ドキュメントを始める"
+      },
+      "typescript": {
+        "title": "TypeScript",
+        "description": "型とスキーマのドキュメント"
+      },
+      "apiReference": {
+        "title": "APIリファレンス",
+        "description": "完全なAPIリファレンス"
+      }
+    }
+  },
+  "nav": {
+    "home": "ホーム",
+    "api": "API",
+    "docs": "ドキュメント",
+    "tests": "テスト",
+    "history": "履歴",
+    "settings": "設定",
+    "expandAll": "すべて展開",
+    "collapseAll": "すべて折りたたむ",
+    "apiReference": "API Reference",
+    "apiReferenceDescription": "すべてのAPIエンドポイントの完全なリファレンス",
+    "documentation": "ドキュメント",
+    "documentationDescription": "一般的なドキュメントとプロジェクトガイド",
+    "typescript": "TypeScript",
+    "models": "Models",
+    "viewOnGithub": "GitHub で見る"
+  },
+  "api": {
+    "endpoints": "エンドポイント",
+    "endpoint": "エンドポイント",
+    "method": "メソッド",
+    "url": "URL",
+    "version": "バージョン",
+    "versions": "バージョン",
+    "description": "説明",
+    "parameters": "パラメータ",
+    "headers": "ヘッダー",
+    "headerExamples": "ヘッダーの例",
+    "body": "ボディ",
+    "response": "レスポンス",
+    "responses": "レスポンス",
+    "success": "成功",
+    "error": "エラー",
+    "examples": "例",
+    "tryIt": "試す",
+    "group": "グループ",
+    "groups": "グループ",
+    "multipleVersions": "{count}個のバージョン",
+    "latestVersion": "最新バージョン",
+    "selectVersion": "バージョンを選択",
+    "compareVersions": "バージョンを比較",
+    "latest": "最新",
+    "endpointsDocumentation": "{section}のエンドポイントドキュメント",
+    "availableEndpoints": "利用可能なエンドポイント",
+    "sectionApi": "{section} API"
+  },
+  "search": {
+    "placeholder": "ドキュメントを検索...",
+    "noResults": "\"{query}\" の結果が見つかりません",
+    "typeToSearch": "ドキュメントを検索するには入力してください",
+    "navigate": "ナビゲート",
+    "select": "選択",
+    "result": "{count} 件の結果",
+    "results": "{count} 件の結果"
+  },
+  "docs": {
+    "title": "ドキュメント",
+    "header": "ヘッダー",
+    "footer": "フッター",
+    "group": "グループ",
+    "tsdoc": "TypeScriptドキュメント"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "required": "必須",
+    "optional": "任意",
+    "default": "デフォルト",
+    "type": "型",
+    "name": "名前",
+    "value": "値",
+    "close": "閉じる",
+    "open": "開く",
+    "expand": "展開",
+    "collapse": "折りたたむ",
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "darkMode": "ダークモード",
+    "lightMode": "ライトモード",
+    "language": "言語",
+    "tableOfContents": "目次",
+    "noContent": "コンテンツがありません"
+  },
+  "status": {
+    "200": "OK",
+    "201": "作成済み",
+    "204": "コンテンツなし",
+    "400": "不正なリクエスト",
+    "401": "未認証",
+    "403": "禁止",
+    "404": "見つかりません",
+    "500": "サーバーエラー"
+  },
+  "login": {
+    "title": "ログイン",
+    "subtitle": "保護されたドキュメントにアクセス",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "submit": "ログイン",
+    "loading": "ログイン中...",
+    "error": "ログインエラー",
+    "invalidCredentials": "無効な認証情報",
+    "networkError": "ネットワークエラー。もう一度お試しください。"
+  },
+  "messages": {
+    "noEndpointsAvailable": "このセクションには利用可能なエンドポイントがありません。",
+    "noContentAvailable": "利用可能なコンテンツがありません",
+    "noContentToShow": "表示可能なコンテンツがありません。",
+    "errorLoadingDocument": "ドキュメントの読み込みエラー",
+    "documentNotFound": "ドキュメントが見つかりません",
+    "errorLoadingSection": "セクション {section} を読み込めませんでした"
+  },
+  "categories": {
+    "documentation": {
+      "title": "ドキュメント",
+      "description": "一般的なドキュメントとプロジェクトガイド"
+    },
+    "apiReference": {
+      "title": "API Reference",
+      "description": "すべての API エンドポイントの完全なリファレンス"
+    },
+    "typescript": {
+      "title": "TypeScript Documentation",
+      "description": "型、インターフェース、TypeScript モジュールのドキュメント"
+    },
+    "models": {
+      "title": "Models",
+      "description": "データモデルとデータベーススキーマ"
+    }
+  },
+  "homepage": {
+    "exploreApi": "API を探索",
+    "apiStatistics": "API 統計",
+    "totalEndpoints": "総エンドポイント数",
+    "apiGroups": "API グループ",
+    "models": "モデル",
+    "typescript": "TypeScript",
+    "endpointsByMethod": "HTTP メソッド別エンドポイント",
+    "apiGroupsList": "API グループ",
+    "endpoints": "エンドポイント",
+    "documents": "ドキュメント",
+    "quickAccess": "クイックアクセス",
+    "guidesAndTutorials": "ガイドとチュートリアル",
+    "completeApiDocumentation": "完全な API ドキュメント"
+  }
+}

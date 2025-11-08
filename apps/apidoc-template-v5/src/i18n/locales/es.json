@@ -52,9 +52,18 @@
     "home": "Inicio",
     "api": "API",
     "docs": "Documentación",
+    "typescript": "TypeScript",
+    "models": "Models",
     "tests": "Tests",
     "history": "Historial",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "expandAll": "Expandir Todo",
+    "collapseAll": "Contraer Todo",
+    "apiReference": "API Reference",
+    "apiReferenceDescription": "Referencia completa de todos los endpoints de la API",
+    "documentation": "Documentación",
+    "documentationDescription": "Documentación general y guías del proyecto",
+    "viewOnGithub": "Ver en GitHub"
   },
   "api": {
     "endpoints": "Endpoints",
@@ -80,11 +89,18 @@
     "latestVersion": "Última versión",
     "selectVersion": "Seleccionar versión",
     "compareVersions": "Comparar versiones",
-    "latest": "Última"
+    "latest": "Última",
+    "endpointsDocumentation": "Documentación de endpoints para {section}",
+    "availableEndpoints": "Endpoints Disponibles",
+    "sectionApi": "{section} API"
   },
   "search": {
-    "placeholder": "Buscar endpoints, documentación...",
-    "noResults": "No se encontraron resultados",
+    "placeholder": "Buscar en la documentación...",
+    "noResults": "No se encontraron resultados para \"{query}\"",
+    "typeToSearch": "Escribe para buscar en la documentación",
+    "navigate": "Navegar",
+    "select": "Seleccionar",
+    "result": "{count} resultado",
     "results": "{count} resultados"
   },
   "docs": {
@@ -135,5 +151,46 @@
     "error": "Error al iniciar sesión",
     "invalidCredentials": "Credenciales inválidas",
     "networkError": "Error de red. Por favor, intenta de nuevo."
+  },
+  "messages": {
+    "noEndpointsAvailable": "No hay endpoints disponibles en esta sección.",
+    "noContentAvailable": "No hay contenido disponible",
+    "noContentToShow": "No hay contenido disponible para mostrar.",
+    "errorLoadingDocument": "Error al cargar documento",
+    "documentNotFound": "Documento no encontrado",
+    "errorLoadingSection": "No se pudo cargar la sección {section}"
+  },
+  "categories": {
+    "documentation": {
+      "title": "Documentación",
+      "description": "Documentación general y guías del proyecto"
+    },
+    "apiReference": {
+      "title": "API Reference",
+      "description": "Referencia completa de todos los endpoints de la API"
+    },
+    "typescript": {
+      "title": "TypeScript Documentation",
+      "description": "Documentación de tipos, interfaces y módulos TypeScript"
+    },
+    "models": {
+      "title": "Models",
+      "description": "Modelos de datos y esquemas de base de datos"
+    }
+  },
+  "homepage": {
+    "exploreApi": "Explorar API",
+    "apiStatistics": "Estadísticas de la API",
+    "totalEndpoints": "Total Endpoints",
+    "apiGroups": "Grupos API",
+    "models": "Modelos",
+    "typescript": "TypeScript",
+    "endpointsByMethod": "Endpoints por Método HTTP",
+    "apiGroupsList": "Grupos de API",
+    "endpoints": "endpoints",
+    "documents": "documentos",
+    "quickAccess": "Acceso Rápido",
+    "guidesAndTutorials": "Guías y tutoriales",
+    "completeApiDocumentation": "Documentación completa de la API"
   }
 }

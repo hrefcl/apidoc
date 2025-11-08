@@ -20,35 +20,35 @@
         <!-- Navigation -->
         <nav class="hidden md:flex items-center gap-6">
           <router-link to="/" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Inicio
+            {{ t('nav.home') }}
           </router-link>
           <router-link
             v-if="hasDocsSection"
             to="/docs"
             class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Documentación
+            {{ t('nav.docs') }}
           </router-link>
           <router-link
             v-if="hasApiSection"
             to="/api"
             class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            API
+            {{ t('nav.api') }}
           </router-link>
           <router-link
             v-if="hasTSDocSection"
             to="/tsdoc"
             class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            TypeScript
+            {{ t('nav.typescript') }}
           </router-link>
           <router-link
             v-if="hasModelsSection"
             to="/model"
             class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Models
+            {{ t('nav.models') }}
           </router-link>
         </nav>
 
@@ -75,7 +75,7 @@
             target="_blank"
             rel="noopener noreferrer"
             class="p-2 hover:bg-muted rounded-lg transition-colors"
-            :title="`Ver en GitHub`"
+            :title="t('nav.viewOnGithub')"
           >
             <Github class="w-5 h-5 text-muted-foreground" />
           </a>
@@ -96,13 +96,13 @@
             @click="expandAll"
             class="text-xs text-primary-600 dark:text-primary-400 hover:underline"
           >
-            Expandir Todo
+            {{ t('nav.expandAll') }}
           </button>
           <button
             @click="collapseAll"
             class="text-xs text-primary-600 dark:text-primary-400 hover:underline"
           >
-            Contraer Todo
+            {{ t('nav.collapseAll') }}
           </button>
         </div>
 
@@ -275,6 +275,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDocsStore } from '@/stores/docs'
+import { useI18n } from 'vue-i18n'
 import LanguageSelector from '@/components/LanguageSelectorSimple.vue'
 import SearchModal from '@/components/SearchModal.vue'
 import {
@@ -284,6 +285,7 @@ import {
 } from 'lucide-vue-next'
 import { reactive } from 'vue'
 
+const { t } = useI18n()
 const route = useRoute()
 const docsStore = useDocsStore()
 

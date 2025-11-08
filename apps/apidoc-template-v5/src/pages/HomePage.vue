@@ -29,7 +29,7 @@
           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300 font-medium"
         >
           <Plug class="w-5 h-5" />
-          Explorar API
+          {{ t('homepage.exploreApi') }}
         </router-link>
 
         <router-link
@@ -37,7 +37,7 @@
           class="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-lg hover:bg-muted transition-colors font-medium"
         >
           <BookOpen class="w-5 h-5" />
-          Documentación
+          {{ t('nav.docs') }}
         </router-link>
       </div>
     </div>
@@ -46,14 +46,14 @@
     <div class="mb-16">
       <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
         <BarChart3 class="w-6 h-6 text-primary-600 dark:text-primary-400" />
-        Estadísticas de la API
+        {{ t('homepage.apiStatistics') }}
       </h2>
 
       <!-- Main Stats Grid -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-lg p-6">
           <div class="flex items-center justify-between mb-2">
-            <div class="text-sm font-medium text-blue-700 dark:text-blue-300">Total Endpoints</div>
+            <div class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ t('homepage.totalEndpoints') }}</div>
             <Plug class="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div class="text-3xl font-bold text-blue-900 dark:text-blue-100">
@@ -63,7 +63,7 @@
 
         <div class="bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-500/20 rounded-lg p-6">
           <div class="flex items-center justify-between mb-2">
-            <div class="text-sm font-medium text-green-700 dark:text-green-300">Grupos API</div>
+            <div class="text-sm font-medium text-green-700 dark:text-green-300">{{ t('homepage.apiGroups') }}</div>
             <FolderTree class="w-5 h-5 text-green-600 dark:text-green-400" />
           </div>
           <div class="text-3xl font-bold text-green-900 dark:text-green-100">
@@ -73,7 +73,7 @@
 
         <div class="bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/20 rounded-lg p-6">
           <div class="flex items-center justify-between mb-2">
-            <div class="text-sm font-medium text-purple-700 dark:text-purple-300">Modelos</div>
+            <div class="text-sm font-medium text-purple-700 dark:text-purple-300">{{ t('homepage.models') }}</div>
             <Database class="w-5 h-5 text-purple-600 dark:text-purple-400" />
           </div>
           <div class="text-3xl font-bold text-purple-900 dark:text-purple-100">
@@ -83,7 +83,7 @@
 
         <div class="bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-lg p-6">
           <div class="flex items-center justify-between mb-2">
-            <div class="text-sm font-medium text-orange-700 dark:text-orange-300">TypeScript</div>
+            <div class="text-sm font-medium text-orange-700 dark:text-orange-300">{{ t('homepage.typescript') }}</div>
             <Code class="w-5 h-5 text-orange-600 dark:text-orange-400" />
           </div>
           <div class="text-3xl font-bold text-orange-900 dark:text-orange-100">
@@ -97,7 +97,7 @@
         <div class="bg-card border border-border rounded-lg p-6">
           <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
             <Activity class="w-5 h-5 text-primary-600 dark:text-primary-400" />
-            Endpoints por Método HTTP
+            {{ t('homepage.endpointsByMethod') }}
           </h3>
           <div class="space-y-3">
             <div v-for="(count, method) in apiStats.byMethod" :key="method" class="flex items-center justify-between">
@@ -123,7 +123,7 @@
         <div class="bg-card border border-border rounded-lg p-6">
           <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
             <Layers class="w-5 h-5 text-primary-600 dark:text-primary-400" />
-            Grupos de API
+            {{ t('homepage.apiGroupsList') }}
           </h3>
           <div class="space-y-2">
             <router-link
@@ -137,7 +137,7 @@
                 <span class="font-medium text-sm">{{ group.title }}</span>
               </div>
               <span class="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                {{ group.count }} endpoints
+                {{ group.count }} {{ t('homepage.endpoints') }}
               </span>
             </router-link>
           </div>
@@ -156,7 +156,7 @@
     <div class="bg-card border border-border rounded-xl p-8">
       <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
         <Zap class="w-6 h-6 text-primary-600 dark:text-primary-400" />
-        Acceso Rápido
+        {{ t('homepage.quickAccess') }}
       </h2>
       <div class="grid md:grid-cols-4 gap-4">
         <router-link
@@ -167,8 +167,8 @@
             <Plug class="w-6 h-6 text-white" />
           </div>
           <div class="text-center">
-            <h3 class="font-semibold mb-1">API Reference</h3>
-            <p class="text-xs text-muted-foreground">{{ apiStats.totalEndpoints }} endpoints</p>
+            <h3 class="font-semibold mb-1">{{ t('nav.apiReference') }}</h3>
+            <p class="text-xs text-muted-foreground">{{ apiStats.totalEndpoints }} {{ t('homepage.endpoints') }}</p>
           </div>
         </router-link>
 
@@ -180,8 +180,8 @@
             <BookOpen class="w-6 h-6 text-white" />
           </div>
           <div class="text-center">
-            <h3 class="font-semibold mb-1">Documentación</h3>
-            <p class="text-xs text-muted-foreground">Guías y tutoriales</p>
+            <h3 class="font-semibold mb-1">{{ t('nav.documentation') }}</h3>
+            <p class="text-xs text-muted-foreground">{{ t('homepage.guidesAndTutorials') }}</p>
           </div>
         </router-link>
 
@@ -193,8 +193,8 @@
             <Code class="w-6 h-6 text-white" />
           </div>
           <div class="text-center">
-            <h3 class="font-semibold mb-1">TypeScript</h3>
-            <p class="text-xs text-muted-foreground">{{ apiStats.totalTSDocs }} documentos</p>
+            <h3 class="font-semibold mb-1">{{ t('nav.typescript') }}</h3>
+            <p class="text-xs text-muted-foreground">{{ apiStats.totalTSDocs }} {{ t('homepage.documents') }}</p>
           </div>
         </router-link>
 
@@ -206,8 +206,8 @@
             <Database class="w-6 h-6 text-white" />
           </div>
           <div class="text-center">
-            <h3 class="font-semibold mb-1">Modelos</h3>
-            <p class="text-xs text-muted-foreground">{{ apiStats.totalModels }} modelos</p>
+            <h3 class="font-semibold mb-1">{{ t('nav.models') }}</h3>
+            <p class="text-xs text-muted-foreground">{{ apiStats.totalModels }} {{ t('homepage.models').toLowerCase() }}</p>
           </div>
         </router-link>
       </div>
@@ -218,6 +218,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useDocsStore } from '@/stores/docs'
+import { useI18n } from 'vue-i18n'
 import { marked } from 'marked'
 import {
   Sparkles, BookOpen, Plug, Code, Database, Zap,
@@ -225,6 +226,7 @@ import {
   User, Users, Building, Settings, MapPin, Tags, Folder, FileText
 } from 'lucide-vue-next'
 
+const { t } = useI18n()
 const docsStore = useDocsStore()
 const customContent = ref(null)
 
@@ -234,7 +236,7 @@ const companyName = computed(() => {
 })
 
 const companyDescription = computed(() => {
-  return docsStore.meta?.description || 'Documentación completa de la API'
+  return docsStore.meta?.description || t('homepage.completeApiDocumentation')
 })
 
 const companyLogo = computed(() => {

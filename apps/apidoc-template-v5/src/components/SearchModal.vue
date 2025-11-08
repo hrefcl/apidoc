@@ -14,7 +14,7 @@
               ref="searchInput"
               v-model="searchQuery"
               type="text"
-              placeholder="Buscar en la documentación..."
+              :placeholder="t('search.placeholder')"
               class="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
               @keydown.esc="close"
               @keydown.down.prevent="selectNext"
@@ -28,7 +28,7 @@
           <div class="max-h-96 overflow-y-auto">
             <div v-if="searchQuery && filteredResults.length === 0" class="p-8 text-center text-muted-foreground">
               <FileQuestion class="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No se encontraron resultados para "{{ searchQuery }}"</p>
+              <p>{{ t('search.noResults', { query: searchQuery }) }}</p>
             </div>
 
             <div v-else-if="filteredResults.length > 0" class="py-2">
@@ -54,7 +54,7 @@
             </div>
 
             <div v-else class="p-8 text-center text-muted-foreground">
-              <p>Escribe para buscar en la documentación</p>
+              <p>{{ t('search.typeToSearch') }}</p>
             </div>
           </div>
 
@@ -64,14 +64,14 @@
               <span class="flex items-center gap-1">
                 <kbd class="px-1.5 py-0.5 bg-background rounded">↑</kbd>
                 <kbd class="px-1.5 py-0.5 bg-background rounded">↓</kbd>
-                Navegar
+                {{ t('search.navigate') }}
               </span>
               <span class="flex items-center gap-1">
                 <kbd class="px-1.5 py-0.5 bg-background rounded">↵</kbd>
-                Seleccionar
+                {{ t('search.select') }}
               </span>
             </div>
-            <div>{{ filteredResults.length }} resultado{{ filteredResults.length !== 1 ? 's' : '' }}</div>
+            <div>{{ filteredResults.length === 1 ? t('search.result', { count: filteredResults.length }) : t('search.results', { count: filteredResults.length }) }}</div>
           </div>
         </div>
       </div>
@@ -83,7 +83,10 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDocsStore } from '@/stores/docs'
+import { useI18n } from 'vue-i18n'
 import { Search, ArrowRight, FileQuestion, FileText, Plug, BookOpen, Code, User, Users, Building, Settings, MapPin, Tags, Folder } from 'lucide-vue-next'
+
+const { t } = useI18n()
 
 const props = defineProps({
   isOpen: {
@@ -112,18 +115,48 @@ watch(() => props.isOpen, (isOpen) => {
   }
 })
 
-// Obtener todos los documentos de la navegación
+// Obtener todos los documentos de la navegación (incluye endpoints de API)
 const allDocuments = computed(() => {
   const docs = []
   const nav = docsStore.getSidebarNav || []
 
   nav.forEach(section => {
+    // Agregar items directos de la sección (docs, etc.)
     section.items?.forEach(item => {
       docs.push({
         title: item.title,
         path: item.path,
         category: section.title,
         icon: item.icon || section.icon || 'file-text'
+      })
+    })
+
+    // Agregar endpoints de API desde subgroups
+    section.subgroups?.forEach(subgroup => {
+      // Si el subgroup tiene endpoints (de API), agregarlos
+      if (subgroup.endpoints && Array.isArray(subgroup.endpoints)) {
+        subgroup.endpoints.forEach(endpointId => {
+          // Buscar información del endpoint en apiIndex
+          const endpointInfo = docsStore.apiIndex?.endpoints?.find(e => e.id === endpointId)
+          if (endpointInfo) {
+            docs.push({
+              title: `${endpointInfo.method} ${endpointInfo.url}${endpointInfo.title ? ' - ' + endpointInfo.title : ''}`,
+              path: `/api/${endpointId}`,
+              category: subgroup.title,
+              icon: 'plug'
+            })
+          }
+        })
+      }
+
+      // También agregar items del subgroup
+      subgroup.items?.forEach(item => {
+        docs.push({
+          title: item.title,
+          path: item.path,
+          category: `${section.title} › ${subgroup.title}`,
+          icon: item.icon || 'file-text'
+        })
       })
     })
   })

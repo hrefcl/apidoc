@@ -52,9 +52,18 @@
     "home": "Home",
     "api": "API",
     "docs": "Documentation",
+    "typescript": "TypeScript",
+    "models": "Models",
     "tests": "Tests",
     "history": "History",
-    "settings": "Settings"
+    "settings": "Settings",
+    "expandAll": "Expand All",
+    "collapseAll": "Collapse All",
+    "apiReference": "API Reference",
+    "apiReferenceDescription": "Complete reference of all API endpoints",
+    "documentation": "Documentation",
+    "documentationDescription": "General documentation and project guides",
+    "viewOnGithub": "View on GitHub"
   },
   "api": {
     "endpoints": "Endpoints",
@@ -80,11 +89,18 @@
     "latestVersion": "Latest version",
     "selectVersion": "Select version",
     "compareVersions": "Compare versions",
-    "latest": "Latest"
+    "latest": "Latest",
+    "endpointsDocumentation": "Endpoints documentation for {section}",
+    "availableEndpoints": "Available Endpoints",
+    "sectionApi": "{section} API"
   },
   "search": {
-    "placeholder": "Search endpoints, documentation...",
-    "noResults": "No results found",
+    "placeholder": "Search documentation...",
+    "noResults": "No results found for \"{query}\"",
+    "typeToSearch": "Type to search documentation",
+    "navigate": "Navigate",
+    "select": "Select",
+    "result": "{count} result",
     "results": "{count} results"
   },
   "docs": {
@@ -135,5 +151,46 @@
     "error": "Login error",
     "invalidCredentials": "Invalid credentials",
     "networkError": "Network error. Please try again."
+  },
+  "messages": {
+    "noEndpointsAvailable": "No endpoints available in this section.",
+    "noContentAvailable": "No content available",
+    "noContentToShow": "No content available to display.",
+    "errorLoadingDocument": "Error loading document",
+    "documentNotFound": "Document not found",
+    "errorLoadingSection": "Could not load section {section}"
+  },
+  "categories": {
+    "documentation": {
+      "title": "Documentation",
+      "description": "General documentation and project guides"
+    },
+    "apiReference": {
+      "title": "API Reference",
+      "description": "Complete reference of all API endpoints"
+    },
+    "typescript": {
+      "title": "TypeScript Documentation",
+      "description": "Types, interfaces, and TypeScript modules documentation"
+    },
+    "models": {
+      "title": "Models",
+      "description": "Data models and database schemas"
+    }
+  },
+  "homepage": {
+    "exploreApi": "Explore API",
+    "apiStatistics": "API Statistics",
+    "totalEndpoints": "Total Endpoints",
+    "apiGroups": "API Groups",
+    "models": "Models",
+    "typescript": "TypeScript",
+    "endpointsByMethod": "Endpoints by HTTP Method",
+    "apiGroupsList": "API Groups",
+    "endpoints": "endpoints",
+    "documents": "documents",
+    "quickAccess": "Quick Access",
+    "guidesAndTutorials": "Guides and tutorials",
+    "completeApiDocumentation": "Complete API documentation"
   }
 }

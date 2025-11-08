@@ -1,0 +1,196 @@
+{
+  "app": {
+    "name": "APIDoc",
+    "version": "5.0.0"
+  },
+  "home": {
+    "title": "Documentação APIDoc v5",
+    "subtitle": "Documentação bonita e moderna gerada automaticamente a partir do seu código. Construída com Vue 3, Vite e MagicUI.",
+    "viewDocs": "Ver Documentação",
+    "github": "GitHub",
+    "features": {
+      "fast": {
+        "title": "Rápido e Moderno",
+        "description": "Construído com Vite e Vue 3 para uma experiência de desenvolvimento ultrarrápida."
+      },
+      "beautiful": {
+        "title": "Design Bonito",
+        "description": "Cores MagicUI com gradientes azuis e roxos, modo escuro incluído."
+      },
+      "jsonBased": {
+        "title": "Baseado em JSON",
+        "description": "Carregamento dinâmico de documentação a partir de arquivos JSON gerados pelo APIDoc."
+      }
+    },
+    "stats": {
+      "docs": "Documentos",
+      "apis": "APIs",
+      "guides": "Guias",
+      "typescript": "TypeScript"
+    },
+    "quickLinks": "Links Rápidos",
+    "links": {
+      "authentication": {
+        "title": "Autenticação",
+        "description": "Endpoints de autenticação e segurança"
+      },
+      "introduction": {
+        "title": "Introdução",
+        "description": "Comece com a documentação"
+      },
+      "typescript": {
+        "title": "TypeScript",
+        "description": "Documentação de tipos e esquemas"
+      },
+      "apiReference": {
+        "title": "Referência da API",
+        "description": "Referência completa da API"
+      }
+    }
+  },
+  "nav": {
+    "home": "Início",
+    "api": "API",
+    "docs": "Documentação",
+    "tests": "Testes",
+    "history": "Histórico",
+    "settings": "Configurações",
+    "expandAll": "Expandir Tudo",
+    "collapseAll": "Recolher Tudo",
+    "apiReference": "API Reference",
+    "apiReferenceDescription": "Referência completa de todos os endpoints da API",
+    "documentation": "Documentação",
+    "documentationDescription": "Documentação geral e guias do projeto",
+    "typescript": "TypeScript",
+    "models": "Models",
+    "viewOnGithub": "Ver no GitHub"
+  },
+  "api": {
+    "endpoints": "Endpoints",
+    "endpoint": "Endpoint",
+    "method": "Método",
+    "url": "URL",
+    "version": "Versão",
+    "versions": "Versões",
+    "description": "Descrição",
+    "parameters": "Parâmetros",
+    "headers": "Cabeçalhos",
+    "headerExamples": "Exemplos de Cabeçalhos",
+    "body": "Corpo",
+    "response": "Resposta",
+    "responses": "Respostas",
+    "success": "Sucesso",
+    "error": "Erro",
+    "examples": "Exemplos",
+    "tryIt": "Testar",
+    "group": "Grupo",
+    "groups": "Grupos",
+    "multipleVersions": "{count} versões",
+    "latestVersion": "Última versão",
+    "selectVersion": "Selecionar versão",
+    "compareVersions": "Comparar versões",
+    "latest": "Última",
+    "endpointsDocumentation": "Documentação de endpoints para {section}",
+    "availableEndpoints": "Endpoints Disponíveis",
+    "sectionApi": "API {section}"
+  },
+  "search": {
+    "placeholder": "Buscar documentação...",
+    "noResults": "Nenhum resultado encontrado para \"{query}\"",
+    "typeToSearch": "Digite para buscar documentação",
+    "navigate": "Navegar",
+    "select": "Selecionar",
+    "result": "{count} resultado",
+    "results": "{count} resultados"
+  },
+  "docs": {
+    "title": "Documentação",
+    "header": "Cabeçalho",
+    "footer": "Rodapé",
+    "group": "Grupo",
+    "tsdoc": "Documentação TypeScript"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "required": "Obrigatório",
+    "optional": "Opcional",
+    "default": "Padrão",
+    "type": "Tipo",
+    "name": "Nome",
+    "value": "Valor",
+    "close": "Fechar",
+    "open": "Abrir",
+    "expand": "Expandir",
+    "collapse": "Recolher",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "darkMode": "Modo escuro",
+    "lightMode": "Modo claro",
+    "language": "Idioma",
+    "tableOfContents": "Índice",
+    "noContent": "Sem conteúdo"
+  },
+  "status": {
+    "200": "OK",
+    "201": "Criado",
+    "204": "Sem Conteúdo",
+    "400": "Requisição Inválida",
+    "401": "Não Autorizado",
+    "403": "Proibido",
+    "404": "Não Encontrado",
+    "500": "Erro do Servidor"
+  },
+  "login": {
+    "title": "Entrar",
+    "subtitle": "Acesse a documentação protegida",
+    "email": "Endereço de e-mail",
+    "password": "Senha",
+    "submit": "Entrar",
+    "loading": "Entrando...",
+    "error": "Erro ao entrar",
+    "invalidCredentials": "Credenciais inválidas",
+    "networkError": "Erro de rede. Por favor, tente novamente."
+  },
+  "messages": {
+    "noEndpointsAvailable": "Não há endpoints disponíveis nesta seção.",
+    "noContentAvailable": "Não há conteúdo disponível",
+    "noContentToShow": "Não há conteúdo disponível para exibir.",
+    "errorLoadingDocument": "Erro ao carregar documento",
+    "documentNotFound": "Documento não encontrado",
+    "errorLoadingSection": "Não foi possível carregar a seção {section}"
+  },
+  "categories": {
+    "documentation": {
+      "title": "Documentação",
+      "description": "Documentação geral e guias do projeto"
+    },
+    "apiReference": {
+      "title": "API Reference",
+      "description": "Referência completa de todos os endpoints da API"
+    },
+    "typescript": {
+      "title": "TypeScript Documentation",
+      "description": "Documentação de tipos, interfaces e módulos TypeScript"
+    },
+    "models": {
+      "title": "Models",
+      "description": "Modelos de dados e esquemas de banco de dados"
+    }
+  },
+  "homepage": {
+    "exploreApi": "Explorar API",
+    "apiStatistics": "Estatísticas da API",
+    "totalEndpoints": "Total de Endpoints",
+    "apiGroups": "Grupos de API",
+    "models": "Modelos",
+    "typescript": "TypeScript",
+    "endpointsByMethod": "Endpoints por Método HTTP",
+    "apiGroupsList": "Grupos de API",
+    "endpoints": "endpoints",
+    "documents": "documentos",
+    "quickAccess": "Acesso Rápido",
+    "guidesAndTutorials": "Guias e tutoriais",
+    "completeApiDocumentation": "Documentação completa da API"
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "app": {
+    "name": "APIDoc",
+    "version": "5.0.0"
+  },
+  "home": {
+    "title": "Documentation APIDoc v5",
+    "subtitle": "Documentation belle et moderne générée automatiquement à partir de votre code. Construit avec Vue 3, Vite et MagicUI.",
+    "viewDocs": "Voir la Documentation",
+    "github": "GitHub",
+    "features": {
+      "fast": {
+        "title": "Rapide et Moderne",
+        "description": "Construit avec Vite et Vue 3 pour une expérience de développement ultra-rapide."
+      },
+      "beautiful": {
+        "title": "Beau Design",
+        "description": "Couleurs MagicUI avec dégradés bleus et violets, mode sombre inclus."
+      },
+      "jsonBased": {
+        "title": "Basé sur JSON",
+        "description": "Chargement dynamique de la documentation à partir de fichiers JSON générés par APIDoc."
+      }
+    },
+    "stats": {
+      "docs": "Documents",
+      "apis": "APIs",
+      "guides": "Guides",
+      "typescript": "TypeScript"
+    },
+    "quickLinks": "Liens Rapides",
+    "links": {
+      "authentication": {
+        "title": "Authentification",
+        "description": "Points de terminaison d'authentification et de sécurité"
+      },
+      "introduction": {
+        "title": "Introduction",
+        "description": "Commencer avec la documentation"
+      },
+      "typescript": {
+        "title": "TypeScript",
+        "description": "Documentation des types et schémas"
+      },
+      "apiReference": {
+        "title": "Référence API",
+        "description": "Référence complète de l'API"
+      }
+    }
+  },
+  "nav": {
+    "home": "Accueil",
+    "api": "API",
+    "docs": "Documentation",
+    "tests": "Tests",
+    "history": "Historique",
+    "settings": "Paramètres",
+    "expandAll": "Tout Développer",
+    "collapseAll": "Tout Réduire",
+    "apiReference": "API Reference",
+    "apiReferenceDescription": "Référence complète de tous les points de terminaison de l'API",
+    "documentation": "Documentation",
+    "documentationDescription": "Documentation générale et guides du projet",
+    "typescript": "TypeScript",
+    "models": "Models",
+    "viewOnGithub": "Voir sur GitHub"
+  },
+  "api": {
+    "endpoints": "Points de terminaison",
+    "endpoint": "Point de terminaison",
+    "method": "Méthode",
+    "url": "URL",
+    "version": "Version",
+    "versions": "Versions",
+    "description": "Description",
+    "parameters": "Paramètres",
+    "headers": "En-têtes",
+    "headerExamples": "Exemples d'En-têtes",
+    "body": "Corps",
+    "response": "Réponse",
+    "responses": "Réponses",
+    "success": "Succès",
+    "error": "Erreur",
+    "examples": "Exemples",
+    "tryIt": "Essayer",
+    "group": "Groupe",
+    "groups": "Groupes",
+    "multipleVersions": "{count} versions",
+    "latestVersion": "Dernière version",
+    "selectVersion": "Sélectionner la version",
+    "compareVersions": "Comparer les versions",
+    "latest": "Dernière",
+    "endpointsDocumentation": "Documentation des points de terminaison pour {section}",
+    "availableEndpoints": "Points de Terminaison Disponibles",
+    "sectionApi": "API {section}"
+  },
+  "search": {
+    "placeholder": "Rechercher dans la documentation...",
+    "noResults": "Aucun résultat trouvé pour \"{query}\"",
+    "typeToSearch": "Tapez pour rechercher dans la documentation",
+    "navigate": "Naviguer",
+    "select": "Sélectionner",
+    "result": "{count} résultat",
+    "results": "{count} résultats"
+  },
+  "docs": {
+    "title": "Documentation",
+    "header": "En-tête",
+    "footer": "Pied de page",
+    "group": "Groupe",
+    "tsdoc": "Documentation TypeScript"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "required": "Obligatoire",
+    "optional": "Facultatif",
+    "default": "Par défaut",
+    "type": "Type",
+    "name": "Nom",
+    "value": "Valeur",
+    "close": "Fermer",
+    "open": "Ouvrir",
+    "expand": "Développer",
+    "collapse": "Réduire",
+    "copy": "Copier",
+    "copied": "Copié",
+    "darkMode": "Mode sombre",
+    "lightMode": "Mode clair",
+    "language": "Langue",
+    "tableOfContents": "Table des matières",
+    "noContent": "Aucun contenu"
+  },
+  "status": {
+    "200": "OK",
+    "201": "Créé",
+    "204": "Pas de Contenu",
+    "400": "Mauvaise Requête",
+    "401": "Non Autorisé",
+    "403": "Interdit",
+    "404": "Non Trouvé",
+    "500": "Erreur du Serveur"
+  },
+  "login": {
+    "title": "Se Connecter",
+    "subtitle": "Accéder à la documentation protégée",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "loading": "Connexion en cours...",
+    "error": "Erreur de connexion",
+    "invalidCredentials": "Identifiants invalides",
+    "networkError": "Erreur réseau. Veuillez réessayer."
+  },
+  "messages": {
+    "noEndpointsAvailable": "Aucun point de terminaison disponible dans cette section.",
+    "noContentAvailable": "Aucun contenu disponible",
+    "noContentToShow": "Aucun contenu disponible à afficher.",
+    "errorLoadingDocument": "Erreur lors du chargement du document",
+    "documentNotFound": "Document non trouvé",
+    "errorLoadingSection": "Impossible de charger la section {section}"
+  },
+  "categories": {
+    "documentation": {
+      "title": "Documentation",
+      "description": "Documentation générale et guides du projet"
+    },
+    "apiReference": {
+      "title": "API Reference",
+      "description": "Référence complète de tous les points de terminaison de l'API"
+    },
+    "typescript": {
+      "title": "TypeScript Documentation",
+      "description": "Documentation des types, interfaces et modules TypeScript"
+    },
+    "models": {
+      "title": "Models",
+      "description": "Modèles de données et schémas de base de données"
+    }
+  },
+  "homepage": {
+    "exploreApi": "Explorer l'API",
+    "apiStatistics": "Statistiques de l'API",
+    "totalEndpoints": "Total des Points de Terminaison",
+    "apiGroups": "Groupes d'API",
+    "models": "Modèles",
+    "typescript": "TypeScript",
+    "endpointsByMethod": "Points de terminaison par méthode HTTP",
+    "apiGroupsList": "Groupes d'API",
+    "endpoints": "points de terminaison",
+    "documents": "documents",
+    "quickAccess": "Accès Rapide",
+    "guidesAndTutorials": "Guides et tutoriels",
+    "completeApiDocumentation": "Documentation complète de l'API"
+  }
+}

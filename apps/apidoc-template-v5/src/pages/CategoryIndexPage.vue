@@ -82,10 +82,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useDocsStore } from '@/stores/docs'
+import { useI18n } from 'vue-i18n'
 import {
   BookOpen, Plug, Code, Users, FileQuestion, Home,
   FileText, User, Building, Settings, MapPin, Tags, Folder
 } from 'lucide-vue-next'
+
+const { t } = useI18n()
 
 const props = defineProps({
   category: {

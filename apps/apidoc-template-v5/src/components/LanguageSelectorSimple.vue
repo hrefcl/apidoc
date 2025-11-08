@@ -41,7 +41,12 @@ const dropdownRef = ref(null)
 
 const languageNames = {
   es: 'Español',
-  en: 'English'
+  en: 'English',
+  zh: '中文',
+  pt: 'Português',
+  fr: 'Français',
+  de: 'Deutsch',
+  ja: '日本語'
 }
 
 const getLanguageName = (lang) => languageNames[lang] || lang.toUpperCase()

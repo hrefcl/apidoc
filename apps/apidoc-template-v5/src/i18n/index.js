@@ -1,6 +1,14 @@
 import { createI18n } from 'vue-i18n'
 import es from './locales/es.json'
 import en from './locales/en.json'
+import zhCN from './locales/zh-CN.json'
+import ptBR from './locales/pt-BR.json'
+import fr from './locales/fr.json'
+import de from './locales/de.json'
+import ja from './locales/ja.json'
+
+// Lista de idiomas soportados
+const supportedLocales = ['es', 'en', 'zh', 'pt', 'fr', 'de', 'ja']
 
 // Detectar idioma del navegador o usar español por defecto
 const getBrowserLocale = () => {
@@ -8,10 +16,10 @@ const getBrowserLocale = () => {
   if (typeof navigator === 'undefined') return 'es'
 
   const browserLocale = navigator.language || navigator.userLanguage
-  const locale = browserLocale.split('-')[0] // 'es-ES' -> 'es'
+  const locale = browserLocale.split('-')[0] // 'es-ES' -> 'es', 'zh-CN' -> 'zh'
 
-  // Solo soportamos es y en por ahora
-  return ['es', 'en'].includes(locale) ? locale : 'es'
+  // Verificar si el idioma está soportado
+  return supportedLocales.includes(locale) ? locale : 'es'
 }
 
 // Cargar idioma guardado en localStorage o usar el del navegador
@@ -29,7 +37,12 @@ const i18n = createI18n({
   fallbackLocale: 'es',
   messages: {
     es,
-    en
+    en,
+    zh: zhCN,
+    pt: ptBR,
+    fr,
+    de,
+    ja
   },
   // Opciones globales
   globalInjection: true,

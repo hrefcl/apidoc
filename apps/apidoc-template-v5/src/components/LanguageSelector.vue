@@ -54,7 +54,12 @@ const selectLanguage = (lang) => {
 const getFlag = (lang) => {
   const flags = {
     es: '🇪🇸',
-    en: '🇬🇧'
+    en: '🇬🇧',
+    zh: '🇨🇳',
+    pt: '🇧🇷',
+    fr: '🇫🇷',
+    de: '🇩🇪',
+    ja: '🇯🇵'
   }
   return flags[lang] || '🌐'
 }
@@ -62,7 +67,12 @@ const getFlag = (lang) => {
 const getLanguageName = (lang) => {
   const names = {
     es: 'Español',
-    en: 'English'
+    en: 'English',
+    zh: '中文',
+    pt: 'Português',
+    fr: 'Français',
+    de: 'Deutsch',
+    ja: '日本語'
   }
   return names[lang] || lang
 }

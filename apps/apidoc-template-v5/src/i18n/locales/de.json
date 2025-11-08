@@ -1,0 +1,196 @@
+{
+  "app": {
+    "name": "APIDoc",
+    "version": "5.0.0"
+  },
+  "home": {
+    "title": "APIDoc v5 Dokumentation",
+    "subtitle": "Schöne und moderne Dokumentation, automatisch aus Ihrem Code generiert. Gebaut mit Vue 3, Vite und MagicUI.",
+    "viewDocs": "Dokumentation ansehen",
+    "github": "GitHub",
+    "features": {
+      "fast": {
+        "title": "Schnell und Modern",
+        "description": "Gebaut mit Vite und Vue 3 für eine ultraschnelle Entwicklungserfahrung."
+      },
+      "beautiful": {
+        "title": "Schönes Design",
+        "description": "MagicUI-Farben mit blauen und violetten Farbverläufen, Dunkelmodus inklusive."
+      },
+      "jsonBased": {
+        "title": "JSON-basiert",
+        "description": "Dynamisches Laden der Dokumentation aus JSON-Dateien, die von APIDoc generiert wurden."
+      }
+    },
+    "stats": {
+      "docs": "Dokumente",
+      "apis": "APIs",
+      "guides": "Anleitungen",
+      "typescript": "TypeScript"
+    },
+    "quickLinks": "Schnellzugriff",
+    "links": {
+      "authentication": {
+        "title": "Authentifizierung",
+        "description": "Authentifizierungs- und Sicherheitsendpunkte"
+      },
+      "introduction": {
+        "title": "Einführung",
+        "description": "Erste Schritte mit der Dokumentation"
+      },
+      "typescript": {
+        "title": "TypeScript",
+        "description": "Typen- und Schemadokumentation"
+      },
+      "apiReference": {
+        "title": "API-Referenz",
+        "description": "Vollständige API-Referenz"
+      }
+    }
+  },
+  "nav": {
+    "home": "Startseite",
+    "api": "API",
+    "docs": "Dokumentation",
+    "tests": "Tests",
+    "history": "Verlauf",
+    "settings": "Einstellungen",
+    "expandAll": "Alles Erweitern",
+    "collapseAll": "Alles Einklappen",
+    "apiReference": "API Reference",
+    "apiReferenceDescription": "Vollständige Referenz aller API-Endpunkte",
+    "documentation": "Dokumentation",
+    "documentationDescription": "Allgemeine Dokumentation und Projektanleitungen",
+    "typescript": "TypeScript",
+    "models": "Models",
+    "viewOnGithub": "Auf GitHub ansehen"
+  },
+  "api": {
+    "endpoints": "Endpunkte",
+    "endpoint": "Endpunkt",
+    "method": "Methode",
+    "url": "URL",
+    "version": "Version",
+    "versions": "Versionen",
+    "description": "Beschreibung",
+    "parameters": "Parameter",
+    "headers": "Header",
+    "headerExamples": "Header-Beispiele",
+    "body": "Body",
+    "response": "Antwort",
+    "responses": "Antworten",
+    "success": "Erfolg",
+    "error": "Fehler",
+    "examples": "Beispiele",
+    "tryIt": "Ausprobieren",
+    "group": "Gruppe",
+    "groups": "Gruppen",
+    "multipleVersions": "{count} Versionen",
+    "latestVersion": "Neueste Version",
+    "selectVersion": "Version auswählen",
+    "compareVersions": "Versionen vergleichen",
+    "latest": "Neueste",
+    "endpointsDocumentation": "Endpunkt-Dokumentation für {section}",
+    "availableEndpoints": "Verfügbare Endpunkte",
+    "sectionApi": "{section}-API"
+  },
+  "search": {
+    "placeholder": "Dokumentation durchsuchen...",
+    "noResults": "Keine Ergebnisse für \"{query}\" gefunden",
+    "typeToSearch": "Tippen Sie, um die Dokumentation zu durchsuchen",
+    "navigate": "Navigieren",
+    "select": "Auswählen",
+    "result": "{count} Ergebnis",
+    "results": "{count} Ergebnisse"
+  },
+  "docs": {
+    "title": "Dokumentation",
+    "header": "Kopfzeile",
+    "footer": "Fußzeile",
+    "group": "Gruppe",
+    "tsdoc": "TypeScript-Dokumentation"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Fehler",
+    "required": "Erforderlich",
+    "optional": "Optional",
+    "default": "Standard",
+    "type": "Typ",
+    "name": "Name",
+    "value": "Wert",
+    "close": "Schließen",
+    "open": "Öffnen",
+    "expand": "Erweitern",
+    "collapse": "Einklappen",
+    "copy": "Kopieren",
+    "copied": "Kopiert",
+    "darkMode": "Dunkelmodus",
+    "lightMode": "Hellmodus",
+    "language": "Sprache",
+    "tableOfContents": "Inhaltsverzeichnis",
+    "noContent": "Kein Inhalt"
+  },
+  "status": {
+    "200": "OK",
+    "201": "Erstellt",
+    "204": "Kein Inhalt",
+    "400": "Ungültige Anfrage",
+    "401": "Nicht autorisiert",
+    "403": "Verboten",
+    "404": "Nicht gefunden",
+    "500": "Serverfehler"
+  },
+  "login": {
+    "title": "Anmelden",
+    "subtitle": "Zugriff auf geschützte Dokumentation",
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "submit": "Anmelden",
+    "loading": "Anmeldung läuft...",
+    "error": "Anmeldefehler",
+    "invalidCredentials": "Ungültige Anmeldedaten",
+    "networkError": "Netzwerkfehler. Bitte versuchen Sie es erneut."
+  },
+  "messages": {
+    "noEndpointsAvailable": "In diesem Abschnitt sind keine Endpunkte verfügbar.",
+    "noContentAvailable": "Kein Inhalt verfügbar",
+    "noContentToShow": "Kein Inhalt zur Anzeige verfügbar.",
+    "errorLoadingDocument": "Fehler beim Laden des Dokuments",
+    "documentNotFound": "Dokument nicht gefunden",
+    "errorLoadingSection": "Abschnitt {section} konnte nicht geladen werden"
+  },
+  "categories": {
+    "documentation": {
+      "title": "Dokumentation",
+      "description": "Allgemeine Dokumentation und Projektanleitungen"
+    },
+    "apiReference": {
+      "title": "API Reference",
+      "description": "Vollständige Referenz aller API-Endpunkte"
+    },
+    "typescript": {
+      "title": "TypeScript Documentation",
+      "description": "Dokumentation zu Typen, Schnittstellen und TypeScript-Modulen"
+    },
+    "models": {
+      "title": "Models",
+      "description": "Datenmodelle und Datenbankschemata"
+    }
+  },
+  "homepage": {
+    "exploreApi": "API Erkunden",
+    "apiStatistics": "API-Statistiken",
+    "totalEndpoints": "Gesamtzahl der Endpunkte",
+    "apiGroups": "API-Gruppen",
+    "models": "Modelle",
+    "typescript": "TypeScript",
+    "endpointsByMethod": "Endpunkte nach HTTP-Methode",
+    "apiGroupsList": "API-Gruppen",
+    "endpoints": "Endpunkte",
+    "documents": "Dokumente",
+    "quickAccess": "Schnellzugriff",
+    "guidesAndTutorials": "Anleitungen und Tutorials",
+    "completeApiDocumentation": "Vollständige API-Dokumentation"
+  }
+}

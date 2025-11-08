@@ -5,7 +5,7 @@
     </div>
 
     <div v-else-if="error" class="p-8 bg-red-50 border border-red-200 rounded-lg">
-      <h2 class="text-xl font-bold text-red-800 mb-2">Error</h2>
+      <h2 class="text-xl font-bold text-red-800 mb-2">{{ t('common.error') }}</h2>
       <p class="text-red-600">{{ error }}</p>
     </div>
 
@@ -21,13 +21,13 @@
 
       <!-- Default Section Header -->
       <div v-else class="mb-8 p-6 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
-        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">{{ section }} API</h1>
-        <p class="text-gray-600 dark:text-gray-400">Documentación de endpoints para {{ section }}</p>
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">{{ t('api.sectionApi', { section }) }}</h1>
+        <p class="text-gray-600 dark:text-gray-400">{{ t('api.endpointsDocumentation', { section }) }}</p>
       </div>
 
       <!-- Endpoints List -->
       <div class="endpoints-list">
-        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Endpoints Disponibles</h2>
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">{{ t('api.availableEndpoints') }}</h2>
         <div class="space-y-3">
           <button
             v-for="endpoint in endpoints"
@@ -57,7 +57,7 @@
         </div>
 
         <div v-if="endpoints.length === 0 && !loading" class="text-center py-12 text-gray-500 dark:text-gray-400">
-          No hay endpoints disponibles en esta sección.
+          {{ t('messages.noEndpointsAvailable') }}
         </div>
       </div>
     </div>
@@ -68,7 +68,9 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDocsStore } from '@/stores/docs'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const docsStore = useDocsStore()
@@ -177,7 +179,7 @@ const loadSectionData = async () => {
     }
   } catch (e) {
     console.error('[ApiSectionPage] Error loading section:', e)
-    error.value = `No se pudo cargar la sección ${section.value}`
+    error.value = t('messages.errorLoadingSection', { section: section.value })
   } finally {
     loading.value = false
   }

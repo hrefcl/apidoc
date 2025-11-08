@@ -54,7 +54,16 @@
     "docs": "文档",
     "tests": "测试",
     "history": "历史",
-    "settings": "设置"
+    "settings": "设置",
+    "expandAll": "全部展开",
+    "collapseAll": "全部折叠",
+    "apiReference": "API Reference",
+    "apiReferenceDescription": "所有 API 端点的完整参考",
+    "documentation": "文档",
+    "documentationDescription": "一般文档和项目指南",
+    "typescript": "TypeScript",
+    "models": "Models",
+    "viewOnGithub": "在 GitHub 上查看"
   },
   "api": {
     "endpoints": "端点",
@@ -80,11 +89,18 @@
     "latestVersion": "最新版本",
     "selectVersion": "选择版本",
     "compareVersions": "比较版本",
-    "latest": "最新"
+    "latest": "最新",
+    "endpointsDocumentation": "{section}的端点文档",
+    "availableEndpoints": "可用端点",
+    "sectionApi": "{section} API"
   },
   "search": {
-    "placeholder": "搜索端点、文档...",
-    "noResults": "未找到结果",
+    "placeholder": "搜索文档...",
+    "noResults": "未找到 \"{query}\" 的结果",
+    "typeToSearch": "输入以搜索文档",
+    "navigate": "导航",
+    "select": "选择",
+    "result": "{count} 个结果",
     "results": "{count} 个结果"
   },
   "docs": {
@@ -135,5 +151,46 @@
     "error": "登录错误",
     "invalidCredentials": "无效的凭据",
     "networkError": "网络错误，请重试。"
+  },
+  "messages": {
+    "noEndpointsAvailable": "此部分没有可用的端点。",
+    "noContentAvailable": "没有可用的内容",
+    "noContentToShow": "没有可显示的内容。",
+    "errorLoadingDocument": "加载文档时出错",
+    "documentNotFound": "未找到文档",
+    "errorLoadingSection": "无法加载部分 {section}"
+  },
+  "categories": {
+    "documentation": {
+      "title": "文档",
+      "description": "一般文档和项目指南"
+    },
+    "apiReference": {
+      "title": "API Reference",
+      "description": "所有 API 端点的完整参考"
+    },
+    "typescript": {
+      "title": "TypeScript Documentation",
+      "description": "类型、接口和 TypeScript 模块文档"
+    },
+    "models": {
+      "title": "Models",
+      "description": "数据模型和数据库模式"
+    }
+  },
+  "homepage": {
+    "exploreApi": "探索 API",
+    "apiStatistics": "API 统计",
+    "totalEndpoints": "总端点数",
+    "apiGroups": "API 分组",
+    "models": "模型",
+    "typescript": "TypeScript",
+    "endpointsByMethod": "按 HTTP 方法分类的端点",
+    "apiGroupsList": "API 分组",
+    "endpoints": "端点",
+    "documents": "文档",
+    "quickAccess": "快速访问",
+    "guidesAndTutorials": "指南和教程",
+    "completeApiDocumentation": "完整的 API 文档"
   }
 }
