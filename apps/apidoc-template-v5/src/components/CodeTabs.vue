@@ -65,8 +65,16 @@ const copied = ref(false)
 const getTabLabel = (type) => {
   const labels = {
     'curl': 'cURL',
+    'bash': 'Bash',
+    'sh': 'Shell',
     'javascript': 'JavaScript',
+    'typescript': 'TypeScript',
     'python': 'Python',
+    'java': 'Java',
+    'go': 'Go',
+    'php': 'PHP',
+    'ruby': 'Ruby',
+    'rust': 'Rust',
     'request': 'Request',
     'response': 'Response'
   }

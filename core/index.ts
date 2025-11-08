@@ -100,6 +100,7 @@ const app = {
         apierror: './parsers/api_error.js',
         apierrorexample: './parsers/api_error_example.js',
         apiexample: './parsers/api_example.js',
+        apicode: './parsers/api_code.js',
         apiheader: './parsers/api_header.js',
         apiheaderexample: './parsers/api_header_example.js',
         apigroup: './parsers/api_group.js',

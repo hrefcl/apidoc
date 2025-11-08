@@ -481,13 +481,12 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
                 }
 
                 if (!values) {
-                    throw new ParserError(
-                        'Empty parser result.',
-                        self.filename,
-                        blockIndex + 1,
-                        element.sourceName,
-                        element.source
+                    // Log warning but don't throw - allow processing to continue
+                    app.log.warn(
+                        `Empty parser result for @${element.sourceName} in block ${blockIndex + 1} of file '${self.filename}'. ` +
+                        `Source: "${element.source}". This element will be skipped.`
                     );
+                    continue; // Skip this element and continue with next
                 }
 
                 if (preventGlobal) {

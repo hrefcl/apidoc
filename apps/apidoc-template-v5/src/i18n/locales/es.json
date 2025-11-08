@@ -66,6 +66,7 @@
     "description": "Descripción",
     "parameters": "Parámetros",
     "headers": "Headers",
+    "headerExamples": "Ejemplos de Headers",
     "body": "Body",
     "response": "Respuesta",
     "responses": "Respuestas",

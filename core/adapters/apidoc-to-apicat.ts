@@ -13,6 +13,7 @@ export interface ApiCATEndpoint {
     url: string;
     parameters?: ApiCATParameter[];
     header?: ApiCATParameter[];
+    headerExamples?: ApiCATExample[]; // Examples for headers (@apiHeaderExample)
     success?: ApiCATResponse;
     error?: ApiCATResponse;
     examples?: ApiCATExample[];
@@ -40,7 +41,7 @@ export interface ApiCATResponse {
 export interface ApiCATExample {
     title: string;
     content: string;
-    type: 'json' | 'text' | 'curl';
+    type: string; // Language type for syntax highlighting (e.g., 'javascript', 'bash', 'python', 'json', 'curl', etc.)
 }
 
 export interface ApiCATProject {
@@ -206,6 +207,21 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
                 }));
             }
 
+            // Transform header examples (from @apiHeaderExample or @apiSchema {json=...} apiHeaderExample)
+            if (item.header?.examples || item.local?.header?.examples) {
+                const headerExamples = item.header?.examples || item.local?.header?.examples || [];
+
+                if (headerExamples.length > 0) {
+                    // Store header examples in the header field or create a separate field
+                    // For now, we'll add them to endpoint.headerExamples
+                    endpoint.headerExamples = headerExamples.map((example: any) => ({
+                        title: example.title || 'Header Example',
+                        content: example.content || '',
+                        type: example.type || 'json',
+                    }));
+                }
+            }
+
             // Transform success response
             if (item.success) {
                 // Extract fields from any success group (usually "Success 200")
@@ -232,7 +248,7 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
                         examples: item.success.examples.map((example: any) => ({
                             title: example.title || 'Success Example',
                             content: example.content || '',
-                            type: 'json' as const,
+                            type: example.type || 'json',
                         })),
                     }),
                     ...(successFields && { fields: successFields }),
@@ -273,7 +289,7 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
                         examples: item.error.examples.map((example: any) => ({
                             title: example.title || 'Error Example',
                             content: example.content || '',
-                            type: 'json' as const,
+                            type: example.type || 'json',
                         })),
                     }),
                     ...(errorFields && { fields: errorFields }),
@@ -285,7 +301,8 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
                 endpoint.examples = item.examples.map((example: any) => ({
                     title: example.title || 'Example',
                     content: example.content || '',
-                    type: detectExampleType(example.content) as 'json' | 'text' | 'curl',
+                    // Use example.type if provided (e.g., from @apiCode), otherwise detect from content
+                    type: example.type || detectExampleType(example.content),
                 }));
             }
 
@@ -368,7 +385,7 @@ function generateEndpointId(item: any): string {
  * Detect example type from content
  * @param content
  */
-function detectExampleType(content: string): 'json' | 'text' | 'curl' {
+function detectExampleType(content: string): string {
     if (!content) return 'text';
 
     const trimmed = content.trim();
@@ -376,6 +393,11 @@ function detectExampleType(content: string): 'json' | 'text' | 'curl' {
     // Check for curl
     if (trimmed.startsWith('curl ')) {
         return 'curl';
+    }
+
+    // Check for bash/shell commands
+    if (trimmed.startsWith('#!/bin/bash') || trimmed.startsWith('#!/bin/sh')) {
+        return 'bash';
     }
 
     // Check for JSON

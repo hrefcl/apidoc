@@ -5,6 +5,78 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.5] - 2025-11-07
+
+### ✨ New Features
+
+#### Load JSON Examples from External Files
+- **Added**: `@apiSchema {json=path/to/file.json} apiSuccessExample` - Load JSON examples from external files
+- **Added**: `@apiSchema {json=path/to/file.json} apiErrorExample` - Load error examples from external files
+- **Benefits**:
+  - DRY principle - define examples once in JSON files
+  - Easier maintenance of complex examples
+  - Automatic HTTP status header generation
+  - Proper JSON formatting with indentation
+- **Example**:
+  ```typescript
+  /**
+   * @api {post} /auth/token Get Access Token
+   * @apiSchema {json=examples/responses/success.json} apiSuccessExample
+   * @apiSchema (Error 401) {json=examples/responses/error.json} apiErrorExample
+   */
+  ```
+
+#### New @apiCode Parser for Code Examples
+- **Added**: `@apiCode` tag - Load code examples from external files with automatic syntax highlighting
+- **Syntax**: `@apiCode (language) {file=path/to/file} Title`
+- **Benefits**:
+  - Keep code examples in actual runnable files
+  - Automatic language detection from file extension
+  - Maintains code syntax highlighting
+  - Examples stay testable and up-to-date
+- **Supported Languages**: JavaScript, TypeScript, Python, Java, Ruby, PHP, Go, Rust, C/C++, C#, Bash, PowerShell, cURL, JSON, XML, YAML, HTML, CSS, SQL, Kotlin, Swift, Dart, and more
+- **Examples**:
+  ```typescript
+  /**
+   * @api {post} /auth/token Get Access Token
+   * @apiCode (javascript) {file=examples/code/auth.js} JavaScript Example
+   * @apiCode (bash) {file=examples/code/auth.sh} cURL Example
+   * @apiCode (python) {file=examples/code/auth.py} Python Example
+   */
+  ```
+
+### 🔧 Technical Improvements
+- **Parser Registration**: Added `apicode` parser to core parser registry
+- **File Loading**: Both `@apiSchema` and `@apiCode` resolve paths relative to source file
+- **Error Handling**: Graceful error handling when files are not found with clear warning messages
+
+### 📝 Testing
+- Added comprehensive test cases in `examples/test-code-loading/`
+- Verified JSON file loading for examples
+- Verified code file loading with multiple languages
+- Zero errors on clean builds
+
+## [5.0.4] - 2025-11-07
+
+### 🐛 Bug Fixes
+
+#### Graceful Parser Error Handling
+- **Fixed**: Fatal parsing errors now log warnings instead of crashing documentation generation
+- **Root Cause**: Malformed syntax like `{''/''} [paramName]` caused parser to throw fatal errors, stopping entire build process
+- **Solution**: Modified parser error handling in `core/parser.ts` to log warning and skip problematic elements instead of throwing
+- **Impact**: Documentation generation continues even when individual elements have invalid syntax
+- **Files Modified**: `core/parser.ts` (lines 483-490)
+- **Example Warning**:
+  ```
+  warn: Empty parser result for @apiParam in block 151 of file 'src/routes/building.ts'.
+  Source: "@apiParam (Query) {''/''} [sortOrder] Sort order". This element will be skipped.
+  ```
+
+### 🔧 Technical Improvements
+- **Robustness**: Parser now handles invalid syntax gracefully without breaking entire documentation build
+- **Error Reporting**: Clear warning messages indicate which blocks have issues and what the invalid source looks like
+- **Continuity**: All valid API documentation generates successfully even when some blocks contain errors
+
 ## [5.0.3] - 2025-11-07
 
 ### 🐛 Bug Fixes

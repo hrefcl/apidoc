@@ -1,0 +1,139 @@
+{
+  "app": {
+    "name": "APIDoc",
+    "version": "5.0.0"
+  },
+  "home": {
+    "title": "APIDoc v5 文档",
+    "subtitle": "从您的代码自动生成精美现代的文档。使用 Vue 3、Vite 和 MagicUI 构建。",
+    "viewDocs": "查看文档",
+    "github": "GitHub",
+    "features": {
+      "fast": {
+        "title": "快速现代",
+        "description": "使用 Vite 和 Vue 3 构建，提供超快的开发体验。"
+      },
+      "beautiful": {
+        "title": "精美设计",
+        "description": "MagicUI 配色，蓝紫渐变，包含深色模式。"
+      },
+      "jsonBased": {
+        "title": "基于 JSON",
+        "description": "从 APIDoc 生成的 JSON 文件动态加载文档。"
+      }
+    },
+    "stats": {
+      "docs": "文档",
+      "apis": "接口",
+      "guides": "指南",
+      "typescript": "TypeScript"
+    },
+    "quickLinks": "快速链接",
+    "links": {
+      "authentication": {
+        "title": "身份验证",
+        "description": "身份验证和安全端点"
+      },
+      "introduction": {
+        "title": "介绍",
+        "description": "开始使用文档"
+      },
+      "typescript": {
+        "title": "TypeScript",
+        "description": "类型和模式文档"
+      },
+      "apiReference": {
+        "title": "API 参考",
+        "description": "完整的 API 参考"
+      }
+    }
+  },
+  "nav": {
+    "home": "首页",
+    "api": "接口",
+    "docs": "文档",
+    "tests": "测试",
+    "history": "历史",
+    "settings": "设置"
+  },
+  "api": {
+    "endpoints": "端点",
+    "endpoint": "端点",
+    "method": "方法",
+    "url": "URL",
+    "version": "版本",
+    "versions": "版本",
+    "description": "描述",
+    "parameters": "参数",
+    "headers": "请求头",
+    "headerExamples": "请求头示例",
+    "body": "请求体",
+    "response": "响应",
+    "responses": "响应",
+    "success": "成功",
+    "error": "错误",
+    "examples": "示例",
+    "tryIt": "试一试",
+    "group": "分组",
+    "groups": "分组",
+    "multipleVersions": "{count} 个版本",
+    "latestVersion": "最新版本",
+    "selectVersion": "选择版本",
+    "compareVersions": "比较版本",
+    "latest": "最新"
+  },
+  "search": {
+    "placeholder": "搜索端点、文档...",
+    "noResults": "未找到结果",
+    "results": "{count} 个结果"
+  },
+  "docs": {
+    "title": "文档",
+    "header": "页眉",
+    "footer": "页脚",
+    "group": "分组",
+    "tsdoc": "TypeScript 文档"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "required": "必需",
+    "optional": "可选",
+    "default": "默认",
+    "type": "类型",
+    "name": "名称",
+    "value": "值",
+    "close": "关闭",
+    "open": "打开",
+    "expand": "展开",
+    "collapse": "折叠",
+    "copy": "复制",
+    "copied": "已复制",
+    "darkMode": "深色模式",
+    "lightMode": "浅色模式",
+    "language": "语言",
+    "tableOfContents": "目录",
+    "noContent": "无内容"
+  },
+  "status": {
+    "200": "成功",
+    "201": "已创建",
+    "204": "无内容",
+    "400": "错误请求",
+    "401": "未授权",
+    "403": "禁止访问",
+    "404": "未找到",
+    "500": "服务器错误"
+  },
+  "login": {
+    "title": "登录",
+    "subtitle": "访问受保护的文档",
+    "email": "电子邮箱",
+    "password": "密码",
+    "submit": "登录",
+    "loading": "登录中...",
+    "error": "登录错误",
+    "invalidCredentials": "无效的凭据",
+    "networkError": "网络错误，请重试。"
+  }
+}

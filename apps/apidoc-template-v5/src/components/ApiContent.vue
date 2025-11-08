@@ -113,11 +113,17 @@
         <!-- Endpoint Body -->
         <div class="p-6 space-y-6">
           <!-- Headers Table -->
-          <div v-if="endpointGroup.endpoint.header?.fields?.Header || endpointGroup.endpoint.headers" id="section-headers">
+          <div v-if="endpointGroup.endpoint.header?.fields?.Header || endpointGroup.endpoint.header" id="section-headers">
             <ParametersTable
-              :parameters="endpointGroup.endpoint.header?.fields?.Header || endpointGroup.endpoint.headers"
+              :parameters="endpointGroup.endpoint.header?.fields?.Header || endpointGroup.endpoint.header"
               :title="t('api.headers')"
             />
+
+            <!-- Header Examples -->
+            <div v-if="endpointGroup.endpoint.headerExamples && endpointGroup.endpoint.headerExamples.length > 0" class="mt-4">
+              <h4 class="text-lg font-semibold mb-3">{{ t('api.headerExamples') || 'Header Examples' }}</h4>
+              <CodeTabs :examples="endpointGroup.endpoint.headerExamples" />
+            </div>
           </div>
 
           <!-- Parameters Table - All Groups (Body, Parameter, Query, etc.) -->
@@ -557,7 +563,7 @@ onMounted(() => {
   if (groupedEndpoints.value.length > 0) {
     const endpoint = groupedEndpoints.value[0].endpoint
 
-    if (endpoint.header?.fields?.Header || endpoint.headers) {
+    if (endpoint.header?.fields?.Header || endpoint.header) {
       sections.push({ id: 'section-headers', title: t('api.headers') })
     }
     if (endpoint.parameter?.fields || endpoint.parameters) {

@@ -617,6 +617,40 @@ function processor(elements: Array<any>, element: any, block: any, filename: str
                 content: `${groupPrefix}{Object} data ${interfaceName} interface`,
             });
         }
+    } else if (parsed.schemaType === 'json') {
+        // Handle JSON file for examples (apiSuccessExample, apiErrorExample, apiHeaderExample, etc.)
+        try {
+            const fullPath = path.resolve(path.dirname(filename), parsed.schemaValue);
+            const jsonContent = fs.readFileSync(fullPath, 'utf8');
+            const jsonData = JSON.parse(jsonContent);
+
+            // Format JSON with proper indentation
+            const formattedJson = JSON.stringify(jsonData, null, 2);
+
+            let exampleContent: string;
+
+            // Special handling for apiHeaderExample - no HTTP status line
+            if (parsed.element.toLowerCase() === 'apiheaderexample') {
+                exampleContent = `{json} ${parsed.group || 'Header-Example'}\n${formattedJson}`;
+            } else {
+                // For apiSuccessExample, apiErrorExample, etc. - include HTTP status
+                const httpStatus = parsed.group ? parsed.group.match(/\d+/)?.[0] || '200' : '200';
+                const statusText = httpStatus.startsWith('2') ? 'OK' :
+                                  httpStatus.startsWith('4') ? 'Bad Request' :
+                                  httpStatus.startsWith('5') ? 'Internal Server Error' : 'OK';
+
+                exampleContent = `{json} ${parsed.group || 'Response'}\nHTTP/1.1 ${httpStatus} ${statusText}\n${formattedJson}`;
+            }
+
+            newElements.push({
+                source: `@${parsed.element} ${exampleContent}`,
+                name: parsed.element.toLowerCase(),
+                sourceName: parsed.element,
+                content: exampleContent,
+            });
+        } catch (error) {
+            console.warn(`Warning: Could not load JSON file at ${parsed.schemaValue}: ${error.message}`);
+        }
     } else if (parsed.schemaType === 'jsonschema') {
         // Handle JSON Schema file
         newElements = parseJsonSchema(parsed.schemaValue, filename);
