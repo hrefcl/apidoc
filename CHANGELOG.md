@@ -5,6 +5,116 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.6] - 2025-11-08
+
+### 🌍 Complete i18n Internationalization
+
+#### Full 7-Language Support
+- **Added**: Complete internationalization (i18n) system with vue-i18n
+- **Supported Languages**:
+  - 🇪🇸 Spanish (Español)
+  - 🇺🇸 English
+  - 🇨🇳 Chinese Simplified (中文)
+  - 🇧🇷 Portuguese (Português)
+  - 🇫🇷 French (Français)
+  - 🇩🇪 German (Deutsch)
+  - 🇯🇵 Japanese (日本語)
+
+#### Components Fully Translated
+- **SearchModal.vue**: All search interface text (placeholder, messages, keyboard shortcuts)
+- **DocsLayout.vue**: Navigation menu, expand/collapse buttons, GitHub tooltip
+- **ApiSectionPage.vue**: Section titles, endpoints list, error messages
+- **CategoryIndexPage.vue**: Category metadata and descriptions
+- **HomePage.vue**: Complete homepage including statistics, quick access, all UI elements
+
+#### Translation Coverage
+- **Navigation**: Home, Documentation, API, TypeScript, Models
+- **Search**: Placeholder, no results, type to search, navigate, select, result counts
+- **Messages**: Error states, loading states, no content messages
+- **Categories**: Documentation, API Reference, TypeScript, Models (titles & descriptions)
+- **Homepage**: API statistics, endpoints by method, API groups, quick access, guides
+- **API**: Endpoints, headers, parameters, responses, versions, examples
+- **Common**: Loading, error, required, optional, copy, dark mode, language
+
+#### Total Translations
+- **~150 translation keys** across all 7 languages
+- **Over 1,050 total translations** (150 keys × 7 languages)
+- **100% coverage** of all user-facing text
+
+### 🔍 Enhanced Search Functionality
+
+#### Search Now Includes API Endpoints
+- **Fixed**: Search modal now searches both documentation AND API endpoints
+- **Enhanced**: Search results include:
+  - Documentation pages (markdown files)
+  - API endpoints with method + URL + title
+  - Nested subgroup items
+- **Improved**: Direct navigation to API endpoints from search results
+- **Example**: Search "POST" to find all POST endpoints, or "users" to find user-related docs and endpoints
+
+### 🎨 Template Improvements
+
+- **Updated**: Template rebuilt with all i18n integrations
+- **Size**: 965.46 kB (gzip: 263.51 kB)
+- **Performance**: No performance impact from i18n system
+- **Locale Persistence**: Selected language saved to localStorage
+- **Auto-detection**: Browser language automatically detected on first visit
+
+### 🔧 Technical Details
+
+- **Framework**: vue-i18n v10.x with Composition API
+- **Message Format**: JSON-based translation files with nested structure
+- **Interpolation**: Dynamic variables with `{variable}` syntax
+- **Pluralization**: Support for singular/plural forms in all languages
+- **Fallback**: English as default fallback language
+- **Type Safety**: Full TypeScript support for translation keys
+
+### 📦 Files Added/Modified
+
+**New Translation Files**:
+- `src/i18n/locales/zh-CN.json` - Chinese Simplified
+- `src/i18n/locales/pt-BR.json` - Brazilian Portuguese
+- `src/i18n/locales/fr.json` - French
+- `src/i18n/locales/de.json` - German
+- `src/i18n/locales/ja.json` - Japanese
+
+**Updated Translation Files**:
+- `src/i18n/locales/es.json` - Extended with 100+ new keys
+- `src/i18n/locales/en.json` - Extended with 100+ new keys
+
+**Updated Components**:
+- `src/components/SearchModal.vue` - Full i18n integration + API search
+- `src/layouts/DocsLayout.vue` - Navigation and controls i18n
+- `src/pages/ApiSectionPage.vue` - Section content i18n
+- `src/pages/CategoryIndexPage.vue` - Category metadata i18n
+- `src/pages/HomePage.vue` - Complete homepage i18n
+
+**Template**:
+- `template/index.html` - Rebuilt with all i18n changes
+
+### 🐛 Bug Fixes
+
+- **Fixed**: Search not finding API endpoints (only searched markdown docs)
+- **Fixed**: All hardcoded Spanish text in interface
+- **Fixed**: Missing translations in navigation menu
+- **Fixed**: Error messages not translated
+- **Fixed**: Statistics dashboard text hardcoded
+
+### 📚 Migration Guide
+
+No breaking changes. The template automatically detects browser language and falls back to English if the detected language is not supported.
+
+**Supported Language Codes**:
+- `es` - Spanish
+- `en` - English
+- `zh` - Chinese
+- `pt` - Portuguese
+- `fr` - French
+- `de` - German
+- `ja` - Japanese
+
+Users can switch languages using the language selector in the header (flag icon).
+
 ## [5.0.5] - 2025-11-07
 
 ### ✨ New Features
