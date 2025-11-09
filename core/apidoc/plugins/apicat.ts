@@ -388,19 +388,19 @@ export class ApiCatPlugin {
         for (const group of groups) {
             const groupEndpoints = apicatData.endpoints.filter((ep: any) => ep.group === group);
 
-            // IMPORTANT: Group by language FIRST, then by version
-            // This ensures that endpoints with @apiLang are preserved before version grouping
+            // Group by BOTH version AND language simultaneously
+            // This creates the dual structure needed for both selectors to work
             let groupedEndpoints = groupEndpoints;
 
-            const defaultLang = this.projectInfo?.i18n?.defaultLang;
+            const defaultLang = this.projectInfo?.i18n?.defaultLang || 'en';
 
-            // Step 1: Group by language if i18n is enabled (BEFORE version grouping)
+            // Use new unified function when i18n is enabled
             if (this.projectInfo?.i18n?.enabled) {
-                groupedEndpoints = this.groupEndpointsByLanguage(groupedEndpoints, defaultLang);
+                groupedEndpoints = this.groupByVersionAndLanguage(groupedEndpoints, defaultLang);
+            } else {
+                // No i18n - just group by version
+                groupedEndpoints = this.groupEndpointsByVersion(groupedEndpoints);
             }
-
-            // Step 2: Group endpoints by ID (multiple versions of same endpoint)
-            groupedEndpoints = this.groupEndpointsByVersion(groupedEndpoints);
 
             // Store in map for navigation generation
             groupedEndpointsMap.set(group, groupedEndpoints);
@@ -1539,14 +1539,19 @@ export class ApiCatPlugin {
      * @returns Array of grouped endpoints with version information
      */
     private groupEndpointsByVersion(endpoints: any[]): any[] {
-        // Create a map to group endpoints by ID
+        // Create a map to group endpoints by ID + LANGUAGE
+        // This prevents different language variants from being grouped as versions
         const endpointMap = new Map<string, any[]>();
 
         endpoints.forEach((endpoint) => {
-            if (!endpointMap.has(endpoint.id)) {
-                endpointMap.set(endpoint.id, []);
+            // Group by id + lang to keep language variants separate
+            // Example: "CreateUser:es" and "CreateUser:en" are separate groups
+            const groupKey = endpoint.lang ? `${endpoint.id}:${endpoint.lang}` : endpoint.id;
+
+            if (!endpointMap.has(groupKey)) {
+                endpointMap.set(groupKey, []);
             }
-            endpointMap.get(endpoint.id)!.push(endpoint);
+            endpointMap.get(groupKey)!.push(endpoint);
         });
 
         // Convert map to array of grouped endpoints
@@ -1587,6 +1592,12 @@ export class ApiCatPlugin {
                     success: ep.success,
                     error: ep.error,
                     examples: ep.examples,
+                    // Include language data for multi-language support
+                    languages: ep.languages,
+                    hasMultipleLanguages: ep.hasMultipleLanguages,
+                    languageCount: ep.languageCount,
+                    availableLanguages: ep.availableLanguages,
+                    defaultLanguage: ep.defaultLanguage,
                 }));
 
                 groupedEndpoint.latestVersion = latestEndpoint.version;
@@ -1645,7 +1656,8 @@ export class ApiCatPlugin {
         const endpointMap = new Map<string, any[]>();
 
         endpoints.forEach((endpoint) => {
-            // Use endpoint.id as the grouping key (same endpoint, different languages)
+            // Group by ID only - this allows different versions with same ID
+            // to be merged together with their language variants
             const groupKey = endpoint.id;
 
             if (!endpointMap.has(groupKey)) {
@@ -1745,6 +1757,144 @@ export class ApiCatPlugin {
         });
 
         return groupedEndpoints;
+    }
+
+    /**
+     * Group endpoints by BOTH version AND language simultaneously
+     * This creates a structure that supports both version switching and language switching
+     *
+     * Example input:
+     *   - CreateUser v1.0.0 ES
+     *   - CreateUser v1.0.0 EN
+     *   - CreateUser v2.0.0 ES
+     *   - CreateUser v2.0.0 EN
+     *
+     * Example output:
+     * {
+     *   id: "CreateUser",
+     *   version: "2.0.0",  // Latest version
+     *   lang: "en",  // Default language
+     *   ...endpointDataEN_v2...,
+     *   versions: [
+     *     {
+     *       version: "2.0.0",
+     *       languages: { es: {...}, en: {...} }
+     *     },
+     *     {
+     *       version: "1.0.0",
+     *       languages: { es: {...}, en: {...}, zh: {...} }
+     *     }
+     *   ],
+     *   languages: {
+     *     es: {...v2_ES...},
+     *     en: {...v2_EN...}
+     *   }
+     * }
+     */
+    private groupByVersionAndLanguage(endpoints: any[], defaultLang: string = 'en'): any[] {
+        // Step 1: Group by ID (ignoring version and language)
+        const byId = new Map<string, any[]>();
+
+        endpoints.forEach(ep => {
+            if (!byId.has(ep.id)) {
+                byId.set(ep.id, []);
+            }
+            byId.get(ep.id)!.push(ep);
+        });
+
+        const result: any[] = [];
+
+        // Step 2: For each ID, create the dual structure
+        byId.forEach((variants, endpointId) => {
+            if (variants.length === 1) {
+                // Single variant - no multi-version, no multi-language
+                result.push(variants[0]);
+                return;
+            }
+
+            // Step 3: Group by version
+            const byVersion = new Map<string, any[]>();
+            variants.forEach(ep => {
+                const version = ep.version || '0.0.0';
+                if (!byVersion.has(version)) {
+                    byVersion.set(version, []);
+                }
+                byVersion.get(version)!.push(ep);
+            });
+
+            // Step 4: Sort versions
+            const sortedVersions = Array.from(byVersion.keys()).sort((a, b) =>
+                b.localeCompare(a, undefined, { numeric: true, sensitivity: 'base' })
+            );
+
+            const latestVersion = sortedVersions[0];
+
+            // Step 5: Create versions array (each version with its languages)
+            const versionsArray = sortedVersions.map(version => {
+                const versionVariants = byVersion.get(version)!;
+
+                // Group by language within this version
+                const versionLanguages: Record<string, any> = {};
+                versionVariants.forEach(ep => {
+                    if (ep.lang) {
+                        versionLanguages[ep.lang] = { ...ep };
+                    }
+                });
+
+                // Pick primary endpoint for this version
+                const primaryLang = defaultLang && versionLanguages[defaultLang]
+                    ? defaultLang
+                    : (Object.keys(versionLanguages)[0] || 'en');
+
+                const primaryEp = versionLanguages[primaryLang] || versionVariants[0];
+
+                return {
+                    version,
+                    isLatest: version === latestVersion,
+                    ...primaryEp,
+                    languages: versionLanguages,
+                    hasMultipleLanguages: Object.keys(versionLanguages).length > 1,
+                    languageCount: Object.keys(versionLanguages).length,
+                    availableLanguages: Object.keys(versionLanguages).sort(),
+                    defaultLanguage: primaryLang
+                };
+            });
+
+            // Step 6: Get latest version variants for root level
+            const latestVariants = byVersion.get(latestVersion)!;
+            const latestLanguages: Record<string, any> = {};
+            latestVariants.forEach(ep => {
+                if (ep.lang) {
+                    latestLanguages[ep.lang] = { ...ep };
+                }
+            });
+
+            const primaryLang = defaultLang && latestLanguages[defaultLang]
+                ? defaultLang
+                : (Object.keys(latestLanguages)[0] || 'en');
+
+            const primaryEp = latestLanguages[primaryLang] || latestVariants[0];
+
+            // Step 7: Create final structure
+            const grouped = {
+                ...primaryEp,
+                // Version information
+                versions: versionsArray,
+                latestVersion,
+                versionCount: sortedVersions.length,
+                hasMultipleVersions: sortedVersions.length > 1,
+                // Language information (for current/latest version)
+                languages: latestLanguages,
+                hasMultipleLanguages: Object.keys(latestLanguages).length > 1,
+                languageCount: Object.keys(latestLanguages).length,
+                availableLanguages: Object.keys(latestLanguages).sort(),
+                defaultLanguage: primaryLang
+            };
+
+            result.push(grouped);
+        });
+
+        return result;
     }
 
     /**

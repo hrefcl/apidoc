@@ -32,6 +32,23 @@
             <p v-if="endpointGroup.endpoint.description" class="text-muted-foreground" v-html="endpointGroup.endpoint.description"></p>
           </div>
 
+          <!-- Version & Language Selector -->
+          <div class="opblock-section border-b border-border p-6">
+            <VersionSelector
+              v-if="endpointGroup.versions && endpointGroup.versions.length > 0"
+              :versions="endpointGroup.versions"
+              :currentVersion="endpointGroup.selectedVersion"
+              :currentLanguage="docsStore.currentLanguage"
+              @version-change="(version) => selectVersion(endpointGroup.key, version)"
+              @language-change="handleLanguageChange"
+            />
+            <!-- DEBUG -->
+            <div v-if="endpointGroup.endpoint" class="text-xs text-muted-foreground mt-2">
+              DEBUG: endpoint.versions = {{ endpointGroup.endpoint.versions?.length || 0 }},
+              group.versions = {{ endpointGroup.versions?.length || 0 }}
+            </div>
+          </div>
+
           <!-- Request Information Section -->
           <div class="opblock-section border-b border-border p-6">
             <div class="flex justify-between items-start mb-4">
@@ -332,6 +349,7 @@ import ParametersTable from './ParametersTable.vue'
 import ResponseTable from './ResponseTable.vue'
 import TryItOut from './TryItOut.vue'
 import MqttTryItOut from './MqttTryItOut.vue'
+import VersionSelector from './VersionSelector.vue'
 
 const { t } = useI18n()
 const docsStore = useDocsStore()
@@ -387,12 +405,20 @@ const groupedEndpoints = computed(() => {
       console.log('🔍 Processing endpoint:', endpoint.name, 'has versions array?', hasVersionsArray, 'versions:', endpoint.versions?.length)
 
       if (hasVersionsArray) {
-        // Usar el array de versiones del endpoint
-        groups.set(key, {
+        // CRITICAL: Pass the FULL version objects, not just version strings
+        // Each version object contains { version, languages, ... }
+        const group = {
           key,
-          versions: endpoint.versions.map(v => v.version),
+          versions: endpoint.versions, // Pass full objects with languages
           endpoints: endpoint.versions
+        }
+        console.log('✅ Creating group with FULL versions array:', {
+          key,
+          versionsCount: group.versions.length,
+          firstVersion: group.versions[0],
+          hasLanguages: !!group.versions[0]?.languages
         })
+        groups.set(key, group)
       } else {
         // Formato antiguo: un endpoint = una versión
         groups.set(key, {
@@ -413,25 +439,44 @@ const groupedEndpoints = computed(() => {
 
   // Convert to array and select latest version by default
   return Array.from(groups.values()).map(group => {
+    // Check if versions are objects or strings
+    const areObjects = group.versions[0] && typeof group.versions[0] === 'object';
+
     // Sort versions descending (latest first)
-    group.versions.sort((a, b) => {
-      const aParts = a.split('.').map(Number)
-      const bParts = b.split('.').map(Number)
-      for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
-        const aNum = aParts[i] || 0
-        const bNum = bParts[i] || 0
-        if (aNum !== bNum) return bNum - aNum
-      }
-      return 0
-    })
+    if (areObjects) {
+      // Versions are objects with { version, languages, ... }
+      group.versions.sort((a, b) => {
+        const versionA = a.version || '0.0.0';
+        const versionB = b.version || '0.0.0';
+        return versionB.localeCompare(versionA, undefined, { numeric: true, sensitivity: 'base' });
+      });
+    } else {
+      // Versions are strings (old format)
+      group.versions.sort((a, b) => {
+        const aParts = a.split('.').map(Number)
+        const bParts = b.split('.').map(Number)
+        for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+          const aNum = aParts[i] || 0
+          const bNum = bParts[i] || 0
+          if (aNum !== bNum) return bNum - aNum
+        }
+        return 0
+      })
+    }
 
-    console.log('🔍 Group versions after sort:', group.versions)
+    console.log('🔍 Group versions after sort:', group.versions.map(v => v.version || v))
 
-    // Get selected version from external prop, internal state, or default to latest
-    const selectedVersion = props.externalSelectedVersion || selectedVersions[group.key] || group.versions[0]
-    const endpoint = group.endpoints.find(e => e.version === selectedVersion) || group.endpoints[0]
+    // Get selected version string
+    const latestVersionStr = areObjects ? group.versions[0].version : group.versions[0];
+    const selectedVersion = props.externalSelectedVersion || selectedVersions[group.key] || latestVersionStr;
 
-    console.log('🔍 Selected version:', selectedVersion, 'endpoint:', endpoint?.name)
+    // Find endpoint matching selected version
+    const endpoint = group.endpoints.find(e => {
+      const epVersion = typeof e === 'object' && e.version ? e.version : e;
+      return epVersion === selectedVersion;
+    }) || group.endpoints[0];
+
+    console.log('🔍 Selected version:', selectedVersion, 'endpoint:', endpoint?.name || endpoint)
 
     return {
       ...group,
@@ -448,6 +493,12 @@ const toggleVersionDropdown = (key) => {
 const selectVersion = (key, version) => {
   selectedVersions[key] = version
   activeVersionDropdown.value = null
+}
+
+const handleLanguageChange = ({ version, language }) => {
+  console.log('🌍 ApiContent: Language changed to', language, 'for version', version)
+  // Language change is already handled by VersionSelector calling docsStore.setLanguage()
+  // Just log for debugging
 }
 
 const toggleCollapse = (key) => {

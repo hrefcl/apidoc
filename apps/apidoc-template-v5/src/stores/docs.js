@@ -770,12 +770,32 @@ export const useDocsStore = defineStore('docs', () => {
 
     // Try requested language first
     if (endpoint.languages[requestedLang]) {
-      return {
+      const langData = endpoint.languages[requestedLang]
+      console.log('🌍 DEBUG before spread:', {
+        endpointHasVersions: !!endpoint.versions,
+        endpointVersionsCount: endpoint.versions?.length,
+        langDataHasVersions: !!langData.versions,
+        langDataVersionsCount: langData.versions?.length
+      })
+
+      const result = {
         ...endpoint,
-        ...endpoint.languages[requestedLang],
+        ...langData,
+        // CRITICAL: Preserve versions array from original endpoint (must come AFTER spread to override)
+        versions: endpoint.versions,
+        hasMultipleVersions: endpoint.hasMultipleVersions,
+        versionCount: endpoint.versionCount,
+        latestVersion: endpoint.latestVersion,
         _currentLang: requestedLang,
         _availableLangs: Object.keys(endpoint.languages)
       }
+      console.log('🌍 getLocalizedEndpoint result:', {
+        name: result.name,
+        hasVersions: !!result.versions,
+        versionsCount: result.versions?.length,
+        hasMultipleVersions: result.hasMultipleVersions
+      })
+      return result
     }
 
     // Fallback to default language
@@ -784,6 +804,11 @@ export const useDocsStore = defineStore('docs', () => {
       return {
         ...endpoint,
         ...endpoint.languages[defaultLang],
+        // CRITICAL: Preserve versions array from original endpoint
+        versions: endpoint.versions,
+        hasMultipleVersions: endpoint.hasMultipleVersions,
+        versionCount: endpoint.versionCount,
+        latestVersion: endpoint.latestVersion,
         _currentLang: defaultLang,
         _availableLangs: Object.keys(endpoint.languages),
         _isFallback: true
@@ -797,6 +822,11 @@ export const useDocsStore = defineStore('docs', () => {
       return {
         ...endpoint,
         ...endpoint.languages[firstAvailable],
+        // CRITICAL: Preserve versions array from original endpoint
+        versions: endpoint.versions,
+        hasMultipleVersions: endpoint.hasMultipleVersions,
+        versionCount: endpoint.versionCount,
+        latestVersion: endpoint.latestVersion,
         _currentLang: firstAvailable,
         _availableLangs: Object.keys(endpoint.languages),
         _isFallback: true
