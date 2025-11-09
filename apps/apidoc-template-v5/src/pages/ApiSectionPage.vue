@@ -68,18 +68,31 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDocsStore } from '@/stores/docs'
+import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const docsStore = useDocsStore()
+const { currentLanguage } = storeToRefs(docsStore)
 
 const section = computed(() => route.params.section)
 const loading = ref(true)
 const error = ref(null)
 const sectionData = ref(null)
-const endpoints = ref([])
+const rawEndpoints = ref([]) // Store raw endpoints without localization
+
+// Apply localization reactively
+const endpoints = computed(() => {
+  // Force reactivity on language change - use the ref value
+  const lang = currentLanguage.value
+  console.log('🔄 [ApiSectionPage] Computing localized endpoints for language:', lang)
+
+  return rawEndpoints.value.map(endpoint => {
+    return docsStore.getLocalizedEndpoint(endpoint)
+  })
+})
 
 const getMethodClass = (method) => {
   const classes = {
@@ -155,6 +168,7 @@ const loadSectionData = async () => {
                 if (shardData) {
                   const fullEndpoint = shardData.endpoints?.find(e => e.id === endpointId)
                   if (fullEndpoint) {
+                    // Store raw endpoint - localization will be applied in computed
                     endpointDetails.push(fullEndpoint)
                     console.log('[ApiSectionPage] Loaded endpoint from embedded data:', endpointId)
                   }
@@ -164,7 +178,7 @@ const loadSectionData = async () => {
               }
             }
           }
-          endpoints.value = endpointDetails
+          rawEndpoints.value = endpointDetails
           console.log('[ApiSectionPage] Loaded endpoints:', endpointDetails.length)
         }
       }

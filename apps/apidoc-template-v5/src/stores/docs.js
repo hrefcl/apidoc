@@ -227,12 +227,15 @@ export const useDocsStore = defineStore('docs', () => {
 
   // Cargar índice de documentos
   const loadDocs = async () => {
+    console.log('🔍 [loadDocs] FUNCTION CALLED')
     loading.value = true
     error.value = null
 
     try {
       // Cargar índice principal (cat.json)
+      console.log('🔍 [loadDocs] Loading cat.json...')
       const catData = await loadData('/data/cat.json', 'cat')
+      console.log('🔍 [loadDocs] cat.json loaded successfully')
 
       // Procesar estructura APIcat v5
       const allDocs = []
@@ -277,21 +280,32 @@ export const useDocsStore = defineStore('docs', () => {
       }
 
       docs.value = allDocs
+      console.log('🔍 [loadDocs] docs.value set, length:', allDocs.length)
 
       // Cargar navegación
+      console.log('🔍 [loadDocs] Loading navigation...')
       await loadNavigation()
+      console.log('🔍 [loadDocs] Navigation loaded')
 
       // Cargar metadata
+      console.log('🔍 [loadDocs] Loading meta...')
       await loadMeta()
+      console.log('🔍 [loadDocs] Meta loaded')
 
       // Cargar índice de API
+      console.log('🔍 [loadDocs] Loading API index...')
       await loadApiIndex()
+      console.log('🔍 [loadDocs] API index loaded')
 
       // Organizar documentos por categoría
+      console.log('🔍 [loadDocs] Organizing docs...')
       organizeDocs()
+      console.log('🔍 [loadDocs] Docs organized')
 
       // Inicializar sistema i18n
+      console.log('🔍 [loadDocs] About to call initI18n()...')
       initI18n()
+      console.log('🔍 [loadDocs] initI18n() completed')
     } catch (e) {
       error.value = 'Error al cargar documentos: ' + e.message
       console.error('Error loading docs:', e)
@@ -324,6 +338,11 @@ export const useDocsStore = defineStore('docs', () => {
       console.log('[loadApiIndex] Loading API index with key: api.index')
       apiIndex.value = await loadData('/data/cat.api.index.json', 'api.index')
       console.log('[loadApiIndex] API index loaded:', apiIndex.value ? 'SUCCESS' : 'FAILED')
+
+      // 🌍 Initialize i18n AFTER API index is loaded (when data is available)
+      console.log('[loadApiIndex] Calling initI18n() after API data loaded...')
+      initI18n()
+      console.log('[loadApiIndex] initI18n() completed')
     } catch (e) {
       console.error('[loadApiIndex] Error loading API index:', e)
     }
@@ -693,24 +712,40 @@ export const useDocsStore = defineStore('docs', () => {
 
     // Get i18n config from meta
     const i18n = window.__APICAT_DATA__?.meta?.i18n
+
     if (i18n && i18n.enabled) {
       i18nConfig.value = i18n
 
-      // Detect available languages from all endpoints
-      const langsSet = new Set()
-      const apiData = window.__APICAT_DATA__?.api || {}
+      // Use availableLangs from meta.i18n (already calculated by core)
+      if (i18n.availableLangs && Array.isArray(i18n.availableLangs)) {
+        availableLanguages.value = i18n.availableLangs.sort()
+      } else {
+        // Fallback: Detect available languages from all endpoints
+        const langsSet = new Set()
+        const apiData = window.__APICAT_DATA__?.api || {}
 
-      Object.values(apiData).forEach(group => {
-        if (group.endpoints) {
-          group.endpoints.forEach(endpoint => {
-            if (endpoint.languages) {
-              Object.keys(endpoint.languages).forEach(lang => langsSet.add(lang))
-            }
-          })
-        }
-      })
+        Object.values(apiData).forEach(group => {
+          if (group.endpoints) {
+            group.endpoints.forEach(endpoint => {
+              // Check languages in the main endpoint
+              if (endpoint.languages) {
+                Object.keys(endpoint.languages).forEach(lang => langsSet.add(lang))
+              }
 
-      availableLanguages.value = Array.from(langsSet).sort()
+              // Also check languages in versions array
+              if (endpoint.versions && Array.isArray(endpoint.versions)) {
+                endpoint.versions.forEach(version => {
+                  if (version.languages) {
+                    Object.keys(version.languages).forEach(lang => langsSet.add(lang))
+                  }
+                })
+              }
+            })
+          }
+        })
+
+        availableLanguages.value = Array.from(langsSet).sort()
+      }
 
       // Set default language from config or first available or browser language
       const browserLang = navigator.language.split('-')[0] // 'en-US' -> 'en'
@@ -747,7 +782,7 @@ export const useDocsStore = defineStore('docs', () => {
 
     currentLanguage.value = lang
     localStorage.setItem('apicat_language', lang)
-    console.log(`🌍 Language changed to: ${lang}`)
+    console.log('🌍 Language changed to:', lang)
   }
 
   /**
