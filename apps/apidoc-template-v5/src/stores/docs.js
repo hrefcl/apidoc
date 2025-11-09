@@ -740,11 +740,11 @@ export const useDocsStore = defineStore('docs', () => {
    * @param {string} lang - ISO 639-1 language code (e.g., 'es', 'en', 'zh')
    */
   const setLanguage = (lang) => {
-    if (!availableLanguages.value.includes(lang)) {
-      console.warn(`Language "${lang}" not available. Available: ${availableLanguages.value.join(', ')}`)
-      return
-    }
+    // Don't validate against availableLanguages because different versions
+    // may have different languages available. Just set it and let
+    // getLocalizedEndpoint handle fallbacks.
 
+    console.log(`🔧 DEBUG setLanguage called with: "${lang}" (type: ${typeof lang}, length: ${lang.length})`)
     currentLanguage.value = lang
     localStorage.setItem('apicat_language', lang)
     console.log(`🌍 Language changed to: ${lang}`)
@@ -768,9 +768,25 @@ export const useDocsStore = defineStore('docs', () => {
     const defaultLang = i18nConfig.value?.defaultLang
     const fallbackToDefault = i18nConfig.value?.fallbackToDefault !== false
 
-    // Try requested language first
-    if (endpoint.languages[requestedLang]) {
-      const langData = endpoint.languages[requestedLang]
+    // Try requested language first in ROOT endpoint
+    console.log(`🔍 DEBUG getLocalizedEndpoint: Looking for language "${requestedLang}" in ROOT:`, Object.keys(endpoint.languages))
+
+    let langData = endpoint.languages[requestedLang]
+
+    // If not found in root, check if it exists in ANY version
+    if (!langData && endpoint.versions && Array.isArray(endpoint.versions)) {
+      console.log(`⚠️ Language "${requestedLang}" not in ROOT, checking versions...`)
+      for (const versionObj of endpoint.versions) {
+        if (versionObj.languages && versionObj.languages[requestedLang]) {
+          console.log(`✅ Found language "${requestedLang}" in version ${versionObj.version}`)
+          langData = versionObj.languages[requestedLang]
+          break
+        }
+      }
+    }
+
+    if (langData) {
+      console.log(`✅ Using language "${requestedLang}"`)
       console.log('🌍 DEBUG before spread:', {
         endpointHasVersions: !!endpoint.versions,
         endpointVersionsCount: endpoint.versions?.length,
@@ -778,11 +794,27 @@ export const useDocsStore = defineStore('docs', () => {
         langDataVersionsCount: langData.versions?.length
       })
 
+      // CRITICAL: Localize ALL versions in the versions array too
+      let localizedVersions = endpoint.versions
+      if (endpoint.versions && Array.isArray(endpoint.versions)) {
+        localizedVersions = endpoint.versions.map(versionObj => {
+          if (versionObj.languages && versionObj.languages[requestedLang]) {
+            return {
+              ...versionObj,
+              ...versionObj.languages[requestedLang],
+              // Preserve structure
+              languages: versionObj.languages
+            }
+          }
+          return versionObj
+        })
+      }
+
       const result = {
         ...endpoint,
         ...langData,
-        // CRITICAL: Preserve versions array from original endpoint (must come AFTER spread to override)
-        versions: endpoint.versions,
+        // CRITICAL: Use localized versions array (must come AFTER spread to override)
+        versions: localizedVersions,
         hasMultipleVersions: endpoint.hasMultipleVersions,
         versionCount: endpoint.versionCount,
         latestVersion: endpoint.latestVersion,

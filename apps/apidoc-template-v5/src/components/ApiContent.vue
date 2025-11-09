@@ -337,6 +337,9 @@ import VersionSelector from './VersionSelector.vue'
 const { t } = useI18n()
 const docsStore = useDocsStore()
 
+// Create a reactive reference to currentLanguage to ensure reactivity
+const currentLanguage = toRef(docsStore, 'currentLanguage')
+
 // Helper to detect MQTT endpoints
 const isMqttEndpoint = (endpoint) => {
   // Check if endpoint method is MQTT type (PUBLISH, SUBSCRIBE, INLINE)
@@ -366,8 +369,8 @@ const collapsedSections = reactive({})
 const localizedEndpoints = computed(() => {
   if (!props.data.endpoints || props.data.endpoints.length === 0) return []
 
-  // IMPORTANT: Access currentLanguage to trigger reactivity
-  const currentLang = docsStore.currentLanguage
+  // IMPORTANT: Access currentLanguage.value to trigger reactivity
+  const currentLang = currentLanguage.value
   console.log('🔄 localizedEndpoints computed triggered, currentLang:', currentLang)
 
   // Aplicar getLocalizedEndpoint a cada endpoint

@@ -1,9 +1,10 @@
 /**
- * @file Simple i18n test with multiple languages and versions
+ * @file Multi-language API documentation test
+ * Tests: Spanish (es), English (en), Chinese (zh), French (fr), German (de), Japanese (ja)
  */
 
 // ============================================================================
-// Example 1: User API - Spanish version
+// Version 1.0.0 - 6 Languages (es, en, zh, fr, de, ja)
 // ============================================================================
 
 /**
@@ -29,14 +30,6 @@
  *   "id": 123,
  *   "nombre": "Juan Pérez",
  *   "email": "juan@example.com"
- * }
- *
- * @apiError UserExistsError El email ya está registrado
- *
- * @apiErrorExample {json} Error-Response:
- * HTTP/1.1 400 Bad Request
- * {
- *   "error": "El usuario ya existe"
  * }
  */
 
@@ -64,14 +57,6 @@
  *   "name": "John Doe",
  *   "email": "john@example.com"
  * }
- *
- * @apiError UserExistsError Email is already registered
- *
- * @apiErrorExample {json} Error-Response:
- * HTTP/1.1 400 Bad Request
- * {
- *   "error": "User already exists"
- * }
  */
 
 /**
@@ -83,33 +68,103 @@
  *
  * @apiDescription 在系统中创建新用户
  *
- * @apiParam {String} name 用户全名
+ * @apiParam {String} name 用户的全名
  * @apiParam {String} email 电子邮件地址
- * @apiParam {String} password 密码（最少8个字符）
+ * @apiParam {String} password 密码（至少8个字符）
  *
  * @apiSuccess {Number} id 创建的用户ID
- * @apiSuccess {String} name 用户姓名
- * @apiSuccess {String} email 电子邮件
+ * @apiSuccess {String} name 用户名
+ * @apiSuccess {String} email 电子邮件地址
  *
  * @apiSuccessExample {json} 成功响应:
  * HTTP/1.1 200 OK
  * {
  *   "id": 123,
- *   "name": "张三",
+ *   "name": "张伟",
  *   "email": "zhang@example.com"
  * }
+ */
+
+/**
+ * @api {post} /users Créer un Utilisateur
+ * @apiName CreateUser
+ * @apiGroup Users
+ * @apiVersion 1.0.0
+ * @apiLang fr
  *
- * @apiError UserExistsError 电子邮件已被注册
+ * @apiDescription Crée un nouvel utilisateur dans le système
  *
- * @apiErrorExample {json} Error-Response:
- * HTTP/1.1 400 Bad Request
+ * @apiParam {String} nom Nom complet de l'utilisateur
+ * @apiParam {String} email Adresse e-mail
+ * @apiParam {String} password Mot de passe (minimum 8 caractères)
+ *
+ * @apiSuccess {Number} id ID de l'utilisateur créé
+ * @apiSuccess {String} nom Nom de l'utilisateur
+ * @apiSuccess {String} email Adresse e-mail
+ *
+ * @apiSuccessExample {json} Réponse-Succès:
+ * HTTP/1.1 200 OK
  * {
- *   "error": "用户已存在"
+ *   "id": 123,
+ *   "nom": "Jean Dupont",
+ *   "email": "jean@example.com"
+ * }
+ */
+
+/**
+ * @api {post} /users Benutzer Erstellen
+ * @apiName CreateUser
+ * @apiGroup Users
+ * @apiVersion 1.0.0
+ * @apiLang de
+ *
+ * @apiDescription Erstellt einen neuen Benutzer im System
+ *
+ * @apiParam {String} name Vollständiger Name des Benutzers
+ * @apiParam {String} email E-Mail-Adresse
+ * @apiParam {String} password Passwort (mindestens 8 Zeichen)
+ *
+ * @apiSuccess {Number} id ID des erstellten Benutzers
+ * @apiSuccess {String} name Benutzername
+ * @apiSuccess {String} email E-Mail-Adresse
+ *
+ * @apiSuccessExample {json} Erfolg-Antwort:
+ * HTTP/1.1 200 OK
+ * {
+ *   "id": 123,
+ *   "name": "Hans Müller",
+ *   "email": "hans@example.com"
+ * }
+ */
+
+/**
+ * @api {post} /users ユーザーを作成
+ * @apiName CreateUser
+ * @apiGroup Users
+ * @apiVersion 1.0.0
+ * @apiLang ja
+ *
+ * @apiDescription システムに新しいユーザーを作成します
+ *
+ * @apiParam {String} name ユーザーのフルネーム
+ * @apiParam {String} email メールアドレス
+ * @apiParam {String} password パスワード（最低8文字）
+ *
+ * @apiSuccess {Number} id 作成されたユーザーのID
+ * @apiSuccess {String} name ユーザー名
+ * @apiSuccess {String} email メールアドレス
+ *
+ * @apiSuccessExample {json} 成功レスポンス:
+ * HTTP/1.1 200 OK
+ * {
+ *   "id": 123,
+ *   "name": "田中太郎",
+ *   "email": "tanaka@example.com"
  * }
  */
 
 // ============================================================================
-// Example 2: Version 2.0.0 with more features - Spanish
+// Version 2.0.0 - 3 Languages (es, en, fr) - Testing partial language support
 // ============================================================================
 
 /**
@@ -176,8 +231,40 @@
  * }
  */
 
+/**
+ * @api {post} /users Créer un Utilisateur (v2)
+ * @apiName CreateUser
+ * @apiGroup Users
+ * @apiVersion 2.0.0
+ * @apiLang fr
+ *
+ * @apiDescription Crée un nouvel utilisateur avec avatar et rôles (version 2.0)
+ *
+ * @apiParam {String} nom Nom complet de l'utilisateur
+ * @apiParam {String} email Adresse e-mail
+ * @apiParam {String} password Mot de passe (minimum 8 caractères)
+ * @apiParam {String} [avatar] URL de l'avatar de l'utilisateur
+ * @apiParam {String[]} [roles] Tableau de rôles (admin, user, guest)
+ *
+ * @apiSuccess {Number} id ID de l'utilisateur créé
+ * @apiSuccess {String} nom Nom de l'utilisateur
+ * @apiSuccess {String} email Adresse e-mail
+ * @apiSuccess {String} avatar URL de l'avatar
+ * @apiSuccess {String[]} roles Rôles attribués
+ *
+ * @apiSuccessExample {json} Réponse-Succès:
+ * HTTP/1.1 200 OK
+ * {
+ *   "id": 123,
+ *   "nom": "Jean Dupont",
+ *   "email": "jean@example.com",
+ *   "avatar": "https://example.com/avatar.jpg",
+ *   "roles": ["user"]
+ * }
+ */
+
 // ============================================================================
-// Example 3: Get User - Spanish and English
+// Additional endpoint - Get User (single version, 4 languages)
 // ============================================================================
 
 /**
@@ -187,23 +274,13 @@
  * @apiVersion 1.0.0
  * @apiLang es
  *
- * @apiDescription Obtiene la información de un usuario por su ID
+ * @apiDescription Obtiene la información de un usuario específico
  *
  * @apiParam {Number} id ID único del usuario
  *
  * @apiSuccess {Number} id ID del usuario
  * @apiSuccess {String} nombre Nombre del usuario
  * @apiSuccess {String} email Correo electrónico
- *
- * @apiSuccessExample {json} Ejemplo de respuesta:
- * HTTP/1.1 200 OK
- * {
- *   "id": 123,
- *   "nombre": "Juan Pérez",
- *   "email": "juan@example.com"
- * }
- *
- * @apiError UserNotFound Usuario no encontrado
  */
 
 /**
@@ -213,48 +290,43 @@
  * @apiVersion 1.0.0
  * @apiLang en
  *
- * @apiDescription Get user information by ID
+ * @apiDescription Retrieves information for a specific user
  *
  * @apiParam {Number} id Unique user ID
  *
  * @apiSuccess {Number} id User ID
  * @apiSuccess {String} name User's name
  * @apiSuccess {String} email Email address
- *
- * @apiSuccessExample {json} Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "id": 123,
- *   "name": "John Doe",
- *   "email": "john@example.com"
- * }
- *
- * @apiError UserNotFound User not found
  */
 
-// ============================================================================
-// Example 4: Product without multiple languages (single language)
-// ============================================================================
+/**
+ * @api {get} /users/:id 获取用户
+ * @apiName GetUser
+ * @apiGroup Users
+ * @apiVersion 1.0.0
+ * @apiLang zh
+ *
+ * @apiDescription 获取特定用户的信息
+ *
+ * @apiParam {Number} id 唯一用户ID
+ *
+ * @apiSuccess {Number} id 用户ID
+ * @apiSuccess {String} name 用户名
+ * @apiSuccess {String} email 电子邮件地址
+ */
 
 /**
- * @api {get} /products/:id Get Product
- * @apiName GetProduct
- * @apiGroup Products
+ * @api {get} /users/:id Utilisateur Obtenir
+ * @apiName GetUser
+ * @apiGroup Users
  * @apiVersion 1.0.0
+ * @apiLang fr
  *
- * @apiDescription Get product information (English only - no @apiLang)
+ * @apiDescription Récupère les informations d'un utilisateur spécifique
  *
- * @apiParam {Number} id Product ID
+ * @apiParam {Number} id ID unique de l'utilisateur
  *
- * @apiSuccess {Number} id Product ID
- * @apiSuccess {String} name Product name
- * @apiSuccess {Number} price Price in USD
- *
- * @apiSuccessExample {json} Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "id": 456,
- *   "name": "Laptop",
- *   "price": 999.99
- * }
+ * @apiSuccess {Number} id ID de l'utilisateur
+ * @apiSuccess {String} nom Nom de l'utilisateur
+ * @apiSuccess {String} email Adresse e-mail
  */
