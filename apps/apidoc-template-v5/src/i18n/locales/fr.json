@@ -100,7 +100,10 @@
     "addParameter": "Ajouter un paramètre",
     "compareWith": "comparer les changements avec :",
     "removedInVersion": "Supprimé dans cette version",
-    "request": "Requête"
+    "request": "Requête",
+    "header": "En-tête",
+    "addHeader": "Ajouter un en-tête",
+    "format": "Format"
   },
   "search": {
     "placeholder": "Rechercher dans la documentation...",

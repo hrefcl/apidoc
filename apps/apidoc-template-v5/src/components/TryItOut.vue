@@ -71,7 +71,7 @@
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
             ]"
           >
-            Headers
+            {{ t('api.headers') }}
             <span v-if="headers.length > 0" class="ml-2 px-1.5 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-700">
               {{ headers.length }}
             </span>
@@ -184,7 +184,7 @@
         <!-- Body Tab -->
         <div v-if="activeTab === 'body' && ['POST', 'PUT', 'PATCH'].includes(endpoint.method)">
           <div class="mb-3 flex items-center gap-2">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Formato:</label>
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('api.format') }}:</label>
             <select
               v-model="bodyFormat"
               class="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
@@ -209,10 +209,10 @@
                 <tr class="border-b border-gray-200 dark:border-gray-700">
                   <th class="text-left py-2 px-2 w-8"></th>
                   <th class="text-left py-2 px-2 w-8"></th>
-                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">Header</th>
-                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300 w-24">Tipo</th>
-                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">Valor</th>
-                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">Descripción</th>
+                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">{{ t('api.header') }}</th>
+                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300 w-24">{{ t('common.type') }}</th>
+                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">{{ t('common.value') }}</th>
+                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">{{ t('api.description') }}</th>
                   <th class="text-left py-2 px-2 w-10"></th>
                 </tr>
               </thead>
@@ -297,7 +297,7 @@
             @click="addHeader"
             class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium py-2"
           >
-            + Agregar header
+            + {{ t('api.addHeader') }}
           </button>
         </div>
       </div>

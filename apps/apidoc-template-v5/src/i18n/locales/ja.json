@@ -100,7 +100,10 @@
     "addParameter": "パラメータを追加",
     "compareWith": "変更を比較:",
     "removedInVersion": "このバージョンで削除",
-    "request": "リクエスト"
+    "request": "リクエスト",
+    "header": "ヘッダー",
+    "addHeader": "ヘッダーを追加",
+    "format": "フォーマット"
   },
   "search": {
     "placeholder": "ドキュメントを検索...",

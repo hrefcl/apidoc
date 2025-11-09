@@ -100,7 +100,10 @@
     "addParameter": "Parameter hinzufügen",
     "compareWith": "Änderungen vergleichen mit:",
     "removedInVersion": "In dieser Version entfernt",
-    "request": "Anfrage"
+    "request": "Anfrage",
+    "header": "Header",
+    "addHeader": "Header hinzufügen",
+    "format": "Format"
   },
   "search": {
     "placeholder": "Dokumentation durchsuchen...",

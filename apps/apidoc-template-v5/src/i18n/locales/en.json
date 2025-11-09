@@ -100,7 +100,10 @@
     "availableEndpoints": "Available Endpoints",
     "sectionApi": "{section} API",
     "removedInVersion": "Removed in this version",
-    "request": "Request"
+    "request": "Request",
+    "header": "Header",
+    "addHeader": "Add header",
+    "format": "Format"
   },
   "search": {
     "placeholder": "Search documentation...",

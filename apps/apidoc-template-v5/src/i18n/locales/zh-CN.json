@@ -100,7 +100,10 @@
     "addParameter": "添加参数",
     "compareWith": "比较更改：",
     "removedInVersion": "此版本中已删除",
-    "request": "请求"
+    "request": "请求",
+    "header": "请求头",
+    "addHeader": "添加请求头",
+    "format": "格式"
   },
   "search": {
     "placeholder": "搜索文档...",
