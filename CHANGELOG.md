@@ -5,6 +5,174 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.7] - 2025-11-09
+
+### 🌐 Multi-Language API Documentation (API Content i18n)
+
+#### Major Feature: Multi-Language API Content Support
+- **Added**: Complete support for documenting APIs in multiple languages simultaneously
+- **Use Case**: Document the same API endpoint with different content per language (titles, descriptions, parameter names)
+- **How it works**: Use `@apiLang` to define the language for each API block
+- **Language Selector**: Automatic language switcher in template UI when multiple API languages detected
+
+#### API Multi-Language Features
+- **Per-Endpoint Translations**: Use `@apiLang` tag to specify the language for each API documentation block
+- **Smart Detection**: System automatically detects available languages from `@apiLang` tags
+- **URL Preserved**: Same endpoint URL, different content per language
+- **Full Coverage**: Complete API documentation blocks in different languages:
+  ```javascript
+  /**
+   * @apiLang en
+   * @api {post} /users Create User
+   * @apiDescription Creates a new user in the system
+   * @apiParam {String} name User's name
+   */
+
+  /**
+   * @apiLang es
+   * @api {post} /users Crear Usuario
+   * @apiDescription Crea un nuevo usuario en el sistema
+   * @apiParam {String} name Nombre del usuario
+   */
+
+  /**
+   * @apiLang zh
+   * @api {post} /users 创建用户
+   * @apiDescription 在系统中创建新用户
+   * @apiParam {String} name 用户名称
+   */
+  ```
+
+#### Configuration
+```json
+{
+  "i18n": {
+    "enabled": true,
+    "defaultLang": "en",
+    "availableLangs": ["en", "es", "zh"],
+    "showLanguageSelector": true,
+    "fallbackToDefault": true
+  }
+}
+```
+
+### 📚 Multi-Version API Support
+
+#### Major Feature: Side-by-Side API Version Comparison
+- **Added**: Display multiple API versions simultaneously in the same documentation
+- **Version Selector**: Dropdown to switch between API versions or compare changes
+- **Version Comparison**: Visual diff showing added/removed/modified parameters between versions
+- **Smart Versioning**: Automatic detection of `@apiVersion` tags in source code
+
+#### Version Management Features
+- **Multiple Versions Visible**: Show v1.0.0 and v2.0.0 of the same endpoint side-by-side
+- **Change Tracking**: Highlight differences:
+  - 🟢 **Added**: New parameters/fields in newer version
+  - 🔴 **Removed**: Parameters removed in newer version
+  - 🟡 **Modified**: Changed type, description, or default values
+- **Version Navigation**: Quick switch between versions with dropdown
+- **Latest Badge**: Automatically marks the most recent version
+
+#### Example Structure
+```javascript
+/**
+ * @api {post} /users Create User
+ * @apiVersion 1.0.0
+ * @apiParam {String} name User's name
+ * @apiParam {String} email User's email
+ */
+
+/**
+ * @api {post} /users Create User
+ * @apiVersion 2.0.0
+ * @apiParam {String} name User's full name
+ * @apiParam {String} email User's email
+ * @apiParam {String} [avatar] User's avatar URL (NEW)
+ */
+```
+
+### 🐛 Critical UI i18n Fixes
+
+#### Fixed Missing Translations in TryItOut Component
+- **Fixed**: "Headers" tab label now translates correctly
+- **Fixed**: "Formato:" label (Body format selector) now translates
+- **Fixed**: Headers table columns ("Header", "Tipo", "Valor", "Descripción") now translate
+- **Fixed**: "Agregar header" button now translates to all 7 languages
+- **Total**: 7 additional UI strings now fully translated
+
+#### Template Translation Coverage Now 100%
+- **Previous**: ~95% UI coverage (some hardcoded strings remained)
+- **Current**: 100% UI coverage - NO hardcoded strings
+- **Impact**: Perfect language switching - all UI elements respond to language selection
+- **Languages Affected**: All 7 supported languages (es, en, zh-CN, fr, de, ja, pt-BR)
+
+#### New Translation Keys Added
+```json
+{
+  "api": {
+    "header": "Header / Encabezado / 请求头 / ...",
+    "addHeader": "Add header / Agregar encabezado / 添加请求头 / ...",
+    "format": "Format / Formato / 格式 / ..."
+  }
+}
+```
+
+### 🔧 Build System Improvements
+
+#### Fixed Template Compilation Path Resolution
+- **Issue**: Template build was using cached version from `/template/` instead of `/apps/apidoc-template-v5/dist/`
+- **Fixed**: Correct path priority now enforced in build system
+- **Impact**: NPM published packages always include latest compiled template
+- **Benefit**: No more stale template issues in production
+
+#### Template Path Resolution Order
+1. **Development**: `./apps/apidoc-template-v5/dist/` (local development)
+2. **Production**: `../../../../template/` (NPM package)
+3. **Auto-build**: If neither exists, automatically builds from source
+
+### 📦 Files Added/Modified
+
+**New Translation Keys**:
+- `apps/apidoc-template-v5/src/i18n/locales/*.json` - Added `header`, `addHeader`, `format` keys
+
+**Updated Components**:
+- `apps/apidoc-template-v5/src/components/TryItOut.vue` - Full i18n integration (7 strings translated)
+- `apps/apidoc-template-v5/src/components/ApiLanguageSelector.vue` - Multi-language API selector
+- `apps/apidoc-template-v5/src/components/ApiVersionSelector.vue` - Multi-version comparison UI
+- `apps/apidoc-template-v5/src/components/ComparisonSection.vue` - Version diff visualization
+
+**Core System**:
+- `core/apidoc/plugins/apicat.ts` - Multi-language and multi-version support
+- `core/adapters/apidoc-to-apicat.ts` - Language/version data transformation
+- `core/apidoc/index.ts` - Enhanced metadata handling
+
+**Configuration**:
+- `examples/i18n-test/` - New example demonstrating multi-language + multi-version APIs
+- `template/index.html` - Updated with all i18n fixes (963 KB)
+
+### 🎨 Template Updates
+
+- **Size**: 963 KB (optimized, was 982 KB in v5.0.6)
+- **Languages**: 7 fully supported UI languages
+- **API Languages**: Unlimited (depends on source documentation)
+- **Versions**: Unlimited simultaneous API versions
+- **Performance**: No degradation with multi-language or multi-version content
+
+### ✅ Testing
+
+- **Manual Testing**: Verified all 7 UI languages switch correctly
+- **API Testing**: Verified multi-language API content displays correctly
+- **Version Testing**: Verified version comparison shows diffs accurately
+- **Build Testing**: Verified NPM package includes correct template version
+
+### 📝 Documentation
+
+- **Coming**: Complete i18n documentation guide
+- **Coming**: Multi-version API documentation guide
+- **Updated**: Examples showing multi-language and multi-version usage
+
+---
+
 ## [5.0.6] - 2025-11-08
 
 ### 🌍 Complete i18n Internationalization
