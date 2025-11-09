@@ -92,7 +92,15 @@
     "latest": "Neueste",
     "endpointsDocumentation": "Endpunkt-Dokumentation für {section}",
     "availableEndpoints": "Verfügbare Endpunkte",
-    "sectionApi": "{section}-API"
+    "sectionApi": "{section}-API",
+    "parameterName": "Parametername",
+    "params": "Parameter",
+    "send": "Senden",
+    "sending": "Wird gesendet...",
+    "addParameter": "Parameter hinzufügen",
+    "compareWith": "Änderungen vergleichen mit:",
+    "removedInVersion": "In dieser Version entfernt",
+    "request": "Anfrage"
   },
   "search": {
     "placeholder": "Dokumentation durchsuchen...",
@@ -108,7 +116,13 @@
     "header": "Kopfzeile",
     "footer": "Fußzeile",
     "group": "Gruppe",
-    "tsdoc": "TypeScript-Dokumentation"
+    "tsdoc": "TypeScript-Dokumentation",
+    "parameters": "Parameter",
+    "properties": "Eigenschaften",
+    "returns": "Gibt zurück",
+    "documentation": "Dokumentation",
+    "example": "Beispiel",
+    "noSymbolsFound": "Keine Symbole gefunden für"
   },
   "common": {
     "loading": "Laden...",

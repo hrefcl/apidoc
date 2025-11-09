@@ -92,7 +92,15 @@
     "latest": "最新",
     "endpointsDocumentation": "{section}のエンドポイントドキュメント",
     "availableEndpoints": "利用可能なエンドポイント",
-    "sectionApi": "{section} API"
+    "sectionApi": "{section} API",
+    "parameterName": "パラメータ名",
+    "params": "パラメータ",
+    "send": "送信",
+    "sending": "送信中...",
+    "addParameter": "パラメータを追加",
+    "compareWith": "変更を比較:",
+    "removedInVersion": "このバージョンで削除",
+    "request": "リクエスト"
   },
   "search": {
     "placeholder": "ドキュメントを検索...",
@@ -108,7 +116,13 @@
     "header": "ヘッダー",
     "footer": "フッター",
     "group": "グループ",
-    "tsdoc": "TypeScriptドキュメント"
+    "tsdoc": "TypeScriptドキュメント",
+    "parameters": "パラメータ",
+    "properties": "プロパティ",
+    "returns": "戻り値",
+    "documentation": "ドキュメント",
+    "example": "例",
+    "noSymbolsFound": "シンボルが見つかりません"
   },
   "common": {
     "loading": "読み込み中...",

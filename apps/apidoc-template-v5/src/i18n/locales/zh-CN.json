@@ -92,7 +92,15 @@
     "latest": "最新",
     "endpointsDocumentation": "{section}的端点文档",
     "availableEndpoints": "可用端点",
-    "sectionApi": "{section} API"
+    "sectionApi": "{section} API",
+    "parameterName": "参数名称",
+    "params": "参数",
+    "send": "发送",
+    "sending": "发送中...",
+    "addParameter": "添加参数",
+    "compareWith": "比较更改：",
+    "removedInVersion": "此版本中已删除",
+    "request": "请求"
   },
   "search": {
     "placeholder": "搜索文档...",
@@ -108,7 +116,13 @@
     "header": "页眉",
     "footer": "页脚",
     "group": "分组",
-    "tsdoc": "TypeScript 文档"
+    "tsdoc": "TypeScript 文档",
+    "parameters": "参数",
+    "properties": "属性",
+    "returns": "返回",
+    "documentation": "文档",
+    "example": "示例",
+    "noSymbolsFound": "未找到符号"
   },
   "common": {
     "loading": "加载中...",

@@ -25,7 +25,7 @@
           :disabled="loading"
           class="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-md transition-colors text-sm"
         >
-          {{ loading ? 'Enviando...' : 'Enviar' }}
+          {{ loading ? t('api.sending') : t('api.send') }}
         </button>
       </div>
 
@@ -42,7 +42,7 @@
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
             ]"
           >
-            Params
+            {{ t('api.params') }}
             <span v-if="parameters.length > 0" class="ml-2 px-1.5 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-700">
               {{ parameters.length }}
             </span>
@@ -58,7 +58,7 @@
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300'
             ]"
           >
-            Body
+            {{ t('api.body') }}
           </button>
 
           <button
@@ -89,10 +89,10 @@
                 <tr class="border-b border-gray-200 dark:border-gray-700">
                   <th class="text-left py-2 px-2 w-8"></th>
                   <th class="text-left py-2 px-2 w-8"></th>
-                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">Nombre del parámetro</th>
-                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300 w-24">Tipo</th>
-                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">Valor</th>
-                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">Descripción</th>
+                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">{{ t('api.parameterName') }}</th>
+                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300 w-24">{{ t('common.type') }}</th>
+                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">{{ t('common.value') }}</th>
+                  <th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">{{ t('api.description') }}</th>
                   <th class="text-left py-2 px-2 w-10"></th>
                 </tr>
               </thead>
@@ -177,7 +177,7 @@
             @click="addParam"
             class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium py-2"
           >
-            + Agregar parámetro
+            + {{ t('api.addParameter') }}
           </button>
         </div>
 

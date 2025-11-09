@@ -35,7 +35,7 @@
           <!-- Request Information Section -->
           <div class="opblock-section border-b border-border p-6">
             <div class="flex justify-between items-start mb-4">
-              <h3 class="text-lg font-semibold">Request</h3>
+              <h3 class="text-lg font-semibold">{{ t('api.request') }}</h3>
 
               <!-- Version Selector Dropdown -->
               <div v-if="endpointGroup.versions.length > 1" class="relative" ref="versionDropdownRef">
@@ -52,7 +52,7 @@
                     class="absolute right-0 mt-2 min-w-[200px] bg-card border border-border rounded-lg shadow-lg overflow-hidden z-50"
                   >
                     <h6 class="px-3 py-2 text-xs font-semibold text-muted-foreground border-b border-border">
-                      comparar cambios con:
+                      {{ t('api.compareWith') }}
                     </h6>
                     <button
                       v-for="ver in endpointGroup.versions"

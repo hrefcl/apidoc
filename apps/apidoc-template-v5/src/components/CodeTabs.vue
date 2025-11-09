@@ -63,6 +63,17 @@ const activeTab = ref(0)
 const copied = ref(false)
 
 const getTabLabel = (type) => {
+  const lowerType = type?.toLowerCase()
+
+  // Use translations for translatable labels
+  if (lowerType === 'request') {
+    return t('api.request')
+  }
+  if (lowerType === 'response') {
+    return t('api.response')
+  }
+
+  // Programming languages and tools remain in English
   const labels = {
     'curl': 'cURL',
     'bash': 'Bash',
@@ -74,11 +85,9 @@ const getTabLabel = (type) => {
     'go': 'Go',
     'php': 'PHP',
     'ruby': 'Ruby',
-    'rust': 'Rust',
-    'request': 'Request',
-    'response': 'Response'
+    'rust': 'Rust'
   }
-  return labels[type?.toLowerCase()] || type || 'Example'
+  return labels[lowerType] || type || 'Example'
 }
 
 const copyCode = async (content) => {

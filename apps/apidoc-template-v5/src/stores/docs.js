@@ -744,10 +744,8 @@ export const useDocsStore = defineStore('docs', () => {
     // may have different languages available. Just set it and let
     // getLocalizedEndpoint handle fallbacks.
 
-    console.log(`🔧 DEBUG setLanguage called with: "${lang}" (type: ${typeof lang}, length: ${lang.length})`)
     currentLanguage.value = lang
     localStorage.setItem('apicat_language', lang)
-    console.log(`🌍 Language changed to: ${lang}`)
   }
 
   /**
@@ -769,16 +767,12 @@ export const useDocsStore = defineStore('docs', () => {
     const fallbackToDefault = i18nConfig.value?.fallbackToDefault !== false
 
     // Try requested language first in ROOT endpoint
-    console.log(`🔍 DEBUG getLocalizedEndpoint: Looking for language "${requestedLang}" in ROOT:`, Object.keys(endpoint.languages))
-
     let langData = endpoint.languages[requestedLang]
 
     // If not found in root, check if it exists in ANY version
     if (!langData && endpoint.versions && Array.isArray(endpoint.versions)) {
-      console.log(`⚠️ Language "${requestedLang}" not in ROOT, checking versions...`)
       for (const versionObj of endpoint.versions) {
         if (versionObj.languages && versionObj.languages[requestedLang]) {
-          console.log(`✅ Found language "${requestedLang}" in version ${versionObj.version}`)
           langData = versionObj.languages[requestedLang]
           break
         }
@@ -786,13 +780,6 @@ export const useDocsStore = defineStore('docs', () => {
     }
 
     if (langData) {
-      console.log(`✅ Using language "${requestedLang}"`)
-      console.log('🌍 DEBUG before spread:', {
-        endpointHasVersions: !!endpoint.versions,
-        endpointVersionsCount: endpoint.versions?.length,
-        langDataHasVersions: !!langData.versions,
-        langDataVersionsCount: langData.versions?.length
-      })
 
       // CRITICAL: Localize ALL versions in the versions array too
       let localizedVersions = endpoint.versions
@@ -821,12 +808,6 @@ export const useDocsStore = defineStore('docs', () => {
         _currentLang: requestedLang,
         _availableLangs: Object.keys(endpoint.languages)
       }
-      console.log('🌍 getLocalizedEndpoint result:', {
-        name: result.name,
-        hasVersions: !!result.versions,
-        versionsCount: result.versions?.length,
-        hasMultipleVersions: result.hasMultipleVersions
-      })
       return result
     }
 

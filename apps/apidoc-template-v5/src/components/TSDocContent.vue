@@ -101,16 +101,16 @@
           <div v-if="symbol.parameters && symbol.parameters.length > 0" class="mb-4">
             <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <List class="w-4 h-4" />
-              Parameters
+              {{ t('docs.parameters') }}
             </h4>
             <div class="overflow-x-auto">
               <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Optional</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Description</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ t('common.name') }}</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ t('common.type') }}</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ t('common.optional') }}</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ t('api.description') }}</th>
                   </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -118,8 +118,8 @@
                     <td class="px-4 py-2 font-mono text-sm text-gray-900 dark:text-white">{{ param.name }}</td>
                     <td class="px-4 py-2 font-mono text-sm text-purple-600 dark:text-purple-400">{{ param.type }}</td>
                     <td class="px-4 py-2 text-sm">
-                      <span v-if="param.optional" class="text-orange-600 dark:text-orange-400">optional</span>
-                      <span v-else class="text-green-600 dark:text-green-400">required</span>
+                      <span v-if="param.optional" class="text-orange-600 dark:text-orange-400">{{ t('common.optional') }}</span>
+                      <span v-else class="text-green-600 dark:text-green-400">{{ t('common.required') }}</span>
                     </td>
                     <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
                       {{ getParamDescription(symbol, param.name) }}
@@ -134,16 +134,16 @@
           <div v-if="symbol.properties && symbol.properties.length > 0" class="mb-4">
             <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <List class="w-4 h-4" />
-              Properties
+              {{ t('docs.properties') }}
             </h4>
             <div class="overflow-x-auto">
               <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Type</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Optional</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Description</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ t('common.name') }}</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ t('common.type') }}</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ t('common.optional') }}</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ t('api.description') }}</th>
                   </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -167,7 +167,7 @@
           <div v-if="symbol.returnType && symbol.type === 'function'" class="mb-4">
             <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
               <ArrowRight class="w-4 h-4" />
-              Returns
+              {{ t('docs.returns') }}
             </h4>
             <div class="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
               <code class="text-green-600 dark:text-green-400 font-mono">{{ symbol.returnType }}</code>
@@ -181,7 +181,7 @@
           <div v-if="symbol.documentation?.tags && symbol.documentation.tags.length > 0" class="mb-4">
             <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <BookOpen class="w-4 h-4" />
-              Documentation
+              {{ t('docs.documentation') }}
             </h4>
             <div class="space-y-2">
               <div
@@ -201,7 +201,7 @@
           <div v-if="getExampleCode(symbol)" class="mt-4">
             <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
               <Code class="w-4 h-4" />
-              Example
+              {{ t('docs.example') }}
             </h4>
             <pre class="bg-gray-900 dark:bg-gray-950 text-gray-100 rounded-lg p-4 overflow-x-auto"><code>{{ getExampleCode(symbol) }}</code></pre>
           </div>
@@ -212,7 +212,7 @@
     <!-- Empty State -->
     <div v-if="filteredSymbols.length === 0" class="text-center py-12">
       <Package class="w-16 h-16 text-gray-400 mx-auto mb-4" />
-      <p class="text-gray-600 dark:text-gray-400">No symbols found for {{ activeTab }}</p>
+      <p class="text-gray-600 dark:text-gray-400">{{ t('docs.noSymbolsFound') }} {{ activeTab }}</p>
     </div>
   </div>
 </template>
@@ -220,6 +220,9 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { Package, FileCode, List, ArrowRight, BookOpen, Code } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 interface TSDocSymbol {
   name: string

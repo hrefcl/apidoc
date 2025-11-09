@@ -18,16 +18,16 @@
             <div class="flex items-center gap-2 mb-1">
               <code class="text-sm font-mono">{{ item.field }}</code>
               <span v-if="item.optional === false" class="text-xs px-1.5 py-0.5 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded">
-                Required
+                {{ t('common.required') }}
               </span>
               <span v-else class="text-xs px-1.5 py-0.5 bg-muted text-muted-foreground rounded">
-                Optional
+                {{ t('common.optional') }}
               </span>
             </div>
             <div class="flex items-center gap-2 mb-1">
               <span class="text-xs px-2 py-0.5 bg-muted rounded font-mono">{{ item.type }}</span>
               <span v-if="item.defaultValue" class="text-xs text-muted-foreground">
-                Default: <code class="text-xs">{{ item.defaultValue }}</code>
+                {{ t('common.default') }}: <code class="text-xs">{{ item.defaultValue }}</code>
               </span>
             </div>
             <div v-if="item.description" v-html="item.description" class="text-xs text-muted-foreground mt-1"></div>
@@ -51,7 +51,7 @@
             <div class="flex items-center gap-2 mb-1">
               <code class="text-sm font-mono line-through">{{ item.field }}</code>
             </div>
-            <div class="text-xs text-muted-foreground">Removed in this version</div>
+            <div class="text-xs text-muted-foreground">{{ t('api.removedInVersion') }}</div>
           </div>
           <Minus class="w-4 h-4 text-red-600" />
         </div>
@@ -63,6 +63,9 @@
 <script setup>
 import { computed } from 'vue'
 import { Plus, Minus, ArrowLeftRight } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   title: {
