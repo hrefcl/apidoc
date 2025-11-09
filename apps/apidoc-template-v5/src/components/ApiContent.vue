@@ -333,11 +333,8 @@ import ResponseTable from './ResponseTable.vue'
 import TryItOut from './TryItOut.vue'
 import MqttTryItOut from './MqttTryItOut.vue'
 
-import { storeToRefs } from 'pinia'
-
 const { t } = useI18n()
 const docsStore = useDocsStore()
-const { currentLanguage } = storeToRefs(docsStore)
 
 // Helper to detect MQTT endpoints
 const isMqttEndpoint = (endpoint) => {
@@ -366,10 +363,6 @@ const collapsedSections = reactive({})
 
 // Aplicar localización a los endpoints según idioma seleccionado
 const localizedEndpoints = computed(() => {
-  // Force reactivity by using the ref value
-  const currentLang = currentLanguage.value
-  console.log('🔄 Computing localized endpoints for language:', currentLang)
-
   if (!props.data.endpoints || props.data.endpoints.length === 0) return []
 
   // Aplicar getLocalizedEndpoint a cada endpoint

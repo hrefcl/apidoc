@@ -109,10 +109,6 @@ const handleClickOutside = (event) => {
 }
 
 onMounted(() => {
-  // Initialize i18n when component mounts (ensures __APICAT_DATA__ is available)
-  if (typeof window !== 'undefined' && window.__APICAT_DATA__?.meta?.i18n?.enabled) {
-    docsStore.initI18n()
-  }
   document.addEventListener('click', handleClickOutside)
 })
 

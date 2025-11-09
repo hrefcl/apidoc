@@ -397,19 +397,10 @@ export class ApiCatPlugin {
             // Step 1: Group by language if i18n is enabled (BEFORE version grouping)
             if (this.projectInfo?.i18n?.enabled) {
                 groupedEndpoints = this.groupEndpointsByLanguage(groupedEndpoints, defaultLang);
-                if (this.config.verbose) {
-                    console.log(`📝 After language grouping: ${groupedEndpoints.length} endpoints`);
-                    groupedEndpoints.forEach(ep => {
-                        console.log(`  - ${ep.id} v${ep.version} ${ep.hasMultipleLanguages ? '(multi-lang)' : ''}`);
-                    });
-                }
             }
 
             // Step 2: Group endpoints by ID (multiple versions of same endpoint)
             groupedEndpoints = this.groupEndpointsByVersion(groupedEndpoints);
-            if (this.config.verbose) {
-                console.log(`📝 After version grouping: ${groupedEndpoints.length} endpoints`);
-            }
 
             // Store in map for navigation generation
             groupedEndpointsMap.set(group, groupedEndpoints);
@@ -1558,16 +1549,6 @@ export class ApiCatPlugin {
             endpointMap.get(endpoint.id)!.push(endpoint);
         });
 
-        // DEBUG: Log grouping info
-        if (this.config.verbose) {
-            endpointMap.forEach((versions, endpointId) => {
-                if (versions.length > 1) {
-                    console.log(`📋 Grouping ${endpointId}: ${versions.length} versions found`);
-                    versions.forEach(v => console.log(`  - v${v.version} (${v.title})`));
-                }
-            });
-        }
-
         // Convert map to array of grouped endpoints
         const groupedEndpoints: any[] = [];
 
@@ -1606,12 +1587,6 @@ export class ApiCatPlugin {
                     success: ep.success,
                     error: ep.error,
                     examples: ep.examples,
-                    // Preserve multi-language information if present
-                    languages: ep.languages,
-                    hasMultipleLanguages: ep.hasMultipleLanguages,
-                    languageCount: ep.languageCount,
-                    availableLanguages: ep.availableLanguages,
-                    defaultLanguage: ep.defaultLanguage,
                 }));
 
                 groupedEndpoint.latestVersion = latestEndpoint.version;
@@ -1670,9 +1645,8 @@ export class ApiCatPlugin {
         const endpointMap = new Map<string, any[]>();
 
         endpoints.forEach((endpoint) => {
-            // Use endpoint.id + version as the grouping key
-            // This prevents different versions from being grouped as language variants
-            const groupKey = `${endpoint.id}@${endpoint.version || '0.0.0'}`;
+            // Use endpoint.id as the grouping key (same endpoint, different languages)
+            const groupKey = endpoint.id;
 
             if (!endpointMap.has(groupKey)) {
                 endpointMap.set(groupKey, []);
