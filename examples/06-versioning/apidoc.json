@@ -1,0 +1,23 @@
+{
+  "name": "API Versioning Example",
+  "version": "4.0.0",
+  "description": "Ejemplo completo de versionado de APIs con APIDoc v5",
+  "title": "Products API - Multi Version Example",
+  "url": "https://api.example.com",
+  "sampleUrl": "https://api.example.com",
+  "src": ["./src/"],
+  "template": {
+    "forceLanguage": "en"
+  },
+  "header": {
+    "title": "API Versioning Guide",
+    "content": "This example demonstrates proper API versioning in APIDoc v5. It shows how to manage multiple versions (v1.0.0 through v4.0.0) without duplicates or conflicts.\n\n**Version History**:\n- **v1.0.0**: Basic product information (id, name, price)\n- **v2.0.0**: Added category support\n- **v3.0.0**: Added inventory tracking (in_stock, quantity)\n- **v4.0.0**: Added reviews and ratings system\n\n**Two Approaches Demonstrated**:\n1. OpenAPI files with different paths (v1-v3)\n2. Native APIDoc annotations with same path (v4)"
+  },
+  "footer": {
+    "title": "Version Selection",
+    "content": "Use the version selector in the UI to switch between API versions and see the evolution of the Products API."
+  },
+  "order": [
+    "Products"
+  ]
+}

@@ -1,0 +1,10 @@
+# Output directories - generated documentation
+*/output/
+*/output-*/
+
+# Node modules if examples have dependencies
+**/node_modules/
+
+# Debug files
+debug-*.js
+*.log

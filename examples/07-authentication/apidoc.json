@@ -1,0 +1,13 @@
+{
+  "name": "Authentication Example",
+  "version": "1.0.0",
+  "description": "Dual authentication system example (Form + API Key)",
+  "title": "Auth API - Dual Authentication",
+  "url": "https://api.example.com",
+  "sampleUrl": "https://api.example.com",
+  "src": ["./src/"],
+  "template": {
+    "forceLanguage": "en"
+  },
+  "order": ["Auth", "Protected"]
+}

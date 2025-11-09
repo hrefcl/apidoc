@@ -1,0 +1,10 @@
+{
+  "name": "apiSchema Example",
+  "version": "1.0.0",
+  "description": "TypeScript interfaces with @apiSchema",
+  "title": "Tasks API - @apiSchema Example",
+  "url": "https://api.example.com",
+  "src": ["./src/"],
+  "template": {"forceLanguage": "en"},
+  "order": ["Tasks"]
+}

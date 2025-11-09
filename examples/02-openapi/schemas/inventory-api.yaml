@@ -1,0 +1,430 @@
+openapi: 3.0.0
+info:
+  title: Inventory API
+  version: 1.0.0
+  description: External OpenAPI specification for inventory management system
+  contact:
+    name: API Support
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.example.com
+    description: Production server
+  - url: https://staging-api.example.com
+    description: Staging server
+
+paths:
+  /api/inventory:
+    get:
+      summary: List inventory items
+      description: Retrieve a paginated list of all inventory items
+      operationId: listInventoryItems
+      tags:
+        - Inventory
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: category
+          in: query
+          description: Filter by category
+          required: false
+          schema:
+            type: string
+        - name: in_stock
+          in: query
+          description: Filter by stock availability
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of inventory items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InventoryItem'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+              example:
+                items:
+                  - id: "550e8400-e29b-41d4-a716-446655440000"
+                    sku: "LAPTOP-001"
+                    name: "Dell XPS 15"
+                    description: "High-performance laptop"
+                    category: "Electronics"
+                    quantity: 50
+                    price: 1299.99
+                    in_stock: true
+                    created_at: "2025-01-09T10:00:00Z"
+                    updated_at: "2025-01-09T10:00:00Z"
+                pagination:
+                  page: 1
+                  limit: 20
+                  total_items: 150
+                  total_pages: 8
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Create inventory item
+      description: Add a new item to the inventory
+      operationId: createInventoryItem
+      tags:
+        - Inventory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInventoryItem'
+            example:
+              sku: "LAPTOP-002"
+              name: "MacBook Pro 16"
+              description: "Apple laptop with M3 chip"
+              category: "Electronics"
+              quantity: 25
+              price: 2499.99
+      responses:
+        '201':
+          description: Inventory item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+              example:
+                id: "660e9500-f39c-52e5-b827-557766551111"
+                sku: "LAPTOP-002"
+                name: "MacBook Pro 16"
+                description: "Apple laptop with M3 chip"
+                category: "Electronics"
+                quantity: 25
+                price: 2499.99
+                in_stock: true
+                created_at: "2025-01-09T11:30:00Z"
+                updated_at: "2025-01-09T11:30:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/inventory/{id}:
+    get:
+      summary: Get inventory item
+      description: Retrieve detailed information about a specific inventory item
+      operationId: getInventoryItem
+      tags:
+        - Inventory
+      parameters:
+        - $ref: '#/components/parameters/InventoryId'
+      responses:
+        '200':
+          description: Inventory item details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                sku: "LAPTOP-001"
+                name: "Dell XPS 15"
+                description: "High-performance laptop"
+                category: "Electronics"
+                quantity: 50
+                price: 1299.99
+                in_stock: true
+                created_at: "2025-01-09T10:00:00Z"
+                updated_at: "2025-01-09T10:00:00Z"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      summary: Update inventory item
+      description: Update an existing inventory item's information
+      operationId: updateInventoryItem
+      tags:
+        - Inventory
+      parameters:
+        - $ref: '#/components/parameters/InventoryId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInventoryItem'
+            example:
+              quantity: 75
+              price: 1199.99
+      responses:
+        '200':
+          description: Inventory item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                sku: "LAPTOP-001"
+                name: "Dell XPS 15"
+                description: "High-performance laptop"
+                category: "Electronics"
+                quantity: 75
+                price: 1199.99
+                in_stock: true
+                created_at: "2025-01-09T10:00:00Z"
+                updated_at: "2025-01-09T12:15:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Delete inventory item
+      description: Remove an item from the inventory
+      operationId: deleteInventoryItem
+      tags:
+        - Inventory
+      parameters:
+        - $ref: '#/components/parameters/InventoryId'
+      responses:
+        '204':
+          description: Inventory item deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  parameters:
+    InventoryId:
+      name: id
+      in: path
+      required: true
+      description: Inventory item's unique identifier
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    InventoryItem:
+      type: object
+      required:
+        - id
+        - sku
+        - name
+        - category
+        - quantity
+        - price
+        - in_stock
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique item identifier
+        sku:
+          type: string
+          description: Stock Keeping Unit
+          minLength: 3
+          maxLength: 50
+        name:
+          type: string
+          description: Item name
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Item description
+          maxLength: 1000
+        category:
+          type: string
+          description: Item category
+          minLength: 1
+          maxLength: 100
+        quantity:
+          type: integer
+          description: Available quantity
+          minimum: 0
+        price:
+          type: number
+          format: decimal
+          description: Item price (USD)
+          minimum: 0
+        in_stock:
+          type: boolean
+          description: Whether item is in stock
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    CreateInventoryItem:
+      type: object
+      required:
+        - sku
+        - name
+        - category
+        - quantity
+        - price
+      properties:
+        sku:
+          type: string
+          minLength: 3
+          maxLength: 50
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 1000
+        category:
+          type: string
+          minLength: 1
+          maxLength: 100
+        quantity:
+          type: integer
+          minimum: 0
+        price:
+          type: number
+          format: decimal
+          minimum: 0
+
+    UpdateInventoryItem:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 1000
+        category:
+          type: string
+          minLength: 1
+          maxLength: 100
+        quantity:
+          type: integer
+          minimum: 0
+        price:
+          type: number
+          format: decimal
+          minimum: 0
+
+    Pagination:
+      type: object
+      required:
+        - page
+        - limit
+        - total_items
+        - total_pages
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          minimum: 1
+        limit:
+          type: integer
+          description: Items per page
+          minimum: 1
+        total_items:
+          type: integer
+          description: Total number of items
+          minimum: 0
+        total_pages:
+          type: integer
+          description: Total number of pages
+          minimum: 0
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+
+  responses:
+    BadRequest:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "BadRequest"
+            message: "Invalid input: quantity must be a positive integer"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "NotFound"
+            message: "Inventory item with ID 550e8400-e29b-41d4-a716-446655440000 not found"
+
+    Conflict:
+      description: Conflict with existing resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Conflict"
+            message: "Item with SKU LAPTOP-001 already exists"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "InternalServerError"
+            message: "An unexpected error occurred"

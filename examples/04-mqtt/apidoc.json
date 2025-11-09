@@ -1,0 +1,24 @@
+{
+  "name": "MQTT IoT Example",
+  "version": "1.0.0",
+  "description": "Ejemplo completo de documentación MQTT para sistemas IoT",
+  "title": "Smart Home IoT - MQTT Protocol Example",
+  "url": "mqtt://broker.example.com:1883",
+  "sampleUrl": "mqtt://broker.example.com:1883",
+  "src": ["./src/"],
+  "template": {
+    "forceLanguage": "en"
+  },
+  "header": {
+    "title": "Introduction to MQTT Documentation",
+    "content": "This example demonstrates how to document MQTT-based IoT systems using APIDoc v5. It covers both publishing sensor data and subscribing to actuator commands."
+  },
+  "footer": {
+    "title": "About MQTT",
+    "content": "MQTT is a lightweight messaging protocol ideal for IoT applications. It uses a publish/subscribe model with topics and supports three Quality of Service (QoS) levels for message delivery."
+  },
+  "order": [
+    "Sensors",
+    "Actuators"
+  ]
+}

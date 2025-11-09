@@ -1,0 +1,23 @@
+{
+  "name": "OpenAPI Integration Example",
+  "version": "1.0.0",
+  "description": "Ejemplo de integración con archivos OpenAPI 3.0 externos",
+  "title": "Inventory API - OpenAPI Example",
+  "url": "https://api.example.com",
+  "sampleUrl": "https://api.example.com",
+  "src": ["./src/"],
+  "template": {
+    "forceLanguage": "en"
+  },
+  "header": {
+    "title": "Introduction",
+    "content": "This example demonstrates how to integrate external OpenAPI 3.0 specifications (YAML/JSON) with APIDoc v5."
+  },
+  "footer": {
+    "title": "About OpenAPI",
+    "content": "OpenAPI 3.0 is an industry-standard specification for RESTful APIs. APIDoc v5 can seamlessly integrate with existing OpenAPI files."
+  },
+  "order": [
+    "Inventory"
+  ]
+}

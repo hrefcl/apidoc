@@ -1,0 +1,10 @@
+{
+  "name": "Code Examples",
+  "version": "1.0.0",
+  "description": "Embedded code examples in multiple languages",
+  "title": "SDK API - Code Examples",
+  "url": "https://api.example.com",
+  "src": ["./src/"],
+  "template": {"forceLanguage": "en"},
+  "order": ["SDK"]
+}

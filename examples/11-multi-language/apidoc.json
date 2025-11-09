@@ -1,0 +1,10 @@
+{
+  "name": "Multi-Language Example",
+  "version": "1.0.0",
+  "description": "Documentation from 11+ programming languages",
+  "title": "Polyglot API - Multi-Language Support",
+  "url": "https://api.example.com",
+  "src": ["./src/"],
+  "template": {"forceLanguage": "en"},
+  "order": ["Books"]
+}

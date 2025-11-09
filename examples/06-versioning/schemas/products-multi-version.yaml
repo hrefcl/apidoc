@@ -1,0 +1,382 @@
+openapi: 3.0.0
+info:
+  title: Products API - Multi Version Example
+  version: 3.0.0
+  description: |
+    This OpenAPI specification demonstrates proper multi-version API documentation.
+
+    It uses DIFFERENT PATHS for each version:
+    - /api/products/{id} → v1.0.0
+    - /api/products-v2/{id} → v2.0.0
+    - /api/products-v3/{id} → v3.0.0
+
+    This approach is recommended for APIs with breaking changes between versions.
+
+paths:
+  /api/products/{id}:
+    get:
+      summary: Get product by ID
+      description: |
+        Retrieve detailed product information (Version 1.0.0)
+
+        **v1.0.0 Features**:
+        - Basic product information
+        - id, name, price fields only
+      operationId: getProductV1
+      tags:
+        - Products
+        - v1.0.0
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Product unique identifier
+      responses:
+        '200':
+          description: Product found successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - name
+                  - price
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  price:
+                    type: number
+                    format: decimal
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                name: "Wireless Mouse"
+                price: 29.99
+        '404':
+          description: Product not found
+
+    put:
+      summary: Update product
+      description: |
+        Update product information (Version 1.0.0)
+
+        **v1.0.0 Limitations**:
+        - Can only update name and price
+        - No category support yet
+      operationId: updateProductV1
+      tags:
+        - Products
+        - v1.0.0
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                price:
+                  type: number
+                  format: decimal
+                  minimum: 0
+            example:
+              name: "Wireless Mouse Pro"
+              price: 34.99
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  price:
+                    type: number
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                name: "Wireless Mouse Pro"
+                price: 34.99
+        '400':
+          description: Invalid input data
+        '404':
+          description: Product not found
+
+  /api/products-v2/{id}:
+    get:
+      summary: Get product by ID
+      description: |
+        Retrieve detailed product information (Version 2.0.0)
+
+        **v2.0.0 New Features**:
+        - ✅ Added category field
+        - ✅ Better product categorization
+
+        **Backward Compatibility**:
+        - Still supports all v1.0.0 fields
+        - Non-breaking change (additive only)
+      operationId: getProductV2
+      tags:
+        - Products
+        - v2.0.0
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product found successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - name
+                  - price
+                  - category
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  price:
+                    type: number
+                    format: decimal
+                  category:
+                    type: string
+                    description: Product category (NEW in v2.0.0)
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                name: "Wireless Mouse"
+                price: 29.99
+                category: "Electronics"
+        '404':
+          description: Product not found
+
+    put:
+      summary: Update product
+      description: |
+        Update product information (Version 2.0.0)
+
+        **v2.0.0 Enhancements**:
+        - ✅ Can now update category field
+        - Maintains backward compatibility with v1.0.0
+      operationId: updateProductV2
+      tags:
+        - Products
+        - v2.0.0
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                price:
+                  type: number
+                  format: decimal
+                  minimum: 0
+                category:
+                  type: string
+                  description: Product category (NEW in v2.0.0)
+            example:
+              name: "Wireless Mouse Pro"
+              price: 34.99
+              category: "Computer Accessories"
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  price:
+                    type: number
+                  category:
+                    type: string
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                name: "Wireless Mouse Pro"
+                price: 34.99
+                category: "Computer Accessories"
+
+  /api/products-v3/{id}:
+    get:
+      summary: Get product by ID
+      description: |
+        Retrieve detailed product information (Version 3.0.0)
+
+        **v3.0.0 New Features**:
+        - ✅ Added inventory tracking (in_stock, quantity)
+        - ✅ Real-time stock information
+        - ✅ Support for inventory management
+
+        **Changelog from v2.0.0**:
+        - Added `in_stock` boolean field
+        - Added `quantity` integer field
+      operationId: getProductV3
+      tags:
+        - Products
+        - v3.0.0
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product found successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - name
+                  - price
+                  - category
+                  - in_stock
+                  - quantity
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  price:
+                    type: number
+                    format: decimal
+                  category:
+                    type: string
+                  in_stock:
+                    type: boolean
+                    description: Whether product is in stock (NEW in v3.0.0)
+                  quantity:
+                    type: integer
+                    minimum: 0
+                    description: Available quantity (NEW in v3.0.0)
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                name: "Wireless Mouse"
+                price: 29.99
+                category: "Electronics"
+                in_stock: true
+                quantity: 150
+        '404':
+          description: Product not found
+
+    put:
+      summary: Update product
+      description: |
+        Update product information (Version 3.0.0)
+
+        **v3.0.0 Enhancements**:
+        - ✅ Can now update inventory fields
+        - Support for stock level management
+        - Automatic `in_stock` calculation based on quantity
+      operationId: updateProductV3
+      tags:
+        - Products
+        - v3.0.0
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                price:
+                  type: number
+                  format: decimal
+                  minimum: 0
+                category:
+                  type: string
+                in_stock:
+                  type: boolean
+                  description: Inventory status (NEW in v3.0.0)
+                quantity:
+                  type: integer
+                  minimum: 0
+                  description: Stock quantity (NEW in v3.0.0)
+            example:
+              name: "Wireless Mouse Pro"
+              price: 34.99
+              category: "Computer Accessories"
+              quantity: 200
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  price:
+                    type: number
+                  category:
+                    type: string
+                  in_stock:
+                    type: boolean
+                  quantity:
+                    type: integer
+              example:
+                id: "550e8400-e29b-41d4-a716-446655440000"
+                name: "Wireless Mouse Pro"
+                price: 34.99
+                category: "Computer Accessories"
+                in_stock: true
+                quantity: 200

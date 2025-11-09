@@ -1,0 +1,23 @@
+{
+  "name": "Basic API Example",
+  "version": "1.0.0",
+  "description": "Ejemplo básico de documentación API con APIDoc v5",
+  "title": "Company API - Basic Example",
+  "url": "https://api.example.com",
+  "sampleUrl": "https://api.example.com",
+  "src": ["./src/"],
+  "template": {
+    "forceLanguage": "en"
+  },
+  "header": {
+    "title": "Introduction",
+    "content": "This is a basic example demonstrating fundamental APIDoc annotations for REST API documentation."
+  },
+  "footer": {
+    "title": "About",
+    "content": "Example created for APIDoc v5.0 documentation."
+  },
+  "order": [
+    "Company"
+  ]
+}

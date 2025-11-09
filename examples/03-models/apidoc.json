@@ -1,0 +1,24 @@
+{
+  "name": "Models & Schemas Example",
+  "version": "1.0.0",
+  "description": "Ejemplo de integración de modelos Sequelize con @apiSchema",
+  "title": "Products API - Sequelize Models Example",
+  "url": "https://api.example.com",
+  "sampleUrl": "https://api.example.com",
+  "src": ["./src/"],
+  "template": {
+    "forceLanguage": "en"
+  },
+  "header": {
+    "title": "Introduction",
+    "content": "This example demonstrates how to document APIs that use Sequelize ORM models with the @apiSchema annotation in APIDoc v5."
+  },
+  "footer": {
+    "title": "About Sequelize",
+    "content": "Sequelize is a promise-based Node.js ORM for Postgres, MySQL, MariaDB, SQLite and Microsoft SQL Server. This example shows how to integrate Sequelize model definitions with APIDoc documentation."
+  },
+  "order": [
+    "Products",
+    "Categories"
+  ]
+}

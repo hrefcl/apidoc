@@ -1,0 +1,10 @@
+{
+  "name": "Markdown Documentation",
+  "version": "1.0.0",
+  "description": "Pure markdown documentation example",
+  "title": "Notes API - Markdown Only",
+  "url": "https://api.example.com",
+  "src": ["./src/"],
+  "template": {"forceLanguage": "en"},
+  "order": ["Notes"]
+}
