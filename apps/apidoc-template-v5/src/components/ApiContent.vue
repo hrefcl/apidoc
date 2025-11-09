@@ -32,23 +32,6 @@
             <p v-if="endpointGroup.endpoint.description" class="text-muted-foreground" v-html="endpointGroup.endpoint.description"></p>
           </div>
 
-          <!-- Version & Language Selector -->
-          <div class="opblock-section border-b border-border p-6">
-            <VersionSelector
-              v-if="endpointGroup.versions && endpointGroup.versions.length > 0"
-              :versions="endpointGroup.versions"
-              :currentVersion="endpointGroup.selectedVersion"
-              :currentLanguage="docsStore.currentLanguage"
-              @version-change="(version) => selectVersion(endpointGroup.key, version)"
-              @language-change="handleLanguageChange"
-            />
-            <!-- DEBUG -->
-            <div v-if="endpointGroup.endpoint" class="text-xs text-muted-foreground mt-2">
-              DEBUG: endpoint.versions = {{ endpointGroup.endpoint.versions?.length || 0 }},
-              group.versions = {{ endpointGroup.versions?.length || 0 }}
-            </div>
-          </div>
-
           <!-- Request Information Section -->
           <div class="opblock-section border-b border-border p-6">
             <div class="flex justify-between items-start mb-4">
@@ -72,13 +55,13 @@
                       comparar cambios con:
                     </h6>
                     <button
-                      v-for="version in endpointGroup.versions"
-                      :key="version"
-                      @click="selectVersion(endpointGroup.key, version)"
+                      v-for="ver in endpointGroup.versions"
+                      :key="getVersionString(ver)"
+                      @click="selectVersion(endpointGroup.key, getVersionString(ver))"
                       class="w-full px-3 py-2 text-left text-sm hover:bg-muted transition-colors"
-                      :class="version === endpointGroup.selectedVersion ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300 font-medium' : 'text-foreground'"
+                      :class="getVersionString(ver) === endpointGroup.selectedVersion ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300 font-medium' : 'text-foreground'"
                     >
-                      v{{ version }}
+                      v{{ getVersionString(ver) }}
                     </button>
                   </div>
                 </Transition>
@@ -340,7 +323,7 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, reactive, onMounted, onUnmounted, watch, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDocsStore } from '@/stores/docs'
 import { ChevronDown, Check, Copy } from 'lucide-vue-next'
@@ -382,6 +365,10 @@ const collapsedSections = reactive({})
 // Aplicar localización a los endpoints según idioma seleccionado
 const localizedEndpoints = computed(() => {
   if (!props.data.endpoints || props.data.endpoints.length === 0) return []
+
+  // IMPORTANT: Access currentLanguage to trigger reactivity
+  const currentLang = docsStore.currentLanguage
+  console.log('🔄 localizedEndpoints computed triggered, currentLang:', currentLang)
 
   // Aplicar getLocalizedEndpoint a cada endpoint
   return props.data.endpoints.map(endpoint => {
@@ -477,17 +464,30 @@ const groupedEndpoints = computed(() => {
     }) || group.endpoints[0];
 
     console.log('🔍 Selected version:', selectedVersion, 'endpoint:', endpoint?.name || endpoint)
+    console.log('🔍 Group versions being returned:', {
+      key: group.key,
+      versionsIsArray: Array.isArray(group.versions),
+      versionsLength: group.versions?.length,
+      firstVersionHasLanguages: group.versions[0]?.languages ? Object.keys(group.versions[0].languages) : 'NO'
+    })
 
     return {
       ...group,
       selectedVersion,
-      endpoint
+      endpoint,
+      // CRITICAL: Ensure versions array is preserved
+      versions: group.versions
     }
   })
 })
 
 const toggleVersionDropdown = (key) => {
   activeVersionDropdown.value = activeVersionDropdown.value === key ? null : key
+}
+
+// Helper to extract version string from version object or string
+const getVersionString = (ver) => {
+  return typeof ver === 'object' && ver.version ? ver.version : ver
 }
 
 const selectVersion = (key, version) => {
@@ -535,6 +535,7 @@ const handleClickOutside = (event) => {
 }
 
 onMounted(() => {
+  console.log('🎯 ApiContent FIRST onMounted - adding click listener')
   document.addEventListener('click', handleClickOutside)
 })
 
@@ -620,6 +621,8 @@ const renderMarkdown = (text) => {
 
 // Emit sections and versions when component is mounted
 onMounted(() => {
+  console.log('🎯 ApiContent SECOND onMounted START')
+
   // Generate sections array for TOC
   const sections = []
 
@@ -657,13 +660,22 @@ onMounted(() => {
       const hasMultipleVersions = groupedEndpoints.value[0].versions && groupedEndpoints.value[0].versions.length > 1
 
       if (hasMultipleVersions) {
+        const versions = groupedEndpoints.value[0].versions
+
+        // Extract version strings from version objects
+        const versionStrings = versions.map(v =>
+          typeof v === 'object' && v.version ? v.version : v
+        )
+
         console.log('✅ DEBUG: Emitting versions-ready with MULTIPLE versions:', {
-          versions: groupedEndpoints.value[0].versions,
+          versions: versions,
+          versionStrings: versionStrings,
           endpoints: groupedEndpoints.value[0].endpoints,
           selectedVersion: groupedEndpoints.value[0].selectedVersion
         })
         emit('versions-ready', {
-          versions: groupedEndpoints.value[0].versions,
+          versions: versions,  // Full objects for VersionSelector
+          versionStrings: versionStrings,  // Strings for TableOfContents
           endpoints: groupedEndpoints.value[0].endpoints,
           selectedVersion: groupedEndpoints.value[0].selectedVersion
         })

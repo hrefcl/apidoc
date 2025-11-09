@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { GitBranch, GitCompare, Check } from 'lucide-vue-next';
 import { useDocsStore } from '../stores/docs';
@@ -70,6 +70,17 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['version-change', 'language-change', 'compare']);
+
+onMounted(() => {
+    console.log('🎯 VersionSelector MOUNTED with props:', {
+        versions: props.versions,
+        versionsLength: props.versions?.length,
+        currentVersion: props.currentVersion,
+        currentLanguage: props.currentLanguage,
+        firstVersionHasLanguages: props.versions?.[0]?.languages,
+        firstVersionLanguageKeys: props.versions?.[0]?.languages ? Object.keys(props.versions[0].languages) : null
+    });
+});
 
 const showSelector = computed(() => {
     console.log('🔍 VersionSelector: versions prop:', props.versions);

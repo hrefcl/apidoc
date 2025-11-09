@@ -101,16 +101,29 @@
       </div>
     </div>
 
-    <!-- Right Sidebar - Table of Contents -->
-    <TableOfContents
-      v-if="isApiDoc && doc && tocSections.length > 0"
-      :sections="tocSections"
-      :versions="tocVersions"
-      :selectedVersion="tocSelectedVersion"
-      @select-version="handleVersionSelect"
-      @compare-versions="handleCompareVersions"
-      class="w-64 flex-shrink-0"
-    />
+    <!-- Right Sidebar -->
+    <div v-if="isApiDoc && doc" class="w-64 flex-shrink-0 space-y-6">
+      <!-- Version & Language Selector -->
+      <VersionSelector
+        v-if="tocVersions && tocVersions.length > 0"
+        :versions="tocVersions"
+        :currentVersion="tocSelectedVersion"
+        :currentLanguage="docsStore.currentLanguage"
+        @version-change="handleVersionSelect"
+        @language-change="handleLanguageChange"
+        @compare="handleCompareVersions"
+      />
+
+      <!-- Table of Contents -->
+      <TableOfContents
+        v-if="tocSections.length > 0"
+        :sections="tocSections"
+        :versions="tocVersionStrings"
+        :selectedVersion="tocSelectedVersion"
+        @select-version="handleVersionSelect"
+        @compare-versions="handleCompareVersions"
+      />
+    </div>
   </div>
 
   <!-- Version Comparator Modal -->
@@ -133,6 +146,7 @@ import TSDocContent from '@/components/TSDocContent.vue'
 import ModelContent from '@/components/ModelContent.vue'
 import TableOfContents from '@/components/TableOfContents.vue'
 import VersionComparator from '@/components/VersionComparator.vue'
+import VersionSelector from '@/components/VersionSelector.vue'
 
 const route = useRoute()
 const docsStore = useDocsStore()
@@ -149,7 +163,8 @@ const error = ref(null)
 
 // TOC state
 const tocSections = ref([])
-const tocVersions = ref([])
+const tocVersions = ref([])  // Array of version OBJECTS for VersionSelector
+const tocVersionStrings = ref([])  // Array of version STRINGS for TableOfContents
 const tocSelectedVersion = ref(null)
 
 // Version comparison state
@@ -358,19 +373,18 @@ const handleSectionsReady = (sections) => {
 // Handle versions from ApiContent
 const handleVersionsReady = (data) => {
   console.log('📥 DEBUG DocPage: Received versions-ready event:', data)
-  console.log('📥 DEBUG DocPage: Versions array:', data.versions)
-  console.log('📥 DEBUG DocPage: Endpoints array:', data.endpoints)
-  console.log('📥 DEBUG DocPage: Selected version:', data.selectedVersion)
 
-  // data.versions es un array de strings: ['3.0.0', '2.0.0', '1.0.0']
-  // data.endpoints es un array de objetos completos para el comparador
-  tocVersions.value = data.versions // Ya son strings, no necesitan mapeo
+  // data.versions = array of version OBJECTS for VersionSelector
+  // data.versionStrings = array of version STRINGS for TableOfContents
+  // data.endpoints = array of full endpoint objects for VersionComparator
+  tocVersions.value = data.versions || []  // Objects for VersionSelector
+  tocVersionStrings.value = data.versionStrings || []  // Strings for TableOfContents
   tocSelectedVersion.value = data.selectedVersion
-  allVersionsData.value = data.endpoints // Objetos completos para VersionComparator
+  allVersionsData.value = data.endpoints || []
 
-  console.log('📥 DEBUG DocPage: tocVersions after assignment:', tocVersions.value)
+  console.log('📥 DEBUG DocPage: tocVersions (objects):', tocVersions.value)
+  console.log('📥 DEBUG DocPage: tocVersionStrings (strings):', tocVersionStrings.value)
   console.log('📥 DEBUG DocPage: tocSelectedVersion:', tocSelectedVersion.value)
-  console.log('📥 DEBUG DocPage: allVersionsData:', allVersionsData.value)
 }
 
 // Handle version selection
@@ -378,6 +392,16 @@ const handleVersionSelect = (version) => {
   console.log('Version selected:', version)
   tocSelectedVersion.value = version
   // ApiContent will react to the change via :externalSelectedVersion prop
+}
+
+// Handle language change from VersionSelector
+const handleLanguageChange = ({ version, language }) => {
+  console.log('🌍 DocPage: Language changed to', language, 'for version', version)
+  // Language is already changed by VersionSelector calling docsStore.setLanguage()
+  // Just update version if needed
+  if (version && version !== tocSelectedVersion.value) {
+    tocSelectedVersion.value = version
+  }
 }
 
 // Handle compare versions

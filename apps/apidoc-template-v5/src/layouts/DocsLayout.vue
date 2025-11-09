@@ -59,9 +59,6 @@
             <Search class="w-5 h-5 text-muted-foreground" />
           </button>
 
-          <!-- API Content Language Selector -->
-          <ApiLanguageSelector />
-
           <!-- UI Language Selector -->
           <LanguageSelector />
 
@@ -280,7 +277,6 @@ import { useRoute } from 'vue-router'
 import { useDocsStore } from '@/stores/docs'
 import { useI18n } from 'vue-i18n'
 import LanguageSelector from '@/components/LanguageSelectorSimple.vue'
-import ApiLanguageSelector from '@/components/ApiLanguageSelector.vue'
 import SearchModal from '@/components/SearchModal.vue'
 import {
   Sparkles, Search, Moon, Sun, Github, Menu, X,

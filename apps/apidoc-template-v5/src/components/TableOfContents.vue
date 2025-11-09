@@ -1,40 +1,5 @@
 <template>
   <div class="toc-sidebar sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto">
-    <!-- Version Selector para endpoints con múltiples versiones -->
-    <div v-if="hasMultipleVersions" class="mb-6 p-4 border border-border rounded-lg bg-card">
-      <h3 class="text-sm font-semibold mb-3 flex items-center gap-2">
-        <GitBranch class="w-4 h-4" />
-        {{ t('api.versions') }}
-      </h3>
-      <div class="space-y-2">
-        <button
-          v-for="version in versions"
-          :key="version"
-          @click="$emit('select-version', version)"
-          :class="[
-            'w-full px-3 py-2 rounded text-sm text-left transition-colors flex items-center justify-between',
-            selectedVersion === version
-              ? 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 font-medium'
-              : 'hover:bg-muted text-foreground'
-          ]"
-        >
-          <span>v{{ version }}</span>
-          <Check v-if="selectedVersion === version" class="w-4 h-4" />
-        </button>
-      </div>
-
-      <!-- Comparar versiones -->
-      <div v-if="versions.length > 1" class="mt-4 pt-4 border-t border-border">
-        <button
-          @click="$emit('compare-versions')"
-          class="w-full px-3 py-2 bg-muted hover:bg-muted/80 rounded text-sm font-medium transition-colors flex items-center justify-center gap-2"
-        >
-          <GitCompare class="w-4 h-4" />
-          {{ t('api.compareVersions', 'Comparar versiones') }}
-        </button>
-      </div>
-    </div>
-
     <!-- Table of Contents -->
     <div class="space-y-1">
       <h3 class="text-sm font-semibold mb-3 px-2">{{ t('common.tableOfContents', 'Contenido') }}</h3>
@@ -59,9 +24,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Check, GitBranch, GitCompare } from 'lucide-vue-next'
 
 const { t } = useI18n()
 
@@ -83,15 +47,6 @@ const props = defineProps({
 defineEmits(['select-version', 'compare-versions'])
 
 const activeSection = ref('')
-
-const hasMultipleVersions = computed(() => {
-  console.log('🎯 DEBUG TableOfContents: Computing hasMultipleVersions')
-  console.log('🎯 DEBUG TableOfContents: props.versions:', props.versions)
-  console.log('🎯 DEBUG TableOfContents: versions.length:', props.versions.length)
-  const result = props.versions.length > 1
-  console.log('🎯 DEBUG TableOfContents: hasMultipleVersions result:', result)
-  return result
-})
 
 const scrollToSection = (id) => {
   const element = document.getElementById(id)
