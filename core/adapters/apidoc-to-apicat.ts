@@ -117,6 +117,9 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
     const models: any[] = [];
     const groups = new Set<string>();
 
+    // Map to group endpoints by ID (for multi-language and multi-version support)
+    const endpointMap = new Map<string, ApiCATEndpoint[]>();
+
     // Process each endpoint or model
     if (Array.isArray(apiDocData)) {
         apiDocData.forEach((item: any) => {
@@ -308,9 +311,104 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
                 }));
             }
 
-            endpoints.push(endpoint);
+            // Group endpoints by ID (base ID without lang/version suffix)
+            const baseId = endpoint.id;
+            if (!endpointMap.has(baseId)) {
+                endpointMap.set(baseId, []);
+            }
+            endpointMap.get(baseId)!.push(endpoint);
         });
     }
+
+    // Now merge multi-language and multi-version endpoints
+    endpointMap.forEach((variants, baseId) => {
+        if (variants.length === 1) {
+            // Single variant - just push as is
+            endpoints.push(variants[0]);
+        } else {
+            // Multiple variants - group by version first, then collect languages
+            const groupedByVersion = new Map<string, ApiCATEndpoint[]>();
+
+            variants.forEach(variant => {
+                const version = variant.version || '1.0.0';
+                if (!groupedByVersion.has(version)) {
+                    groupedByVersion.set(version, []);
+                }
+                groupedByVersion.get(version)!.push(variant);
+            });
+
+            // Sort versions in descending order to get latest first
+            const sortedVersions = Array.from(groupedByVersion.keys()).sort((a, b) => {
+                return b.localeCompare(a);
+            });
+
+            // Get the latest version's language variants
+            const latestVersion = sortedVersions[0];
+            const latestVersionVariants = groupedByVersion.get(latestVersion)!;
+
+            // Use the first language variant as the base endpoint
+            const baseEndpoint = latestVersionVariants[0];
+
+            // Create languages object with all language variants for the latest version
+            const languages: Record<string, any> = {};
+            latestVersionVariants.forEach(variant => {
+                const lang = variant.lang || 'en';
+                languages[lang] = {
+                    title: variant.title,
+                    description: variant.description,
+                    parameters: variant.parameters,
+                    success: variant.success,
+                    error: variant.error,
+                };
+            });
+
+            // Add languages to the base endpoint (used by getLocalizedEndpoint() in frontend)
+            (baseEndpoint as any).languages = languages;
+
+            // If there are multiple versions, create versions array
+            if (sortedVersions.length > 1) {
+                const versionsArray = sortedVersions.map((version, index) => {
+                    const versionVariants = groupedByVersion.get(version)!;
+                    const versionBase = versionVariants[0];
+
+                    // Create translations for this version
+                    const versionTranslations: Record<string, any> = {};
+                    versionVariants.forEach(v => {
+                        const lang = v.lang || 'en';
+                        versionTranslations[lang] = {
+                            title: v.title,
+                            description: v.description,
+                            parameters: v.parameters,
+                            success: v.success,
+                            error: v.error,
+                        };
+                    });
+
+                    return {
+                        version: version,
+                        title: versionBase.title,
+                        name: versionBase.name,
+                        description: versionBase.description,
+                        filename: versionBase.filename,
+                        url: versionBase.url,
+                        method: versionBase.method,
+                        isLatest: index === 0,
+                        parameters: versionBase.parameters,
+                        success: versionBase.success,
+                        error: versionBase.error,
+                        languages: versionTranslations, // VersionSelector.vue expects 'languages' not 'translations'
+                    };
+                });
+
+                (baseEndpoint as any).versions = versionsArray;
+                (baseEndpoint as any).latestVersion = latestVersion;
+                (baseEndpoint as any).versionCount = sortedVersions.length;
+                (baseEndpoint as any).hasMultipleVersions = true;
+            }
+
+            endpoints.push(baseEndpoint);
+        }
+    });
 
     // Build project info
     const project: ApiCATProject = {

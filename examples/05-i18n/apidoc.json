@@ -12,5 +12,9 @@
     "availableLangs": ["es", "en", "zh"],
     "showLanguageSelector": true,
     "fallbackToDefault": true
+  },
+  "apicat": {
+    "active": true,
+    "dest": "./tmp/05-i18n"
   }
 }
