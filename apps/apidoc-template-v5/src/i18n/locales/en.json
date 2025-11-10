@@ -233,5 +233,23 @@
     "contentLanguage": "API Documentation Language",
     "currentLanguage": "Current language",
     "switchTo": "Switch to {language}"
+  },
+  "pdf": {
+    "exportToPdf": "Export to PDF",
+    "generating": "Generating PDF",
+    "completed": "PDF Generated",
+    "error": "Error",
+    "successMessage": "PDF has been generated and downloaded successfully",
+    "errorMessage": "An error occurred while generating the PDF",
+    "close": "Close",
+    "downloadAgain": "Download again",
+    "stages": {
+      "preparing": "Preparing generation",
+      "cover": "Generating cover",
+      "index": "Generating index",
+      "content": "Generating content",
+      "finalizing": "Finalizing document",
+      "done": "Completed"
+    }
   }
 }

@@ -14,7 +14,7 @@
       </div>
 
       <!-- Document Content -->
-      <article v-else-if="doc" class="prose prose-lg">
+      <article v-else-if="doc" class="prose prose-lg" :data-section="docId">
         <!-- Breadcrumbs -->
         <div class="flex items-center gap-2 text-sm text-muted-foreground mb-6 not-prose">
           <template v-for="(crumb, index) in breadcrumbs" :key="index">

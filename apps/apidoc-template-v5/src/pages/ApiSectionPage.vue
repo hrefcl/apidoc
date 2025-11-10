@@ -9,7 +9,7 @@
       <p class="text-red-600">{{ error }}</p>
     </div>
 
-    <div v-else-if="sectionData" class="section-content">
+    <div v-else-if="sectionData" class="section-content" :data-section="section">
       <!-- Custom Markdown Section -->
       <div v-if="sectionData.customMarkdown" class="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 border border-blue-200 dark:border-blue-700 rounded-lg">
         <div class="flex items-center gap-3 mb-4">
