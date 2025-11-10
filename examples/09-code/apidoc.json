@@ -2,9 +2,12 @@
   "name": "Code Examples",
   "version": "1.0.0",
   "description": "Embedded code examples in multiple languages",
-  "title": "SDK API - Code Examples",
-  "url": "https://api.example.com",
+  "title": "Thinmoo API - Floor & Community Management",
+  "url": "http://api-cloud.thinmoo.net",
   "src": ["./src/"],
+  "apicat": {
+    "active": true
+  },
   "template": {"forceLanguage": "en"},
-  "order": ["SDK"]
+  "order": ["Floor", "Community"]
 }

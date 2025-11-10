@@ -2,9 +2,12 @@
   "name": "apiSchema Example",
   "version": "1.0.0",
   "description": "TypeScript interfaces with @apiSchema",
-  "title": "Tasks API - @apiSchema Example",
+  "title": "Community API - @apiSchema Complete Example",
   "url": "https://api.example.com",
   "src": ["./src/"],
+  "apicat": {
+    "active": true
+  },
   "template": {"forceLanguage": "en"},
-  "order": ["Tasks"]
+  "order": ["TestQuery"]
 }

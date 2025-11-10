@@ -5,6 +5,9 @@
   "title": "Notes API - Markdown Only",
   "url": "https://api.example.com",
   "src": ["./src/"],
+  "apicat": {
+    "active": true
+  },
   "template": {"forceLanguage": "en"},
   "order": ["Notes"]
 }

@@ -122,7 +122,7 @@
             Autenticación
           </h4>
 
-          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-sm text-blue-800 dark:text-blue-200">
+          <div class="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-sm text-blue-800 dark:text-blue-200">
             <strong>Nota:</strong> Para brokers como AWS IoT, la autenticación se realiza mediante certificados SSL/TLS.
             Usuario y contraseña son opcionales si usas autenticación por certificados.
           </div>

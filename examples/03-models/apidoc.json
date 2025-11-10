@@ -5,7 +5,6 @@
   "title": "Products API - Sequelize Models Example",
   "url": "https://api.example.com",
   "sampleUrl": "https://api.example.com",
-  "src": ["./src/"],
   "template": {
     "forceLanguage": "en"
   },
