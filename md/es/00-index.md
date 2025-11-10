@@ -46,6 +46,7 @@ Bienvenido a la documentación completa de APIDoc 5.0. Esta guía te permitirá 
 - **[🐳 Docker y Containers](./16-docker.md)** - Uso con contenedores
 - **[🔧 Herramientas y Plugins](./17-build-tools.md)** - Integración con Grunt, Webpack, etc.
 - **[💻 CLI v5 Moderna](./18-cli-v5.md)** - Guía completa de la nueva CLI con subcomandos
+- **[📄 Exportación a PDF](./19-pdf-export.md)** - Genera PDFs profesionales del lado del cliente
 
 ## 💡 Casos de Uso Comunes
 
@@ -80,6 +81,7 @@ Bienvenido a la documentación completa de APIDoc 5.0. Esta guía te permitirá 
 
 ### 🎨 Features Principales
 - **✅ apiCAT (Vue 3)**: Template moderno con carga lazy de endpoints
+- **✅ PDF Export**: Generación de PDFs profesionales 100% client-side con jsPDF
 - **✅ Custom Markdown**: Contenido personalizado por secciones (`settings.{Grupo}.filename`)
 - **✅ MQTT Protocol**: 16+ parsers MQTT con template especializado
 - **✅ OpenAPI 3.0**: Integración nativa y export a swagger.json

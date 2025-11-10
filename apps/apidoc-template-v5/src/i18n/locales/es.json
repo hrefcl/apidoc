@@ -219,5 +219,23 @@
     "contentLanguage": "Idioma de la Documentación API",
     "currentLanguage": "Idioma actual",
     "switchTo": "Cambiar a {language}"
+  },
+  "pdf": {
+    "exportToPdf": "Exportar a PDF",
+    "generating": "Generando PDF",
+    "completed": "PDF Generado",
+    "error": "Error",
+    "successMessage": "El PDF se ha generado y descargado exitosamente",
+    "errorMessage": "Ocurrió un error al generar el PDF",
+    "close": "Cerrar",
+    "downloadAgain": "Descargar nuevamente",
+    "stages": {
+      "preparing": "Preparando generación",
+      "cover": "Generando portada",
+      "index": "Generando índice",
+      "content": "Generando contenido",
+      "finalizing": "Finalizando documento",
+      "done": "Completado"
+    }
   }
 }

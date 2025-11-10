@@ -59,6 +59,9 @@
             <Search class="w-5 h-5 text-muted-foreground" />
           </button>
 
+          <!-- PDF Export -->
+          <PdfExportButton />
+
           <!-- UI Language Selector -->
           <LanguageSelector />
 
@@ -278,6 +281,7 @@ import { useDocsStore } from '@/stores/docs'
 import { useI18n } from 'vue-i18n'
 import LanguageSelector from '@/components/LanguageSelectorSimple.vue'
 import SearchModal from '@/components/SearchModal.vue'
+import PdfExportButton from '@/components/PdfExportButton.vue'
 import {
   Sparkles, Search, Moon, Sun, Github, Menu, X,
   FileText, Plug, BookOpen, Code, User, Users, Building,
