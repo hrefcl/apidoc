@@ -5,7 +5,10 @@
   "title": "Products API - Multi Version Example",
   "url": "https://api.example.com",
   "sampleUrl": "https://api.example.com",
-  "src": ["./src/"],
+  "inputs": {
+    "docs": ["/"],
+    "all": ["src"]
+  },
   "template": {
     "forceLanguage": "en"
   },

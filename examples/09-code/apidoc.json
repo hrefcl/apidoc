@@ -4,7 +4,10 @@
   "description": "Embedded code examples in multiple languages",
   "title": "Thinmoo API - Floor & Community Management",
   "url": "http://api-cloud.thinmoo.net",
-  "src": ["./src/"],
+  "inputs": {
+    "docs": ["/"],
+    "all": ["src"]
+  },
   "apicat": {
     "active": true
   },

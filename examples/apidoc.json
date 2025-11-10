@@ -1,0 +1,46 @@
+{
+  "name": "APIDoc v5 - Complete Examples",
+  "version": "5.0.6",
+  "description": "Comprehensive examples demonstrating all APIDoc v5 features",
+  "title": "APIDoc v5 Examples",
+  "url": "https://api.example.com",
+  "apicat": {
+    "active": true
+  },
+  "inputs": {
+    "basic": ["./01-basic-api/src"],
+    "openapi": ["./02-openapi/src"],
+    "models": ["./03-models/src"],
+    "mqtt": ["./04-mqtt/src"],
+    "i18n": ["./05-i18n/src"],
+    "versioning": ["./06-versioning/src"],
+    "auth": ["./07-authentication/src"],
+    "schema": ["./08-apiSchema/src"],
+    "code": ["./09-code/src"],
+    "docs": ["./10-markdown/src"],
+    "multilang": ["./11-multi-language/src"],
+    "tsdoc": ["./12-tsdoc/src"]
+  },
+  "order": [
+    "Users",
+    "Products",
+    "Authentication",
+    "Mqtt",
+    "Floor",
+    "Community"
+  ],
+  "template": {
+    "forceLanguage": "en",
+    "showRequiredLabels": true,
+    "withCompare": true,
+    "withGenerator": true
+  },
+  "header": {
+    "title": "APIDoc v5 Examples",
+    "content": "# Complete APIDoc v5 Examples\n\nThis documentation demonstrates all features of APIDoc v5:\n\n## Examples Included\n\n- **01-basic-api**: Simple REST API endpoints\n- **02-openapi**: OpenAPI 3.0 integration\n- **03-models**: Sequelize ORM model documentation\n- **04-mqtt**: MQTT protocol documentation\n- **05-i18n**: Internationalization support\n- **06-versioning**: API version management\n- **07-authentication**: JWT and OAuth authentication\n- **08-apiSchema**: TypeScript interface integration\n- **09-code**: Embedded code examples\n- **10-markdown**: Markdown content in API docs\n- **11-multi-language**: Multi-language API documentation\n- **12-tsdoc**: TypeScript & JSDoc comments\n\n## Features\n\n- ✅ REST API Documentation\n- ✅ MQTT Protocol Support\n- ✅ OpenAPI 3.0 Export\n- ✅ TypeScript Integration\n- ✅ Sequelize Models\n- ✅ Multi-language Support\n- ✅ Version Management\n- ✅ Authentication Patterns"
+  },
+  "footer": {
+    "title": "About APIDoc v5",
+    "content": "## APIDoc v5\n\nAPIDoc v5 is a modern API documentation generator with support for:\n\n- REST APIs\n- MQTT/IoT protocols\n- OpenAPI 3.0\n- TypeScript schemas\n- Multiple output formats\n\nVisit [apidoc.app](https://apidoc.app) for more information."
+  }
+}

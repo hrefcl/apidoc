@@ -5,6 +5,10 @@
   "title": "Polyglot API - Multi-Language Support",
   "url": "https://api.example.com",
   "src": ["./src/"],
+  "inputs": {
+    "docs": ["/"],
+    "all": ["src"]
+  },
   "template": {"forceLanguage": "en"},
   "order": ["Books"]
 }

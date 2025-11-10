@@ -1,102 +1,201 @@
-# Example 03: Sequelize Models + @apiSchema
+# Sequelize Models Example
 
-Este ejemplo demuestra cómo documentar APIs que utilizan modelos de base de datos Sequelize con la anotación `@apiSchema` de APIDoc v5.
+## Overview
 
-## 🎯 Objetivo
+This example demonstrates how to document APIs that use Sequelize ORM models with the `@apiSchema` annotation in APIDoc v5. It shows automatic schema extraction from Sequelize model definitions including validations, relationships, and lifecycle hooks.
 
-Mostrar la integración entre:
-- **Sequelize ORM**: Definición de modelos de base de datos
-- **@apiSchema**: Anotación para referenciar esquemas TypeScript/Sequelize
-- **Validaciones**: Documentación de reglas de validación de modelos
-- **Relaciones**: Documentación de relaciones entre modelos (hasMany, belongsTo)
+## Parser Used
 
-## 📁 Estructura
+**Parser**: `models` (Sequelize Models Parser)
+
+This parser extracts documentation from Sequelize model class definitions using TypeScript decorators. It automatically generates API documentation from model schemas, validations, and relationships.
+
+## How it Works
+
+The `models` parser reads Sequelize model definitions and extracts:
+
+### Extracted Information
+
+- **Model Attributes**: All fields defined with `@Attribute` decorator
+- **Data Types**: Sequelize DataTypes mapped to JSON Schema types
+- **Validations**: `@ValidateAttribute`, `@AllowNull`, `@Unique` decorators
+- **Relationships**: `@HasMany`, `@BelongsTo`, `@HasOne`, `@BelongsToMany`
+- **Indexes**: `@Index`, `@PrimaryKey` decorators
+- **Timestamps**: `@CreatedAt`, `@UpdatedAt`, `@DeletedAt` fields
+- **Lifecycle Hooks**: `@BeforeCreate`, `@AfterCreate`, `@BeforeUpdate`, etc.
+
+### Model Annotation Format
+
+```typescript
+/**
+ * @model User Complete user entity with authentication
+ * @modelname UserModel
+ * @modelgroup User Management
+ * @modeldescription Complete User entity model with all attributes and relationships
+ * @apiVersion 5.0.1
+ */
+@Table({ tableName: 'users', schema: 'public', timestamps: true, paranoid: true })
+export default class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+  @PrimaryKey
+  @AutoIncrement
+  @Attribute(DataTypes.INTEGER)
+  declare id: CreationOptional<number>;
+
+  @Unique
+  @Attribute(DataTypes.STRING)
+  declare email: string;
+}
+```
+
+## Example Code
+
+```typescript
+/**
+ * @model User Complete user entity with authentication and access control
+ * @modelname UserModel
+ * @modelgroup User Management
+ * @modeldescription Complete User entity model with all attributes, relationships,
+ * and lifecycle hooks automatically extracted from the Sequelize class definition.
+ */
+@Table({ tableName: 'users', schema: 'public', timestamps: true, paranoid: true })
+export default class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+  @PrimaryKey
+  @Index
+  @Unique
+  @AutoIncrement
+  @Attribute(DataTypes.INTEGER)
+  declare id: CreationOptional<number>;
+
+  @Index
+  @Unique
+  @AllowNull(false)
+  @Default(sql.uuidV4)
+  @Attribute(DataTypes.UUID)
+  declare uuid: CreationOptional<string>;
+
+  @Index
+  @Unique
+  @Attribute(DataTypes.STRING)
+  @ValidateAttribute({
+    async isUnique(value: string) {
+      // Validation logic
+    },
+  })
+  declare email: string;
+
+  @CreatedAt
+  declare createdAt: CreationOptional<Date>;
+
+  @UpdatedAt
+  declare updatedAt: CreationOptional<Date>;
+
+  // Relationships
+  @BelongsTo(() => Community, { foreignKey: 'id_community' })
+  community!: NonAttribute<Community>;
+
+  @HasMany(() => Access, { foreignKey: 'id_user' })
+  accesses!: NonAttribute<Access[]>;
+
+  // Lifecycle Hooks
+  @BeforeCreate
+  static async DataFormating(instance: User) {
+    // Normalize and validate data before creation
+  }
+
+  @AfterCreate
+  static async AddUserToCommunity(instance: User) {
+    // Create relationships after user creation
+  }
+}
+```
+
+## Files Structure
 
 ```
 03-models/
-├── README.md
-├── apidoc.json
+├── apidoc.json          # Configuration file
+├── README.md            # This file
 └── src/
-    ├── models.ts          # Modelos Sequelize con @apiSchema
-    └── products-api.js    # Endpoints REST que usan los modelos
+    └── User.ts          # Sequelize model with @model annotations
 ```
 
-## 🗂️ Entidad Utilizada
+## Key Features
 
-**Product** - Sistema de gestión de productos con categorías
+- **Automatic Schema Extraction**: Models automatically documented from decorators
+- **Type Mapping**: Sequelize DataTypes to JSON Schema types
+- **Validation Documentation**: `@ValidateAttribute` and constraints
+- **Relationship Documentation**: `@HasMany`, `@BelongsTo` associations
+- **Lifecycle Hooks**: `@BeforeCreate`, `@AfterUpdate` documented
+- **Timestamps**: Auto-generated `createdAt`, `updatedAt`, `deletedAt`
+- **Indexes**: Primary keys and unique constraints
+- **Soft Deletes**: Paranoid mode with `@DeletedAt`
 
-Evita duplicados con otros ejemplos:
-- ❌ Company (usado en 01-basic-api)
-- ❌ Inventory (usado en 02-openapi)
-- ✅ Product (usado aquí con enfoque en modelos DB)
+## Configuration (apidoc.json)
 
-## 🔧 Características Demostradas
-
-### 1. Modelos Sequelize
-```typescript
-@apiDefine ProductModel Product Database Model
-@apiSchema (body) {jsonschema=./models.ts#ProductSchema} Product
-```
-
-### 2. Validaciones en Modelos
-- Campo requerido: `allowNull: false`
-- Validaciones de formato: email, URL, enum
-- Validaciones custom: min/max length, ranges
-
-### 3. Relaciones
-- **Category hasMany Products**
-- **Product belongsTo Category**
-
-### 4. Timestamps Automáticos
-- `createdAt`: Timestamp de creación
-- `updatedAt`: Timestamp de última actualización
-
-## 📚 Uso
-
-### Generar Documentación
-```bash
-# Desde la raíz del proyecto
-npm run example:03
-
-# O directamente
-./bin/apidoc generate -i examples/03-models/src/ -o examples/03-models/output
-npx serve examples/03-models/output -p 8080
-```
-
-### Ver Documentación
-Abrir en navegador: `http://localhost:8080`
-
-## 🎓 Conceptos Aprendidos
-
-1. **@apiSchema con Sequelize**: Cómo referenciar modelos de base de datos
-2. **Validaciones**: Documentar reglas de validación del ORM
-3. **Relaciones**: Documentar asociaciones entre modelos
-4. **Tipos de Datos**: Mapeo de tipos Sequelize a tipos de API
-5. **Campos Automáticos**: Timestamps y campos generados por DB
-
-## 🔗 Referencias
-
-- [Sequelize ORM](https://sequelize.org/)
-- [APIDoc @apiSchema](../../md/en/11-typescript-schemas.md)
-- [TypeScript Schemas](../../md/en/11-typescript-schemas.md)
-
-## ⚙️ Configuración
-
-El archivo `apidoc.json` incluye:
 ```json
 {
   "name": "Models & Schemas Example",
   "version": "1.0.0",
   "title": "Products API - Sequelize Models Example",
-  "template": {
-    "forceLanguage": "en"
-  }
+  "url": "https://api.example.com",
+  "inputs": {
+    "docs": ["/"],
+    "models": ["src"]
+  },
+  "order": ["Products", "Categories"]
 }
 ```
 
-## 📝 Notas Técnicas
+### Inputs Configuration
 
-- Los modelos Sequelize se definen en TypeScript para mejor tipado
-- Las validaciones de Sequelize se documentan en los comentarios @apiParam
-- Las relaciones se documentan en comentarios dedicados
-- Los campos generados automáticamente (id, timestamps) se marcan claramente
+- `"docs": ["/"]` - Includes this README.md in the documentation
+- `"models": ["src"]` - Processes `@model` annotations in src/ directory
+  - Extracts Sequelize model schemas
+  - Documents attributes and relationships
+  - Generates JSON Schema from models
+
+## Testing
+
+Generate documentation:
+
+```bash
+# From the example directory
+apidoc generate -i src -o doc
+
+# Or from project root
+npm run example:models
+```
+
+Preview documentation:
+
+```bash
+npx serve doc
+# Open http://localhost:3000
+```
+
+## What You'll Learn
+
+1. How to document Sequelize models automatically
+2. Using TypeScript decorators for model definitions
+3. Documenting validations and constraints
+4. Documenting model relationships (hasMany, belongsTo)
+5. Lifecycle hook documentation
+6. Auto-generated fields (timestamps, IDs)
+7. Soft delete (paranoid mode) documentation
+
+## Supported Sequelize Features
+
+- **Data Types**: All Sequelize DataTypes supported
+- **Decorators**: All @sequelize/core decorators
+- **Validations**: Built-in and custom validators
+- **Relationships**: All association types
+- **Hooks**: All lifecycle hooks
+- **Indexes**: Primary, unique, and composite indexes
+- **Schemas**: PostgreSQL schema support
+- **Paranoid**: Soft delete with deletedAt
+
+## Related Examples
+
+- **08-apiSchema**: For TypeScript interface documentation
+- **12-tsdoc**: For TypeScript/JSDoc comments
+- **01-basic-api**: For REST endpoint documentation

@@ -1,0 +1,17 @@
+{
+  "name": "TypeScript & JSDoc",
+  "version": "1.0.0",
+  "description": "Example showing TypeScript interfaces and JSDoc comments",
+  "title": "TypeScript Documentation Example",
+  "url": "https://api.example.com",
+  "inputs": {
+    "docs": [""],
+    "tsdoc": ["src/"]
+  },
+  "apicat": {
+    "active": true
+  },
+  "template": {
+    "forceLanguage": "en"
+  }
+}

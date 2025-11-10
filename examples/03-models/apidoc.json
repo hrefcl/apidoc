@@ -5,6 +5,10 @@
   "title": "Products API - Sequelize Models Example",
   "url": "https://api.example.com",
   "sampleUrl": "https://api.example.com",
+  "inputs": {
+    "docs": ["/"],
+    "models": ["src"]
+  },
   "template": {
     "forceLanguage": "en"
   },

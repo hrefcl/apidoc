@@ -1,105 +1,208 @@
-# Example 02: OpenAPI Integration
+# OpenAPI Integration Example
 
-Este ejemplo demuestra cómo integrar archivos OpenAPI 3.0 externos (YAML/JSON) con APIDoc v5.
+## Overview
 
-## Objetivo
+This example demonstrates how to integrate external OpenAPI 3.0 specifications (YAML/JSON files) with APIDoc v5. It shows how to import complete OpenAPI specs or specific paths, maintaining full OpenAPI semantics and compatibility.
 
-Mostrar la capacidad de APIDoc para:
-- Referenciar especificaciones OpenAPI 3.0 completas desde archivos externos
-- Extraer paths específicos de archivos OpenAPI
-- Combinar documentación nativa de APIDoc con especificaciones OpenAPI
-- Soportar tanto formato YAML como JSON
+## Parser Used
 
-## Endpoints Incluidos
+**Parser**: `openapi` (OpenAPI 3.0 Parser)
 
-Este ejemplo documenta una API de gestión de inventario (Inventory API):
+This parser processes external OpenAPI 3.0 specification files and converts them into APIDoc documentation. It supports both YAML and JSON formats and handles `$ref` resolution automatically.
 
-**Desde OpenAPI externo** (`schemas/inventory-api.yaml`):
-- **GET /api/inventory** - Listar todos los items
-- **POST /api/inventory** - Crear nuevo item
-- **GET /api/inventory/:id** - Obtener item por ID
-- **PUT /api/inventory/:id** - Actualizar item
-- **DELETE /api/inventory/:id** - Eliminar item
+## How it Works
 
-## Estructura
+The `openapi` parser reads OpenAPI specification files and extracts:
 
-```
-02-openapi/
-├── README.md                  # Este archivo
-├── apidoc.json               # Configuración del ejemplo
-├── src/
-│   └── inventory-loader.js   # Archivo que carga OpenAPI externo
-├── schemas/
-│   └── inventory-api.yaml    # Especificación OpenAPI 3.0
-└── output/                   # Documentación generada (gitignored)
-```
+### Supported Features
 
-## Formato de Referencia
+- **Complete Spec Loading**: Load entire OpenAPI files with all paths and operations
+- **Selective Path Loading**: Import only specific paths from OpenAPI files
+- **Schema Resolution**: Automatic resolution of `$ref` references and `components`
+- **All HTTP Methods**: GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD
+- **Parameter Types**: Path, query, header, and body parameters
+- **Response Schemas**: Multiple status codes with detailed schemas
+- **Examples**: Request and response examples
 
-### Cargar Especificación Completa
+### OpenAPI Annotation Format
 
 ```javascript
 /**
  * Load complete OpenAPI specification
  * @openapi {openapi=./schemas/inventory-api.yaml}
  */
-```
 
-### Cargar Path Específico
-
-```javascript
 /**
- * Load specific path from OpenAPI file
+ * Load specific path only
  * @openapi /api/inventory/{id} {openapi=./schemas/inventory-api.yaml}
  */
 ```
 
-## Generar Documentación
+## Example Code
 
-Desde esta carpeta:
+```javascript
+/**
+ * OpenAPI Integration Example - Inventory API
+ *
+ * This file demonstrates how to load external OpenAPI 3.0 specifications
+ * into APIDoc v5 documentation.
+ */
 
-```bash
-# Usando CLI v5
-apidoc generate -c apidoc.json -o output/
+/**
+ * Example 1: Load complete OpenAPI specification
+ *
+ * This loads ALL paths and operations from the external YAML file.
+ * Use this when you want to include the entire API specification.
+ *
+ * @openapi {openapi=./schemas/inventory-api.yaml}
+ */
+function loadCompleteInventoryAPI() {
+  // All 5 endpoints will be loaded from inventory-api.yaml
+}
 
-# Ver documentación
-npx serve output/
+/**
+ * Example 2: Mixing APIDoc native annotations with OpenAPI
+ *
+ * You can combine native APIDoc annotations with OpenAPI references.
+ *
+ * @api {get} /api/inventory/categories List Categories
+ * @apiName ListInventoryCategories
+ * @apiGroup Inventory
+ * @apiVersion 1.0.0
+ * @apiDescription Get a list of all available inventory categories.
+ */
+function listInventoryCategories(req, res) {
+  // Native APIDoc annotation - not from OpenAPI file
+}
 ```
 
-Desde la raíz del proyecto:
+## Files Structure
 
-```bash
-# Generar este ejemplo específico
-./bin/apidoc generate -c examples/02-openapi/apidoc.json -o examples/02-openapi/output/
+```
+02-openapi/
+├── apidoc.json              # Configuration file
+├── README.md                # This file
+├── src/
+│   └── inventory-loader.js  # OpenAPI loader file
+└── schemas/
+    └── inventory-api.yaml   # OpenAPI 3.0 specification
 ```
 
-## Características Demostradas
+## Key Features
 
-- ✅ Referencia a archivos OpenAPI 3.0 externos
-- ✅ Formato YAML y JSON soportados
-- ✅ Carga de especificación completa
-- ✅ Carga de paths específicos
-- ✅ Esquemas con `$ref` y `components`
-- ✅ Parámetros de path, query y body
-- ✅ Respuestas con múltiples códigos de estado
-- ✅ Ejemplos de request/response
+- **External Spec Integration**: Reference complete OpenAPI files
+- **Schema Reusability**: Use `components/schemas` with `$ref`
+- **Multi-format Support**: YAML and JSON specifications
+- **Path Filtering**: Load complete specs or specific paths
+- **Standard Compliance**: Full OpenAPI 3.0 compatibility
+- **Hybrid Documentation**: Mix OpenAPI and native APIDoc
+- **Automatic Resolution**: `$ref` pointers resolved automatically
 
-## Ventajas del Enfoque OpenAPI
+## Configuration (apidoc.json)
 
-1. **Reutilización**: El mismo archivo OpenAPI puede usarse para generación de código, testing, etc.
-2. **Estandarización**: OpenAPI es un estándar de la industria
-3. **Separación de Concerns**: Spec separada del código
-4. **Mantenibilidad**: Un solo lugar para actualizar la API spec
+```json
+{
+  "name": "OpenAPI Integration Example",
+  "version": "1.0.0",
+  "title": "Inventory API - OpenAPI Example",
+  "url": "https://api.example.com",
+  "inputs": {
+    "docs": ["/"],
+    "openapi": ["src"]
+  },
+  "order": ["Inventory"]
+}
+```
 
-## Notas
+### Inputs Configuration
 
-- Las referencias OpenAPI externas se procesan en tiempo de generación
-- Los esquemas con `$ref` se resuelven automáticamente
-- Se mantiene toda la semántica de OpenAPI 3.0
-- Compatible con validadores y herramientas OpenAPI estándar
+- `"docs": ["/"]` - Includes this README.md in the documentation
+- `"openapi": ["src"]` - Processes `@openapi` annotations in src/ directory
+  - Looks for `@openapi` tags
+  - Loads referenced OpenAPI files
+  - Converts to APIDoc format
 
-## Ver También
+## OpenAPI Specification Example
 
-- **Documentación OpenAPI**: `/md/es/09-openapi.md`
-- **Ejemplo de Versionado**: `/examples/06-versioning/`
-- **Ejemplo Completo**: `/examples/10-complete-app/`
+```yaml
+# schemas/inventory-api.yaml
+openapi: 3.0.0
+info:
+  title: Inventory API
+  version: 1.0.0
+
+paths:
+  /api/inventory:
+    get:
+      summary: List all inventory items
+      operationId: listInventory
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryItem'
+
+components:
+  schemas:
+    InventoryItem:
+      type: object
+      required:
+        - id
+        - name
+        - quantity
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        quantity:
+          type: integer
+```
+
+## Testing
+
+Generate documentation:
+
+```bash
+# From the example directory
+apidoc generate -i src -o doc
+
+# Or from project root
+npm run example:openapi
+```
+
+Preview documentation:
+
+```bash
+npx serve doc
+# Open http://localhost:3000
+```
+
+## What You'll Learn
+
+1. How to integrate external OpenAPI 3.0 specifications
+2. Loading complete specs vs specific paths
+3. Mixing OpenAPI with native APIDoc annotations
+4. Using `$ref` and `components` for schema reuse
+5. Supporting multiple response status codes
+6. Documenting request/response examples
+7. Maintaining OpenAPI standard compliance
+
+## Advantages of OpenAPI Integration
+
+1. **Spec Reusability**: Same OpenAPI file can be used for code generation, testing, mock servers
+2. **Industry Standard**: OpenAPI is the de-facto standard for API documentation
+3. **Separation of Concerns**: API specification separated from implementation code
+4. **Tool Ecosystem**: Compatible with Swagger UI, Postman, validation tools
+5. **Single Source of Truth**: One spec file for all API documentation needs
+
+## Related Examples
+
+- **01-basic-api**: For native APIDoc annotations
+- **06-versioning**: For managing API versions with OpenAPI
+- **03-models**: For database model integration

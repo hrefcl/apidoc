@@ -5,6 +5,10 @@
   "title": "Smart Home IoT - MQTT Protocol Example",
   "url": "mqtt://broker.example.com:1883",
   "sampleUrl": "mqtt://broker.example.com:1883",
+  "inputs": {
+    "docs": ["/"],
+    "mqtt": ["src"]
+  },
   "template": {
     "forceLanguage": "en"
   },

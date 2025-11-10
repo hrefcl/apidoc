@@ -243,6 +243,9 @@ function parse(options) {
             app.parser.parseFiles(options, parsedFiles, parsedFilenames);
         }
 
+        // Initialize blocks array for API endpoints
+        let blocks = [];
+
         if (parsedFiles.length > 0) {
             // process transformations and assignments
             app.log.verbose('run worker');
@@ -250,7 +253,7 @@ function parse(options) {
 
             // cleanup
             app.log.verbose('run filter');
-            let blocks = app.filter.process(parsedFiles, parsedFilenames);
+            blocks = app.filter.process(parsedFiles, parsedFilenames);
 
             // sort by group ASC, name ASC, version DESC
             blocks.sort(function (a, b) {
@@ -301,7 +304,12 @@ function parse(options) {
                 }
                 app.log.verbose('MQTT schema validation passed for ' + mqttBlocks.length + ' endpoints');
             }
+        }
 
+        // Check if we have any content to generate (parsed files OR documentation/markdown)
+        const hasDocumentation = app.packageInfos.documentation && app.packageInfos.documentation.length > 0;
+
+        if (parsedFiles.length > 0 || hasDocumentation) {
             // add apiDoc specification version
             app.packageInfos.apidoc = SPECIFICATION_VERSION;
 
@@ -316,11 +324,16 @@ function parse(options) {
             let apiProject = JSON.stringify(app.packageInfos, null, 2);
             apiProject = apiProject.replace(/(\r\n|\n|\r)/g, app.options.lineEnding);
 
+            if (parsedFiles.length === 0 && hasDocumentation) {
+                app.log.info('📚 Generating documentation from markdown files only (no API endpoints)');
+            }
+
             return {
                 data: apiData,
                 project: apiProject,
             };
         }
+
         return true;
     } catch (e) {
         // display error by instance

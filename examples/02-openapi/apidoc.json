@@ -6,6 +6,10 @@
   "url": "https://api.example.com",
   "sampleUrl": "https://api.example.com",
   "src": ["./src/"],
+  "inputs": {
+    "docs": ["/"],
+    "openapi": ["src"]
+  },
   "template": {
     "forceLanguage": "en"
   },

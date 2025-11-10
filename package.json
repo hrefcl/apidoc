@@ -65,9 +65,11 @@
     "example:07": "./bin/apidoc generate -i examples/07-authentication/src/ -o tmp/07-authentication && npx serve tmp/07-authentication -p 8080",
     "example:08": "./bin/apidoc generate -i examples/08-apiSchema/src/ -o tmp/08-apiSchema && npx serve tmp/08-apiSchema -p 8080",
     "example:09": "./bin/apidoc generate -i examples/09-code/src/ -o tmp/09-code && npx serve tmp/09-code -p 8080",
-    "example:10": "./bin/apidoc generate -i examples/10-markdown/src/ -o tmp/10-markdown && npx serve tmp/10-markdown -p 8080",
+    "example:10": "./bin/apidoc generate -c examples/10-markdown/apidoc.json -o tmp/10-markdown && npx serve tmp/10-markdown -p 8080",
     "example:11": "./bin/apidoc generate -i examples/11-multi-language/src/ -o tmp/11-multi-language && npx serve tmp/11-multi-language -p 8080",
-    "example:all": "./bin/apidoc generate -i examples/ -o tmp/all && npx serve tmp/all -p 8080",
+        "example:12": "./bin/apidoc generate -i examples/12-tsdoc/src/ -o tmp/12-tsdoc && npx serve tmp/12-tsdoc -p 8080",
+
+    "example:all": "./bin/apidoc generate -c examples/apidoc.json -o tmp/all && npx serve tmp/all -p 8080",
 
     "//3": "=== DEVELOPMENT ===",
     "dev": "npm run build:watch",

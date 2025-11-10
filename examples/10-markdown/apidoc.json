@@ -1,13 +1,16 @@
 {
-  "name": "Markdown Documentation",
-  "version": "1.0.0",
-  "description": "Pure markdown documentation example",
-  "title": "Notes API - Markdown Only",
-  "url": "https://api.example.com",
-  "src": ["./src/"],
   "apicat": {
     "active": true
   },
-  "template": {"forceLanguage": "en"},
-  "order": ["Notes"]
+  "description": "Example showing markdown content in API documentation",
+  "inputs": {
+    "docs": ["src"]
+  },
+  "name": "Markdown & Documentation",
+  "template": {
+    "forceLanguage": "en"
+  },
+  "title": "Markdown Documentation Example",
+  "url": "https://api.example.com",
+  "version": "1.0.0"
 }
