@@ -5,6 +5,108 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.7] - 2025-11-10
+
+### 🌍 Complete i18n for TypeScript Documentation (TSDoc)
+
+#### TSDoc UI Fully Translated
+- **Fixed**: All hardcoded text in TSDoc navigation and components
+- **Added**: Complete i18n support for TypeScript documentation interface
+- **Components Updated**:
+  - `TSDocContent.vue` - All property labels, type names, and navigation tabs
+  - `DocsLayout.vue` - Section titles and navigation markers
+  - `stores/docs.js` - Navigation structure with i18n markers
+
+#### Translation Keys Added
+- **TSDoc Section**: Type names, plurals, and section titles
+  - `tsdoc.title` - "TypeScript" (simplified from "TypeScript Documentation")
+  - `tsdoc.all` - "all" / "todos" / "すべて"
+  - `tsdoc.interface` / `tsdoc.interfaces` - Singular/plural forms
+  - `tsdoc.function` / `tsdoc.functions` - Singular/plural forms
+  - `tsdoc.class` / `tsdoc.classes` - Singular/plural forms
+  - `tsdoc.type` / `tsdoc.types` - Singular/plural forms
+  - `tsdoc.enum` / `tsdoc.enums` - Singular/plural forms
+- **Navigation**: Section titles now translatable
+  - `nav.documentation` - "Documentación" / "Documentation" / "ドキュメント"
+- **Common Properties**: Already supported from v5.0.6
+  - `common.optional` / `common.required` - Property labels
+
+#### Smart Plural Handling
+- **Added**: `translateType()` function with automatic singular/plural detection
+- **Logic**: Counts items and selects appropriate translation key
+- **Example**: "interface 1" vs "interfaces 5" automatically handled
+- **Languages**: Works across all 7 supported languages
+
+#### Marker Pattern Implementation
+- **Pattern**: `__key__` markers in Pinia stores (cannot access i18n directly)
+- **Translation**: Happens in Vue components with access to `useI18n()`
+- **Function**: `translateTitle()` processes markers and returns translated text
+- **Examples**:
+  - Store: `title: '__tsdoc.title__'` → Component: "TypeScript"
+  - Store: `title: '__nav.documentation__'` → Component: "Documentación"
+
+### 🐛 Bug Fixes
+
+- **Fixed**: TSDoc menu showed "TypeScript Docs" hardcoded in English
+- **Fixed**: TSDoc tabs showed "all", "interface", "function" in English only
+- **Fixed**: "optional" and "required" labels hardcoded in TSDoc property tables
+- **Fixed**: Navigation section title "Documentación" was not translatable
+- **Fixed**: TSDoc title was verbose "TypeScript Documentation" instead of clean "TypeScript"
+
+### 📦 Files Modified
+
+**Translation Files Updated**:
+- `src/i18n/locales/es.json` - Added tsdoc section with Spanish translations
+- `src/i18n/locales/en.json` - Added tsdoc section with English translations
+- `src/i18n/locales/ja.json` - Added tsdoc section with Japanese translations
+
+**Components Updated**:
+- `src/components/TSDocContent.vue` (lines 29, 121-122, 154-155, 301-311)
+  - Added `translateType()` function for smart plural handling
+  - Replaced hardcoded "optional"/"required" with i18n
+  - Updated tab labels to use translations
+- `src/layouts/DocsLayout.vue` (lines 118, 222, 308, 316-322)
+  - Added `translateTitle()` function for marker pattern
+  - Updated section title rendering
+- `src/stores/docs.js` (line 473, 561)
+  - Changed hardcoded titles to i18n markers
+  - Navigation structure now fully translatable
+
+**Template**:
+- `template/index.html` - Rebuilt with all TSDoc i18n changes (983.17 kB / gzip: 268.08 kB)
+
+### 🎨 UI Improvements
+
+- **Cleaner Navigation**: TSDoc section now shows just "TypeScript" instead of verbose "TypeScript Documentation"
+- **Consistent UX**: All UI elements now respect user's selected language
+- **Dynamic Updates**: Language changes immediately update all TSDoc interface text
+- **Complete Coverage**: Zero hardcoded text remaining in TypeScript documentation
+
+### 📚 Translation Examples
+
+**Spanish (ES)**:
+- Menu: "Documentación" | "TypeScript"
+- Tabs: "todos 5" | "interfaz 1" | "funciones 4"
+- Labels: "opcional" | "requerido"
+
+**English (EN)**:
+- Menu: "Documentation" | "TypeScript"
+- Tabs: "all 5" | "interface 1" | "functions 4"
+- Labels: "optional" | "required"
+
+**Japanese (JA)**:
+- Menu: "ドキュメント" | "TypeScript"
+- Tabs: "すべて 5" | "インターフェース 1" | "関数 4"
+- Labels: "任意" | "必須"
+
+### 🔧 Technical Details
+
+- **Pattern**: Marker-based translation for Pinia stores (`__key__`)
+- **Dynamic**: Computed properties ensure reactivity on language change
+- **Type-Safe**: TypeScript support for all translation keys
+- **Fallback**: English as default if translation key not found
+- **Performance**: No impact, translations cached by vue-i18n
+
 ## [5.0.6] - 2025-11-08
 
 ### 🌍 Complete i18n Internationalization
