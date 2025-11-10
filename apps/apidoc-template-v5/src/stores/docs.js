@@ -533,7 +533,13 @@ export const useDocsStore = defineStore('docs', () => {
           sectionPath: `/api/section/${group.groupId}`,
           items: group.endpoints.map(endpoint => {
             // Buscar el summary del endpoint en el índice de API
-            const endpointData = apiIndex.value?.endpoints?.find(e => e.id === endpoint)
+            // Filtrar por idioma actual
+            const currentLang = currentLanguage.value
+
+            const endpointData = apiIndex.value?.endpoints?.find(e =>
+              e.id === endpoint &&
+              (!currentLang || e.lang === currentLang)
+            )
             const endpointTitle = endpointData?.summary || formatEndpointTitle(endpoint)
 
             return {

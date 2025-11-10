@@ -312,8 +312,10 @@ export class ApiCatPlugin {
             // Get grouped endpoints for this group from the map
             const groupedEndpoints = groupedEndpointsMap.get(groupName) || [];
 
-            // Extract unique endpoint IDs (already grouped, so no duplicates)
-            const endpointIds = groupedEndpoints.map((ep: any) => ep.id);
+            // Extract unique endpoint IDs (deduplicate by ID to handle multi-language variants)
+            const uniqueIds = new Set<string>();
+            groupedEndpoints.forEach((ep: any) => uniqueIds.add(ep.id));
+            const endpointIds = Array.from(uniqueIds);
 
             return {
                 id: groupName,
