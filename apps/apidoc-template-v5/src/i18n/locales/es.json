@@ -127,6 +127,20 @@
     "example": "Ejemplo",
     "noSymbolsFound": "No se encontraron símbolos para"
   },
+  "tsdoc": {
+    "title": "TypeScript",
+    "all": "todos",
+    "interface": "interfaz",
+    "interfaces": "interfaces",
+    "function": "función",
+    "functions": "funciones",
+    "class": "clase",
+    "classes": "clases",
+    "type": "tipo",
+    "types": "tipos",
+    "enum": "enum",
+    "enums": "enums"
+  },
   "common": {
     "loading": "Cargando...",
     "error": "Error",

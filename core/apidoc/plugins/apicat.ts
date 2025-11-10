@@ -723,49 +723,38 @@ export class ApiCatPlugin {
                 return {};
             }
 
-            // Parse files by module groups
-            // Try to auto-detect module structure, or group all as "interfaces" if no structure
-            const moduleGroups: Record<string, string[]> = {
-                core: coreFiles.filter((f) => f.includes('/apidoc/') || f.includes('/types/')),
-                exporters: coreFiles.filter((f) => f.includes('/exporters/')),
-                markdown: coreFiles.filter((f) => f.includes('/markdown/')),
-                parsers: coreFiles.filter((f) => f.includes('/parsers/')),
-                filters: coreFiles.filter((f) => f.includes('/filters/')),
-                plugins: coreFiles.filter((f) => f.includes('/plugins/')),
-            };
+            // Group by file: Each file becomes its own group named after the first exported symbol
+            // This creates intuitive navigation where each file is a separate menu item
+            for (const filePath of coreFiles) {
+                try {
+                    const fileContent = await fs.readFile(filePath, 'utf8');
+                    const sourceFile = ts.createSourceFile(filePath, fileContent, ts.ScriptTarget.ES2020, true);
 
-            // If no files matched the APIDoc core structure, group all files as "interfaces"
-            const totalMatched = Object.values(moduleGroups).reduce((sum, files) => sum + files.length, 0);
-            if (totalMatched === 0 && coreFiles.length > 0) {
-                moduleGroups['interfaces'] = coreFiles;
-            }
+                    const fileSymbols = this.extractTSDocSymbols(sourceFile, filePath, ts);
 
-            for (const [moduleName, files] of Object.entries(moduleGroups)) {
-                if (files.length === 0) continue;
-
-                this.log(`📦 TSDoc: Processing module "${moduleName}" with ${files.length} files`);
-                const symbols: any[] = [];
-
-                for (const filePath of files) {
-                    try {
-                        const fileContent = await fs.readFile(filePath, 'utf8');
-                        const sourceFile = ts.createSourceFile(filePath, fileContent, ts.ScriptTarget.ES2020, true);
-
-                        const fileSymbols = this.extractTSDocSymbols(sourceFile, filePath, ts);
-                        this.log(`  ✓ Extracted ${fileSymbols.length} symbols from ${path.basename(filePath)}`);
-                        symbols.push(...fileSymbols);
-                    } catch (error) {
-                        console.warn(`Warning: Could not process ${filePath}: ${error.message}`);
+                    if (fileSymbols.length === 0) {
+                        this.log(`  ⚠️ No exported symbols found in ${path.basename(filePath)}, skipping...`);
+                        continue;
                     }
-                }
 
-                tsdocData[moduleName] = {
-                    module: moduleName,
-                    description: this.getModuleDescription(moduleName),
-                    symbols,
-                    fileCount: files.length,
-                    generatedAt: new Date().toISOString(),
-                };
+                    // Use the name of the first exported symbol as the group name
+                    const firstSymbolName = fileSymbols[0].name;
+                    const fileName = path.basename(filePath, path.extname(filePath));
+
+                    this.log(`📦 TSDoc: Processing file "${fileName}" as group "${firstSymbolName}" with ${fileSymbols.length} symbols`);
+
+                    // Use first symbol name as the key for this file's group
+                    tsdocData[firstSymbolName] = {
+                        module: firstSymbolName,
+                        description: fileSymbols[0].documentation?.summary || `${fileName} module`,
+                        symbols: fileSymbols,
+                        fileCount: 1,
+                        fileName: path.basename(filePath),
+                        generatedAt: new Date().toISOString(),
+                    };
+                } catch (error) {
+                    console.warn(`Warning: Could not process ${filePath}: ${error.message}`);
+                }
             }
 
             return tsdocData;
@@ -1064,22 +1053,6 @@ export class ApiCatPlugin {
         return node.modifiers?.some((modifier: any) => modifier.kind === ts.SyntaxKind.ExportKeyword) || false;
     }
 
-    /**
-     * Get module description based on module name
-     * @param moduleName
-     */
-    private getModuleDescription(moduleName: string): string {
-        const descriptions: Record<string, string> = {
-            core: 'Core APIDoc functionality including writers, types, and main processing logic',
-            exporters: 'Export utilities for converting APIDoc data to various formats (OpenAPI, Markdown, etc.)',
-            markdown: 'Markdown processing and generation utilities',
-            parsers: 'API comment parsers for extracting documentation from source code',
-            filters: 'Post-processing filters for API documentation data',
-            plugins: 'Plugin system for extending APIDoc functionality',
-        };
-
-        return descriptions[moduleName] || `${moduleName} module documentation`;
-    }
 
     /**
      * Generate HTML documentation from TSDoc data

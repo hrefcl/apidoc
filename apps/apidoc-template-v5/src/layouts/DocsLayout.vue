@@ -115,7 +115,7 @@
             >
               <div class="flex items-center gap-2">
                 <component :is="getIcon(section.icon)" class="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                <h4 class="text-sm font-semibold text-foreground">{{ section.title }}</h4>
+                <h4 class="text-sm font-semibold text-foreground">{{ translateTitle(section.title) }}</h4>
               </div>
               <ChevronDown
                 class="w-4 h-4 text-muted-foreground transition-transform"
@@ -219,7 +219,7 @@
             <!-- Section Header -->
             <div class="flex items-center gap-2 mb-3">
               <component :is="getIcon(section.icon)" class="w-4 h-4 text-primary-600 dark:text-primary-400" />
-              <h4 class="text-sm font-semibold text-foreground">{{ section.title }}</h4>
+              <h4 class="text-sm font-semibold text-foreground">{{ translateTitle(section.title) }}</h4>
             </div>
 
             <!-- Section with subgroups -->
@@ -305,12 +305,21 @@ const hasApiSection = computed(() => {
 })
 
 const hasTSDocSection = computed(() => {
-  return navigation.value.some(section => section.title === 'TypeScript Docs')
+  return navigation.value.some(section => section.title === '__tsdoc.title__' || section.title === 'TypeScript Docs')
 })
 
 const hasModelsSection = computed(() => {
   return navigation.value.some(section => section.title === 'Models')
 })
+
+// Translate title if it's a i18n marker
+const translateTitle = (title) => {
+  if (title.startsWith('__') && title.endsWith('__')) {
+    const key = title.slice(2, -2) // Remove __ markers
+    return t(key, title) // fallback to original if translation not found
+  }
+  return title
+}
 
 // Cargar documentos al montar
 onMounted(async () => {

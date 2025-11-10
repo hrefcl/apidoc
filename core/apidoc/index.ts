@@ -366,11 +366,26 @@ async function createDoc(options: ApiDocOptions): Promise<ApiDocParseResult | bo
         }
 
         // this is holding our results from parsing the source code
-        const api = core.parse(app.options);
+        let api = core.parse(app.options);
 
         if (api === true) {
-            app.log.info('Nothing to do.');
-            return true;
+            // Check if we have TSDoc inputs configured with APIcat
+            // TSDoc processing happens in APIcat plugin, not in traditional parser
+            const hasTSDocInputs = packageInfo.resolvedInputs?.tsdoc?.length > 0 || packageInfo.inputs?.tsdoc?.length > 0;
+            const isApiCatActive = app.options.apicat?.enabled || (app.options.apicat as any)?.active;
+
+            if (hasTSDocInputs && isApiCatActive) {
+                app.log.verbose('No traditional API data found, but TSDoc inputs configured - proceeding with APIcat processing...');
+                // Create empty API data structure for APIcat to process TSDoc
+                api = {
+                    data: '[]',
+                    project: JSON.stringify(packageInfo)
+                };
+                // Continue to APIcat processing below with empty API data
+            } else {
+                app.log.info('Nothing to do.');
+                return true;
+            }
         }
 
         if (api === false) {

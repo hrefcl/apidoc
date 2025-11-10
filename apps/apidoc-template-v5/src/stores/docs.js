@@ -470,7 +470,7 @@ export const useDocsStore = defineStore('docs', () => {
     )
     if (docFiles.length > 0) {
       nav.push({
-        title: 'Documentación',
+        title: '__nav.documentation__', // Marker for i18n translation in components
         icon: 'BookOpen',
         isSection: true,
         items: docFiles.map(doc => {
@@ -558,7 +558,7 @@ export const useDocsStore = defineStore('docs', () => {
     const tsFiles = docs.value.filter(d => d.directory === 'cat.tsdoc')
     if (tsFiles.length > 0) {
       nav.push({
-        title: 'TypeScript Docs',
+        title: '__tsdoc.title__', // Marker for i18n translation in components
         icon: 'Code',
         isSection: true,
         items: tsFiles.map(doc => ({

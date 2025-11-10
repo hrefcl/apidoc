@@ -127,6 +127,20 @@
     "example": "例",
     "noSymbolsFound": "シンボルが見つかりません"
   },
+  "tsdoc": {
+    "title": "TypeScript",
+    "all": "すべて",
+    "interface": "インターフェース",
+    "interfaces": "インターフェース",
+    "function": "関数",
+    "functions": "関数",
+    "class": "クラス",
+    "classes": "クラス",
+    "type": "型",
+    "types": "型",
+    "enum": "列挙型",
+    "enums": "列挙型"
+  },
   "common": {
     "loading": "読み込み中...",
     "error": "エラー",

@@ -5,13 +5,15 @@
   "title": "TypeScript Documentation Example",
   "url": "https://api.example.com",
   "inputs": {
-    "docs": [""],
     "tsdoc": ["src/"]
   },
   "apicat": {
     "active": true
   },
   "template": {
-    "forceLanguage": "en"
+    "i18n": {
+      "defaultLanguage": "en",
+      "availableLangs": ["en", "es", "ja"]
+    }
   }
 }

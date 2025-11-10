@@ -195,7 +195,7 @@ Parser.prototype.parseFile = function (filename, encoding) {
     if (self.currentCategory === 'tsdoc') {
         const tsExtensions = ['.ts', '.tsx', '.d.ts'];
         if (tsExtensions.includes(self.extension)) {
-            app.log.verbose(
+            app.log.debug(
                 `Skipping parser for ${self.extension} in tsdoc category (processed via TypeScript compiler): ${filename}`
             );
             return null;
@@ -316,6 +316,17 @@ Parser.prototype._parseBlockElements = function (indexApiBlocks, detectedElement
 
         for (let j = 0; j < elements.length; j += 1) {
             const element = elements[j];
+
+            // Skip TSDoc tags when in tsdoc category (they're processed via TypeScript compiler)
+            if (self.currentCategory === 'tsdoc') {
+                const tsdocTags = ['param', 'returns', 'remarks', 'example', 'see', 'public', 'internal', 'alpha', 'beta', 'throws', 'deprecated'];
+                if (tsdocTags.includes(element.name)) {
+                    app.log.debug(
+                        `Skipping TSDoc tag '@${element.name}' in tsdoc category (processed via TypeScript compiler)`
+                    );
+                    continue;
+                }
+            }
 
             // Check if this parser is enabled for the current category
             if (self.currentCategory && !isParserEnabled(self.currentCategory, element.name)) {

@@ -26,7 +26,7 @@
             : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
         ]"
       >
-        {{ type }}
+        {{ translateType(type) }}
         <span
           v-if="getSymbolsByType(type).length > 0"
           class="ml-2 px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-800"
@@ -151,8 +151,8 @@
                     <td class="px-4 py-2 font-mono text-sm text-gray-900 dark:text-white">{{ property.name }}</td>
                     <td class="px-4 py-2 font-mono text-sm text-purple-600 dark:text-purple-400">{{ property.type }}</td>
                     <td class="px-4 py-2 text-sm">
-                      <span v-if="property.optional" class="text-orange-600 dark:text-orange-400">optional</span>
-                      <span v-else class="text-green-600 dark:text-green-400">required</span>
+                      <span v-if="property.optional" class="text-orange-600 dark:text-orange-400">{{ t('common.optional') }}</span>
+                      <span v-else class="text-green-600 dark:text-green-400">{{ t('common.required') }}</span>
                     </td>
                     <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
                       {{ property.documentation?.summary || '' }}
@@ -296,6 +296,18 @@ const getIconForType = (type: string) => {
     variable: FileCode
   }
   return icons[type] || FileCode
+}
+
+const translateType = (type: string) => {
+  // Special handling for compound types with count
+  const count = getSymbolsByType(type).length
+
+  // Translate the type using i18n
+  const key = `tsdoc.${type}${count > 1 ? 's' : ''}`
+  const translated = t(key, type) // fallback to type if key doesn't exist
+
+  // If translation is the same as key, it means it wasn't found, use the type itself
+  return translated === key ? type : translated
 }
 
 const getTypeColor = (type: string) => {
