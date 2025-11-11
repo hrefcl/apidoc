@@ -72,6 +72,7 @@
     "url": "URL",
     "version": "バージョン",
     "versions": "バージョン",
+    "availableLanguages": "利用可能な言語",
     "description": "説明",
     "parameters": "パラメータ",
     "headers": "ヘッダー",

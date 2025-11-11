@@ -1,0 +1,17 @@
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "产品数据无效",
+    "details": [
+      {
+        "field": "price",
+        "message": "价格必须是正数"
+      },
+      {
+        "field": "name",
+        "message": "名称是必填项，且必须至少3个字符"
+      }
+    ]
+  }
+}

@@ -5,6 +5,109 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.8] - 2025-11-10
+
+### 🐛 Critical Bug Fixes
+
+#### VersionSelector Now Shows for Single Version + Multiple Languages
+- **Fixed**: VersionSelector component wasn't appearing when endpoints had a single version (`@apiVersion`) with multiple languages (`@apiLang`)
+- **Root Cause**: `ApiContent.vue` only emitted `versions-ready` event when `hasMultipleVersions === true`
+- **Solution**: Modified `ApiContent.vue` (lines 686-736) to check language count for single-version scenarios
+- **New Behavior**:
+  - Single version + Multiple languages (languageCount > 1) → Shows VersionSelector with language-only layout
+  - Single version + Single language → Hides VersionSelector (emits empty array)
+  - No version → Hides VersionSelector
+
+#### Impact
+- Endpoints with single `@apiVersion` and multiple `@apiLang` tags now correctly display language selector
+- Fixes missing language selector for version "0.0.0" (default when no `@apiVersion` tag specified)
+- Users can now switch between languages even when endpoint has only one version
+
+### 📚 Documentation - Translation System Reference
+
+This version includes comprehensive documentation about the `@apiLang` multi-language system that was added in v5.0.7.
+
+> **Note**: The `@apiLang` tag and multi-language support were added in v5.0.7 but were never documented in that version's CHANGELOG. This entry provides the missing documentation explaining how the system works.
+
+#### Multi-Language Support Architecture
+APIDoc v5 includes a complete internationalization (i18n) system supporting 7 languages:
+- 🇬🇧 English (en)
+- 🇪🇸 Español (es)
+- 🇨🇳 中文 (zh)
+- 🇫🇷 Français (fr)
+- 🇩🇪 Deutsch (de)
+- 🇯🇵 日本語 (ja)
+- 🇧🇷 Português (pt-BR)
+
+#### How @apiLang Works (Added in v5.0.7)
+
+The `@apiLang` tag allows you to create multi-language API documentation:
+
+```javascript
+/**
+ * @api {get} /user/:id Get User
+ * @apiVersion 1.0.0
+ * @apiLang en
+ * @apiName GetUser
+ * @apiGroup Users
+ * @apiDescription Get user information
+ */
+
+/**
+ * @api {get} /user/:id Obtener Usuario
+ * @apiVersion 1.0.0
+ * @apiLang es
+ * @apiName GetUser
+ * @apiGroup Users
+ * @apiDescription Obtener información del usuario
+ */
+```
+
+**Processing Flow**:
+1. **Backend**: APIDoc parser groups endpoints by version + language
+2. **JSON Output**: Creates `versions[].languages[langCode]` nested structure
+3. **Frontend**: VersionSelector detects multiple languages and shows language selector
+4. **User Interaction**: Clicking a language filters content to show only that language's documentation
+
+#### UI Translation System
+
+**Translation Files** (`apps/apidoc-template-v5/src/i18n/locales/*.json`):
+```json
+{
+  "api": {
+    "versions": "Versions",
+    "availableLanguages": "Available Languages",
+    "method": "Method"
+  }
+}
+```
+
+**Usage in Vue Components**:
+```vue
+<template>
+  <h3>{{ t('api.availableLanguages') }}</h3>
+</template>
+
+<script setup>
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+</script>
+```
+
+**Adding New UI Translations**:
+1. Add the key to ALL 7 language files
+2. Use `t('section.key')` in Vue components
+3. Run `yarn build:template`
+
+**Best Practices**:
+- Always add keys to all language files (consistency)
+- Use hierarchical structure (`api.method`, not `apiMethod`)
+- Keep keys semantic (describe content, not appearance)
+- Test language switching after changes
+
+### 📝 Complete Translation Keys Added
+- `api.availableLanguages` - Added to all 7 locale files with proper translations
+
 ## [5.0.7] - 2025-11-10
 
 ### 🌍 Complete i18n for TypeScript Documentation (TSDoc)

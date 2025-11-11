@@ -72,6 +72,7 @@
     "url": "URL",
     "version": "版本",
     "versions": "版本",
+    "availableLanguages": "可用语言",
     "description": "描述",
     "parameters": "参数",
     "headers": "请求头",

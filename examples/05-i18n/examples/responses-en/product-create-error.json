@@ -1,0 +1,17 @@
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid product data",
+    "details": [
+      {
+        "field": "price",
+        "message": "Price must be a positive number"
+      },
+      {
+        "field": "name",
+        "message": "Name is required and must be at least 3 characters"
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "message": "Product created successfully",
+  "data": {
+    "id": 1,
+    "name": "Laptop Computer",
+    "description": "High performance laptop with 16GB RAM and 512GB SSD",
+    "price": 999.99,
+    "stock": 50,
+    "createdAt": "2025-11-10T10:00:00Z"
+  }
+}

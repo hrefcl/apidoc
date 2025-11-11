@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "message": "产品创建成功",
+  "data": {
+    "id": 1,
+    "name": "笔记本电脑",
+    "description": "高性能笔记本电脑，配备16GB内存和512GB固态硬盘",
+    "price": 6999.99,
+    "stock": 50,
+    "createdAt": "2025-11-10T10:00:00Z"
+  }
+}
