@@ -195,7 +195,7 @@ export function findInterface(interfaceName: string, currentFile: string): Parse
 function parseTypeScriptInterfaces(content: string): Map<string, ParsedInterface> {
     const interfaces = new Map<string, ParsedInterface>();
 
-    // Remove comments and strings to avoid false matches
+    // Remove comments and strings to avoid false matches ONLY for finding interfaces
     const cleanContent = removeCommentsAndStrings(content);
 
     // Find all interface declarations, including those with generics
@@ -217,17 +217,37 @@ function parseTypeScriptInterfaces(content: string): Map<string, ParsedInterface
         }
 
         if (braceCount === 0) {
-            const body = cleanContent.substring(startPos, pos - 1);
+            // IMPORTANT: Extract body from ORIGINAL content (with JSDoc comments intact)
+            // Find the same interface in the original content to preserve JSDoc comments
+            const originalInterfaceMatch = content.match(
+                new RegExp(`interface\\s+${name}(?:<[^>]*>)?(?:\\s+extends\\s+[\\w,\\s]+)?\\s*\\{`)
+            );
 
-            const extendsInterfaces = extendsClause ? extendsClause.split(',').map((s) => s.trim()) : undefined;
+            if (originalInterfaceMatch) {
+                const originalStartPos = originalInterfaceMatch.index! + originalInterfaceMatch[0].length;
 
-            const properties = parseInterfaceBody(body);
+                // Find matching brace in original content
+                let originalBraceCount = 1;
+                let originalPos = originalStartPos;
+                while (originalPos < content.length && originalBraceCount > 0) {
+                    if (content[originalPos] === '{') originalBraceCount++;
+                    else if (content[originalPos] === '}') originalBraceCount--;
+                    originalPos++;
+                }
 
-            interfaces.set(name, {
-                name,
-                properties,
-                extends: extendsInterfaces,
-            });
+                // Extract body from ORIGINAL content (preserves JSDoc)
+                const body = content.substring(originalStartPos, originalPos - 1);
+
+                const extendsInterfaces = extendsClause ? extendsClause.split(',').map((s) => s.trim()) : undefined;
+
+                const properties = parseInterfaceBody(body);
+
+                interfaces.set(name, {
+                    name,
+                    properties,
+                    extends: extendsInterfaces,
+                });
+            }
         }
     }
 
@@ -241,6 +261,22 @@ function parseTypeScriptInterfaces(content: string): Map<string, ParsedInterface
 function parseInterfaceBody(body: string): ParsedProperty[] {
     const properties: ParsedProperty[] = [];
 
+    // Track JSDoc comments for properties
+    const jsdocComments = new Map<string, string>();
+
+    // Extract JSDoc comments that appear before properties
+    const jsdocPattern = /\/\*\*\s*([\s\S]*?)\s*\*\/\s*(\w+)[\s:?]/g;
+    let jsdocMatch;
+    while ((jsdocMatch = jsdocPattern.exec(body)) !== null) {
+        const commentText = jsdocMatch[1]
+            .split('\n')
+            .map(line => line.replace(/^\s*\*\s?/, '').trim())
+            .filter(line => line.length > 0)
+            .join(' ');
+        const propertyName = jsdocMatch[2];
+        jsdocComments.set(propertyName, commentText);
+    }
+
     // Split by semicolons and newlines, handle nested objects
     const lines = body
         .split(/[;\n]/)
@@ -248,7 +284,7 @@ function parseInterfaceBody(body: string): ParsedProperty[] {
         .filter((line) => line);
 
     for (const line of lines) {
-        if (!line || line.startsWith('//') || line.startsWith('*')) continue;
+        if (!line || line.startsWith('//') || line.startsWith('*') || line.startsWith('/**')) continue;
 
         // Skip index signatures like [k: string]: unknown or [extra: string]: unknown
         if (line.match(/^\[[\w\s:]+\]:\s*\w+/)) {
@@ -265,7 +301,7 @@ function parseInterfaceBody(body: string): ParsedProperty[] {
                 name,
                 type: 'Array',
                 optional: !!optional,
-                description: generateDescription(name),
+                description: jsdocComments.get(name) || generateDescription(name),
             });
             continue;
         }
@@ -280,7 +316,7 @@ function parseInterfaceBody(body: string): ParsedProperty[] {
                 name,
                 type: 'Object',
                 optional: !!optional,
-                description: generateDescription(name),
+                description: jsdocComments.get(name) || generateDescription(name),
             });
             continue;
         }
@@ -294,7 +330,7 @@ function parseInterfaceBody(body: string): ParsedProperty[] {
                 name,
                 type: `${normalizeTypeScript(baseType)}[]`,
                 optional: !!optional,
-                description: comment?.trim() || generateDescription(name),
+                description: jsdocComments.get(name) || comment?.trim() || generateDescription(name),
             });
             continue;
         }
@@ -313,7 +349,7 @@ function parseInterfaceBody(body: string): ParsedProperty[] {
                 name,
                 type: normalizeTypeScript(typeStr),
                 optional: !!optional,
-                description: comment?.trim() || generateDescription(name),
+                description: jsdocComments.get(name) || comment?.trim() || generateDescription(name),
             });
             continue;
         }

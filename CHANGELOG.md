@@ -5,6 +5,79 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.9] - 2025-11-11
+
+### 🐛 Critical Bug Fixes
+
+#### @apiSchema Now Correctly Processes JSDoc Comments in Multi-Language Interfaces
+
+**Problem**: When using `@apiSchema` with language-specific TypeScript interfaces, all languages showed identical generic descriptions instead of the language-specific JSDoc comments.
+
+**Example of the Issue**:
+```typescript
+// English interface
+interface CreateProductRequestEN {
+    /** Product name in English */
+    name: string;
+    /** Price in USD */
+    price: number;
+}
+
+// Chinese interface
+interface CreateProductRequestZH {
+    /** 产品名称（中文） */
+    name: string;
+    /** 价格（人民币） */
+    price: number;
+}
+
+// Both languages showed: "Name", "Price" (generic)
+// Expected: EN shows "Product name in English", "Price in USD"
+//           ZH shows "产品名称（中文）", "价格（人民币）"
+```
+
+**Root Cause**:
+- The TypeScript parser (`core/utils/typescript-parser.ts`) was removing all JSDoc comments before parsing interface bodies
+- It only read inline comments (`// comment`) that appear AFTER properties
+- JSDoc comments (`/** comment */`) that appear BEFORE properties were lost
+
+**Solution**:
+1. **Modified `parseTypeScriptInterfaces()` (lines 220-250)**:
+   - Now extracts interface body from ORIGINAL content (preserves JSDoc)
+   - Previously extracted from `cleanContent` where comments were already removed
+
+2. **Enhanced `parseInterfaceBody()` (lines 244-258)**:
+   - Added regex pattern to capture JSDoc comments before each property
+   - Stores comments in `Map<propertyName, description>`
+   - Pattern: `/\/\*\*\s*([\s\S]*?)\s*\*\/\s*(\w+)[\s:?]/g`
+
+3. **Updated all property parsing sections** (lines 284, 299, 313, 332):
+   - Now checks JSDoc comments first: `jsdocComments.get(name)`
+   - Fallbacks: inline comment → auto-generated description
+   - Applies to: Arrays, nested objects, array properties, and simple properties
+
+**Impact**:
+- ✅ Each language now shows correct descriptions from its respective interface
+- ✅ Multi-language `@apiSchema` documentation works as expected
+- ✅ JSDoc comments properly preserved and language-specific
+- ✅ Maintains backward compatibility with inline comments
+
+**Example Result After Fix**:
+```typescript
+// @apiLang en
+@apiSchema (Body) {interface=CreateProductRequestEN} apiParam
+// Shows: "Product name in English", "Price in USD" ✅
+
+// @apiLang zh
+@apiSchema (Body) {interface=CreateProductRequestZH} apiParam
+// Shows: "产品名称（中文）", "价格（人民币）" ✅
+```
+
+**Files Modified**:
+- `core/utils/typescript-parser.ts` (parseTypeScriptInterfaces, parseInterfaceBody)
+
+---
+
 ## [5.0.8] - 2025-11-10
 
 ### 🐛 Critical Bug Fixes

@@ -1,6 +1,6 @@
 {
   "name": "@hrefcl/apidoc",
-  "version": "5.0.8",
+  "version": "5.0.9",
   "description": "APIDoc v5 - RESTful web API Documentation Generator with Vue 3 and modern features",
   "private": false,
   "keywords": [
