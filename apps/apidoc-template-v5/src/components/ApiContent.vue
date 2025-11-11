@@ -683,12 +683,56 @@ onMounted(() => {
           selectedVersion: groupedEndpoints.value[0].selectedVersion
         })
       } else {
-        console.log('⚠️ DEBUG: Emitting versions-ready with SINGLE/NO versions (will hide TOC)')
-        emit('versions-ready', {
-          versions: [], // Empty array signals no versions
-          endpoints: [],
-          selectedVersion: null
-        })
+        // SINGLE VERSION - Check if it has multiple languages
+        const versions = groupedEndpoints.value[0].versions
+
+        if (versions && versions.length === 1) {
+          const singleVersion = versions[0]
+          const languageCount = singleVersion.languages ? Object.keys(singleVersion.languages).length : 0
+
+          console.log('🔍 DEBUG: Single version with languages:', {
+            version: singleVersion.version,
+            languageCount: languageCount,
+            languages: singleVersion.languages ? Object.keys(singleVersion.languages) : []
+          })
+
+          if (languageCount > 1) {
+            // Single version with MULTIPLE LANGUAGES - emit for VersionSelector
+            const versionStrings = [singleVersion.version]
+
+            console.log('✅ DEBUG: Emitting versions-ready with SINGLE version + MULTIPLE LANGUAGES:', {
+              versions: versions,
+              versionStrings: versionStrings,
+              endpoints: groupedEndpoints.value[0].endpoints,
+              selectedVersion: groupedEndpoints.value[0].selectedVersion
+            })
+
+            emit('versions-ready', {
+              versions: versions,  // Full objects for VersionSelector
+              versionStrings: versionStrings,  // Strings for TableOfContents (optional)
+              endpoints: groupedEndpoints.value[0].endpoints,
+              selectedVersion: groupedEndpoints.value[0].selectedVersion
+            })
+          } else {
+            // Single version with SINGLE LANGUAGE - hide VersionSelector
+            console.log('⚠️ DEBUG: Single version with single language - hiding VersionSelector')
+            emit('versions-ready', {
+              versions: [], // Empty array signals no versions
+              versionStrings: [],
+              endpoints: [],
+              selectedVersion: null
+            })
+          }
+        } else {
+          // No versions at all
+          console.log('⚠️ DEBUG: No versions found - hiding VersionSelector')
+          emit('versions-ready', {
+            versions: [], // Empty array signals no versions
+            versionStrings: [],
+            endpoints: [],
+            selectedVersion: null
+          })
+        }
       }
     } else {
       console.log('⚠️ DEBUG: No endpoints, emitting empty versions-ready')

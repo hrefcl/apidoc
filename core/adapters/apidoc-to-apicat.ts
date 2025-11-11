@@ -365,46 +365,44 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
             // Add languages to the base endpoint (used by getLocalizedEndpoint() in frontend)
             (baseEndpoint as any).languages = languages;
 
-            // If there are multiple versions, create versions array
-            if (sortedVersions.length > 1) {
-                const versionsArray = sortedVersions.map((version, index) => {
-                    const versionVariants = groupedByVersion.get(version)!;
-                    const versionBase = versionVariants[0];
+            // Always create versions array (needed for VersionSelector even with single version)
+            const versionsArray = sortedVersions.map((version, index) => {
+                const versionVariants = groupedByVersion.get(version)!;
+                const versionBase = versionVariants[0];
 
-                    // Create translations for this version
-                    const versionTranslations: Record<string, any> = {};
-                    versionVariants.forEach(v => {
-                        const lang = v.lang || 'en';
-                        versionTranslations[lang] = {
-                            title: v.title,
-                            description: v.description,
-                            parameters: v.parameters,
-                            success: v.success,
-                            error: v.error,
-                        };
-                    });
-
-                    return {
-                        version: version,
-                        title: versionBase.title,
-                        name: versionBase.name,
-                        description: versionBase.description,
-                        filename: versionBase.filename,
-                        url: versionBase.url,
-                        method: versionBase.method,
-                        isLatest: index === 0,
-                        parameters: versionBase.parameters,
-                        success: versionBase.success,
-                        error: versionBase.error,
-                        languages: versionTranslations, // VersionSelector.vue expects 'languages' not 'translations'
+                // Create translations for this version
+                const versionTranslations: Record<string, any> = {};
+                versionVariants.forEach(v => {
+                    const lang = v.lang || 'en';
+                    versionTranslations[lang] = {
+                        title: v.title,
+                        description: v.description,
+                        parameters: v.parameters,
+                        success: v.success,
+                        error: v.error,
                     };
                 });
 
-                (baseEndpoint as any).versions = versionsArray;
-                (baseEndpoint as any).latestVersion = latestVersion;
-                (baseEndpoint as any).versionCount = sortedVersions.length;
-                (baseEndpoint as any).hasMultipleVersions = true;
-            }
+                return {
+                    version: version,
+                    title: versionBase.title,
+                    name: versionBase.name,
+                    description: versionBase.description,
+                    filename: versionBase.filename,
+                    url: versionBase.url,
+                    method: versionBase.method,
+                    isLatest: index === 0,
+                    parameters: versionBase.parameters,
+                    success: versionBase.success,
+                    error: versionBase.error,
+                    languages: versionTranslations, // VersionSelector.vue expects 'languages' not 'translations'
+                };
+            });
+
+            (baseEndpoint as any).versions = versionsArray;
+            (baseEndpoint as any).latestVersion = latestVersion;
+            (baseEndpoint as any).versionCount = sortedVersions.length;
+            (baseEndpoint as any).hasMultipleVersions = sortedVersions.length > 1;
 
             endpoints.push(baseEndpoint);
         }

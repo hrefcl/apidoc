@@ -1,8 +1,9 @@
 <template>
-    <div v-if="showSelector" class="border-border bg-card mb-6 rounded-lg border p-4">
+    <!-- MULTI-VERSION LAYOUT: Show full card with versions and nested languages -->
+    <div v-if="showSelector && hasMultipleVersions" class="border-border bg-card mb-6 rounded-lg border p-4">
         <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold">
             <GitBranch class="h-4 w-4" />
-            {{ t('api.versions') }}
+            {{ t('api.versions') }} 
         </h3>
 
         <!-- Version list with nested languages -->
@@ -39,6 +40,29 @@
             <button @click="$emit('compare')" class="bg-muted hover:bg-muted/80 flex w-full items-center justify-center gap-2 rounded px-3 py-2 text-sm font-medium transition-colors">
                 <GitCompare class="h-4 w-4" />
                 {{ t('api.compareVersions') }}
+            </button>
+        </div>
+    </div>
+
+    <!-- LANGUAGE-ONLY LAYOUT: Show simpler layout with just language buttons -->
+    <div v-else-if="showSelector && !hasMultipleVersions" class="border-border bg-card mb-6 rounded-lg border p-4">
+        <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold">
+            <GitBranch class="h-4 w-4" />
+            {{ t('api.availableLanguages') }}
+        </h3>
+
+        <!-- Language buttons only (no version grouping) -->
+        <div class="space-y-1 version-group">
+            <button
+                v-for="(langData, langCode) in versions[0].languages"
+                :key="`lang-${langCode}`"
+                @click="selectLanguage(versions[0].version, langCode)"
+                class="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-sm transition-colors"
+                :class="isLanguageSelected(versions[0].version, langCode) ? 'bg-primary-50 dark:bg-primary-950 text-primary-600 dark:text-primary-400' : 'hover:bg-muted/50 text-muted-foreground'">
+                <span class="text-base">{{ getLanguageFlag(langCode) }}</span>
+                <span class="flex-1">{{ getLanguageName(langCode) }}</span>
+                <span class="font-mono text-[10px] opacity-60">{{ langCode }}</span>
+                <Check v-if="isLanguageSelected(versions[0].version, langCode)" class="h-3 w-3" />
             </button>
         </div>
     </div>
@@ -93,6 +117,10 @@ const showSelector = computed(() => {
         return ver.languages && Object.keys(ver.languages).length > 1;
     }
     return false;
+});
+
+const hasMultipleVersions = computed(() => {
+    return props.versions && props.versions.length > 1;
 });
 
 const isSelected = (version) => {

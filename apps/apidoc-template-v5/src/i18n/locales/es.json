@@ -72,6 +72,7 @@
     "url": "URL",
     "version": "Versión",
     "versions": "Versiones",
+    "availableLanguages": "Idiomas Disponibles",
     "description": "Descripción",
     "parameters": "Parámetros",
     "parameterName": "Nombre del parámetro",

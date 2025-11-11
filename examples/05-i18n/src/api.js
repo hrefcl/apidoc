@@ -330,3 +330,162 @@
  * @apiSuccess {String} nom Nom de l'utilisateur
  * @apiSuccess {String} email Adresse e-mail
  */
+
+// ============================================================================
+// NO VERSION - Multiple Languages Only (Testing language-only selector)
+// ============================================================================
+
+/**
+ * @api {delete} /users/:id Eliminar Usuario
+ * @apiName DeleteUser
+ * @apiGroup Users
+ * @apiLang es
+ *
+ * @apiDescription Elimina permanentemente un usuario del sistema
+ *
+ * @apiParam {Number} id ID único del usuario a eliminar
+ *
+ * @apiSuccess {Boolean} success Indica si la eliminación fue exitosa
+ * @apiSuccess {String} message Mensaje de confirmación
+ *
+ * @apiSuccessExample {json} Ejemplo de respuesta exitosa:
+ * HTTP/1.1 200 OK
+ * {
+ *   "success": true,
+ *   "message": "Usuario eliminado exitosamente"
+ * }
+ *
+ * @apiError {String} error Descripción del error
+ * @apiError {Number} code Código de error
+ *
+ * @apiErrorExample {json} Error-Response:
+ * HTTP/1.1 404 Not Found
+ * {
+ *   "error": "Usuario no encontrado",
+ *   "code": 404
+ * }
+ */
+
+/**
+ * @api {delete} /users/:id Delete User
+ * @apiName DeleteUser
+ * @apiGroup Users
+ * @apiLang en
+ *
+ * @apiDescription Permanently deletes a user from the system
+ *
+ * @apiParam {Number} id Unique ID of the user to delete
+ *
+ * @apiSuccess {Boolean} success Indicates if deletion was successful
+ * @apiSuccess {String} message Confirmation message
+ *
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "success": true,
+ *   "message": "User deleted successfully"
+ * }
+ *
+ * @apiError {String} error Error description
+ * @apiError {Number} code Error code
+ *
+ * @apiErrorExample {json} Error-Response:
+ * HTTP/1.1 404 Not Found
+ * {
+ *   "error": "User not found",
+ *   "code": 404
+ * }
+ */
+
+/**
+ * @api {delete} /users/:id 删除用户
+ * @apiName DeleteUser
+ * @apiGroup Users
+ * @apiLang zh
+ *
+ * @apiDescription 永久从系统中删除用户
+ *
+ * @apiParam {Number} id 要删除的用户的唯一ID
+ *
+ * @apiSuccess {Boolean} success 表示删除是否成功
+ * @apiSuccess {String} message 确认消息
+ *
+ * @apiSuccessExample {json} 成功响应:
+ * HTTP/1.1 200 OK
+ * {
+ *   "success": true,
+ *   "message": "用户删除成功"
+ * }
+ *
+ * @apiError {String} error 错误描述
+ * @apiError {Number} code 错误代码
+ *
+ * @apiErrorExample {json} 错误响应:
+ * HTTP/1.1 404 Not Found
+ * {
+ *   "error": "未找到用户",
+ *   "code": 404
+ * }
+ */
+
+/**
+ * @api {delete} /users/:id Supprimer Utilisateur
+ * @apiName DeleteUser
+ * @apiGroup Users
+ * @apiLang fr
+ *
+ * @apiDescription Supprime définitivement un utilisateur du système
+ *
+ * @apiParam {Number} id ID unique de l'utilisateur à supprimer
+ *
+ * @apiSuccess {Boolean} success Indique si la suppression a réussi
+ * @apiSuccess {String} message Message de confirmation
+ *
+ * @apiSuccessExample {json} Réponse-Succès:
+ * HTTP/1.1 200 OK
+ * {
+ *   "success": true,
+ *   "message": "Utilisateur supprimé avec succès"
+ * }
+ *
+ * @apiError {String} error Description de l'erreur
+ * @apiError {Number} code Code d'erreur
+ *
+ * @apiErrorExample {json} Réponse-Erreur:
+ * HTTP/1.1 404 Not Found
+ * {
+ *   "error": "Utilisateur non trouvé",
+ *   "code": 404
+ * }
+ */
+
+/**
+ * @api {delete} /users/:id Benutzer Löschen
+ * @apiName DeleteUser
+ * @apiGroup Users
+ * @apiLang de
+ *
+ * @apiDescription Löscht einen Benutzer dauerhaft aus dem System
+ *
+ * @apiParam {Number} id Eindeutige ID des zu löschenden Benutzers
+ *
+ * @apiSuccess {Boolean} success Gibt an, ob das Löschen erfolgreich war
+ * @apiSuccess {String} message Bestätigungsnachricht
+ *
+ * @apiSuccessExample {json} Erfolg-Antwort:
+ * HTTP/1.1 200 OK
+ * {
+ *   "success": true,
+ *   "message": "Benutzer erfolgreich gelöscht"
+ * }
+ *
+ * @apiError {String} error Fehlerbeschreibung
+ * @apiError {Number} code Fehlercode
+ *
+ * @apiErrorExample {json} Fehler-Antwort:
+ * HTTP/1.1 404 Not Found
+ * {
+ *   "error": "Benutzer nicht gefunden",
+ *   "code": 404
+ * }
+ */
