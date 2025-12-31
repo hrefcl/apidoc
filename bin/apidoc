@@ -482,7 +482,7 @@ program
                 debug: options.debug,
                 colorize: true,
                 excludeFilters: ['node_modules', 'apidoc.config.js'],
-                includeFilters: ['.*\\.(c|cpp|h|hpp|clj|cls|coffee|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|kt|litcoffee|lua|mjs|p|php?|pl|pm|py|rb|scala|ts|tsx|vue)$'],
+                includeFilters: ['.*\\.(c|cpp|h|hpp|clj|cls|coffee|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|kt|litcoffee|lua|mjs|p|php?|pl|pm|py|rb|rs|scala|swift|ts|tsx|vue)$'],
                 filterBy: options.filterVersion ? `version=${options.filterVersion}` : undefined,
             };
 
@@ -597,7 +597,7 @@ program
                     verbose: options.verbose,
                     colorize: true,
                     excludeFilters: ['node_modules'],
-                    includeFilters: ['.*\\.(c|cpp|h|hpp|clj|cls|coffee|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|kt|litcoffee|lua|mjs|p|php?|pl|pm|py|rb|scala|ts|tsx|vue)$'],
+                    includeFilters: ['.*\\.(c|cpp|h|hpp|clj|cls|coffee|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|kt|litcoffee|lua|mjs|p|php?|pl|pm|py|rb|rs|scala|swift|ts|tsx|vue)$'],
                     filterBy: options.filterVersion ? `version=${options.filterVersion}` : undefined,
                 };
 

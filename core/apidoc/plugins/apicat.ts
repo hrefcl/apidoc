@@ -118,6 +118,7 @@ export class ApiCatPlugin {
         await fs.ensureDir(path.join(dataPath, 'cat.docs'));
         await fs.ensureDir(path.join(dataPath, 'cat.tsdoc'));
         await fs.ensureDir(path.join(dataPath, 'cat.iot'));
+        await fs.ensureDir(path.join(dataPath, 'cat.code'));
 
         // Transform data using adapter
         const adapter = require('../../adapters/apidoc-to-apicat');
@@ -160,6 +161,14 @@ export class ApiCatPlugin {
             manifest.iot = {
                 index: 'cat.iot.index.json',
                 shards: this.generateIoTShardList(apicatData.iot),
+            };
+        }
+
+        // Add Code section if there are Code elements
+        if (apicatData.code && apicatData.code.length > 0) {
+            manifest.code = {
+                index: 'cat.code.index.json',
+                shards: this.generateCodeShardList(apicatData.code),
             };
         }
 
@@ -243,6 +252,11 @@ export class ApiCatPlugin {
         // Generate IoT structure if there are IoT elements
         if (apicatData.iot && apicatData.iot.length > 0) {
             await this.generateIoTStructure(apicatData, outputPath);
+        }
+
+        // Generate Code structure if there are Code elements
+        if (apicatData.code && apicatData.code.length > 0) {
+            await this.generateCodeStructure(apicatData, outputPath);
         }
 
         // Generate navigation using grouped endpoints
@@ -1614,6 +1628,126 @@ export class ApiCatPlugin {
     private getIoTStatsByType(iotElements: any[]): Record<string, number> {
         const stats: Record<string, number> = {};
         iotElements.forEach((element) => {
+            stats[element.type] = (stats[element.type] || 0) + 1;
+        });
+        return stats;
+    }
+
+    /**
+     * Generate list of Code shards from code elements
+     * @param codeElements - Array of Code documentation items
+     */
+    private generateCodeShardList(codeElements: any[]): string[] {
+        // Group by lang first, then by group
+        const shards = new Set<string>();
+        codeElements.forEach((element) => {
+            const lang = element.lang || 'general';
+            const group = element.group || 'General';
+            shards.add(`cat.code/${this.sanitizeGroupName(lang)}-${this.sanitizeGroupName(group)}.json`);
+        });
+        return Array.from(shards);
+    }
+
+    /**
+     * Generate Code structure with index and shards
+     */
+    private async generateCodeStructure(apicatData: any, outputPath: string): Promise<void> {
+        const codeElements = apicatData.code || [];
+
+        // All JSON data goes into /data subdirectory
+        const dataPath = path.join(outputPath, 'data');
+
+        // Create cat.code directory
+        const codeDir = path.join(dataPath, 'cat.code');
+        if (!fs.existsSync(codeDir)) {
+            await fs.mkdir(codeDir, { recursive: true });
+        }
+
+        // Generate Code index
+        const codeIndex = {
+            elements: codeElements.map((element: any) => ({
+                id: element.id,
+                name: element.name,
+                type: element.type,
+                lang: element.lang,
+                group: element.group,
+                summary: element.title || element.description,
+                version: element.version,
+                shard: `cat.code/${this.sanitizeGroupName(element.lang || 'general')}-${this.sanitizeGroupName(element.group)}.json`,
+            })),
+            stats: {
+                totalElements: codeElements.length,
+                byLang: this.getCodeStatsByLang(codeElements),
+                byGroup: this.getCodeStatsByGroup(codeElements),
+                byType: this.getCodeStatsByType(codeElements),
+            },
+            lastUpdated: new Date().toISOString(),
+        };
+
+        await fs.writeFile(path.join(dataPath, 'cat.code.index.json'), JSON.stringify(codeIndex, null, 2));
+
+        // Group elements by lang and group
+        const elementsByLangGroup = new Map<string, any[]>();
+        codeElements.forEach((element: any) => {
+            const lang = element.lang || 'general';
+            const group = element.group || 'General';
+            const key = `${lang}-${group}`;
+            if (!elementsByLangGroup.has(key)) {
+                elementsByLangGroup.set(key, []);
+            }
+            elementsByLangGroup.get(key)!.push(element);
+        });
+
+        // Generate shards for each lang-group combination
+        for (const [key, groupElements] of elementsByLangGroup.entries()) {
+            const [lang, group] = key.split('-');
+            const shard = {
+                lang,
+                group,
+                description: `${group} code documentation (${lang})`,
+                elements: groupElements,
+                generatedAt: new Date().toISOString(),
+            };
+
+            await fs.writeFile(
+                path.join(codeDir, `${this.sanitizeGroupName(lang)}-${this.sanitizeGroupName(group)}.json`),
+                JSON.stringify(shard, null, 2)
+            );
+        }
+    }
+
+    /**
+     * Get stats of Code elements by language
+     * @param codeElements - Array of Code documentation items
+     */
+    private getCodeStatsByLang(codeElements: any[]): Record<string, number> {
+        const stats: Record<string, number> = {};
+        codeElements.forEach((element) => {
+            const lang = element.lang || 'general';
+            stats[lang] = (stats[lang] || 0) + 1;
+        });
+        return stats;
+    }
+
+    /**
+     * Get stats of Code elements by group
+     * @param codeElements - Array of Code documentation items
+     */
+    private getCodeStatsByGroup(codeElements: any[]): Record<string, number> {
+        const stats: Record<string, number> = {};
+        codeElements.forEach((element) => {
+            stats[element.group] = (stats[element.group] || 0) + 1;
+        });
+        return stats;
+    }
+
+    /**
+     * Get stats of Code elements by type
+     * @param codeElements - Array of Code documentation items
+     */
+    private getCodeStatsByType(codeElements: any[]): Record<string, number> {
+        const stats: Record<string, number> = {};
+        codeElements.forEach((element) => {
             stats[element.type] = (stats[element.type] || 0) + 1;
         });
         return stats;

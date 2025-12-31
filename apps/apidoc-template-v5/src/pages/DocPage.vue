@@ -63,6 +63,11 @@
           <IoTContent :data="doc" />
         </div>
 
+        <!-- Code Content -->
+        <div v-else-if="isCodeContent">
+          <CodeContent :data="doc" />
+        </div>
+
         <!-- Model Content -->
         <div v-else-if="isModelContent">
           <ModelContent :data="doc" />
@@ -149,6 +154,7 @@ import ApiContent from '@/components/ApiContent.vue'
 import GenericContent from '@/components/GenericContent.vue'
 import TSDocContent from '@/components/TSDocContent.vue'
 import IoTContent from '@/components/IoTContent.vue'
+import CodeContent from '@/components/CodeContent.vue'
 import ModelContent from '@/components/ModelContent.vue'
 import TableOfContents from '@/components/TableOfContents.vue'
 import VersionComparator from '@/components/VersionComparator.vue'
@@ -237,6 +243,11 @@ const isIoTContent = computed(() => {
   return props.category === 'cat.iot' && doc.value?.elements
 })
 
+// Detectar si es contenido Code
+const isCodeContent = computed(() => {
+  return props.category === 'cat.code' && doc.value?.elements
+})
+
 // Detectar si es contenido Model
 const isModelContent = computed(() => {
   return props.category === 'cat.model' || doc.value?.models
@@ -297,6 +308,7 @@ const getCategoryLabel = (category) => {
     'cat.docs': t('nav.docs'),
     'cat.tsdoc': 'TypeScript Docs',
     'cat.iot': 'IoT Docs',
+    'cat.code': 'Code Docs',
     'cat.model': 'Models'
   }
   return labels[category] || category.replace('cat.', '')
@@ -308,6 +320,7 @@ const getCategoryPath = (category) => {
     'cat.docs': '/docs',
     'cat.tsdoc': '/tsdoc',
     'cat.iot': '/iot',
+    'cat.code': '/code',
     'cat.model': '/model'
   }
   return paths[category] || `/docs/${category}`
@@ -317,6 +330,7 @@ const getDefaultTitle = () => {
   if (isApiDoc.value) return 'APIs'
   if (isTSDocContent.value) return 'TypeScript Docs'
   if (isIoTContent.value) return 'IoT Docs'
+  if (isCodeContent.value) return 'Code Docs'
   if (isModelContent.value) return 'Models'
   return 'Documentación'
 }

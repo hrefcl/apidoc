@@ -5,6 +5,189 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.0] - 2025-12-31
+
+### 🚀 New Features
+
+#### Generic Code Documentation System (`@code*` tags)
+
+New documentation system for ANY programming language - Kotlin, Swift, Java, Python, Go, Rust, C++, C#, and more.
+
+**21 New Parsers:**
+- `@code` - Main code element definition (function, class, interface, etc.)
+- `@codeName` - Display name
+- `@codeGroup` - Category grouping
+- `@codeVersion` - Version number
+- `@codeLang` - Programming language (kotlin, swift, java, python, go, rust, cpp, etc.)
+- `@codePlatform` - Target platforms (iOS, Android, Server, etc.)
+- `@codeDescription` - Detailed description with markdown support
+- `@codeParam` - Parameters with type and description
+- `@codeReturn` - Return value documentation
+- `@codeExample` - Code examples with syntax highlighting
+- `@codeSignature` - Function/method signature
+- `@codeThrows` - Exception documentation
+- `@codeAccess` - Access modifiers (public, private, protected)
+- `@codeGeneric` - Generic type parameters
+- `@codeAsync` - Async/await markers
+- `@codeDeprecated` - Deprecation notices
+- `@codeSince` - Since version
+- `@codeSee` - Cross-references
+- `@codeNote` - Important notes
+- `@codeWarning` - Warning messages
+- `@codeTodo` - TODO items
+
+**Example Usage:**
+```swift
+/**
+ * @code {class} UserManager
+ * @codeName UserManager
+ * @codeGroup Services
+ * @codeVersion 2.0.0
+ * @codeLang swift
+ * @codePlatform {iOS,macOS}
+ * @codeDescription Manages user authentication and profile data.
+ * @codeGeneric {T} User type conforming to Codable
+ * @codeExample {swift} Basic Usage:
+ *     let manager = UserManager<AppUser>()
+ *     let user = try await manager.authenticate(email, password)
+ */
+class UserManager<T: Codable> { }
+```
+
+**Supported Languages:**
+- Swift, Kotlin, Java, Scala
+- Python, Ruby, PHP
+- Go, Rust, C, C++, C#
+- JavaScript, TypeScript
+- And any other language!
+
+**File Extensions Added:**
+- `.rs` (Rust)
+- `.swift` (Swift)
+- `.kt` (Kotlin)
+
+#### IoT/Embedded Documentation System (`@iot*` tags)
+
+Complete documentation system for firmware and embedded systems (ESP32, Arduino, STM32, etc.).
+
+**16 IoT Parsers:**
+- `@iot` - Main IoT element (function, struct, enum, macro, callback, isr, etc.)
+- `@iotName` - Display name
+- `@iotGroup` - Module grouping (WiFi, GPIO, UART, etc.)
+- `@iotVersion` - Firmware version
+- `@iotPlatform` - Target platforms (ESP32, ESP8266, STM32, Arduino)
+- `@iotDescription` - Description with markdown tables support
+- `@iotParam` - Parameters with C types
+- `@iotReturn` - Return value
+- `@iotError` - Error codes
+- `@iotExample` - Code examples
+- `@iotSince` - Since version
+- `@iotDeprecated` - Deprecation info
+- `@iotSee` - Cross-references
+
+**Example Usage:**
+```cpp
+/**
+ * @iot {function} wifi_get_rssi
+ * @iotName WifiGetRssi
+ * @iotGroup WiFi
+ * @iotVersion 1.0.0
+ * @iotPlatform {ESP32,ESP8266}
+ * @iotDescription Obtiene la intensidad de señal WiFi (RSSI) en dBm.
+ *
+ * | RSSI (dBm) | Calidad      |
+ * |------------|--------------|
+ * | -30 a -50  | Excelente    |
+ * | -50 a -60  | Buena        |
+ *
+ * @iotReturn {int8_t} RSSI en dBm (valor negativo)
+ * @iotExample {cpp} Check Signal:
+ *     int8_t rssi = wifi_get_rssi();
+ *     printf("Signal: %d dBm\n", rssi);
+ */
+int8_t wifi_get_rssi();
+```
+
+### 🐛 Bug Fixes
+
+#### Version Field Display Fixed
+- **Problem**: Version displayed as `v{ "version": "1.0.0" }` instead of `v1.0.0`
+- **Cause**: Parser returned object `{version: "..."}` but adapter expected string
+- **Solution**: Added version extraction logic in `apidoc-to-apicat.ts` for both `@code` and `@iot` elements
+- **Files**: `core/adapters/apidoc-to-apicat.ts` (transformCodeElement, transformIoTElement)
+
+#### Language Field Extraction Fixed
+- **Problem**: `@codeLang` value not appearing in generated documentation
+- **Cause**: Adapter looked for `local.lang` but parser stored in `item.lang`
+- **Solution**: Updated extraction to check `item.lang` first
+- **File**: `core/adapters/apidoc-to-apicat.ts` (line 795)
+
+#### Markdown Tables Now Render in IoT Descriptions
+- **Problem**: Markdown tables in `@iotDescription` showed as plain text
+- **Solution**: Added `marked` library processing with `renderMarkdown()` function
+- **File**: `apps/apidoc-template-v5/src/components/IoTContent.vue`
+
+#### HTML Tags Now Render in Descriptions
+- **Problem**: `<p>text</p>` showed as visible tags instead of rendering
+- **Affected Fields**: Parameters, Returns, Errors descriptions
+- **Solution**: Changed from `{{ description }}` to `v-html="description"`
+- **File**: `apps/apidoc-template-v5/src/components/IoTContent.vue`
+
+### 📁 New Files
+
+```
+core/parsers/
+├── code.ts
+├── code_access.ts
+├── code_async.ts
+├── code_deprecated.ts
+├── code_description.ts
+├── code_example.ts
+├── code_generic.ts
+├── code_group.ts
+├── code_lang.ts
+├── code_name.ts
+├── code_note.ts
+├── code_param.ts
+├── code_platform.ts
+├── code_return.ts
+├── code_see.ts
+├── code_signature.ts
+├── code_since.ts
+├── code_throws.ts
+├── code_todo.ts
+├── code_version.ts
+├── code_warning.ts
+├── iot.ts
+├── iot_deprecated.ts
+├── iot_description.ts
+├── iot_error.ts
+├── iot_example.ts
+├── iot_group.ts
+├── iot_name.ts
+├── iot_param.ts
+├── iot_platform.ts
+├── iot_return.ts
+├── iot_see.ts
+├── iot_since.ts
+└── iot_version.ts
+
+examples/
+├── 13-iot-cpp/          # IoT documentation example
+└── 14-code-multilang/   # Multi-language code documentation example
+```
+
+### 🔧 Modified Files
+
+- `core/parser.ts` - Added 'code' prefix detection in `_findBlockWithApiGetIndex`
+- `core/index.ts` - Updated `includeFilters` with new extensions
+- `bin/apidoc` - Added `.rs`, `.swift`, `.kt` to file filters
+- `core/adapters/apidoc-to-apicat.ts` - Added transformCodeElement, transformIoTElement, version extraction
+- `apps/apidoc-template-v5/src/components/CodeContent.vue` - Added formatVersion, filename display
+- `apps/apidoc-template-v5/src/components/IoTContent.vue` - Added markdown rendering, v-html for descriptions
+
+---
+
 ## [5.0.9] - 2025-11-11
 
 ### 🐛 Critical Bug Fixes

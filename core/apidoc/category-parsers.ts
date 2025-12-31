@@ -175,6 +175,64 @@ export const CATEGORY_PARSERS: Record<string, CategoryParserConfig> = {
     },
 
     /**
+     * Generic Code Documentation
+     * Multi-language support: Kotlin, Swift, Java, Python, Go, Rust, C#, etc.
+     * For documenting functions, classes, methods, interfaces, protocols
+     */
+    code: {
+        filePatterns: [
+            '.kt', '.kts',           // Kotlin
+            '.swift',                 // Swift
+            '.java',                  // Java
+            '.py', '.pyw',           // Python
+            '.go',                    // Go
+            '.rs',                    // Rust
+            '.cs',                    // C#
+            '.rb',                    // Ruby
+            '.php',                   // PHP
+            '.dart',                  // Dart/Flutter
+            '.scala',                 // Scala
+            '.lua',                   // Lua
+            '.ex', '.exs',           // Elixir
+            '.hs',                    // Haskell
+            '.m', '.mm',             // Objective-C
+            '.r', '.R',              // R
+            '.jl',                    // Julia
+            '.clj',                   // Clojure
+            '.groovy',                // Groovy
+            '.v',                     // V
+            '.zig',                   // Zig
+            '.nim',                   // Nim
+            '.js', '.ts', '.tsx',    // JavaScript/TypeScript (when not using TSDoc)
+            '.c', '.cpp', '.h', '.hpp', // C/C++ (when not using IoT)
+        ],
+        enabledParsers: [
+            'code',
+            'codename',
+            'codegroup',
+            'codetype',
+            'codelang',
+            'codeplatform',
+            'codesignature',
+            'codeparam',
+            'codereturn',
+            'codethrows',
+            'codeexample',
+            'codedescription',
+            'codeversion',
+            'codesince',
+            'codedeprecated',
+            'codesee',
+            'codeaccess',
+            'codestatic',
+            'codeasync',
+            'codegeneric',
+            'codeannotation',
+        ],
+        description: 'Generic code documentation for any programming language',
+    },
+
+    /**
      * OpenAPI/Swagger specifications
      * Native OpenAPI 3.0 syntax support
      */

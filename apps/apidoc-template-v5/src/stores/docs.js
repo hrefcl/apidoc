@@ -12,6 +12,7 @@ export const useDocsStore = defineStore('docs', () => {
   const apiIndex = ref(null)
   const modelIndex = ref(null)
   const iotIndex = ref(null)
+  const codeIndex = ref(null)
   const loading = ref(false)
   const error = ref(null)
 
@@ -289,6 +290,18 @@ export const useDocsStore = defineStore('docs', () => {
         })
       }
 
+      // Procesar Code
+      if (catData.code?.shards) {
+        catData.code.shards.forEach(path => {
+          allDocs.push({
+            filename: path.split('/').pop(),
+            directory: 'cat.code',
+            path: path,
+            title: formatFileName(path.split('/').pop())
+          })
+        })
+      }
+
       docs.value = allDocs
 
       // Cargar navegación
@@ -302,6 +315,9 @@ export const useDocsStore = defineStore('docs', () => {
 
       // Cargar índice de IoT
       await loadIotIndex()
+
+      // Cargar índice de Code
+      await loadCodeIndex()
 
       // Organizar documentos por categoría
       organizeDocs()
@@ -361,6 +377,16 @@ export const useDocsStore = defineStore('docs', () => {
       console.log('[loadIotIndex] IoT index loaded:', iotIndex.value?.elements?.length || 0, 'elements')
     } catch (e) {
       console.warn('IoT index file not found')
+    }
+  }
+
+  // Cargar índice de Code
+  const loadCodeIndex = async () => {
+    try {
+      codeIndex.value = await loadData('/data/cat.code.index.json', 'code.index')
+      console.log('[loadCodeIndex] Code index loaded:', codeIndex.value?.elements?.length || 0, 'elements')
+    } catch (e) {
+      console.warn('Code index file not found')
     }
   }
 
@@ -479,6 +505,40 @@ export const useDocsStore = defineStore('docs', () => {
           }
         } else {
           console.warn('[loadDoc] IoT element not found in index or no shard')
+        }
+      }
+
+      // Si es un elemento Code, buscar en el índice de Code
+      if (category === 'cat.code' && codeIndex.value) {
+        console.log('[loadDoc] Searching in Code index for:', slug)
+        const element = codeIndex.value.elements?.find(e => e.id === slug)
+        console.log('[loadDoc] Found Code element:', element)
+
+        if (element && element.shard) {
+          console.log('[loadDoc] Loading Code shard:', element.shard)
+          // Cargar el archivo del grupo (ej: "cat.code/kotlin-utils.json")
+          const shardKey = element.shard
+            .replace('cat.', '')  // cat.code/kotlin-utils.json → code/kotlin-utils.json
+            .replace('.json', '') // code/kotlin-utils.json → code/kotlin-utils
+            .replace('/', '.')     // code/kotlin-utils → code.kotlin-utils
+          const groupData = await loadData(`/data/${element.shard}`, shardKey)
+          console.log('[loadDoc] Code group data loaded, elements:', groupData.elements?.length)
+
+          // Buscar el elemento específico dentro del grupo
+          const elementData = groupData.elements?.find(e => e.id === slug)
+          console.log('[loadDoc] Found Code element in group:', elementData ? 'YES' : 'NO')
+
+          if (elementData) {
+            // Devolver el elemento Code con la estructura correcta para CodeContent.vue
+            currentDoc.value = {
+              ...groupData,
+              elements: [elementData] // El elemento Code individual
+            }
+            console.log('[loadDoc] Returning Code element data')
+            return currentDoc.value
+          }
+        } else {
+          console.warn('[loadDoc] Code element not found in index or no shard')
         }
       }
 
@@ -660,6 +720,23 @@ export const useDocsStore = defineStore('docs', () => {
       })
     }
 
+    // cat.code section
+    const codeFiles = docs.value.filter(d => d.directory === 'cat.code')
+    if (codeFiles.length > 0) {
+      nav.push({
+        title: 'Code Docs',
+        icon: 'Braces',
+        isSection: true,
+        items: codeFiles.map(doc => ({
+          title: doc.title || formatFileName(doc.filename),
+          path: `/code/${doc.filename.replace('.json', '')}`,
+          slug: doc.filename.replace('.json', ''),
+          category: 'cat.code',
+          icon: 'braces'
+        }))
+      })
+    }
+
     return nav
   })
 
@@ -749,7 +826,8 @@ export const useDocsStore = defineStore('docs', () => {
       'cat.docs': 'Documentación',
       'cat.tsdoc': 'TypeScript',
       'cat.iot': 'IoT Docs',
-      'cat.model': 'Models'
+      'cat.model': 'Models',
+      'cat.code': 'Code Docs'
     }
     return titles[category] || category.replace('cat.', '')
   }
@@ -761,6 +839,7 @@ export const useDocsStore = defineStore('docs', () => {
     if (doc.directory === 'cat.tsdoc') return 'code'
     if (doc.directory === 'cat.iot') return 'cpu'
     if (doc.directory === 'cat.model') return 'users'
+    if (doc.directory === 'cat.code') return 'braces'
     return 'file-text'
   }
 
@@ -957,6 +1036,7 @@ export const useDocsStore = defineStore('docs', () => {
     settings,
     apiIndex,
     iotIndex,
+    codeIndex,
     loading,
     error,
     loadDocs,

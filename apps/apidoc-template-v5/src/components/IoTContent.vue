@@ -125,7 +125,7 @@
             <!-- Version Badge -->
             <div v-if="element.version" class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <Tag class="w-4 h-4" />
-              <span>v{{ element.version }}</span>
+              <span>v{{ formatVersion(element.version) }}</span>
             </div>
           </div>
         </div>
@@ -133,8 +133,8 @@
         <!-- Element Body -->
         <div class="px-6 py-4">
           <!-- Description -->
-          <div v-if="element.description" class="mb-4">
-            <p class="text-gray-700 dark:text-gray-300" v-html="element.description"></p>
+          <div v-if="element.description" class="mb-4 prose prose-sm dark:prose-invert max-w-none">
+            <div class="text-gray-700 dark:text-gray-300" v-html="renderMarkdown(element.description)"></div>
           </div>
 
           <!-- Parameters Table -->
@@ -156,7 +156,7 @@
                   <tr v-for="param in element.parameters" :key="param.field">
                     <td class="px-4 py-2 font-mono text-sm text-gray-900 dark:text-white">{{ param.field }}</td>
                     <td class="px-4 py-2 font-mono text-sm text-purple-600 dark:text-purple-400">{{ param.type }}</td>
-                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{{ param.description }}</td>
+                    <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300" v-html="param.description"></td>
                   </tr>
                 </tbody>
               </table>
@@ -172,7 +172,7 @@
             <div class="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
               <div v-for="ret in element.returns" :key="ret.type" class="flex items-start gap-2">
                 <code class="text-green-600 dark:text-green-400 font-mono">{{ ret.type }}</code>
-                <p class="text-sm text-gray-700 dark:text-gray-300">{{ ret.description }}</p>
+                <span class="text-sm text-gray-700 dark:text-gray-300" v-html="ret.description"></span>
               </div>
             </div>
           </div>
@@ -188,7 +188,7 @@
                    class="flex gap-3 bg-red-50 dark:bg-red-900/20 rounded-lg p-3">
                 <code class="text-red-600 dark:text-red-400 font-mono text-sm">{{ error.type }}</code>
                 <span class="font-mono text-sm text-gray-900 dark:text-white">{{ error.field }}</span>
-                <span class="text-sm text-gray-700 dark:text-gray-300">{{ error.description }}</span>
+                <span class="text-sm text-gray-700 dark:text-gray-300" v-html="error.description"></span>
               </div>
             </div>
           </div>
@@ -246,8 +246,30 @@ import {
   Zap, Box, Hash, Binary, CircuitBoard, Settings
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
+import { marked } from 'marked'
 
 const { t } = useI18n()
+
+// Configure marked for safe rendering
+marked.setOptions({
+  gfm: true,
+  breaks: true
+})
+
+// Helper to render markdown to HTML
+const renderMarkdown = (text: string | undefined): string => {
+  if (!text) return ''
+  return marked.parse(text) as string
+}
+
+// Format version (handle object or string)
+const formatVersion = (version: any): string => {
+  if (!version) return ''
+  if (typeof version === 'object' && version.version) {
+    return version.version
+  }
+  return String(version)
+}
 
 interface IoTParameter {
   field: string

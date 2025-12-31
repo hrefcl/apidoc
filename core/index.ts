@@ -32,7 +32,7 @@ const SPECIFICATION_VERSION = '4.0.0';
 const defaults = {
     excludeFilters: [],
     includeFilters: [
-        '.*\\.(c|cpp|h|hpp|clj|cls|coffee|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|litcoffee|lua|p|php?|pl|pm|py|rb|scala|ts|vue)$',
+        '.*\\.(c|cpp|h|hpp|clj|cls|coffee|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|kt|litcoffee|lua|p|php?|pl|pm|py|rb|rs|scala|swift|ts|vue)$',
     ],
 
     src: path.join(__dirname, '../../example/'),
@@ -157,6 +157,28 @@ const app = {
         iotsince: './parsers/iot_since.js',
         iotdeprecated: './parsers/iot_deprecated.js',
         iotsee: './parsers/iot_see.js',
+        // Code parsers - Generic code documentation (any language: Kotlin, Swift, Java, Python, Go, etc.)
+        code: './parsers/code.js',
+        codename: './parsers/code_name.js',
+        codegroup: './parsers/code_group.js',
+        codetype: './parsers/code_type.js',
+        codelang: './parsers/code_lang.js',
+        codeplatform: './parsers/code_platform.js',
+        codesignature: './parsers/code_signature.js',
+        codeparam: './parsers/code_param.js',
+        codereturn: './parsers/code_return.js',
+        codethrows: './parsers/code_throws.js',
+        codeexample: './parsers/code_example.js',
+        codedescription: './parsers/code_description.js',
+        codeversion: './parsers/code_version.js',
+        codesince: './parsers/code_since.js',
+        codedeprecated: './parsers/code_deprecated.js',
+        codesee: './parsers/code_see.js',
+        codeaccess: './parsers/code_access.js',
+        codestatic: './parsers/code_static.js',
+        codeasync: './parsers/code_async.js',
+        codegeneric: './parsers/code_generic.js',
+        codeannotation: './parsers/code_annotation.js',
     },
     workers: {
         // Temporarily disabled while migrating workers to TypeScript

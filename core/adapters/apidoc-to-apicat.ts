@@ -103,6 +103,7 @@ export interface ApiCATDocs {
     endpoints: ApiCATEndpoint[];
     models?: any[]; // Model documentation items
     iot?: ApiCATIoTElement[]; // IoT code documentation
+    code?: ApiCATCodeElement[]; // Generic code documentation
     groups: string[];
     generated: string;
     generator: string;
@@ -142,6 +143,52 @@ export interface ApiCATIoTElement {
 }
 
 /**
+ * Code Element interface for generic programming language documentation
+ * Supports: Kotlin, Swift, Java, Python, Go, Rust, C#, etc.
+ */
+export interface ApiCATCodeElement {
+    id: string;
+    group: string;
+    name: string;
+    title: string;
+    type: string; // function, class, method, interface, protocol, struct, enum, extension, property, constant, module
+    lang?: string; // kotlin, swift, java, python, go, rust, csharp, etc.
+    description: string;
+    version?: string;
+    platforms?: string[]; // Android, iOS, Web, Server, etc.
+    signature?: string; // Full method/function signature
+    access?: string; // public, private, protected, internal
+    isStatic?: boolean;
+    isAsync?: boolean;
+    generics?: {
+        name: string;
+        constraint?: string;
+        description: string;
+    }[];
+    annotations?: string[]; // @Composable, @MainActor, @Override, etc.
+    parameters?: ApiCATParameter[];
+    returns?: {
+        type: string;
+        description: string;
+    };
+    throws?: {
+        type: string;
+        description: string;
+    }[];
+    examples?: ApiCATExample[];
+    since?: string;
+    deprecated?: {
+        deprecated: boolean;
+        message: string;
+    };
+    see?: {
+        reference: string;
+        description: string;
+    }[];
+    filename?: string;
+}
+
+/**
  * Transform apiDoc data to apiCAT format
  * @param apiDocData
  * @param projectInfo
@@ -150,12 +197,13 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
     const endpoints: ApiCATEndpoint[] = [];
     const models: any[] = [];
     const iotElements: ApiCATIoTElement[] = [];
+    const codeElements: ApiCATCodeElement[] = [];
     const groups = new Set<string>();
 
     // Map to group endpoints by ID (for multi-language and multi-version support)
     const endpointMap = new Map<string, ApiCATEndpoint[]>();
 
-    // Process each endpoint, model, or IoT element
+    // Process each endpoint, model, IoT element, or code element
     if (Array.isArray(apiDocData)) {
         apiDocData.forEach((item: any) => {
             // Check if this is an IoT element (has @iot tag)
@@ -165,6 +213,15 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
                 const iotElement = transformIoTElement(item);
                 iotElements.push(iotElement);
                 // Note: IoT groups are separate from API groups, don't add to groups set
+                return; // Skip adding to endpoints
+            }
+
+            // Check if this is a Code element (has @code tag with type and lang)
+            const codeInfo = item.local?.code || item.code;
+            if (codeInfo && (codeInfo.type || codeInfo.lang)) {
+                const codeElement = transformCodeElement(item);
+                codeElements.push(codeElement);
+                // Note: Code groups are separate from API groups
                 return; // Skip adding to endpoints
             }
 
@@ -516,6 +573,19 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
                       return a.name.localeCompare(b.name);
                   })
                 : undefined,
+        code:
+            codeElements.length > 0
+                ? codeElements.sort((a, b) => {
+                      // Sort Code elements by lang first, then by group, then by name
+                      if (a.lang !== b.lang) {
+                          return (a.lang || '').localeCompare(b.lang || '');
+                      }
+                      if (a.group !== b.group) {
+                          return a.group.localeCompare(b.group);
+                      }
+                      return a.name.localeCompare(b.name);
+                  })
+                : undefined,
         groups: orderedGroups,
         generated: new Date().toISOString(),
         generator: 'apiCAT v5.0 (powered by apiDoc)',
@@ -536,6 +606,14 @@ function isIoTType(type: string): boolean {
 function transformIoTElement(item: any): ApiCATIoTElement {
     const local = item.local || {};
 
+    // Extract version (may be string or object {version: "..."})
+    let versionValue = '1.0.0';
+    if (local.version) {
+        versionValue = typeof local.version === 'object' ? local.version.version : local.version;
+    } else if (item.version) {
+        versionValue = typeof item.version === 'object' ? item.version.version : item.version;
+    }
+
     const element: ApiCATIoTElement = {
         id: generateIoTId(item),
         group: local.group || item.group || 'General',
@@ -543,7 +621,7 @@ function transformIoTElement(item: any): ApiCATIoTElement {
         title: local.title || item.title || local.name || item.name || '',
         type: local.type || item.type || 'function',
         description: local.description || item.description || '',
-        version: local.version || item.version || '1.0.0',
+        version: versionValue,
         filename: item.filename || '',
     };
 
@@ -702,6 +780,159 @@ function detectExampleType(content: string): string {
     }
 
     return 'text';
+}
+
+/**
+ * Transform a Code item to ApiCATCodeElement format
+ */
+function transformCodeElement(item: any): ApiCATCodeElement {
+    const local = item.local || {};
+    const codeInfo = local.code || item.code || {};
+
+    // Extract version (may be string or object {version: "..."})
+    let versionValue = '1.0.0';
+    if (local.version) {
+        versionValue = typeof local.version === 'object' ? local.version.version : local.version;
+    } else if (codeInfo.version) {
+        versionValue = typeof codeInfo.version === 'object' ? codeInfo.version.version : codeInfo.version;
+    } else if (item.version) {
+        versionValue = typeof item.version === 'object' ? item.version.version : item.version;
+    }
+
+    // Extract lang - check item.lang first (where parser stores it), then local, then codeInfo
+    const langValue = item.lang || local.lang?.lang || local.lang || local.codeLang?.lang || local.codeLang || codeInfo.lang || '';
+
+    const element: ApiCATCodeElement = {
+        id: generateCodeId(item),
+        group: local.group || codeInfo.group || item.group || 'General',
+        name: local.name || codeInfo.name || item.name || '',
+        title: local.title || codeInfo.name || item.title || local.name || item.name || '',
+        type: codeInfo.type || local.type || 'function',
+        lang: langValue,
+        description: local.description || codeInfo.description || item.description || '',
+        version: versionValue,
+        filename: item.filename || local.filename || '',
+    };
+
+    // Add platforms if present
+    if (local.platforms && Array.isArray(local.platforms)) {
+        element.platforms = local.platforms;
+    }
+
+    // Add signature if present
+    if (local.signature) {
+        element.signature = local.signature;
+    }
+
+    // Add access modifier if present
+    if (local.access) {
+        element.access = local.access;
+    }
+
+    // Add static flag if present
+    if (local.static !== undefined) {
+        element.isStatic = local.static;
+    }
+
+    // Add async flag if present
+    if (local.async !== undefined) {
+        element.isAsync = local.async;
+    }
+
+    // Add generics if present
+    if (local.generics && Array.isArray(local.generics)) {
+        element.generics = local.generics;
+    }
+
+    // Add annotations if present
+    if (local.annotations && Array.isArray(local.annotations)) {
+        element.annotations = local.annotations.map((a: any) => a.annotation || a);
+    }
+
+    // Transform parameters from @codeParam
+    if (item.parameter?.fields) {
+        const allParams: ApiCATParameter[] = [];
+        Object.keys(item.parameter.fields).forEach((groupName) => {
+            const groupParams = item.parameter.fields[groupName];
+            if (Array.isArray(groupParams)) {
+                groupParams.forEach((param: any) => {
+                    allParams.push({
+                        field: param.field,
+                        type: param.type || 'any',
+                        required: !param.optional,
+                        description: param.description || '',
+                        defaultValue: param.defaultValue,
+                        group: groupName,
+                    });
+                });
+            }
+        });
+        if (allParams.length > 0) {
+            element.parameters = allParams;
+        }
+    }
+
+    // Transform return value from @codeReturn
+    if (local.returns) {
+        element.returns = {
+            type: local.returns.type || 'void',
+            description: local.returns.description || '',
+        };
+    }
+
+    // Transform throws from @codeThrows
+    if (local.throws && Array.isArray(local.throws)) {
+        element.throws = local.throws.map((t: any) => ({
+            type: t.type || 'Error',
+            description: t.description || '',
+        }));
+    }
+
+    // Transform examples from @codeExample
+    if (local.examples && Array.isArray(local.examples)) {
+        element.examples = local.examples.map((example: any) => ({
+            title: example.title || 'Example',
+            content: example.code || example.content || '',
+            type: element.lang || 'text',
+        }));
+    }
+
+    // Add since version
+    if (local.since) {
+        element.since = local.since;
+    }
+
+    // Add deprecation info
+    if (local.deprecated !== undefined) {
+        element.deprecated = {
+            deprecated: true,
+            message: local.message || local.deprecated?.message || '',
+        };
+    }
+
+    // Add see references
+    if (local.see && Array.isArray(local.see)) {
+        element.see = local.see.map((ref: any) => ({
+            reference: ref.reference || ref,
+            description: ref.description || '',
+        }));
+    }
+
+    return element;
+}
+
+/**
+ * Generate a unique ID for a Code element
+ */
+function generateCodeId(item: any): string {
+    const local = item.local || {};
+    const codeInfo = local.code || item.code || {};
+    const lang = (local.lang || codeInfo.lang || 'code').toLowerCase();
+    const group = (local.group || codeInfo.group || item.group || 'general').toLowerCase();
+    const name = (local.name || codeInfo.name || item.name || 'unnamed').toLowerCase();
+    const type = (codeInfo.type || local.type || 'function').toLowerCase();
+
+    return `code-${lang}-${group}-${type}-${name}`.replace(/[^a-z0-9-]/g, '-');
 }
 
 /**

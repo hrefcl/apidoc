@@ -1,0 +1,11 @@
+{
+  "name": "Multi-Language Code Documentation",
+  "version": "1.0.0",
+  "description": "Documentation for code in multiple programming languages",
+  "title": "Multi-Language Code Docs",
+  "url": "https://api.example.com",
+  "header": {
+    "title": "Multi-Language Code Documentation",
+    "content": "This example demonstrates documentation for code in multiple programming languages."
+  }
+}
