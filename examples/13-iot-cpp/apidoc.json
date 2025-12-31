@@ -1,0 +1,10 @@
+{
+  "name": "ESP32 IoT API",
+  "version": "1.0.0",
+  "description": "Documentacion de funciones para sistemas embebidos IoT en ESP32",
+  "title": "ESP32 IoT Documentation",
+  "url": "https://github.com/myproject/esp32-iot",
+  "input": ["./src"],
+  "output": "./doc",
+  "order": ["Sensors", "GPIO", "WiFi", "System"]
+}

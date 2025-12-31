@@ -151,6 +151,30 @@ export const CATEGORY_PARSERS: Record<string, CategoryParserConfig> = {
     },
 
     /**
+     * IoT/Embedded documentation
+     * C/C++ firmware functions, defines, ISRs for embedded systems
+     */
+    iot: {
+        filePatterns: ['.c', '.cpp', '.h', '.hpp', '.ino'],
+        enabledParsers: [
+            'iot',
+            'iotname',
+            'iotgroup',
+            'iotversion',
+            'iotdescription',
+            'iotparam',
+            'iotreturn',
+            'ioterror',
+            'iotexample',
+            'iotplatform',
+            'iotsee',
+            'iotsince',
+            'iotdeprecated',
+        ],
+        description: 'IoT/Embedded C/C++ documentation (functions, defines, ISRs)',
+    },
+
+    /**
      * OpenAPI/Swagger specifications
      * Native OpenAPI 3.0 syntax support
      */

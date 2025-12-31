@@ -117,6 +117,7 @@ export class ApiCatPlugin {
         await fs.ensureDir(path.join(dataPath, 'cat.api'));
         await fs.ensureDir(path.join(dataPath, 'cat.docs'));
         await fs.ensureDir(path.join(dataPath, 'cat.tsdoc'));
+        await fs.ensureDir(path.join(dataPath, 'cat.iot'));
 
         // Transform data using adapter
         const adapter = require('../../adapters/apidoc-to-apicat');
@@ -151,6 +152,14 @@ export class ApiCatPlugin {
             manifest.models = {
                 index: 'cat.model.index.json',
                 shards: this.generateModelShardList(apicatData.models),
+            };
+        }
+
+        // Add IoT section if there are IoT elements
+        if (apicatData.iot && apicatData.iot.length > 0) {
+            manifest.iot = {
+                index: 'cat.iot.index.json',
+                shards: this.generateIoTShardList(apicatData.iot),
             };
         }
 
@@ -229,6 +238,11 @@ export class ApiCatPlugin {
         // Generate Model structure if there are models
         if (apicatData.models && apicatData.models.length > 0) {
             await this.generateModelStructure(apicatData, outputPath);
+        }
+
+        // Generate IoT structure if there are IoT elements
+        if (apicatData.iot && apicatData.iot.length > 0) {
+            await this.generateIoTStructure(apicatData, outputPath);
         }
 
         // Generate navigation using grouped endpoints
@@ -1503,6 +1517,104 @@ export class ApiCatPlugin {
         const stats: Record<string, number> = {};
         models.forEach((model) => {
             stats[model.group] = (stats[model.group] || 0) + 1;
+        });
+        return stats;
+    }
+
+    /**
+     * Generate IoT shard list for manifest
+     * @param iotElements - Array of IoT documentation items
+     */
+    private generateIoTShardList(iotElements: any[]): string[] {
+        const groups = new Set<string>();
+        iotElements.forEach((element) => groups.add(element.group));
+        return Array.from(groups).map((group) => `cat.iot/${this.sanitizeGroupName(group)}.json`);
+    }
+
+    /**
+     * Generate IoT structure (index and shards)
+     * @param apicatData - Transformed apiCAT data
+     * @param outputPath - Output directory path
+     */
+    private async generateIoTStructure(apicatData: any, outputPath: string): Promise<void> {
+        const iotElements = apicatData.iot || [];
+
+        // All JSON data goes into /data subdirectory
+        const dataPath = path.join(outputPath, 'data');
+
+        // Create cat.iot directory
+        const iotDir = path.join(dataPath, 'cat.iot');
+        if (!fs.existsSync(iotDir)) {
+            await fs.mkdir(iotDir, { recursive: true });
+        }
+
+        // Generate IoT index
+        const iotIndex = {
+            elements: iotElements.map((element: any) => ({
+                id: element.id,
+                name: element.name,
+                type: element.type,
+                group: element.group,
+                summary: element.title || element.description,
+                version: element.version,
+                shard: `cat.iot/${this.sanitizeGroupName(element.group)}.json`,
+            })),
+            stats: {
+                totalElements: iotElements.length,
+                byGroup: this.getIoTStatsByGroup(iotElements),
+                byType: this.getIoTStatsByType(iotElements),
+            },
+            lastUpdated: new Date().toISOString(),
+        };
+
+        await fs.writeFile(path.join(dataPath, 'cat.iot.index.json'), JSON.stringify(iotIndex, null, 2));
+
+        // Group elements by group
+        const elementsByGroup = new Map<string, any[]>();
+        iotElements.forEach((element: any) => {
+            const group = element.group || 'General';
+            if (!elementsByGroup.has(group)) {
+                elementsByGroup.set(group, []);
+            }
+            elementsByGroup.get(group)!.push(element);
+        });
+
+        // Generate shards for each group
+        for (const [group, groupElements] of elementsByGroup.entries()) {
+            const shard = {
+                group,
+                description: `${group} IoT functions and definitions`,
+                elements: groupElements,
+                generatedAt: new Date().toISOString(),
+            };
+
+            await fs.writeFile(
+                path.join(iotDir, `${this.sanitizeGroupName(group)}.json`),
+                JSON.stringify(shard, null, 2)
+            );
+        }
+    }
+
+    /**
+     * Get stats of IoT elements by group
+     * @param iotElements - Array of IoT documentation items
+     */
+    private getIoTStatsByGroup(iotElements: any[]): Record<string, number> {
+        const stats: Record<string, number> = {};
+        iotElements.forEach((element) => {
+            stats[element.group] = (stats[element.group] || 0) + 1;
+        });
+        return stats;
+    }
+
+    /**
+     * Get stats of IoT elements by type
+     * @param iotElements - Array of IoT documentation items
+     */
+    private getIoTStatsByType(iotElements: any[]): Record<string, number> {
+        const stats: Record<string, number> = {};
+        iotElements.forEach((element) => {
+            stats[element.type] = (stats[element.type] || 0) + 1;
         });
         return stats;
     }

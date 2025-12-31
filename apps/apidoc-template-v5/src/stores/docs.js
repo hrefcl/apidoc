@@ -11,6 +11,7 @@ export const useDocsStore = defineStore('docs', () => {
   const settings = ref({})
   const apiIndex = ref(null)
   const modelIndex = ref(null)
+  const iotIndex = ref(null)
   const loading = ref(false)
   const error = ref(null)
 
@@ -276,6 +277,18 @@ export const useDocsStore = defineStore('docs', () => {
         })
       }
 
+      // Procesar IoT
+      if (catData.iot?.shards) {
+        catData.iot.shards.forEach(path => {
+          allDocs.push({
+            filename: path.split('/').pop(),
+            directory: 'cat.iot',
+            path: path,
+            title: formatFileName(path.split('/').pop())
+          })
+        })
+      }
+
       docs.value = allDocs
 
       // Cargar navegación
@@ -286,6 +299,9 @@ export const useDocsStore = defineStore('docs', () => {
 
       // Cargar índice de API
       await loadApiIndex()
+
+      // Cargar índice de IoT
+      await loadIotIndex()
 
       // Organizar documentos por categoría
       organizeDocs()
@@ -335,6 +351,16 @@ export const useDocsStore = defineStore('docs', () => {
       modelIndex.value = await loadData('/data/cat.model.index.json', 'model.index')
     } catch (e) {
       console.warn('Model index file not found')
+    }
+  }
+
+  // Cargar índice de IoT
+  const loadIotIndex = async () => {
+    try {
+      iotIndex.value = await loadData('/data/cat.iot.index.json', 'iot.index')
+      console.log('[loadIotIndex] IoT index loaded:', iotIndex.value?.elements?.length || 0, 'elements')
+    } catch (e) {
+      console.warn('IoT index file not found')
     }
   }
 
@@ -420,11 +446,40 @@ export const useDocsStore = defineStore('docs', () => {
         } else {
           console.warn('[loadDoc] Endpoint not found in index or no shard')
         }
-      } else {
-        console.log('[loadDoc] Not an API doc or no API index:', {
-          isApi: category === 'cat.api',
-          hasIndex: !!apiIndex.value
-        })
+      }
+
+      // Si es un elemento IoT, buscar en el índice de IoT
+      if (category === 'cat.iot' && iotIndex.value) {
+        console.log('[loadDoc] Searching in IoT index for:', slug)
+        const element = iotIndex.value.elements?.find(e => e.id === slug)
+        console.log('[loadDoc] Found IoT element:', element)
+
+        if (element && element.shard) {
+          console.log('[loadDoc] Loading IoT shard:', element.shard)
+          // Cargar el archivo del grupo (ej: "cat.iot/gpio.json")
+          const shardKey = element.shard
+            .replace('cat.', '')  // cat.iot/gpio.json → iot/gpio.json
+            .replace('.json', '') // iot/gpio.json → iot/gpio
+            .replace('/', '.')     // iot/gpio → iot.gpio
+          const groupData = await loadData(`/data/${element.shard}`, shardKey)
+          console.log('[loadDoc] IoT group data loaded, elements:', groupData.elements?.length)
+
+          // Buscar el elemento específico dentro del grupo
+          const elementData = groupData.elements?.find(e => e.id === slug)
+          console.log('[loadDoc] Found IoT element in group:', elementData ? 'YES' : 'NO')
+
+          if (elementData) {
+            // Devolver el elemento IoT con la estructura correcta para IoTContent.vue
+            currentDoc.value = {
+              ...groupData,
+              elements: [elementData] // El elemento IoT individual
+            }
+            console.log('[loadDoc] Returning IoT element data')
+            return currentDoc.value
+          }
+        } else {
+          console.warn('[loadDoc] IoT element not found in index or no shard')
+        }
       }
 
       // Fallback: intentar cargar como archivo individual
@@ -588,6 +643,23 @@ export const useDocsStore = defineStore('docs', () => {
       })
     }
 
+    // cat.iot section
+    const iotFiles = docs.value.filter(d => d.directory === 'cat.iot')
+    if (iotFiles.length > 0) {
+      nav.push({
+        title: 'IoT Docs',
+        icon: 'Cpu',
+        isSection: true,
+        items: iotFiles.map(doc => ({
+          title: doc.title || formatFileName(doc.filename),
+          path: `/iot/${doc.filename.replace('.json', '')}`,
+          slug: doc.filename.replace('.json', ''),
+          category: 'cat.iot',
+          icon: 'cpu'
+        }))
+      })
+    }
+
     return nav
   })
 
@@ -675,7 +747,9 @@ export const useDocsStore = defineStore('docs', () => {
       'root': 'General',
       'cat.api': 'API',
       'cat.docs': 'Documentación',
-      'cat.tsdoc': 'TypeScript'
+      'cat.tsdoc': 'TypeScript',
+      'cat.iot': 'IoT Docs',
+      'cat.model': 'Models'
     }
     return titles[category] || category.replace('cat.', '')
   }
@@ -685,6 +759,8 @@ export const useDocsStore = defineStore('docs', () => {
     if (doc.directory === 'cat.api') return 'plug'
     if (doc.directory === 'cat.docs') return 'book-open'
     if (doc.directory === 'cat.tsdoc') return 'code'
+    if (doc.directory === 'cat.iot') return 'cpu'
+    if (doc.directory === 'cat.model') return 'users'
     return 'file-text'
   }
 
@@ -880,6 +956,7 @@ export const useDocsStore = defineStore('docs', () => {
     meta,
     settings,
     apiIndex,
+    iotIndex,
     loading,
     error,
     loadDocs,

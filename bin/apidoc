@@ -482,7 +482,7 @@ program
                 debug: options.debug,
                 colorize: true,
                 excludeFilters: ['node_modules', 'apidoc.config.js'],
-                includeFilters: ['.*\\.(clj|cls|coffee|cpp|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|kt|litcoffee|lua|mjs|p|php?|pl|pm|py|rb|scala|ts|tsx|vue)$'],
+                includeFilters: ['.*\\.(c|cpp|h|hpp|clj|cls|coffee|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|kt|litcoffee|lua|mjs|p|php?|pl|pm|py|rb|scala|ts|tsx|vue)$'],
                 filterBy: options.filterVersion ? `version=${options.filterVersion}` : undefined,
             };
 
@@ -494,7 +494,7 @@ program
 
                 nodemon({
                     watch: apidocOptions.src,
-                    ext: 'js,ts,jsx,tsx,vue,py,php,rb,go,java',
+                    ext: 'c,cpp,h,hpp,js,ts,jsx,tsx,vue,py,php,rb,go,java,ino',
                 });
 
                 nodemon
@@ -597,7 +597,7 @@ program
                     verbose: options.verbose,
                     colorize: true,
                     excludeFilters: ['node_modules'],
-                    includeFilters: ['.*\\.(js|ts|jsx|tsx|vue|py|php|rb|go|java)$'],
+                    includeFilters: ['.*\\.(c|cpp|h|hpp|clj|cls|coffee|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|kt|litcoffee|lua|mjs|p|php?|pl|pm|py|rb|scala|ts|tsx|vue)$'],
                     filterBy: options.filterVersion ? `version=${options.filterVersion}` : undefined,
                 };
 

@@ -102,9 +102,43 @@ export interface ApiCATDocs {
     project: ApiCATProject;
     endpoints: ApiCATEndpoint[];
     models?: any[]; // Model documentation items
+    iot?: ApiCATIoTElement[]; // IoT code documentation
     groups: string[];
     generated: string;
     generator: string;
+}
+
+/**
+ * IoT Element interface for embedded/firmware code documentation
+ */
+export interface ApiCATIoTElement {
+    id: string;
+    group: string;
+    name: string;
+    title: string;
+    type: string; // function, struct, enum, macro, typedef, callback, isr, define, const
+    description: string;
+    version?: string;
+    platforms?: string[]; // ESP32, Arduino, STM32, etc.
+    parameters?: ApiCATParameter[];
+    returns?: {
+        type: string;
+        description: string;
+    }[];
+    errors?: {
+        type: string;
+        field: string;
+        description: string;
+        group?: string;
+    }[];
+    examples?: ApiCATExample[];
+    since?: string;
+    deprecated?: {
+        deprecated: boolean;
+        message: string;
+    };
+    see?: string[];
+    filename?: string;
 }
 
 /**
@@ -115,14 +149,25 @@ export interface ApiCATDocs {
 export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs {
     const endpoints: ApiCATEndpoint[] = [];
     const models: any[] = [];
+    const iotElements: ApiCATIoTElement[] = [];
     const groups = new Set<string>();
 
     // Map to group endpoints by ID (for multi-language and multi-version support)
     const endpointMap = new Map<string, ApiCATEndpoint[]>();
 
-    // Process each endpoint or model
+    // Process each endpoint, model, or IoT element
     if (Array.isArray(apiDocData)) {
         apiDocData.forEach((item: any) => {
+            // Check if this is an IoT element (has @iot tag)
+            // Check both item.local.type and item.type (worker may have moved data)
+            const iotType = item.local?.type || item.type;
+            if (iotType && isIoTType(iotType)) {
+                const iotElement = transformIoTElement(item);
+                iotElements.push(iotElement);
+                // Note: IoT groups are separate from API groups, don't add to groups set
+                return; // Skip adding to endpoints
+            }
+
             // Check if this is a model documentation (has .model field)
             if (item.model) {
                 // This is a model - add to models array
@@ -461,10 +506,155 @@ export function transformToApiCAT(apiDocData: any, projectInfo: any): ApiCATDocs
                       return a.name.localeCompare(b.name);
                   })
                 : undefined,
+        iot:
+            iotElements.length > 0
+                ? iotElements.sort((a, b) => {
+                      // Sort IoT elements by group first, then by name
+                      if (a.group !== b.group) {
+                          return a.group.localeCompare(b.group);
+                      }
+                      return a.name.localeCompare(b.name);
+                  })
+                : undefined,
         groups: orderedGroups,
         generated: new Date().toISOString(),
         generator: 'apiCAT v5.0 (powered by apiDoc)',
     };
+}
+
+/**
+ * Check if a type is an IoT element type
+ */
+function isIoTType(type: string): boolean {
+    const iotTypes = ['function', 'struct', 'enum', 'macro', 'typedef', 'callback', 'isr', 'define', 'const', 'variable', 'class'];
+    return iotTypes.includes(type);
+}
+
+/**
+ * Transform an IoT item to ApiCATIoTElement format
+ */
+function transformIoTElement(item: any): ApiCATIoTElement {
+    const local = item.local || {};
+
+    const element: ApiCATIoTElement = {
+        id: generateIoTId(item),
+        group: local.group || item.group || 'General',
+        name: local.name || item.name || '',
+        title: local.title || item.title || local.name || item.name || '',
+        type: local.type || item.type || 'function',
+        description: local.description || item.description || '',
+        version: local.version || item.version || '1.0.0',
+        filename: item.filename || '',
+    };
+
+    // Add platforms if present
+    if (local.platforms) {
+        element.platforms = local.platforms;
+    }
+
+    // Transform parameters from @iotParam
+    if (item.parameter?.fields) {
+        const allParams: ApiCATParameter[] = [];
+        Object.keys(item.parameter.fields).forEach((groupName) => {
+            const groupParams = item.parameter.fields[groupName];
+            if (Array.isArray(groupParams)) {
+                groupParams.forEach((param: any) => {
+                    allParams.push({
+                        field: param.field,
+                        type: param.type || 'int',
+                        required: !param.optional,
+                        description: param.description || '',
+                        defaultValue: param.defaultValue,
+                        group: groupName,
+                    });
+                });
+            }
+        });
+        if (allParams.length > 0) {
+            element.parameters = allParams;
+        }
+    }
+
+    // Transform return values from @iotReturn
+    if (item.return?.fields) {
+        const returns: { type: string; description: string }[] = [];
+        Object.keys(item.return.fields).forEach((groupName) => {
+            const groupReturns = item.return.fields[groupName];
+            if (Array.isArray(groupReturns)) {
+                groupReturns.forEach((ret: any) => {
+                    returns.push({
+                        type: ret.type || 'void',
+                        description: ret.description || '',
+                    });
+                });
+            }
+        });
+        if (returns.length > 0) {
+            element.returns = returns;
+        }
+    }
+
+    // Transform errors from @iotError
+    if (item.error?.fields) {
+        const errors: { type: string; field: string; description: string; group?: string }[] = [];
+        Object.keys(item.error.fields).forEach((groupName) => {
+            const groupErrors = item.error.fields[groupName];
+            if (Array.isArray(groupErrors)) {
+                groupErrors.forEach((err: any) => {
+                    errors.push({
+                        type: err.type || '',
+                        field: err.field || '',
+                        description: err.description || '',
+                        group: groupName,
+                    });
+                });
+            }
+        });
+        if (errors.length > 0) {
+            element.errors = errors;
+        }
+    }
+
+    // Transform examples from @iotExample
+    if (local.examples && Array.isArray(local.examples)) {
+        element.examples = local.examples.map((example: any) => ({
+            title: example.title || 'Example',
+            content: example.content || '',
+            type: example.type || 'c',
+        }));
+    }
+
+    // Add since version
+    if (local.since) {
+        element.since = local.since;
+    }
+
+    // Add deprecation info
+    if (local.deprecated !== undefined) {
+        element.deprecated = {
+            deprecated: true,
+            message: local.message || '',
+        };
+    }
+
+    // Add see references
+    if (local.see && Array.isArray(local.see)) {
+        element.see = local.see.map((ref: any) => ref.reference || ref);
+    }
+
+    return element;
+}
+
+/**
+ * Generate a unique ID for an IoT element
+ */
+function generateIoTId(item: any): string {
+    const local = item.local || {};
+    const group = (local.group || item.group || 'general').toLowerCase();
+    const name = (local.name || item.name || 'unnamed').toLowerCase();
+    const type = (local.type || item.type || 'function').toLowerCase();
+
+    return `iot-${group}-${type}-${name}`.replace(/[^a-z0-9-]/g, '-');
 }
 
 /**

@@ -32,7 +32,7 @@ const SPECIFICATION_VERSION = '4.0.0';
 const defaults = {
     excludeFilters: [],
     includeFilters: [
-        '.*\\.(clj|cls|coffee|cpp|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|litcoffee|lua|p|php?|pl|pm|py|rb|scala|ts|vue)$',
+        '.*\\.(c|cpp|h|hpp|clj|cls|coffee|cs|dart|erl|exs?|go|groovy|ino?|java|js|jsx|litcoffee|lua|p|php?|pl|pm|py|rb|scala|ts|vue)$',
     ],
 
     src: path.join(__dirname, '../../example/'),
@@ -143,6 +143,20 @@ const app = {
         modelgroup: './parsers/model_group.js',
         modelname: './parsers/model_name.js',
         modeldescription: './parsers/model_description.js',
+        // IoT parsers - Documentation for embedded/IoT code (C/C++)
+        iot: './parsers/iot.js',
+        iotname: './parsers/iot_name.js',
+        iotgroup: './parsers/iot_group.js',
+        iotversion: './parsers/iot_version.js',
+        iotdescription: './parsers/iot_description.js',
+        iotparam: './parsers/iot_param.js',
+        iotreturn: './parsers/iot_return.js',
+        iotexample: './parsers/iot_example.js',
+        iotplatform: './parsers/iot_platform.js',
+        ioterror: './parsers/iot_error.js',
+        iotsince: './parsers/iot_since.js',
+        iotdeprecated: './parsers/iot_deprecated.js',
+        iotsee: './parsers/iot_see.js',
     },
     workers: {
         // Temporarily disabled while migrating workers to TypeScript

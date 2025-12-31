@@ -58,6 +58,11 @@
           <TSDocContent :data="doc" />
         </div>
 
+        <!-- IoT Content -->
+        <div v-else-if="isIoTContent">
+          <IoTContent :data="doc" />
+        </div>
+
         <!-- Model Content -->
         <div v-else-if="isModelContent">
           <ModelContent :data="doc" />
@@ -143,6 +148,7 @@ import { ChevronRight, ChevronLeft, FileQuestion, Home } from 'lucide-vue-next'
 import ApiContent from '@/components/ApiContent.vue'
 import GenericContent from '@/components/GenericContent.vue'
 import TSDocContent from '@/components/TSDocContent.vue'
+import IoTContent from '@/components/IoTContent.vue'
 import ModelContent from '@/components/ModelContent.vue'
 import TableOfContents from '@/components/TableOfContents.vue'
 import VersionComparator from '@/components/VersionComparator.vue'
@@ -226,6 +232,11 @@ const isTSDocContent = computed(() => {
   return props.category === 'cat.tsdoc' && doc.value?.symbols
 })
 
+// Detectar si es contenido IoT
+const isIoTContent = computed(() => {
+  return props.category === 'cat.iot' && doc.value?.elements
+})
+
 // Detectar si es contenido Model
 const isModelContent = computed(() => {
   return props.category === 'cat.model' || doc.value?.models
@@ -285,6 +296,7 @@ const getCategoryLabel = (category) => {
     'cat.api': t('nav.api'),
     'cat.docs': t('nav.docs'),
     'cat.tsdoc': 'TypeScript Docs',
+    'cat.iot': 'IoT Docs',
     'cat.model': 'Models'
   }
   return labels[category] || category.replace('cat.', '')
@@ -295,6 +307,7 @@ const getCategoryPath = (category) => {
     'cat.api': '/api',
     'cat.docs': '/docs',
     'cat.tsdoc': '/tsdoc',
+    'cat.iot': '/iot',
     'cat.model': '/model'
   }
   return paths[category] || `/docs/${category}`
@@ -303,6 +316,7 @@ const getCategoryPath = (category) => {
 const getDefaultTitle = () => {
   if (isApiDoc.value) return 'APIs'
   if (isTSDocContent.value) return 'TypeScript Docs'
+  if (isIoTContent.value) return 'IoT Docs'
   if (isModelContent.value) return 'Models'
   return 'Documentación'
 }

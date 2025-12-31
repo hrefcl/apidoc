@@ -49,6 +49,12 @@ export const routes = [
         component: CategoryIndexPage,
         props: { category: 'model' }
       },
+      {
+        path: 'iot',
+        name: 'iot-index',
+        component: CategoryIndexPage,
+        props: { category: 'iot' }
+      },
       // API Section page
       {
         path: 'api/section/:section',
@@ -79,6 +85,12 @@ export const routes = [
         name: 'model',
         component: DocPage,
         props: route => ({ category: 'cat.model', doc: route.params.doc })
+      },
+      {
+        path: 'iot/:doc',
+        name: 'iot',
+        component: DocPage,
+        props: route => ({ category: 'cat.iot', doc: route.params.doc })
       }
     ]
   }
